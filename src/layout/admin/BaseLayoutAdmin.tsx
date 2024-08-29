@@ -1,19 +1,25 @@
-import { Breadcrumb, Layout } from "antd";
-import { Content, Header } from "antd/es/layout/layout";
-import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { Layout } from 'antd';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { HeaderMain } from './HeaderMain';
+import Sidebar from './Sidebar';
 
-const BaseLayoutAdmin = () => {
+const { Header, Content, Footer } = Layout;
+
+const BaseLayoutAdmin: React.FC = () => {
   return (
-    <Layout>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sidebar />
       <Layout>
-        <Header />
-        <Content style={{ margin: "0 16px" }}>
-          <div>
-            <Outlet></Outlet>
-          </div>
+        <Header style={{ padding: 0, backgroundColor: "transparent" }}>
+          <HeaderMain />
+        </Header>
+        <Content style={{ margin: '0 24px' }}>
+          <Outlet></Outlet>
         </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        </Footer>
       </Layout>
     </Layout>
   );
