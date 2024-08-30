@@ -7,7 +7,7 @@ import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
 import React, { useState } from "react";
 
-const { Sider } = Layout;
+const { Header, Sider } = Layout;
 
 
 
@@ -99,14 +99,16 @@ const Sidebar: React.FC = () => {
       onCollapse={(value) => setCollapsed(value)}
       width={260}
     >
-      <Menu
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
-        mode="inline"
-        theme="light"
-        inlineCollapsed={collapsed}
-        items={items}
-      />
+        <Menu
+          
+          title="aaaaaaaaaaa"
+          defaultSelectedKeys={['1']}
+          defaultOpenKeys={['sub1']}
+          mode="inline"
+          theme="light"
+          inlineCollapsed={collapsed}
+          items={items}
+        />
     </Sider>
   );
 };
