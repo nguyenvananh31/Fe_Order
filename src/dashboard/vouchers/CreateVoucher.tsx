@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Axios from "../../configs/Axios";
 import { Button, Form, Input, InputNumber, message, Skeleton, Switch } from "antd";
 import { BackwardFilled, Loading3QuartersOutlined } from "@ant-design/icons";
@@ -10,21 +10,20 @@ const CreateVouchers = () => {
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const queryClient = useQueryClient();
-    const { id } = useParams();
   
    
   
     const { mutate, isPending } = useMutation({
       mutationFn: async (vouchers: Ivouchers) => {
         try {
-          return await Axios.put(`vouchers/${id}`, vouchers);
+          return await Axios.post(`voucher`, vouchers);
         } catch (error) {
           throw new Error(`Error deleting`);
         }
       },
       onSuccess: () => {
         messageApi.open({
-          content: "Cập nhật thành công",
+          content: "Thêm mới thành công",
           type: "success",
         });
   
@@ -35,7 +34,7 @@ const CreateVouchers = () => {
       },
       onError: () => {
         messageApi.error({
-          content: "Cập nhật thất bại",
+          content: "Thêm mới thất bại",
           type: "error",
         });
       },
@@ -59,7 +58,7 @@ const CreateVouchers = () => {
               </p>
   
               <Link
-                to="/admin"
+                to="/admin/vouchers"
                 className="text-blue-600 decoration-2 hover:underline font-medium cursor-pointer"
               >
                 <BackwardFilled /> Quay lại
@@ -87,9 +86,7 @@ const CreateVouchers = () => {
                 <Form.Item
                   label="Trạng Thái"
                   name="status"
-                  rules={[
-                    { required: true, message: "Vui Lòng Chọn Trạng Thái" },
-                  ]}
+                  initialValue={false}
                 >
                   <Switch />
                 </Form.Item>

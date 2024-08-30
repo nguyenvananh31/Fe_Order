@@ -8,6 +8,7 @@ import CreatePayments from "../dashboard/payments/CreatePayments";
 import UpdateVoucher from "../dashboard/vouchers/UploadVouchers";
 import CreateVouchers from "../dashboard/vouchers/CreateVoucher";
 import DashboardVoucher from "../dashboard/vouchers/DashboardVoucher";
+import Dashboard from "../dashboard/Chartjs/Dashboard";
 
 const Router = () => {
   return (
@@ -17,6 +18,7 @@ const Router = () => {
           <Route index element={<HomePage />} />
         </Route>
         <Route path="admin" element={<BaseLayoutAdmin />}>
+        <Route index element={<Dashboard />} />
           <Route path="payments" element={<DashboardPayments />} />
           <Route path="update-payments/:id" element={<UpdatePayments />} />
           <Route path="create-payments" element={<CreatePayments />} />

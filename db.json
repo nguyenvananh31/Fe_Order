@@ -1,4 +1,16 @@
 {
-    "voucher":[],
-    "payments":[]
+  "voucher": [
+    {
+      "id": "a9f3",
+      "name": "NGUYEN VAN ANH ",
+      "status": true,
+      "customer_id": 1
+    }
+  ],
+  "payments": [
+    {
+      "id": "b92e",
+      "name": "NGUYEN VAN ANH "
+    }
+  ]
 }

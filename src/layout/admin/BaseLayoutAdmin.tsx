@@ -44,13 +44,19 @@ const LayoutAdmin: React.FC = () => {
                         {
                             key: "1",
                             icon: <UserOutlined />,
-                            label: <NavLink to="/admin/payments">Thống kê</NavLink>,
+                            label: <NavLink to="/admin/">Thống kê</NavLink>,
                         },
                         {
                             key: "2",
                             icon: <VideoCameraOutlined />,
-                            label: <NavLink to="/admin/vouchers">Sản phẩm</NavLink>,
+                            label: <NavLink to="/admin/vouchers">Vouchers</NavLink>,
                         },
+                        {
+                            key: "3",
+                            icon: <UserOutlined />,
+                            label: <NavLink to="/admin/payments">Payments</NavLink>,
+                        }
+                        
                     ]}
                 />
             </Sider>

@@ -11,7 +11,6 @@ const CreatePayments = () => {
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const queryClient = useQueryClient();
-    const { id } = useParams();
   
    
   
@@ -25,7 +24,7 @@ const CreatePayments = () => {
       },
       onSuccess: () => {
         messageApi.open({
-          content: "Cập nhật thành công",
+          content: "Thêm mới thành công",
           type: "success",
         });
   
@@ -36,14 +35,15 @@ const CreatePayments = () => {
       },
       onError: () => {
         messageApi.error({
-          content: "Cập nhật thất bại",
+          content: "Thêm mới thất bại",
           type: "error",
         });
       },
     });
   
     const onFinish = (values: IPayments) => {
-      mutate(values);
+      mutate(values); 
+      form.resetFields()
     };
   
     return (
@@ -60,7 +60,7 @@ const CreatePayments = () => {
               </p>
   
               <Link
-                to="/admin"
+                to="/admin/payments"
                 className="text-blue-600 decoration-2 hover:underline font-medium cursor-pointer"
               >
                 <BackwardFilled /> Quay lại
@@ -88,9 +88,7 @@ const CreatePayments = () => {
                 <Form.Item
                   label="Trạng Thái"
                   name="status"
-                  rules={[
-                    { required: true, message: "Vui Lòng Chọn Trạng Thái" },
-                  ]}
+                  initialValue={false}
                 >
                   <Switch />
                 </Form.Item>

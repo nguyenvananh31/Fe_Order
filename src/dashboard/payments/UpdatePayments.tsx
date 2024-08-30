@@ -92,9 +92,7 @@ const UpdatePayments = () => {
                 <Form.Item
                   label="Trạng Thái"
                   name="status"
-                  rules={[
-                    { required: true, message: "Vui Lòng Chọn Trạng Thái" },
-                  ]}
+
                 >
                   <Switch />
                 </Form.Item>
