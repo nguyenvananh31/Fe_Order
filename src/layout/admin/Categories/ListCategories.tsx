@@ -1,4 +1,4 @@
-import { Form, Input, Button, Upload, Breadcrumb } from 'antd';
+import { Form, Input, Button, Upload, Breadcrumb, Image } from 'antd';
 import useListCate from './utils/list-categories.hooks';
 import { PlusOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
@@ -13,6 +13,12 @@ const normFile = (e: any) => {
 export default function ListCategories() {
     const { ...hooks } = useListCate();
 
+    const uploadButton = (
+        <button style={{ border: 0, background: 'none' }} type="button">
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </button>
+    );
 
     return (
         <div className="">
@@ -34,6 +40,8 @@ export default function ListCategories() {
             <div className='bg-primary drop-shadow-primary rounded-primary'>
                 <h1 className='p-6 text-2xl font-semibold'>Thêm danh mục</h1>
                 <Form
+                    onFinish={hooks.onCreateCate}
+                    form={hooks.form}
                     style={{
                         padding: "0 24px"
                     }}
@@ -47,8 +55,8 @@ export default function ListCategories() {
                                 Tên danh mục
                             </div>
                         )}
-                        name="categoryInput"
-                        rules={[{ required: true, message: 'Please input!' }]}
+                        name="name"
+                        rules={[{ required: true, message: 'Vui lòng không để trống name!' }]}
                     >
                         <Input />
                     </Form.Item>
@@ -57,6 +65,7 @@ export default function ListCategories() {
                             Mô tả
                         </div>
                     )}
+                        name='description'
                     >
                         <TextArea rows={4} />
                     </Form.Item>
@@ -67,12 +76,26 @@ export default function ListCategories() {
                     )}
                         valuePropName="fileList" getValueFromEvent={normFile}
                     >
-                        <Upload action="/upload.do" listType="picture-card">
-                            <button style={{ border: 0, background: 'none' }} type="button">
-                                <PlusOutlined />
-                                <div className='mt-2'>Upload</div>
-                            </button>
+                        <Upload
+                            // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                            listType="picture-card"
+                            fileList={hooks.fileList}
+                            onPreview={hooks.handlePreview}
+                            onChange={hooks.handleChange}
+                        >
+                            {hooks.fileList.length >= 8 ? null : uploadButton}
                         </Upload>
+                        {hooks.previewImage && (
+                            <Image
+                                wrapperStyle={{ display: 'none' }}
+                                preview={{
+                                    visible: hooks.previewOpen,
+                                    onVisibleChange: (visible) => hooks.setPreviewOpen(visible),
+                                    afterOpenChange: (visible) => !visible && hooks.setPreviewImage(''),
+                                }}
+                                src={hooks.previewImage}
+                            />
+                        )}
                     </Form.Item>
                     <Form.Item style={{ paddingBottom: "24px" }}>
                         <Button type="primary" htmlType="submit">
