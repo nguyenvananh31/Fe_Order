@@ -7,7 +7,7 @@ import type { MenuProps } from "antd";
 import { Avatar, Layout, Menu } from "antd";
 import React, { useState } from "react";
 
-const { Header, Sider } = Layout;
+const { Sider } = Layout;
 
 
 

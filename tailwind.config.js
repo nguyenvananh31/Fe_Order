@@ -5,9 +5,12 @@ export default {
         extend: {
             backgroundColor: {
                 primary: "#ffffff",
+                purple: "rgba(115, 103, 240, 0.08)",
             },
             colors: {
-                primary: "#ffffff", // Thêm màu nền chính
+                primary: '#5d596c',
+                ghost: "#6f6b7d",
+                purple: '#7367f0',
             },
             dropShadow: {
                 primary: "0 0.125rem 0.25rem rgba(165, 163, 174, 0.3)",
