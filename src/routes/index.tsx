@@ -1,10 +1,16 @@
 import { Route, Routes } from "react-router-dom";
-import DashboardPayments from "../dashboard/payments/DashboardPayments";
+import BaseLayoutUsers from "../layout/users/BaseLayoutUsers";
 import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
-import ListCategories from "../pages/admin/Categories/ListCategories";
-import { RoutePath } from "../constants/path";
-import Login from "../pages/admin/Login/Login";
-import Register from "../pages/admin/Register/Register";
+
+import DashboardPayments from "../dashboard/payments/DashboardPayments";
+import UpdatePayments from "../dashboard/payments/UpdatePayments";
+import CreatePayments from "../dashboard/payments/CreatePayments";
+
+import UpdateVoucher from "../dashboard/vouchers/UploadVouchers";
+import CreateVouchers from "../dashboard/vouchers/CreateVoucher";
+import DashboardVoucher from "../dashboard/vouchers/DashboardVoucher";
+import Dashboard from "../dashboard/chartjs/Dashboard";
+
 
 const Router = () => {
   return (
@@ -16,11 +22,20 @@ const Router = () => {
       </Routes>
       <Routes>
 
-
-        <Route path={RoutePath.ADMIN} element={<BaseLayoutAdmin />}>
-          <Route index element={<DashboardPayments />} />
-          <Route path={`${RoutePath.ADMIN}`+`.`+`${RoutePath.CATEGORY}`} element={<ListCategories />} />
+        <Route path="/" element={<BaseLayoutUsers />}>
         </Route>
+        <Route path="admin" element={<BaseLayoutAdmin />}>
+        <Route index element={<Dashboard />} />
+          <Route path="payments" element={<DashboardPayments />} />
+          <Route path="update-payments/:id" element={<UpdatePayments />} />
+          <Route path="create-payments" element={<CreatePayments />} />
+          
+          <Route path="vouchers" element={<DashboardVoucher />} />
+          <Route path="update-vouchers/:id" element={<UpdateVoucher />} />
+          <Route path="create-vouchers" element={<CreateVouchers />} />
+
+        </Route>
+   
       </Routes>
     </>
   );

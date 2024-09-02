@@ -9,18 +9,18 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-const DashboardPayments = () => {
+const DashboardVoucher = () => {
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
   const navigator = useNavigate();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["payments"],
+    queryKey: ["voucher"],
     queryFn: async () => {
       try {
-        return await Axios.get(`payments`);
+        return await Axios.get(`voucher`);
       } catch (error) {
-        throw new Error(`Kết nối thất bại ${error}`);
+        throw new Error("Kết nối thất bại");
       }
     },
   });
@@ -28,9 +28,9 @@ const DashboardPayments = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: async (id: number) => {
       try {
-        return await Axios.delete(`payments/${id}`);
+        return await Axios.delete(`voucher/${id}`);
       } catch (error) {
-        throw new Error(`Error deleting ${error}`);
+        throw new Error("Error deleting");
       }
     },
     onSuccess: () => {
@@ -39,7 +39,7 @@ const DashboardPayments = () => {
         type: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["payments"],
+        queryKey: ["voucher"],
       });
     },
   });
@@ -69,9 +69,14 @@ const DashboardPayments = () => {
       ),
     },
     {
+      title: "Custom ID",
+      dataIndex: "customer_id",
+      key: "customer_id",
+    },
+    {
       title: "Action",
       key: "action",
-      render: ( payment: IPayments) => (
+      render: (_: any, payment: IPayments) => (
         <>
           <Popconfirm
             title="Bạn muốn xóa phương thức này không"
@@ -79,7 +84,7 @@ const DashboardPayments = () => {
             icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             onConfirm={() => mutate(payment.id!)}
           >
-            <Button danger htmlType="submit" className="mx-2" disabled={isPending}>
+            <Button type="primary" htmlType="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loading3QuartersOutlined className="animate-spin" /> Delete
@@ -89,8 +94,6 @@ const DashboardPayments = () => {
               )}
             </Button>
           </Popconfirm>
-
-          <Button type="primary">Cập nhật</Button>
         </>
       ),
     },
@@ -103,7 +106,7 @@ const DashboardPayments = () => {
         type="primary"
         htmlType="button"
         className="m-2"
-        onClick={() => navigator(`/admin/create-payments`)}
+        onClick={() => navigator(`/admin/create-vouchers`)}
       >
         <FileAddOutlined /> Thêm mới
       </Button>
@@ -114,4 +117,4 @@ const DashboardPayments = () => {
   );
 };
 
-export default DashboardPayments;
+export default DashboardVoucher;
