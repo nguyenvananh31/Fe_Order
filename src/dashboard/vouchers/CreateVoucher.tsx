@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import Axios from "../../configs/Axios";
-import { Button, Form, Input,  message,  Switch } from "antd";
+import { Button, Form, Input, InputNumber, message,  Switch } from "antd";
 import { BackwardFilled, Loading3QuartersOutlined } from "@ant-design/icons";
-import { IPayments } from "../../interFaces/payments";
+import { Ivouchers } from "../../interFaces/vouchers";
 
 
-const CreatePayments = () => {
+const CreateVouchers = () => {
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const queryClient = useQueryClient();
@@ -14,9 +14,9 @@ const CreatePayments = () => {
    
   
     const { mutate, isPending } = useMutation({
-      mutationFn: async (payments: IPayments) => {
+      mutationFn: async (vouchers: Ivouchers) => {
         try {
-          return await Axios.post(`payments`, payments);
+          return await Axios.post(`voucher`, vouchers);
         } catch (error) {
           throw new Error(`Error deleting ${error}`);
         }
@@ -29,7 +29,7 @@ const CreatePayments = () => {
   
         // Làm mới danh sách payments
         queryClient.invalidateQueries({
-          queryKey: ["payments"],
+          queryKey: ["vouchers"],
         });
       },
       onError: () => {
@@ -40,8 +40,8 @@ const CreatePayments = () => {
       },
     });
   
-    const onFinish = (values: IPayments) => {
-      mutate(values); 
+    const onFinish = (values: Ivouchers) => {
+      mutate(values);
       form.resetFields()
     };
   
@@ -59,7 +59,7 @@ const CreatePayments = () => {
               </p>
   
               <Link
-                to="/admin/payments"
+                to="/admin/vouchers"
                 className="text-blue-600 decoration-2 hover:underline font-medium cursor-pointer"
               >
                 <BackwardFilled /> Quay lại
@@ -74,14 +74,14 @@ const CreatePayments = () => {
                   disabled={isPending}
                 >
                   <Form.Item
-                  label="Tên payments"
+                  label="Tên Voucher"
                   name="name"
                   rules={[
                     { required: true, message: "Vui Lòng Nhập Tên" },
                     { type: "string", message: "Không được nhập ký tự đặc biệt" },
                   ]}
                 >
-                  <Input placeholder="Tên payments" />
+                  <Input placeholder="Tên Voucher" />
                 </Form.Item>
   
                 <Form.Item
@@ -92,7 +92,16 @@ const CreatePayments = () => {
                   <Switch />
                 </Form.Item>
 
-                
+                <Form.Item
+                  label="Custorm ID"
+                  name="customer_id"
+                  rules={[
+                    { required: true, message: "Không được bỏ trống" },
+                    { type: "number", message: "Không được nhập ký tự đặc biệt" },
+                  ]}
+                >
+                  <InputNumber min={0}/>
+                </Form.Item>
   
                   <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button type="primary" htmlType="submit">
@@ -114,4 +123,4 @@ const CreatePayments = () => {
     );
 }
 
-export default CreatePayments
+export default CreateVouchers

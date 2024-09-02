@@ -1,4 +1,6 @@
 export const RoutePath = {
-    ADMIN: 'admin',
-    CATEGORY: 'categories'
+    ADMIN: '/admin',
+    CATEGORY: '/category',
+    LOGIN : '/login',
+    REGISTER : '/register',
 }
