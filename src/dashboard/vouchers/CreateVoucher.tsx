@@ -42,6 +42,7 @@ const CreateVouchers = () => {
   
     const onFinish = (values: Ivouchers) => {
       mutate(values);
+      form.resetFields()
     };
   
     return (

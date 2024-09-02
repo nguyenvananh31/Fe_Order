@@ -14,12 +14,12 @@ const DashboardPayments = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigator = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading , isError , error } = useQuery({
     queryKey: ["payments"],
     queryFn: async () => {
       try {
         return await Axios.get(`payments`);
-      } catch (error) {
+      } catch {
         throw new Error("Kết nối thất bại");
       }
     },
@@ -29,7 +29,7 @@ const DashboardPayments = () => {
     mutationFn: async (id: number) => {
       try {
         return await Axios.delete(`payments/${id}`);
-      } catch (error) {
+      } catch  {
         throw new Error("Error deleting");
       }
     },
@@ -43,6 +43,10 @@ const DashboardPayments = () => {
       });
     },
   });
+
+  if(isError) return (<div>
+    <p>Đã xảy ra lỗi: {error.message}</p>
+  </div>)
 
   const dataTable = data?.data.map((payment: IPayments) => ({
     key: payment.id,
@@ -71,7 +75,7 @@ const DashboardPayments = () => {
     {
       title: "Action",
       key: "action",
-      render: (_: any, payment: IPayments) => (
+      render: ( payment: IPayments) => (
         <>
           <Popconfirm
             title="Bạn muốn xóa phương thức này không"
@@ -79,7 +83,7 @@ const DashboardPayments = () => {
             icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             onConfirm={() => mutate(payment.id!)}
           >
-            <Button type="primary" htmlType="submit" disabled={isPending}>
+            <Button danger htmlType="submit" className="mx-2" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loading3QuartersOutlined className="animate-spin" /> Delete
@@ -89,6 +93,8 @@ const DashboardPayments = () => {
               )}
             </Button>
           </Popconfirm>
+
+          <Button type="primary">Cập nhật</Button>
         </>
       ),
     },

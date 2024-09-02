@@ -1,9 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import Axios from "../../configs/Axios";
 import { Button, Form, Input,  message,  Switch } from "antd";
 import { BackwardFilled, Loading3QuartersOutlined } from "@ant-design/icons";
-import { Ivouchers } from "../../interFaces/vouchers";
 import { IPayments } from "../../interFaces/payments";
 
 
@@ -18,7 +17,7 @@ const CreatePayments = () => {
       mutationFn: async (payments: IPayments) => {
         try {
           return await Axios.post(`payments`, payments);
-        } catch (error) {
+        } catch  {
           throw new Error(`Error deleting`);
         }
       },

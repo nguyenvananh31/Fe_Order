@@ -27,6 +27,7 @@ const Router = () => {
           <Route path="update-vouchers/:id" element={<UpdateVoucher />} />
           <Route path="create-vouchers" element={<CreateVouchers />} />
         </Route>
+   
       </Routes>
     </>
   );
