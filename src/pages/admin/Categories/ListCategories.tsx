@@ -1,27 +1,55 @@
-import { Form, Input, Button, Upload, Breadcrumb, Image } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image } from 'antd';
 import useListCate from './utils/list-categories.hooks';
-import { PlusOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
 
-const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e?.fileList;
-};
 
 export default function ListCategories() {
+
     const { ...hooks } = useListCate();
 
-    const uploadButton = (
-        <button style={{ border: 0, background: 'none' }} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </button>
-    );
+    const columns = [
+        {
+            title: 'Tên danh mục',
+            dataIndex: 'name',
+            key: 'name'
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            align: 'center',
+            width: '15%',
+            render: (_: any, { status }: any) => (
+                <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
+                    {!!status ? "Hiển thị" : 'Ẩn'}
+                </Button>
+            )
+        },
+        {
+            title: 'Hành động',
+            dataIndex: 'actions',
+            align: 'center',
+            width: '15%',
+            render: () => (
+                <div>
+                    <Button type='default' className='border-yellow-400 text-yellow-400' icon={<EditOutlined />}></Button>
+                    <Popconfirm
+                        placement='topRight'
+                        title="Xoá danh mục"
+                        description="Bạn có muốn xoá danh mục này?"
+                        icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                        okText="Có"
+                        cancelText="Không"
+                    >
+                        <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
+                    </Popconfirm>
+                </div>
+            )
+        },
+    ];
 
     return (
-        <div className="">
+        <>
             <Breadcrumb
                 style={{
                     fontSize: "24px",
@@ -36,17 +64,36 @@ export default function ListCategories() {
                     },
                 ]}
             />
-
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-                <h1 className='p-6 text-2xl font-semibold'>Thêm danh mục</h1>
+                <div className='flex items-center justify-between'>
+                    <h1 className='p-6 text-xl font-semibold'>Danh mục</h1>
+                    <Button
+                        type='primary'
+                        icon={<PlusOutlined />}
+                        className='mx-6'
+                        onClick={hooks.showDraw}
+                    >
+                        Thêm mới
+                    </Button>
+                </div>
+                <div>
+
+                </div>
+                <Table loading={hooks.loading} dataSource={hooks.dataSource} columns={columns} />
+            </div>
+            <Drawer
+                closable
+                destroyOnClose
+                title={<div className='text-primary font-bold'>Danh mục</div>}
+                placement="right"
+                open={hooks.open}
+                loading={hooks.loading}
+                onClose={() => hooks.setOpen(false)}
+            >
                 <Form
                     onFinish={hooks.onCreateCate}
                     form={hooks.form}
-                    style={{
-                        padding: "0 24px"
-                    }}
                     name="categoryForm"
-                    // onFinish={onFinish}
                     layout="vertical"
                 >
                     <Form.Item
@@ -74,7 +121,7 @@ export default function ListCategories() {
                             Hình ảnh mô tả
                         </div>
                     )}
-                        valuePropName="fileList" getValueFromEvent={normFile}
+                        valuePropName="fileList" getValueFromEvent={hooks.normFile}
                     >
                         <Upload
                             // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
@@ -83,7 +130,14 @@ export default function ListCategories() {
                             onPreview={hooks.handlePreview}
                             onChange={hooks.handleChange}
                         >
-                            {hooks.fileList.length >= 8 ? null : uploadButton}
+                            {hooks.fileList.length >= 8 ? null :
+                                (
+                                    <button style={{ border: 0, background: 'none' }} type="button">
+                                        <PlusOutlined />
+                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                    </button>
+                                )
+                            }
                         </Upload>
                         {hooks.previewImage && (
                             <Image
@@ -103,7 +157,7 @@ export default function ListCategories() {
                         </Button>
                     </Form.Item>
                 </Form>
-            </div>
-        </div>
+            </Drawer>
+        </>
     );
 }
