@@ -7,6 +7,7 @@ export interface ICateReq {
 export interface Icate {
     id: number;
     name: string;
+    status: number;
     description: string | null;
     image: string | null;
     created_at: Date;
