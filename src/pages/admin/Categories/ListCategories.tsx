@@ -30,9 +30,9 @@ export default function ListCategories() {
             dataIndex: 'actions',
             align: 'center',
             width: '15%',
-            render: () => (
+            render: (_: any, {id}: any) => (
                 <div>
-                    <Button type='default' className='border-yellow-400 text-yellow-400' icon={<EditOutlined />}></Button>
+                    <Button onClick={() => {hooks.handleEditCate(id)}} type='default' className='border-yellow-400 text-yellow-400' icon={<EditOutlined />}></Button>
                     <Popconfirm
                         placement='topRight'
                         title="Xoá danh mục"
@@ -40,6 +40,7 @@ export default function ListCategories() {
                         icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                         okText="Có"
                         cancelText="Không"
+                        onConfirm={() => hooks.handleDeleteCate(id)}
                     >
                         <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
                     </Popconfirm>
@@ -50,6 +51,7 @@ export default function ListCategories() {
 
     return (
         <>
+            {hooks.contextHolder}
             <Breadcrumb
                 style={{
                     fontSize: "24px",
@@ -79,16 +81,29 @@ export default function ListCategories() {
                 <div>
 
                 </div>
-                <Table loading={hooks.loading} dataSource={hooks.dataSource} columns={columns} />
+                <Table
+                    loading={hooks.state.loading}
+                    dataSource={hooks.dataSource}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={{
+                        pageSize: hooks.state.pageSize,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+                        total: hooks.state.totalCate,
+                        current: hooks.state.pageIndex,
+                        // onChange: hooks.handleChange
+                    }}
+                />
             </div>
             <Drawer
                 closable
                 destroyOnClose
                 title={<div className='text-primary font-bold'>Danh mục</div>}
                 placement="right"
-                open={hooks.open}
-                loading={hooks.loading}
-                onClose={() => hooks.setOpen(false)}
+                open={hooks.state.showDrawAdd}
+                loading={hooks.state.loading}
+                onClose={hooks.showDraw}
             >
                 <Form
                     onFinish={hooks.onCreateCate}

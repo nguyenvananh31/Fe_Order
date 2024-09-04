@@ -1,6 +1,7 @@
-import { Form, GetProp, UploadFile, UploadProps } from "antd";
-import { useEffect, useState } from "react"
-import { apiGetCate } from "./categories.sevices";
+import { Form, GetProp, message, UploadFile, UploadProps } from "antd";
+import { useEffect, useState } from "react";
+import { ICateReq } from "../../../../interFaces/categories";
+import { apiCreateCate, apiDeleteCate, apiGetCate, apiGetOneCate } from "./categories.sevices";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -12,28 +13,56 @@ const getBase64 = (file: FileType): Promise<string> =>
         reader.onerror = (error) => reject(error);
     });
 
+interface DataSource {
+    id: number;
+    name: string;
+    status: number;
+}
+
+interface IState {
+    loading: boolean;
+    showDrawAdd: boolean;
+    totalCate: number;
+    pageIndex: number;
+    pageSize: number;
+}
+
+const initstate: IState = {
+    loading: false,
+    showDrawAdd: false,
+    totalCate: 0,
+    pageIndex: 1,
+    pageSize: 5
+}
+
 const useListCate = () => {
-    const [open, setOpen] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [state, setState] = useState<IState>(initstate);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [form] = Form.useForm();
-    const [dataSource, setDataSource] = useState([]);
+    const [dataSource, setDataSource] = useState<DataSource[] | null>(null);
+    const [messageApi, contextHolder] = message.useMessage();
 
     //Lấy ra cate gory
     useEffect(() => {
         ; (async () => {
-            setLoading(true);
+            setState(prev => ({ ...prev, loading: !prev.loading }));
             try {
                 const res = await apiGetCate();
-                if (res) {
-                    console.log(res);
+                if (res.data) {
+                    const newDataSource: any = res.data.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        status: item.status
+                    }));
+                    setDataSource(newDataSource);
+                    setState(prev => ({ ...prev, totalCate: res.meta.total, pageIndex: res.meta.current_page }))
                 }
             } catch (error) {
                 console.log(error);
             }
-            setLoading(false);
+            setState(prev => ({ ...prev, loading: !prev.loading }));
         })();
     }, []);
 
@@ -49,16 +78,84 @@ const useListCate = () => {
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
         setFileList(newFileList);
 
-    const onCreateCate = async () => {
-        const formData = new FormData();
-        formData.append('name', form.getFieldValue('name'));
-        setLoading(true);
-        try {
+    const messageAlert = (type: any, content: string) => {
+        messageApi.open({
+            type,
+            content,
+        });
+    }
 
-        } catch (error) {
-
+    const onCreateCate = async (values: ICateReq) => {
+        if (fileList.length > 10) {
+            messageAlert('error', "Hình ảnh không được lớn hơn 1 ảnh!");
+            return;
         }
-        setLoading(false);
+        setState(prev => ({ ...prev, loading: !prev.loading }));
+        try {
+            const formData = new FormData();
+            formData.append('name', values.name);
+            if (values.description) formData.append('description', values.description);
+            if (!!fileList) {
+                fileList.forEach((item) => formData.append('image', item.originFileObj as any));
+            }
+            const res = await apiCreateCate(formData);
+            if (res.data) {
+                setDataSource(prev => ([
+                    {
+                        id: res.data.id,
+                        name: res.data.name,
+                        status: res.data.status
+                    },
+                    ...prev!
+                ]));
+                form.resetFields();
+                setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd, totalCate: state.totalCate + 1 }));
+                messageAlert('success', 'Thêm danh mục thành công!');
+            }
+
+        } catch (error: any) {
+            console.log(error);
+            messageAlert('error', "Thêm danh mục thất bại!");
+        }
+        setState(prev => ({ ...prev, loading: !prev.loading }));
+    }
+
+    const handleEditCate = async (id: number) => {
+        const cate = fetchApiGetCate(id);
+        console.log(cate);
+        
+
+    }
+
+    const fetchApiGetCate = async (id: number) => {
+        setState(prev => ({ ...prev, loading: !prev.loading }));
+        try {
+            const res = await apiGetOneCate(id);
+            if (res) {
+                setState(prev => ({ ...prev, loading: !prev.loading }));
+                return res;
+            }
+        } catch (error) {
+            console.log(error);
+            messageAlert('error', 'Sửa danh mục thất bại!')
+        }
+        setState(prev => ({ ...prev, loading: !prev.loading }));
+    }
+
+    const handleDeleteCate = async (id: number) => {
+        try {
+            setState(prev => ({ ...prev, loading: !prev.loading }));
+            const res = await apiDeleteCate(id);
+            if (res) {
+                const newDataSource = dataSource?.filter(data => data.id !== id);
+                setDataSource([...newDataSource!]);
+                setState(prev => ({ ...prev, totalCate: state.totalCate - 1 }));
+                messageAlert('success', "Xoá danh mục thành công!");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setState(prev => ({ ...prev, loading: !prev.loading }));
     }
 
     const normFile = (e: any) => {
@@ -70,14 +167,17 @@ const useListCate = () => {
 
 
     const showDraw = () => {
-        setOpen(true);
-
+        setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd }));
     };
 
+    // const handlePageChange = (page: any, pageSize: any) => {
+    //     setState(prev => ({...prev, pageIndex: page})); // Cập nhật trang hiện tại
+    //     console.log(`Chuyển sang trang: ${page}, Số lượng bản ghi mỗi trang: ${pageSize}`);
+    //     // Mày có thể gọi API để fetch dữ liệu trang mới ở đây
+    //   };
+
     return {
-        loading,
-        open,
-        setOpen,
+        state,
         dataSource,
         showDraw,
         form,
@@ -89,7 +189,11 @@ const useListCate = () => {
         setPreviewImage,
         setPreviewOpen,
         onCreateCate,
-        normFile
+        normFile,
+        handleDeleteCate,
+        contextHolder,
+        handleEditCate,
+        handlePageChange
     }
 }
 
