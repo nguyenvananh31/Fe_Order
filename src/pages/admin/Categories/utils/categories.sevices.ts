@@ -7,8 +7,8 @@ const apiName = {
     cate: '/api/admin/category',
 };
 
-export const apiGetCate = async () => {
-    const res = await ApiUtils.fetch<any , ResponeBase<Icate[]>>(apiName.cate);
+export const apiGetCate = async (params?: any) => {
+    const res = await ApiUtils.fetch<any , ResponeBase<Icate[]>>(apiName.cate, params);
     return res;
 }
 

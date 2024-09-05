@@ -25,6 +25,7 @@ interface IState {
     totalCate: number;
     pageIndex: number;
     pageSize: number;
+    refresh: boolean;
 }
 
 const initstate: IState = {
@@ -32,7 +33,8 @@ const initstate: IState = {
     showDrawAdd: false,
     totalCate: 0,
     pageIndex: 1,
-    pageSize: 5
+    pageSize: 5,
+    refresh: false
 }
 
 const useListCate = () => {
@@ -44,16 +46,20 @@ const useListCate = () => {
     const [dataSource, setDataSource] = useState<DataSource[] | null>(null);
     const [messageApi, contextHolder] = message.useMessage();
 
-    //Lấy ra cate gory
+    //Lấy ra category
     useEffect(() => {
         ; (async () => {
             setState(prev => ({ ...prev, loading: !prev.loading }));
             try {
-                const res = await apiGetCate();
+                const res = await apiGetCate({ 
+                    page: state.pageIndex,
+                    pageSize: state.pageSize
+                });
                 if (res.data) {
                     const newDataSource: any = res.data.map(item => ({
                         id: item.id,
                         name: item.name,
+                        image: item.image,
                         status: item.status
                     }));
                     setDataSource(newDataSource);
@@ -64,13 +70,12 @@ const useListCate = () => {
             }
             setState(prev => ({ ...prev, loading: !prev.loading }));
         })();
-    }, []);
+    }, [state.refresh]);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
-
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
@@ -86,7 +91,7 @@ const useListCate = () => {
     }
 
     const onCreateCate = async (values: ICateReq) => {
-        if (fileList.length > 10) {
+        if (fileList?.length > 1) {
             messageAlert('error', "Hình ảnh không được lớn hơn 1 ảnh!");
             return;
         }
@@ -104,6 +109,7 @@ const useListCate = () => {
                     {
                         id: res.data.id,
                         name: res.data.name,
+                        image: res.data.image,
                         status: res.data.status
                     },
                     ...prev!
@@ -170,11 +176,9 @@ const useListCate = () => {
         setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd }));
     };
 
-    // const handlePageChange = (page: any, pageSize: any) => {
-    //     setState(prev => ({...prev, pageIndex: page})); // Cập nhật trang hiện tại
-    //     console.log(`Chuyển sang trang: ${page}, Số lượng bản ghi mỗi trang: ${pageSize}`);
-    //     // Mày có thể gọi API để fetch dữ liệu trang mới ở đây
-    //   };
+    const handlePageChange = (page: any, pageSize: any) => {
+        setState(prev => ({...prev, pageIndex: page, pageSize, refresh: !state.refresh}));
+      };
 
     return {
         state,
