@@ -1,6 +1,7 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image, Space } from 'antd';
 import useListCate from './utils/list-categories.hooks';
+import { getImageUrl } from '../../../constants/common';
 const { TextArea } = Input;
 
 
@@ -15,6 +16,27 @@ export default function ListCategories() {
             key: 'name'
         },
         {
+            title: 'Ảnh',
+            dataIndex: 'image',
+            width: 'auto',
+            align: 'center',
+            render: (_: any, item: any) => {
+              return (
+                <Image
+                  style={{ objectFit: 'cover', width: '120px', height: '80px' }}
+                  src={item.image ? getImageUrl(item.image) : '/images/no-image.png'}
+                  preview={{
+                    mask: (
+                      <Space direction="vertical" align="center">
+                        <ZoomInOutlined />
+                      </Space>
+                    ),
+                  }}
+                />
+              );
+            },
+          },
+        {
             title: 'Trạng thái',
             dataIndex: 'status',
             align: 'center',
@@ -27,11 +49,12 @@ export default function ListCategories() {
         },
         {
             title: 'Hành động',
-            dataIndex: 'actions',
+            dataIndex: 'action',
             align: 'center',
             width: '15%',
+            fixed: 'right',
             render: (_: any, {id}: any) => (
-                <div>
+                <div className='min-w-[100px]'>
                     <Button onClick={() => {hooks.handleEditCate(id)}} type='default' className='border-yellow-400 text-yellow-400' icon={<EditOutlined />}></Button>
                     <Popconfirm
                         placement='topRight'
@@ -92,7 +115,12 @@ export default function ListCategories() {
                         pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
                         total: hooks.state.totalCate,
                         current: hooks.state.pageIndex,
-                        // onChange: hooks.handleChange
+                        style:{
+                            paddingRight: "24px",
+                        },
+                        onChange(page, pageSize) {
+                            hooks.handlePageChange(page, pageSize);
+                        },
                     }}
                 />
             </div>
@@ -145,7 +173,7 @@ export default function ListCategories() {
                             onPreview={hooks.handlePreview}
                             onChange={hooks.handleChange}
                         >
-                            {hooks.fileList.length >= 8 ? null :
+                            {hooks.fileList?.length >= 1 ? null :
                                 (
                                     <button style={{ border: 0, background: 'none' }} type="button">
                                         <PlusOutlined />
