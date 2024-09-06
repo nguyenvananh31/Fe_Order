@@ -52,7 +52,6 @@ const UpdatePayments = () => {
 
   const onFinish = (values: IPayments) => {
     mutate(values);
-    form.resetFields();
   };
 
   return (

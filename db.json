@@ -1,0 +1,24 @@
+{
+  "payments": [
+    {
+      "name": "NGUYEN VAN ANH 1",
+      "status": true,
+      "id": "b9ea"
+    }
+  ],
+  "vouchers": [],
+  "customer": [
+    {
+      "id": "1",
+      "name": "Anhnv 1"
+    },
+    {
+      "id": "2",
+      "name": "Anhnv 2"
+    },
+    {
+      "id": "3",
+      "name": "Anhnv 3"
+    }
+  ]
+}

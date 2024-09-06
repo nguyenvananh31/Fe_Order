@@ -197,6 +197,7 @@ const DashboardVouchers = () => {
   return (
     <>
       {contextHolder}
+      <div className="mt-5">
       <Button
         type="primary"
         htmlType="button"
@@ -260,6 +261,7 @@ const DashboardVouchers = () => {
             </Form.Item>
           </Form>
         </Drawer>
+      </div>
     </>
   );
 };

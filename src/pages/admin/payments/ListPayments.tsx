@@ -52,9 +52,6 @@ const DashboardPayments = () => {
     },
   });
 
-
-
-
   const { mutate: DeletePayments, isPending } = useMutation({
     mutationFn: async (id: number) => {
       try {
@@ -83,10 +80,10 @@ const DashboardPayments = () => {
     },
   });
 
-  const { mutate:createPayments } = useMutation({
+  const { mutate: createPayments } = useMutation({
     mutationFn: async (data: IPayments) => {
       try {
-        await Axios.post(`/payments` ,data);
+        await Axios.post(`/payments`, data);
       } catch (error) {
         console.log(error);
 
@@ -180,7 +177,10 @@ const DashboardPayments = () => {
             </Button>
           </Popconfirm>
 
-          <Button type="primary" onClick={() =>  navigator(`/admin/update-payments/${payment.id}`)}>
+          <Button
+            type="primary"
+            onClick={() => navigator(`/admin/update-payments/${payment.id}`)}
+          >
             Cập Nhật
           </Button>
         </>
@@ -190,18 +190,19 @@ const DashboardPayments = () => {
 
   return (
     <>
-      {contextHolder}
-      <Button
-        type="primary"
-        htmlType="button"
-        className="m-2"
-        onClick={() => showDrawer()}
-      >
-        <FileAddOutlined /> Thêm mới
-      </Button>
-      <Skeleton loading={isLoading} active>
-        <Table columns={colums} dataSource={dataTable} />
-      </Skeleton>
+      <div className="mt-5">
+        {contextHolder}
+        <Button
+          type="primary"
+          htmlType="button"
+          className="m-2"
+          onClick={() => showDrawer()}
+        >
+          <FileAddOutlined /> Thêm mới
+        </Button>
+        <Skeleton loading={isLoading} active>
+          <Table columns={colums} dataSource={dataTable} />
+        </Skeleton>
 
         <Drawer title="Basic Drawer" onClose={onClose} open={open}>
           <Form
@@ -241,6 +242,7 @@ const DashboardPayments = () => {
             </Form.Item>
           </Form>
         </Drawer>
+      </div>
     </>
   );
 };
