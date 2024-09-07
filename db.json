@@ -1,12 +1,20 @@
 {
   "payments": [
     {
-      "name": "NGUYEN VAN ANH 1",
+      "name": "NGUYEN VAN ANH update",
       "status": true,
       "id": "b9ea"
     }
   ],
-  "vouchers": [],
+  "vouchers": [
+    {
+      "name": "NGUYEN VAN ANH 1",
+      "status": true,
+      "customer_id": "3",
+      "id": "9c80"
+    }
+  ],
+  
   "customer": [
     {
       "id": "1",
@@ -20,5 +28,16 @@
       "id": "3",
       "name": "Anhnv 3"
     }
+  ],
+  "products":[],
+  "categories":[
+    {
+      "id":"1",
+      "name":"Category 1"
+  }
+],
+  "size":[
+    {"id":1 , "name":"Size 1"},
+    {"id":2 , "name":"Size 2"}
   ]
 }

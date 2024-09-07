@@ -1,5 +1,9 @@
+export interface IPaymentsReq {
+    name: string;
+}
+
 export interface IPayments {
     id?: number,
     name: string,
-    staus:boolean,
+    status:number,
 }

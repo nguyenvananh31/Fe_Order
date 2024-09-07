@@ -1,250 +1,168 @@
 import {
-  Button,
-  Drawer,
-  Popconfirm,
-  Skeleton,
-  Form,
-  Table,
-  Input,
-  Switch,
-  message,
-} from "antd";
-import {
-  FileAddOutlined,
-  Loading3QuartersOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { IPayments } from "../../../interFaces/payments";
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Axios from "../../../configs/Axios";
+import {
+  Breadcrumb,
+  Button,
+  Drawer,
+  Input,
+  Popconfirm,
+  Table,
+  Form,
+  Switch,
+} from "antd";
+import useListPayments from "./utils/list-payments.hook";
 
-const DashboardPayments = () => {
-  const [open, setOpen] = useState(false);
-  const [form] = Form.useForm();
-  const queryClient = useQueryClient();
-  const navigator = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
+export default function DashboardPayments() {
+  const { ...hooks } = useListPayments();
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
+ 
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const {
-    data: dataPayments,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["payments"],
-    queryFn: async () => {
-      try {
-        return await Axios.get(`/payments`);
-      } catch (error) {
-        console.log(error);
-        throw new Error("Error fetching payments");
-      }
-    },
-  });
-
-  const { mutate: DeletePayments, isPending } = useMutation({
-    mutationFn: async (id: number) => {
-      try {
-        await Axios.delete(`/payments/${id}`);
-      } catch (error) {
-        console.log(error);
-
-        throw new Error("Error deleting payment");
-      }
-    },
-    onSuccess: () => {
-      messageApi.open({
-        content: "Xóa thành công",
-        type: "success",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payments"],
-      });
-    },
-    onError: (error) => {
-      console.log(error);
-      messageApi.open({
-        content: "Xóa thất bại",
-        type: "error",
-      });
-    },
-  });
-
-  const { mutate: createPayments } = useMutation({
-    mutationFn: async (data: IPayments) => {
-      try {
-        await Axios.post(`/payments`, data);
-      } catch (error) {
-        console.log(error);
-
-        throw new Error("Error updating payment");
-      }
-    },
-    onSuccess: () => {
-      setOpen(false);
-      form.resetFields();
-      messageApi.open({
-        content: "Thêm thành công",
-        type: "success",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["payments"],
-      });
-    },
-    onError: (error) => {
-      console.error(error);
-      messageApi.open({
-        content: "Thêm không thành công",
-        type: "error",
-      });
-    },
-  });
-
-  const onFinish = (values: IPayments) => {
-    createPayments(values);
-    form.resetFields();
-  };
-
-  if (isError)
-    return (
-      <div>
-        <p>Đã xảy ra lỗi: {error?.message}</p>
-      </div>
-    );
-
-  // thay data json-server = data db
-  const dataTable = dataPayments?.data.map((payment: IPayments) => ({
-    key: payment.id,
-    ...payment,
-  }));
-
-  const colums = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
+  const columns = [
     {
       title: "Tên Phương Thức",
       dataIndex: "name",
       key: "name",
     },
+
     {
-      title: "Trạng Thái",
+      title: "Trạng thái",
       dataIndex: "status",
-      key: "status",
-      render: (status: boolean) => (
-        <span style={{ color: status ? "green" : "red" }}>
+      align: "center",
+      width: "15%",
+      render: (_: any, { status }: any) => (
+        <Button
+          danger={!status}
+          className={`${
+            !!status && "border-green-600 text-green-600"
+          } min-w-[80px]`}
+        >
           {status ? "Hoạt Động" : "Không Hoạt Động"}
-        </span>
+        </Button>
       ),
     },
     {
-      title: "Action",
-      key: "action",
-      render: (payment: IPayments) => (
-        <>
-          <Popconfirm
-            title="Bạn muốn xóa phương thức này không"
-            description="Bạn có chắc chán xóa không?"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={() => DeletePayments(payment.id!)}
-          >
-            <Button
-              danger
-              htmlType="submit"
-              className="mx-2"
-              disabled={isPending}
-            >
-              {isPending ? (
-                <>
-                  <Loading3QuartersOutlined className="animate-spin" /> Delete
-                </>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </Popconfirm>
-
+      title: "Hành động",
+      dataIndex: "action",
+      align: "center",
+      width: "15%",
+      fixed: "right",
+      render: (_: any, { id }: any) => (
+        <div className="min-w-[100px]">
           <Button
-            type="primary"
-            onClick={() => navigator(`/admin/update-payments/${payment.id}`)}
+            onClick={() => {
+              hooks.handleEditPayments(id);
+            }}
+            type="default"
+            className="border-yellow-400 text-yellow-400"
+            icon={<EditOutlined />}
+          ></Button>
+          <Popconfirm
+            placement="topRight"
+            title="Xoá danh mục"
+            description="Bạn có muốn xoá danh mục này?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            okText="Có"
+            cancelText="Không"
+            onConfirm={() => hooks.handleDeletePayments(id)}
           >
-            Cập Nhật
-          </Button>
-        </>
+            <Button className="ml-2" danger icon={<DeleteOutlined />}></Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
 
   return (
     <>
-      <div className="mt-5">
-        {contextHolder}
-        <Button
-          type="primary"
-          htmlType="button"
-          className="m-2"
-          onClick={() => showDrawer()}
-        >
-          <FileAddOutlined /> Thêm mới
-        </Button>
-        <Skeleton loading={isLoading} active>
-          <Table columns={colums} dataSource={dataTable} />
-        </Skeleton>
-
-        <Drawer title="Basic Drawer" onClose={onClose} open={open}>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            disabled={isPending}
+      {hooks.contextHolder}
+      <Breadcrumb
+        style={{
+          fontSize: "24px",
+          margin: "28px 0",
+        }}
+        items={[
+          {
+            title: "Dashboard",
+          },
+          {
+            title: <h1 className="font-bold">Payments</h1>,
+          },
+        ]}
+      />
+      <div className="bg-primary drop-shadow-primary rounded-primary">
+        <div className="flex items-center justify-between">
+          <h1 className="p-6 text-xl font-semibold">Payments</h1>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            className="mx-6"
+            onClick={hooks.showDraw}
           >
-            <Form.Item
-              label="Tên payments"
-              name="name"
-              rules={[
-                { required: true, message: "Vui Lòng Nhập Tên" },
-                {
-                  type: "string",
-                  message: "Không được nhập ký tự đặc biệt",
-                },
-              ]}
-            >
-              <Input placeholder="Tên payments" />
-            </Form.Item>
-
-            <Form.Item label="Trạng Thái" name="status">
-              <Switch />
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button type="primary" htmlType="submit">
-                {isPending ? (
-                  <>
-                    <Loading3QuartersOutlined className="animate-spin" /> Submit
-                  </>
-                ) : (
-                  "Submit"
-                )}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Drawer>
+            Thêm mới
+          </Button>
+        </div>
+        <div></div>
+        <Table
+          loading={hooks.state.loading}
+          dataSource={hooks.dataSource || []}
+          columns={columns}
+          rowKey="id"
+          pagination={{
+            pageSize: hooks.state.pageSize,
+            showSizeChanger: true,
+            pageSizeOptions: ["5", "10", "20", "50"], // Các tùy chọn số lượng bản ghi
+            total: hooks.state.totalCate,
+            current: hooks.state.pageIndex,
+            style: {
+              paddingRight: "24px",
+            },
+            onChange(page, pageSize) {
+              hooks.handlePageChange(page, pageSize);
+            },
+          }}
+        />
       </div>
+      <Drawer
+        closable
+        destroyOnClose
+        title={<div className="text-primary font-bold">Phương Thức</div>}
+        placement="right"
+        open={hooks.state.showDrawAdd}
+        loading={hooks.state.loading}
+        onClose={hooks.showDraw}
+      >
+        <Form
+          onFinish={hooks.onCreatePayments}
+          // onFinish={onFinish}
+          form={hooks.form}
+          name="paymentsForm"
+          layout="vertical"
+        >
+          <Form.Item
+            label={<div className="font-bold">Tên Payments</div>}
+            name="name"
+            rules={[
+              { required: true, message: "Vui lòng không để trống name!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item label="Trạng Thái" name="status">
+            <Switch />
+          </Form.Item>
+
+          <Form.Item style={{ paddingBottom: "24px" }}>
+            <Button type="primary" htmlType="submit">
+              Thêm
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </>
   );
-};
-
-export default DashboardPayments;
+}

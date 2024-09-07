@@ -1,22 +1,15 @@
-import { Form, GetProp, message, UploadFile, UploadProps } from "antd";
+import { Form, message,  } from "antd";
 import { useEffect, useState } from "react";
-import { ICateReq } from "../../../../interFaces/categories";
-import { apiCreateCate, apiDeleteCate, apiGetCate, apiGetOneCate } from "./categories.sevices";
+import { IPaymentsRed } from "../../../../interFaces/payments";
+import { apiCreatePayments, apiDeletePayments, apiGetOnePayments, apiGetPayments } from "./payments.sevices";
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-const getBase64 = (file: FileType): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-    });
+
 
 interface DataSource {
     id: number;
     name: string;
-    status: number;
+    status: boolean;
 }
 
 interface IState {
@@ -37,11 +30,10 @@ const initstate: IState = {
     refresh: false
 }
 
-const useListCate = () => {
+const useListPayments = () => {
     const [state, setState] = useState<IState>(initstate);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
-    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [form] = Form.useForm();
     const [dataSource, setDataSource] = useState<DataSource[] | null>(null);
     const [messageApi, contextHolder] = message.useMessage();
@@ -51,7 +43,7 @@ const useListCate = () => {
         ; (async () => {
             setState(prev => ({ ...prev, loading: !prev.loading }));
             try {
-                const res = await apiGetCate({ 
+                const res = await apiGetPayments({ 
                     page: state.pageIndex,
                     pageSize: state.pageSize
                 });
@@ -59,7 +51,6 @@ const useListCate = () => {
                     const newDataSource: any = res.data.map(item => ({
                         id: item.id,
                         name: item.name,
-                        image: item.image,
                         status: item.status
                     }));
                     setDataSource(newDataSource);
@@ -72,47 +63,19 @@ const useListCate = () => {
         })();
     }, [state.refresh]);
 
+    const onCreatePayments = async (values: IPaymentsRed) => {
 
-    
-
-    const handlePreview = async (file: UploadFile) => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj as FileType);
-        }
-        setPreviewImage(file.url || (file.preview as string));
-        setPreviewOpen(true);
-    };
-
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
-        setFileList(newFileList);
-
-    const messageAlert = (type: any, content: string) => {
-        messageApi.open({
-            type,
-            content,
-        });
-    }
-
-    const onCreateCate = async (values: ICateReq) => {
-        if (fileList?.length > 1) {
-            messageAlert('error', "Hình ảnh không được lớn hơn 1 ảnh!");
-            return;
-        }
         setState(prev => ({ ...prev, loading: !prev.loading }));
         try {
             const formData = new FormData();
             formData.append('name', values.name);
-            if (values.description) formData.append('description', values.description);
-            if (!!fileList) {
-                fileList.forEach((item) => formData.append('image', item.originFileObj as any));
-            }
-            const res = await apiCreateCate(formData);
+ 
+            const res = await apiCreatePayments(formData);
             if (res.data) {
                 setDataSource(prev => ([
                     {
-                        id: res.data.id,
+                        id: res.data.id!,
                         name: res.data.name,
-                        image: res.data.image,
                         status: res.data.status
                     },
                     ...prev!
@@ -129,37 +92,53 @@ const useListCate = () => {
         setState(prev => ({ ...prev, loading: !prev.loading }));
     }
 
-    const handleEditCate = async (id: number) => {
-        const cate = fetchApiGetCate(id);
-        console.log(cate);
+
+
+    
+
+   
+
+ 
+    const messageAlert = (type: any, content: string) => {
+        messageApi.open({
+            type,
+            content,
+        });
+    }
+
+
+
+    const handleEditPayments = async (id: number) => {
+        const payments = fetchApiGetPaymentsByID(id);
+        console.log(payments);
         
 
     }
 
-    const fetchApiGetCate = async (id: number) => {
+    const fetchApiGetPaymentsByID = async (id: number) => {
         setState(prev => ({ ...prev, loading: !prev.loading }));
         try {
-            const res = await apiGetOneCate(id);
+            const res = await apiGetOnePayments(id);
             if (res) {
                 setState(prev => ({ ...prev, loading: !prev.loading }));
                 return res;
             }
         } catch (error) {
             console.log(error);
-            messageAlert('error', 'Sửa danh mục thất bại!')
+            messageAlert('error', 'Sửa thất bại!')
         }
         setState(prev => ({ ...prev, loading: !prev.loading }));
     }
 
-    const handleDeleteCate = async (id: number) => {
+    const handleDeletePayments = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loading: !prev.loading }));
-            const res = await apiDeleteCate(id);
+            const res = await apiDeletePayments(id);
             if (res) {
                 const newDataSource = dataSource?.filter(data => data.id !== id);
                 setDataSource([...newDataSource!]);
                 setState(prev => ({ ...prev, totalCate: state.totalCate - 1 }));
-                messageAlert('success', "Xoá danh mục thành công!");
+                messageAlert('success', "Xoá  thành công!");
             }
         } catch (error) {
             console.log(error);
@@ -167,12 +146,6 @@ const useListCate = () => {
         setState(prev => ({ ...prev, loading: !prev.loading }));
     }
 
-    const normFile = (e: any) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    };
 
 
     const showDraw = () => {
@@ -188,20 +161,16 @@ const useListCate = () => {
         dataSource,
         showDraw,
         form,
-        handlePreview,
         previewOpen,
         previewImage,
-        handleChange,
-        fileList,
         setPreviewImage,
         setPreviewOpen,
-        onCreateCate,
-        normFile,
-        handleDeleteCate,
+        handleDeletePayments,
         contextHolder,
-        handleEditCate,
-        handlePageChange
+        handleEditPayments,
+        handlePageChange,
+        onCreatePayments
     }
 }
 
-export default useListCate;
+export default useListPayments;
