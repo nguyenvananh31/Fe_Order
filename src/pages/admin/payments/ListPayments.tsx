@@ -12,14 +12,17 @@ import {
   Popconfirm,
   Table,
   Form,
-  Switch,
+  Select,
 } from "antd";
 import useListPayments from "./utils/list-payments.hook";
+import { IPayments } from "../../../interFaces/payments";
 
 export default function DashboardPayments() {
   const { ...hooks } = useListPayments();
 
- 
+  const onFinish = (values: IPayments) => {
+    console.log("Success:", values);
+  };
 
   const columns = [
     {
@@ -152,8 +155,11 @@ export default function DashboardPayments() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="Trạng Thái" name="status">
-            <Switch />
+          <Form.Item name="status" label="Trạng thái" initialValue={0}>
+            <Select>
+              <Select.Option value={0}>Không Hoạt Động</Select.Option>
+              <Select.Option value={1}>Hoạt Động</Select.Option>
+            </Select>
           </Form.Item>
 
           <Form.Item style={{ paddingBottom: "24px" }}>
