@@ -1,7 +1,9 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image, Space } from 'antd';
+import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image, Space, Tooltip } from 'antd';
 import useListCate from './utils/list-categories.hooks';
-import { getImageUrl } from '../../../constants/common';
+import { FileRule, getImageUrl } from '../../../constants/common';
+import { ColumnProps } from 'antd/es/table';
+import { Icate } from '../../../interFaces/categories';
 const { TextArea } = Input;
 
 
@@ -9,11 +11,32 @@ export default function ListCategories() {
 
     const { ...hooks } = useListCate();
 
-    const columns = [
+    const columns: ColumnProps<Icate>[] = [
+        {
+            title: 'STT',
+            dataIndex: 'stt',
+            width: 50,
+            align: 'center',
+            fixed: 'left',
+            render: (_: any, __: Icate, index: number) => {
+                return (
+                    <span>
+                        {Number(hooks.state.pageIndex) > 1 ? (Number(hooks.state.pageIndex) - 1) * hooks.state.pageSize + (index + 1) : index + 1}
+                    </span>
+                );
+            },
+        },
         {
             title: 'Tên danh mục',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
+            render: (_: any, item: Icate) => {
+                return (
+                    <div onClick={() => {hooks.handleEditCate(item.id)}} className='text-purple font-semibold cursor-pointer'>
+                        {item.name}
+                    </div>
+                )
+            }
         },
         {
             title: 'Ảnh',
@@ -21,30 +44,32 @@ export default function ListCategories() {
             width: 'auto',
             align: 'center',
             render: (_: any, item: any) => {
-              return (
-                <Image
-                  style={{ objectFit: 'cover', width: '120px', height: '80px' }}
-                  src={item.image ? getImageUrl(item.image) : '/images/no-image.png'}
-                  preview={{
-                    mask: (
-                      <Space direction="vertical" align="center">
-                        <ZoomInOutlined />
-                      </Space>
-                    ),
-                  }}
-                />
-              );
+                return (
+                    <Image
+                        style={{ objectFit: 'cover', width: '120px', height: '80px' }}
+                        src={item.image ? getImageUrl(item.image) : '/images/no-image.png'}
+                        preview={{
+                            mask: (
+                                <Space direction="vertical" align="center">
+                                    <ZoomInOutlined />
+                                </Space>
+                            ),
+                        }}
+                    />
+                );
             },
-          },
+        },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             align: 'center',
             width: '15%',
             render: (_: any, { status }: any) => (
-                <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
-                    {!!status ? "Hiển thị" : 'Ẩn'}
-                </Button>
+                <Tooltip title="Thay đổi trạng thái">
+                    <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
+                        {!!status ? "Hiển thị" : 'Ẩn'}
+                    </Button>
+                </Tooltip>
             )
         },
         {
@@ -53,9 +78,8 @@ export default function ListCategories() {
             align: 'center',
             width: '15%',
             fixed: 'right',
-            render: (_: any, {id}: any) => (
-                <div className='min-w-[100px]'>
-                    <Button onClick={() => {hooks.handleEditCate(id)}} type='default' className='border-yellow-400 text-yellow-400' icon={<EditOutlined />}></Button>
+            render: (_: any, { id }: any) => (
+                <Tooltip title="Xoá danh mục">
                     <Popconfirm
                         placement='topRight'
                         title="Xoá danh mục"
@@ -67,7 +91,7 @@ export default function ListCategories() {
                     >
                         <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
                     </Popconfirm>
-                </div>
+                </Tooltip>
             )
         },
     ];
@@ -115,7 +139,7 @@ export default function ListCategories() {
                         pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
                         total: hooks.state.totalCate,
                         current: hooks.state.pageIndex,
-                        style:{
+                        style: {
                             paddingRight: "24px",
                         },
                         onChange(page, pageSize) {
@@ -134,8 +158,8 @@ export default function ListCategories() {
                 onClose={hooks.showDraw}
             >
                 <Form
-                    onFinish={hooks.onCreateCate}
                     form={hooks.form}
+                    onFinish={hooks.onCreateCate}
                     name="categoryForm"
                     layout="vertical"
                 >
@@ -156,6 +180,7 @@ export default function ListCategories() {
                         </div>
                     )}
                         name='description'
+                        rules={[{ required: true, message: 'Vui lòng không để trống name!' }]}
                     >
                         <TextArea rows={4} />
                     </Form.Item>
@@ -167,11 +192,12 @@ export default function ListCategories() {
                         valuePropName="fileList" getValueFromEvent={hooks.normFile}
                     >
                         <Upload
-                            // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                             listType="picture-card"
                             fileList={hooks.fileList}
                             onPreview={hooks.handlePreview}
                             onChange={hooks.handleChange}
+                            accept={FileRule.accepts}
+                            beforeUpload={hooks.handleBeforeUpload}
                         >
                             {hooks.fileList?.length >= 1 ? null :
                                 (

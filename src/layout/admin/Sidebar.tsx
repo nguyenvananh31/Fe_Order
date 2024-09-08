@@ -1,11 +1,12 @@
 import {
-  AppstoreOutlined,
+  FileTextOutlined,
   MailOutlined,
   SettingOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Avatar, Layout, Menu } from "antd";
 import React, { useState } from "react";
+import { RoutePath } from "../../constants/path";
 
 const { Sider } = Layout;
 
@@ -40,24 +41,11 @@ const items: MenuItem[] = [
     ],
   },
   {
-    key: 'sub2',
-    label: 'Navigation Two',
-    icon: <AppstoreOutlined />,
-    children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' },
-      {
-        key: 'sub3',
-        label: 'Submenu',
-        children: [
-          { key: '7', label: 'Option 7' },
-          { key: '8', label: 'Option 8' },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'divider',
+    key: 'cate',
+    label: (
+      <a href={`http://localhost:5173/admin/${RoutePath.CATEGORY}`}>Danh mục sản phẩm</a>
+    ),
+    icon: <FileTextOutlined />,
   },
   {
     key: 'sub4',
