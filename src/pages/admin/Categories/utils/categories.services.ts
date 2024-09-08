@@ -17,6 +17,11 @@ export const apiCreateCate = async (body: FormData) => {
     return res;
 }
 
+export const apiUpdateCate = async (id:number, body: FormData) => {
+    const res = await ApiUtils.putForm<FormData, ResponeBase<Icate>>(`${apiName.cate}/${id}`, body);
+    return res;
+}
+
 export const apiGetOneCate = async (id: number) => {
     const res = await ApiUtils.fetch<number , Icate>(`${apiName.cate}/${id}`);
     return res;

@@ -1,5 +1,6 @@
-import { AppstoreOutlined, BellOutlined, CloseOutlined, LogoutOutlined, MailOutlined, MenuUnfoldOutlined, SearchOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { BellOutlined, CloseOutlined, FileTextOutlined, LogoutOutlined, MailOutlined, MenuUnfoldOutlined, SearchOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Drawer, Dropdown, Menu, MenuProps } from "antd";
+import { RoutePath } from "../../constants/path";
 import useHeader from "./header.hooks";
 
 // Menu item Account
@@ -77,24 +78,11 @@ const itemsSidebar: MenuItem[] = [
     ],
   },
   {
-    key: 'sub2',
-    label: 'Navigation Two',
-    icon: <AppstoreOutlined />,
-    children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' },
-      {
-        key: 'sub3',
-        label: 'Submenu',
-        children: [
-          { key: '7', label: 'Option 7' },
-          { key: '8', label: 'Option 8' },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'divider',
+    key: 'cate',
+    label: (
+      <a href={`http://localhost:5173/admin/${RoutePath.CATEGORY}`}>Danh mục sản phẩm</a>
+    ),
+    icon: <FileTextOutlined />,
   },
   {
     key: 'sub4',

@@ -1,7 +1,9 @@
-import { Form, GetProp, message, UploadFile, UploadProps } from "antd";
+import { Form, GetProp, message, Upload, UploadFile, UploadProps } from "antd";
 import { useEffect, useState } from "react";
 import { ICateReq } from "../../../../interFaces/categories";
-import { apiCreateCate, apiDeleteCate, apiGetCate, apiGetOneCate } from "./categories.sevices";
+import { apiCreateCate, apiDeleteCate, apiGetCate, apiGetOneCate, apiUpdateCate } from "./categories.services";
+import { FileRule, getImageUrl } from "../../../../constants/common";
+import { RcFile } from "antd/es/upload";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -26,6 +28,7 @@ interface IState {
     pageIndex: number;
     pageSize: number;
     refresh: boolean;
+    isEdit: number;
 }
 
 const initstate: IState = {
@@ -34,16 +37,17 @@ const initstate: IState = {
     totalCate: 0,
     pageIndex: 1,
     pageSize: 5,
-    refresh: false
+    refresh: false,
+    isEdit: 0,
 }
 
 const useListCate = () => {
     const [state, setState] = useState<IState>(initstate);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
-    const [previewImage, setPreviewImage] = useState<string>('');
+    const [previewImage, setPreviewImage] = useState<string | undefined>('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [form] = Form.useForm();
-    const [dataSource, setDataSource] = useState<DataSource[] | null>(null);
+    const [dataSource, setDataSource] = useState([]);
     const [messageApi, contextHolder] = message.useMessage();
 
     //Lấy ra category
@@ -51,9 +55,9 @@ const useListCate = () => {
         ; (async () => {
             setState(prev => ({ ...prev, loading: !prev.loading }));
             try {
-                const res = await apiGetCate({ 
+                const res = await apiGetCate({
                     page: state.pageIndex,
-                    pageSize: state.pageSize
+                    per_page: state.pageSize
                 });
                 if (res.data) {
                     const newDataSource: any = res.data.map(item => ({
@@ -90,47 +94,69 @@ const useListCate = () => {
         });
     }
 
+    const handleBeforeUpload = async (file: any) => {
+        if (!FileRule.accepts.includes(file.type)) {
+            messageAlert('error', 'Định dạng hình ảnh không hợp lệ, vui lòng chọn hình ảnh khác');
+            return Upload.LIST_IGNORE;
+        }
+
+        return false;
+    };
+
     const onCreateCate = async (values: ICateReq) => {
         if (fileList?.length > 1) {
             messageAlert('error', "Hình ảnh không được lớn hơn 1 ảnh!");
             return;
         }
         setState(prev => ({ ...prev, loading: !prev.loading }));
+        console.log(values);
+
+        const formData = new FormData();
+        formData.append('name', values.name);
+        if (values.description) formData.append('description', values.description);
+        if (!!fileList) {
+            fileList.forEach((item) => formData.append('image', item.originFileObj as any));
+        }
         try {
-            const formData = new FormData();
-            formData.append('name', values.name);
-            if (values.description) formData.append('description', values.description);
-            if (!!fileList) {
-                fileList.forEach((item) => formData.append('image', item.originFileObj as any));
+            let res;
+            if (state.isEdit !== 0) {
+                res = await apiUpdateCate(state.isEdit, formData);
+            } else {
+                res = await apiCreateCate(formData);
             }
-            const res = await apiCreateCate(formData);
             if (res.data) {
-                setDataSource(prev => ([
-                    {
-                        id: res.data.id,
-                        name: res.data.name,
-                        image: res.data.image,
-                        status: res.data.status
-                    },
-                    ...prev!
-                ]));
                 form.resetFields();
-                setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd, totalCate: state.totalCate + 1 }));
-                messageAlert('success', 'Thêm danh mục thành công!');
+                setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd, refresh: !prev.refresh, isEdit: 0 }));
+                messageAlert('success', `${state.isEdit ? 'Sửa' : 'Thêm'} danh mục thành công!`);
             }
 
         } catch (error: any) {
             console.log(error);
-            messageAlert('error', "Thêm danh mục thất bại!");
+            messageAlert('error', `${state.isEdit ? 'Sửa' : 'Thêm'} danh mục thất bại!`);
         }
-        setState(prev => ({ ...prev, loading: !prev.loading }));
+        setState(prev => ({ ...prev, loading: !prev.loading, isEdit: 0 }));
     }
 
     const handleEditCate = async (id: number) => {
-        const cate = fetchApiGetCate(id);
-        console.log(cate);
-        
-
+        const { category: cate }: any = await fetchApiGetCate(id);
+        if (!cate) {
+            messageAlert('error', 'Danh mục không tồn tại!');
+            return;
+        }
+        if (cate.image) {
+            setFileList([{
+                uid: '-1',
+                name: 'default.png',
+                status: 'done',
+                url: getImageUrl(cate.image),
+            }])
+        }
+        form.setFieldsValue(cate);
+        setState(prev => ({
+            ...prev,
+            showDrawAdd: true,
+            isEdit: id,
+        }));
     }
 
     const fetchApiGetCate = async (id: number) => {
@@ -153,9 +179,7 @@ const useListCate = () => {
             setState(prev => ({ ...prev, loading: !prev.loading }));
             const res = await apiDeleteCate(id);
             if (res) {
-                const newDataSource = dataSource?.filter(data => data.id !== id);
-                setDataSource([...newDataSource!]);
-                setState(prev => ({ ...prev, totalCate: state.totalCate - 1 }));
+                setState(prev => ({ ...prev, refresh: !prev.refresh }));
                 messageAlert('success', "Xoá danh mục thành công!");
             }
         } catch (error) {
@@ -171,14 +195,17 @@ const useListCate = () => {
         return e?.fileList;
     };
 
-
     const showDraw = () => {
-        setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd }));
+        if (!state.isEdit) {
+            form.resetFields();
+            setFileList([]);
+        }
+        setState(prev => ({ ...prev, showDrawAdd: !state.showDrawAdd, isEdit: 0 }));
     };
 
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({...prev, pageIndex: page, pageSize, refresh: !state.refresh}));
-      };
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+    };
 
     return {
         state,
@@ -197,7 +224,8 @@ const useListCate = () => {
         handleDeleteCate,
         contextHolder,
         handleEditCate,
-        handlePageChange
+        handlePageChange,
+        handleBeforeUpload
     }
 }
 
