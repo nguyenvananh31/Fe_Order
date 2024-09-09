@@ -1,9 +1,8 @@
 import { Form, GetProp, message, Upload, UploadFile, UploadProps } from "antd";
 import { useEffect, useState } from "react";
+import { FileRule, getImageUrl } from "../../../../constants/common";
 import { ICateReq } from "../../../../interFaces/categories";
 import { apiCreateCate, apiDeleteCate, apiGetCate, apiGetOneCate, apiUpdateCate } from "./categories.services";
-import { FileRule, getImageUrl } from "../../../../constants/common";
-import { RcFile } from "antd/es/upload";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -14,12 +13,6 @@ const getBase64 = (file: FileType): Promise<string> =>
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = (error) => reject(error);
     });
-
-interface DataSource {
-    id: number;
-    name: string;
-    status: number;
-}
 
 interface IState {
     loading: boolean;

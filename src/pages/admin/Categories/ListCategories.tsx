@@ -1,9 +1,9 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Drawer, Input, Popconfirm, Table, Upload, Form, Image, Space, Tooltip } from 'antd';
-import useListCate from './utils/list-categories.hooks';
-import { FileRule, getImageUrl } from '../../../constants/common';
+import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Drawer, Form, Image, Input, Popconfirm, Space, Table, Tooltip, Upload } from 'antd';
 import { ColumnProps } from 'antd/es/table';
+import { FileRule, getImageUrl } from '../../../constants/common';
 import { Icate } from '../../../interFaces/categories';
+import useListCate from './utils/list-categories.hooks';
 const { TextArea } = Input;
 
 
@@ -102,7 +102,7 @@ export default function ListCategories() {
             <Breadcrumb
                 style={{
                     fontSize: "24px",
-                    margin: "28px 0"
+                    margin: "16px 0 28px 0"
                 }}
                 items={[
                     {
@@ -124,9 +124,6 @@ export default function ListCategories() {
                     >
                         Thêm mới
                     </Button>
-                </div>
-                <div>
-
                 </div>
                 <Table
                     loading={hooks.state.loading}
