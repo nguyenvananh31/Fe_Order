@@ -13,7 +13,8 @@ import Dashboard from "../dashboard/chartjs/Dashboard";
 import { RoutePath } from "../constants/path";
 import Login from "../pages/admin/Login/Login";
 import Register from "../pages/admin/Register/Register";
-import ListPayment from "../pages/Payments/ListPayment";
+import ListPayment from "../pages/admin/Payments/ListPayment";
+import ListVoucher from "../pages/admin/Vouchers/ListVoucher";
 
 
 const Router = () => {
@@ -31,6 +32,8 @@ const Router = () => {
         <Route path="admin" element={<BaseLayoutAdmin />}>
         <Route index element={<Dashboard />} />
           <Route path="payments" element={<ListPayment />} />
+          <Route path="vouchers" element={<ListVoucher />} />
+
           <Route path="update-payments/:id" element={<UpdatePayments />} />
           <Route path="create-payments" element={<CreatePayments />} />
           
