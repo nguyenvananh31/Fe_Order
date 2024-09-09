@@ -23,13 +23,15 @@ const ListProduct: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number] | null>(null);
+  const [isImagePreviewVisible, setIsImagePreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Sample product data
   const [products, setProducts] = useState<Product[]>([
     {
       id: 1,
       name: 'Cafe',
-      image: 'https://example.com/smartphone-xyz.jpg',
+      image: 'https://photo.znews.vn/w660/Uploaded/mdf_eioxrd/2021_07_06/2.jpg',
       description: 'A high-end smartphone with a 6.5-inch display, 128GB storage, and a 48MP camera.',
       quantity: 30,
       category: 'Đồ uống',
@@ -82,7 +84,7 @@ const ListProduct: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: Product) => (
-        <Button type="link" onClick={() => showProductDetails(record)}>
+        <Button type="link" className='text-md font-semibold text-[#000] hover:text-blue-800 ' onClick={() => showProductDetails(record)}>
           {text}
         </Button>
       ),
@@ -91,10 +93,17 @@ const ListProduct: React.FC = () => {
       title: 'Ảnh',
       dataIndex: 'image',
       key: 'image',
-      render: (image: string) => <img src={image} alt="Product" width={50} height={50} />,
+      render: (image: string) => (
+        <img
+          src={image}
+          alt="Product"
+          className='w-[75px] h-[75px] object-cover rounded-md shadow-sm hover:scale-115 transition-transform cursor-pointer'
+          onClick={() => showImagePreview(image)}
+        />
+      ),
     },
     { title: 'Mô tả', dataIndex: 'description', key: 'description' },
-    { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity' },
+    { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity'},
     { title: 'Danh mục', dataIndex: 'category', key: 'category' },
     { title: 'Giá', dataIndex: 'price', key: 'price', render: (price: number) => `${price} $` },
     {
@@ -138,6 +147,17 @@ const ListProduct: React.FC = () => {
   const handleEditModalCancel = () => {
     setIsEditModalVisible(false);
     setSelectedProduct(null);
+  };
+
+  // Show Image Preview Modal
+  const showImagePreview = (image: string) => {
+    setPreviewImage(image);
+    setIsImagePreviewVisible(true);
+  };
+
+  const handleImagePreviewCancel = () => {
+    setIsImagePreviewVisible(false);
+    setPreviewImage(null);
   };
 
   // Handle form submission for adding product (you can modify this to actually add the product)
@@ -300,6 +320,23 @@ const ListProduct: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Image Preview Modal */}
+      <Modal
+        visible={isImagePreviewVisible}
+        onCancel={handleImagePreviewCancel}
+        footer={null}
+        bodyStyle={{ textAlign: 'center' }}
+      >
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="Preview"
+            className='p-6 rounded-sm'
+            style={{ maxWidth: '100%', maxHeight: '600px' }}
+          />
+        )}
       </Modal>
     </div>
   );
