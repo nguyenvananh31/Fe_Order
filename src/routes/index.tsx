@@ -10,6 +10,7 @@ import ListProduct from "../pages/admin/Products/ListProduct";
 import ListPayment from "../pages/admin/Payments/ListPayment";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
+import Home from "../pages/user/Home/Home";
 
 
 const Router = () => {
@@ -21,8 +22,8 @@ const Router = () => {
         <Route path={`${RoutePath.REGISTER}`} element={<Register />} />
       </Routes>
       <Routes>
-
         <Route path="/" element={<BaseLayoutUsers />}>
+          <Route index element={<Home />} />
         </Route>
         <Route path="admin" element={<BaseLayoutAdmin />}>
           {/* <Route index element={<Dashboard />} /> */}
