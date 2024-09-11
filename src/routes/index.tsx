@@ -3,10 +3,10 @@ import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
 
 import { RoutePath } from "../constants/path";
 import useAuth from "../hooks/redux/auth/useAuth";
-import ListCategories from "../pages/admin/Categories/ListCategories";
+import AccountPage from "../pages/admin/Account/index.page";
+import CatePage from "../pages/admin/Categories/index.page";
 import Login from "../pages/admin/Login/Login";
 import Register from "../pages/admin/Register/Register";
-import AccountPage from "../pages/admin/Account/index.page";
 
 const Router = () => {
   const { auth } = useAuth();
@@ -19,7 +19,7 @@ const Router = () => {
         <Route path="/" element={<BaseLayoutAdmin />}>
         </Route>
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
-          <Route path={RoutePath.CATEGORY} element={<ListCategories />} />
+          <Route path={RoutePath.CATEGORY} element={<CatePage />} />
           <Route path={RoutePath.ACCOUNT} element={<AccountPage />} />
         </Route>
       </Routes>

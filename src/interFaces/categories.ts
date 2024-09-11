@@ -1,15 +1,18 @@
 export interface ICateReq {
-    name: string;
+    name?: string;
     description?: string;
     image?: File;
+    status?: boolean;
 }
 
-export interface Icate {
+export interface ICate {
     id: number;
     name: string;
-    status: number;
+    status: boolean;
     description: string | null;
     image: string | null;
+    subcategory: ICate[] | [];
     created_at: Date;
     updated_at: Date;
+    parent_id: number;
 }
