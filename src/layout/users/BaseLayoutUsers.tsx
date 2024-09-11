@@ -1,9 +1,12 @@
 import React from 'react'
+import { Outlet } from 'react-router-dom'
+import TopNav from '../views/components/TopNav'
 
 const BaseLayoutUsers = () => {
   return (
     <div>
-      <h1>Layout Users</h1>
+      <TopNav/>
+      <Outlet/>
     </div>
   )
 }
