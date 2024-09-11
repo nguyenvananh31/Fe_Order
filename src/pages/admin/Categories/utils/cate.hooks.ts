@@ -2,16 +2,15 @@ import { InputRef } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import { IUser } from "../../../../interFaces/common.types";
 import useToast from "../../../../hooks/useToast";
-import { apiChangeLock, apiDelAccount, apiGetUsers } from "./account.services";
-import useAuth from "../../../../hooks/redux/auth/useAuth";
+import { ICate } from "../../../../interFaces/categories";
+import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.services";
 
 
 interface ISate {
     loadingSubmit: boolean;
     loading: boolean;
-    data: IUser[];
+    data: ICate[];
     pageSize: number;
     pageIndex: number;
     total: number;
@@ -34,8 +33,7 @@ const initState: ISate = {
     search: false
 }
 
-const useAccount = () => {
-    const { auth } = useAuth();
+const useCate = () => {
     const [state, setState] = useState<ISate>(initState);
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
@@ -48,7 +46,7 @@ const useAccount = () => {
         const fetchData = async () => {
             setState({ ...state, loading: true });
             try {
-                const res = await apiGetUsers({ page: state.pageIndex, per_page: state.pageSize });
+                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
                     setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
                 }
@@ -61,16 +59,12 @@ const useAccount = () => {
         fetchData();
     }, [state.refresh]);
 
-    // handle xoá tài khoản
-    const handleDelAccount = async (id: number) => {
-        if (auth.id == id) {
-            showToast('error', 'Không thể xoá tài khoản đang đăng nhập!');
-            return;
-        }
+    // handle xoá danh mục
+    const handleDeleteCate = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            await apiDelAccount(id);
-            showToast('success', 'Xoá tài khoản thành công!');
+            await apiDeleteCate(id);
+            showToast('success', 'Xoá danh mục thành công!');
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');
@@ -79,15 +73,11 @@ const useAccount = () => {
     }
 
     // handle thay đổi trạng thái 
-    const handleChangeLock = async (id: number) => {
-        if (auth.id == id) {
-            showToast('error', 'Không thể khoá tài khoản đang đăng nhập!');
-            return;
-        }
+    const handleChangeStatus = async (id: number, status: boolean) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            const res = await apiChangeLock(id);
-            showToast('success', res.message + '!');
+            const res = await apiChangeStatus(id, { status: !status });
+            showToast('success', res.message);
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');
@@ -125,18 +115,6 @@ const useAccount = () => {
         setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
     };
 
-    // Danh sách màu sắc cố định
-    const colors = ['geekblue', 'green', 'volcano', 'cyan', 'purple', 'magenta', 'gold', 'lime'];
-
-    // Hàm hash để chuyển đổi chuỗi thành chỉ số màu
-    const hashStringToColorIndex = (str: string) => {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash); // Tính toán hash dựa trên mã ASCII
-        }
-        // Chuyển đổi hash thành chỉ số của mảng màu
-        return Math.abs(hash % colors.length);
-    };
 
     return {
         state,
@@ -146,12 +124,10 @@ const useAccount = () => {
         handleDismissModal,
         handleOpenModal,
         handlePageChange,
-        hashStringToColorIndex,
-        colors,
-        handleDelAccount,
+        handleDeleteCate,
         showToast,
-        handleChangeLock
+        handleChangeStatus
     }
 }
 
-export default useAccount;
+export default useCate;
