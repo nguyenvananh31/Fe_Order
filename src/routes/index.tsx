@@ -7,6 +7,10 @@ import AccountPage from "../pages/admin/Account/index.page";
 import CatePage from "../pages/admin/Categories/index.page";
 import Login from "../pages/admin/Login/Login";
 import Register from "../pages/admin/Register/Register";
+import ListPayment from "../pages/admin/Payments/ListPayment";
+import ListProduct from "../pages/admin/Products/ListProduct";
+import ListTable from "../pages/admin/Tables/ListTable";
+import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 
 const Router = () => {
   const { auth } = useAuth();
@@ -21,7 +25,12 @@ const Router = () => {
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           <Route path={RoutePath.CATEGORY} element={<CatePage />} />
           <Route path={RoutePath.ACCOUNT} element={<AccountPage />} />
-        </Route>
+
+          <Route path="payments" element={<ListPayment />} />
+          <Route path="products" element={<ListProduct />} />
+          <Route path="tables" element={<ListTable />} />
+          <Route path="tables-order" element={<DetailOrderTable />} />
+          </Route>
       </Routes>
     </>
   );
