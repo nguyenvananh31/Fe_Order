@@ -11,6 +11,7 @@ import ListPayment from "../pages/admin/Payments/ListPayment";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import Home from "../pages/user/Home/Home";
+import AddProduct from "../pages/admin/Products/AddProduct";
 
 
 const Router = () => {
@@ -30,6 +31,7 @@ const Router = () => {
           <Route path="payments" element={<ListPayment />} />
           <Route path="products" element={<ListProduct />} />
           <Route path="tables" element={<ListTable />} />
+          <Route path="product-add" element={<AddProduct />} />
           <Route path="tables-order" element={<DetailOrderTable />} />
 
 

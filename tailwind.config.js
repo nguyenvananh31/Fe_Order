@@ -23,6 +23,7 @@ export default {
         mainColor3: "#FFB936",
         textColor1: "#212121",
         textColor2: "#5C5C5B",
+        textColor3: "#fff",
         borderColor1: "#D9D9D9",
         borderColor2: "#ffffff2b",
         btnColor1: "#1C2539",
