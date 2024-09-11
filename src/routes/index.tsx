@@ -1,49 +1,38 @@
-import { Route, Routes } from "react-router-dom";
-import BaseLayoutUsers from "../layout/users/BaseLayoutUsers";
+import { Navigate, Route, Routes } from "react-router-dom";
 import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
 
-// import DashboardPayments from "../dashboard/payments/DashboardPayments";
 import { RoutePath } from "../constants/path";
+import useAuth from "../hooks/redux/auth/useAuth";
+import ListCategories from "../pages/admin/Categories/ListCategories";
 import Login from "../pages/admin/Login/Login";
 import Register from "../pages/admin/Register/Register";
+import AccountPage from "../pages/admin/Account/index.page";
 import ListProduct from "../pages/admin/Products/ListProduct";
 import ListPayment from "../pages/admin/Payments/ListPayment";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import Home from "../pages/user/Home/Home";
-import AddProduct from "../pages/admin/Products/AddProduct";
 
 
 const Router = () => {
+  const { auth } = useAuth();
+
   return (
     <>
-
-      <Routes >
-        <Route path={`${RoutePath.LOGIN}`} element={<Login />} />
-        <Route path={`${RoutePath.REGISTER}`} element={<Register />} />
-      </Routes>
       <Routes>
-        <Route path="/" element={<BaseLayoutUsers />}>
-          <Route index element={<Home />} />
+        <Route path={RoutePath.LOGIN} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Login />} />
+        <Route path={RoutePath.REGISTER} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Register />} />
+        <Route path="/" element={<BaseLayoutAdmin />}>
         </Route>
-        <Route path="admin" element={<BaseLayoutAdmin />}>
-          {/* <Route index element={<Dashboard />} /> */}
+        <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
+          <Route path={RoutePath.CATEGORY} element={<ListCategories />} />
+          <Route path={RoutePath.ACCOUNT} element={<AccountPage />} />
+
           <Route path="payments" element={<ListPayment />} />
           <Route path="products" element={<ListProduct />} />
           <Route path="tables" element={<ListTable />} />
           <Route path="product-add" element={<AddProduct />} />
           <Route path="tables-order" element={<DetailOrderTable />} />
-
-
-          {/* <Route path="update-payments/:id" element={<UpdatePayments />} />
-          <Route path="create-payments" element={<CreatePayments />} />
-           */}
-          {/* <Route path="vouchers" element={<DashboardVoucher />} /> */}
-          {/* <Route path="update-vouchers/:id" element={<UpdateVoucher />} />
-          <Route path="create-vouchers" element={<CreateVouchers />} /> */}
-
-        </Route>
-
       </Routes>
     </>
   );

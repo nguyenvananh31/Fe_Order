@@ -13,13 +13,12 @@ export const RegisterForm = () => {
     password_confirmation: string;
     remember: boolean;
   }) => {
-    const dataRegister = await registerService(formData);
+    const dataRegister: any = await registerService(formData);
     if (dataRegister && dataRegister !== undefined) {
       if (dataRegister.remember == true) {
         // localStorage.setItem('rememberedEmail', dataRegister.email);
-        console.log(dataRegister.remember);
       }
-       await setAuth(dataRegister.user);
+      setAuth({ ...dataRegister.remember, token: dataRegister.token });
       notification.success({
         message: "Đăng ký thành công!",
         description: "Xin chào Admin!",
