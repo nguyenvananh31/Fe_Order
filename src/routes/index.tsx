@@ -11,7 +11,8 @@ import ListProduct from "../pages/admin/Products/ListProduct";
 import ListPayment from "../pages/admin/Payments/ListPayment";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
-import Home from "../pages/user/Home/Home";
+import AddProduct from "../pages/admin/Products/AddProduct";
+import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 
 
 const Router = () => {
@@ -22,7 +23,7 @@ const Router = () => {
       <Routes>
         <Route path={RoutePath.LOGIN} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Login />} />
         <Route path={RoutePath.REGISTER} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Register />} />
-        <Route path="/" element={<BaseLayoutAdmin />}>
+        <Route path="/" element={<BaseLayoutUser />}>
         </Route>
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           <Route path={RoutePath.CATEGORY} element={<ListCategories />} />
@@ -33,6 +34,7 @@ const Router = () => {
           <Route path="tables" element={<ListTable />} />
           <Route path="product-add" element={<AddProduct />} />
           <Route path="tables-order" element={<DetailOrderTable />} />
+        </Route>
       </Routes>
     </>
   );

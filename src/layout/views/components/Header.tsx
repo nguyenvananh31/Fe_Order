@@ -1,4 +1,4 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, DeleteFilled, DownOutlined, FacebookFilled, HomeOutlined, InstagramOutlined, MailOutlined, MenuOutlined, PhoneOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TwitterOutlined, YoutubeFilled } from '@ant-design/icons'
+import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, DeleteFilled, DownOutlined, FacebookFilled, HomeOutlined, InstagramOutlined, MailOutlined, MenuOutlined, PhoneOutlined, PinterestOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined, YoutubeFilled } from '@ant-design/icons'
 import { Badge, Button, Drawer, Image } from 'antd'
 import React, { useState } from 'react'
 
@@ -107,7 +107,7 @@ const Header = () => {
                 </div>
               </div>
             </div>
-            <button className="btn uppercase text-[16px] font-semibold text-textColor3 bg-mainColor1 rounded-md px-12 py-5 hidden md:block">Đặt bàn ngay</button>
+            <button className="btn uppercase text-[16px] font-semibold text-textColor3 bg-mainColor1 rounded-md px-10 py-4 hidden md:block">Đặt bàn ngay</button>
             <button className='text-3xl text-textColor1 group' onClick={showDrawer}><AlignLeftOutlined className='group-active:text-mainColor1' /></button>
           </div>
         </div>
@@ -179,8 +179,11 @@ const Header = () => {
               />
             </div>
           </div>
+          <div className="container my-5 flex justify-center">
+            <button className="btn uppercase text-[13px] font-semibold text-nowrap text-textColor3 bg-mainColor2 rounded-md px-10 py-5 hover:bg-mainColor1 transition-all duration-1s ease-in-out">Đặt bàn ngay</button>
+          </div>
           <div className="container">
-            <div className="box-contact-sideBar pt-10">
+            <div className="box-contact-sideBar">
               <ul className="contact-list">
                 <li className="contact-list-item mb-6 text-[16px] font-semibold text-textColor1"><MailOutlined className='text-[18px] text-mainColor1' /><span className='ml-2 '>Email : </span><a href="mailto:annguyen04@homail.com" className="contact-list-item__link">annguyen04@homail.com</a></li>
                 <li className="contact-list-item mb-6 text-[16px] font-semibold text-textColor1"><HomeOutlined className='text-[17px] text-mainColor1' /><span className='ml-2 '>Địa Chỉ : </span><a href="" className="contact-list-item__link">Thôn Thượng - Tuy Lai - Mỹ Đức - Hà Nội</a></li>
@@ -191,12 +194,13 @@ const Header = () => {
           </div>
           <div className="container">
             <ul className="box-social flex gap-4 mb-4 border-t-[1px] border-borderColor1 pt-6">
-              <li className="box-social-item"><a href="" className="box-social-item__link group"><FacebookFilled className='text-[30px] text-mainColor1 group-active:text-mainColor2 group-hover:text-mainColor2' /></a></li>
-              <li className="box-social-item"><a href="" className="box-social-item__link group"><InstagramOutlined className='text-[30px] text-mainColor1 group-active:text-mainColor2 group-hover:text-mainColor2' /></a></li>
-              <li className="box-social-item"><a href="" className="box-social-item__link group"><TwitterOutlined className='text-[30px] text-mainColor1 group-active:text-mainColor2 group-hover:text-mainColor2' /></a></li>
-              <li className="box-social-item"><a href="" className="box-social-item__link group"><YoutubeFilled className='text-[30px] text-mainColor1 group-active:text-mainColor2 group-hover:text-mainColor2' /></a></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><a href="" className="box-social-item__link group"><TwitterOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></a></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><a href="" className="box-social-item__link group"><TikTokOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></a></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><a href="" className="box-social-item__link group"><PinterestOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></a></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><a href="" className="box-social-item__link group"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></a></li>
             </ul>
           </div>
+
         </div>
 
       </Drawer>

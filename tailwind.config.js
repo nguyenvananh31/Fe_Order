@@ -6,8 +6,14 @@ export default {
   theme: {
     extend: {
       gridTemplateColumns: {
-        'gridLayout': '1fr 300px', // Custom grid template column configuration
-        'gridTopNav': '2fr 1fr', // Custom grid template column configuration
+        'gridLayout': '1fr 300px', 
+        'gridTopNav': '2fr 1fr', 
+      },
+      transitionDuration: {
+        '1s': '0.3s',
+      },
+      transitionTimingFunction: {
+        'ease-in-out': 'ease-in-out', 
       },
       backgroundColor: {
         primary: "#ffffff",
