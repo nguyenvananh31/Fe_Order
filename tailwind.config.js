@@ -5,6 +5,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        'gridLayout': '1fr 300px', // Custom grid template column configuration
+        'gridTopNav': '2fr 1fr', // Custom grid template column configuration
+      },
       backgroundColor: {
         primary: "#ffffff",
         purple: "rgba(115, 103, 240, 0.08)",
