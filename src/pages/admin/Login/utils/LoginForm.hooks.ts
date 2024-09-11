@@ -23,19 +23,18 @@ export const LoginForm = () => {
     password: string;
     remember: boolean;
   }) => {
-    const dataLogin = await loginService(formData);
-    if (dataLogin &&  dataLogin !== undefined) {
+    const dataLogin: any = await loginService(formData);
+    if (dataLogin && dataLogin !== undefined) {
       if (dataLogin.remember == true) {
         localStorage.setItem("rememberedEmail", dataLogin.email);
       }
-      setAuth(dataLogin);
-      console.log(dataLogin);
+      setAuth({ ...dataLogin.user, token: dataLogin.token });
 
-        notification.success({
-          message: "Đăng nhập thành công!",
-          description: "Xin chào Admin!",
-        });
-        await navigate("/admin/dashboard");
+      notification.success({
+        message: "Đăng nhập thành công!",
+        description: "Xin chào Admin!",
+      });
+      await navigate("/admin/dashboard");
     }
   };
   // Trường hợp mặc định là sai
