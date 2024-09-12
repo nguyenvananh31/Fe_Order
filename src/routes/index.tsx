@@ -12,7 +12,10 @@ import ListPayment from "../pages/admin/Payments/ListPayment";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import AddProduct from "../pages/admin/Products/AddProduct";
-import BaseLayoutUsers from "../layout/users/BaseLayoutUsers";
+import BaseLayoutUser from "../pages/user/BaseLayoutUser";
+import About from "../pages/user/About/About";
+import Search from "antd/es/transfer/search";
+import Home from "../pages/user/Home/Home";
 
 
 const Router = () => {
@@ -23,7 +26,10 @@ const Router = () => {
       <Routes>
         <Route path={RoutePath.LOGIN} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Login />} />
         <Route path={RoutePath.REGISTER} element={auth ? <Navigate to={`/${RoutePath.ADMIN}`} /> : <Register />} />
-        <Route path="/" element={<BaseLayoutUsers />}>
+        <Route path="/" element={<BaseLayoutUser />}>
+          <Route index element={<Home />} />
+          <Route path={RoutePath.ABOUT} element={<About />} />
+          <Route path={RoutePath.SEARCH} element={<Search />} />
         </Route>
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           <Route path={RoutePath.CATEGORY} element={<ListCategories />} />
