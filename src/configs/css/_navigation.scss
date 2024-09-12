@@ -1,0 +1,7 @@
+.menus{
+    display: flex;
+    align-items: center;
+    &-item{
+        text-transform: uppercase;
+    }
+}

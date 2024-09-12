@@ -6,8 +6,14 @@ export default {
   theme: {
     extend: {
       gridTemplateColumns: {
-        'gridLayout': '1fr 300px', // Custom grid template column configuration
-        'gridTopNav': '2fr 1fr', // Custom grid template column configuration
+        'gridLayout': '1fr 300px', 
+        'gridTopNav': '2fr 1fr', 
+      },
+      transitionDuration: {
+        '1s': '0.3s',
+      },
+      transitionTimingFunction: {
+        'ease-in-out': 'ease-in-out', 
       },
       backgroundColor: {
         primary: "#ffffff",
@@ -23,6 +29,7 @@ export default {
         mainColor3: "#FFB936",
         textColor1: "#212121",
         textColor2: "#5C5C5B",
+        textColor3: "#fff",
         borderColor1: "#D9D9D9",
         borderColor2: "#ffffff2b",
         btnColor1: "#1C2539",
