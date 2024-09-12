@@ -1,7 +1,7 @@
 import React from 'react'
-import TopNav from '../../layout/views/components/TopNav'
+import TopNav from '../../layout/users/components/TopNav/TopNav'
 import { Outlet } from 'react-router-dom'
-import Header from '../../layout/views/components/Header'
+import Header from '../../layout/users/components/Header/Header'
 
 const BaseLayoutUser = () => {
   return (

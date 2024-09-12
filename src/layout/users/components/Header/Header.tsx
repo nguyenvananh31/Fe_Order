@@ -1,6 +1,6 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, DeleteFilled, DownOutlined, FacebookFilled, HomeOutlined, InstagramOutlined, MailOutlined, MenuOutlined, PhoneOutlined, PinterestOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined, YoutubeFilled } from '@ant-design/icons'
-import { Badge, Button, Drawer, Image } from 'antd'
-import React, { useState } from 'react'
+import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, PhoneOutlined, PinterestOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons'
+import { Badge, Drawer, Image } from 'antd'
+import { useState } from 'react'
 
 const Header = () => {
   const [visible, setVisible] = useState(false);
