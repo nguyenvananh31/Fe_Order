@@ -4,7 +4,6 @@ export const RoutePath = {
     LOGIN : 'login',
     REGISTER : 'register',
     VOUCHERS:'vouchers',
-    UPDATE_VOUCHER:"update-vouchers/:id",
     PAYMENTS:'payments',
-    UPDATE_PAYMENTS:"update-payments/:id"
+    CUSTOMERS:'customers',
 }
