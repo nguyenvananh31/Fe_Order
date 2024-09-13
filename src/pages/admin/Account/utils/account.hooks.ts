@@ -4,7 +4,7 @@ import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import { IUser } from "../../../../interFaces/common.types";
 import useToast from "../../../../hooks/useToast";
-import { apiChangeLock, apiDelAccount, apiGetUsers } from "./account.services";
+import { apiChangeLock, apiDelAccount, apiGetUsers } from "./account.service";
 import useAuth from "../../../../hooks/redux/auth/useAuth";
 
 

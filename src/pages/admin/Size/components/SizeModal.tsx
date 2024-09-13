@@ -38,7 +38,7 @@ const initState: IState = {
     data: [],
 }
 
-export default function CateModel({ onClose, onRefresh, showToast, itemId = undefined }: IProps) {
+export default function SizeModel({ onClose, onRefresh, showToast, itemId = undefined }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
     const [form] = Form.useForm();
@@ -64,7 +64,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                             name: 'default.png',
                             status: 'done',
                             url: getImageUrl(res.data.image),
-                        }]);
+                        }])
                     }
                 }
             } catch (error) {
@@ -126,22 +126,6 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
         setState(prev => ({ ...prev, isEdit: true }));
     }
 
-    const downloadImage = async (url: any) => {
-        // Tải file từ URL
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch the file from ${url}`);
-        }
-
-        // Chuyển đổi response thành Blob
-        const blob = await response.blob();
-
-        // Tạo một đối tượng File từ Blob (tùy chọn nếu cần File object)
-        const file = new File([blob], 'aaaa', { type: blob.type });
-
-        return file;
-    }
-
     const onFinish = async (values: any) => {
         console.log(values);
 
@@ -152,15 +136,12 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
             if (values.parent_id) {
                 formData.append('parent_id', values.parent_id);
             }
-            console.log(fileList);
-            
-            if (fileList[0].originFileObj) {
+            if (!!fileList) {
                 fileList.forEach((item) => formData.append('image', item.originFileObj as any));
             }
-            console.log(fileList);
             if (itemId) {
-                await apiUpdateCate(itemId, formData, '_method=PUT');
-            } else {
+                await apiUpdateCate(itemId, formData);
+            }else {
                 await apiCreateCate(formData);
             }
             showToast('success', `${itemId ? 'Cập nhật' : 'Thêm'} danh mục thành công!`);
