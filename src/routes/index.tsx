@@ -16,6 +16,7 @@ import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import About from "../pages/user/About/About";
 import Search from "antd/es/transfer/search";
 import Home from "../pages/user/Home/Home";
+import Contact from "../pages/user/Contact/Contact";
 
 const Router = () => {
   const { auth } = useAuth();
@@ -29,6 +30,8 @@ const Router = () => {
           <Route index element={<Home />} />
           <Route path={RoutePath.ABOUT} element={<About />} />
           <Route path={RoutePath.SEARCH} element={<Search />} />
+          <Route path={RoutePath.CONTACT} element={<Contact />} />
+
         </Route>
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           <Route path={RoutePath.CATEGORY} element={<CatePage />} />
