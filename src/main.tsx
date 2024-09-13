@@ -1,5 +1,6 @@
 import App from './App.tsx'
-import './index.css'
+import './index.scss'
+import './configs/css/config.css'
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ import reduxStoreUtils from './utils/redux-store.utils'
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            refetchOnMount: true,
+            refetchOnMount: false,
             refetchOnWindowFocus: false,
             retry: 3,
             staleTime: 0,

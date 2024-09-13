@@ -9,6 +9,8 @@ const localStorageUtils = {
             localStorage.setItem(key, value);
             return true;
         } catch (error) {
+            console.log(error);
+            
         }
         return false;
     },
@@ -17,7 +19,10 @@ const localStorageUtils = {
             const newValue = JSON.stringify(value);
             localStorage.setItem(key, newValue);
             return true;
-        } catch (error) { }
+        } catch (error) { 
+            console.log(error);
+            
+        }
         return false;
     },
     get: (key: KeyStorage, defaultValue: string | null = null): string | null => {
@@ -34,7 +39,10 @@ const localStorageUtils = {
                 const object = JSON.parse(value);
                 return object;
             }
-        } catch (error) { }
+        } catch (error) {
+            console.log(error);
+            
+         }
         return defaultValue;
     },
     remove: (key: KeyStorage) => {

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Modal, Form, Input, Button, message, Select } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icustomer } from "../../../../interFaces/custommers";
-import instance from "../../../../configs/axios";
+import instanceAxios from "../../../../configs/Axios/AxiosConfig";
 
 interface ModalComponentProps {
   visible: boolean;
@@ -22,7 +22,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 
   const { data: user } = useQuery({
     queryKey: ["user"],
-    queryFn: () => instance.get(`admin/users`),
+    queryFn: () => instanceAxios.get(`admin/users`),
   });
 
   console.log(user?.data.data);
@@ -32,7 +32,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   // Mutation cho POST (Thêm mới)
   const { mutate: addCustomer, isPending: isAdding } = useMutation({
     mutationFn: async (newCustomer: Icustomer) => {
-      return await instance.post("/admin/customers", newCustomer);
+      return await instanceAxios.post("/admin/customers", newCustomer);
     },
     onSuccess: () => {
       messageApi.success("Thêm khách hàng thành công.");
@@ -48,7 +48,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   // Mutation cho PUT (Chỉnh sửa)
   const { mutate: editCustomer, isPending: isEditing } = useMutation({
     mutationFn: async (updatedCustomer: Icustomer) => {
-      return await instance.put(`/admin/customers/${updatedCustomer.id}`, updatedCustomer);
+      return await instanceAxios.put(`/admin/customers/${updatedCustomer.id}`, updatedCustomer);
     },
     onSuccess: () => {
       messageApi.success("Chỉnh sửa khách hàng thành công.");
@@ -112,8 +112,9 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
           label="Điểm thưởng"
           name="diemthuong"
           rules={[{ required: true, message: "Vui lòng nhập điểm thưởng!" }]}
+          initialValue={0}
         >
-          <Input />
+          <Input disabled={true}/>
         </Form.Item>
         {/* Thêm các trường cần thiết khác */}
 
@@ -126,7 +127,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
               style={{ width: "100%" }}
               placeholder="Please select"
               options={user?.data.data.map(
-                (user: { id: number | string; name: string }) => ({
+                (user: { id: number ; name: string }) => ({
                   value: user.id,
                   label: user.name,
                 })

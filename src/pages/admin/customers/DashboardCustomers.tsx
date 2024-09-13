@@ -1,10 +1,10 @@
 import  { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import instance from "../../../configs/axios";
 import { Icustomer } from "../../../interFaces/custommers";
 import { Button, message, Popconfirm, Skeleton, Spin, Table } from "antd";
 import { DeleteOutlined, EditFilled, FileAddOutlined } from "@ant-design/icons";
 import ModalComponent from "./components/model";
+import instanceAxios from "../../../configs/Axios/AxiosConfig";
 
 const DashboardCustomers = () => {
   const queryClient = useQueryClient();
@@ -15,7 +15,7 @@ const DashboardCustomers = () => {
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
-      return await instance.get("/admin/customers");
+      return await instanceAxios.get("/admin/customers");
     },
     refetchInterval: 60000,
   });
@@ -28,7 +28,7 @@ const DashboardCustomers = () => {
   const { mutate: deleteCustomers, isPending: isDeleting } = useMutation({
     mutationFn: async (id: number) => {
       try {
-        await instance.delete(`/admin/customers/${id}`);
+        await instanceAxios.delete(`/admin/customers/${id}`);
       } catch (error) {
         console.error(error);
       }
@@ -68,7 +68,6 @@ const DashboardCustomers = () => {
       title: "Tên",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Số Điện Thoại",

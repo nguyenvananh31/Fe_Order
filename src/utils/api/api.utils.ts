@@ -32,7 +32,6 @@ export const getAccessToken = () => {
 export const getHeader = async (customHeaders?: CustomHeaders) => {
     const header: any = customHeaders || {};
     const initCustomHeader = customHeaders ? customHeaders : initHeader;
-    
     if (!initCustomHeader?.isAuth) {
         delete header.Authorization;
     } else {
