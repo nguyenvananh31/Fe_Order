@@ -1,0 +1,15 @@
+.itemProuduct {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  &-img {
+    &:hover {
+      background-image: url(https://modinatheme.com/html/foodking-html/assets/img/shape/catagory-card-shape.jpg);
+    }
+    .itemProduct-btn {
+      &:hover {
+        .ant-btn-icon {
+            color: #ffb936 ;
+        }
+      }
+    }
+  }
+}
