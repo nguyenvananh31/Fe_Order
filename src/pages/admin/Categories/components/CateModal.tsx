@@ -126,22 +126,6 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
         setState(prev => ({ ...prev, isEdit: true }));
     }
 
-    const downloadImage = async (url: any) => {
-        // Tải file từ URL
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch the file from ${url}`);
-        }
-
-        // Chuyển đổi response thành Blob
-        const blob = await response.blob();
-
-        // Tạo một đối tượng File từ Blob (tùy chọn nếu cần File object)
-        const file = new File([blob], 'aaaa', { type: blob.type });
-
-        return file;
-    }
-
     const onFinish = async (values: any) => {
         console.log(values);
 
