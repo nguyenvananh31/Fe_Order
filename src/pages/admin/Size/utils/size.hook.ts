@@ -33,7 +33,7 @@ const initState: ISate = {
     search: false
 }
 
-const useCate = () => {
+const useSize = () => {
     const [state, setState] = useState<ISate>(initState);
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
@@ -130,4 +130,4 @@ const useCate = () => {
     }
 }
 
-export default useCate;
+export default useSize;
