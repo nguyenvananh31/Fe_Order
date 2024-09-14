@@ -11,5 +11,10 @@ export const RoutePath = {
     TABLE : 'table',
     CONTACT : 'contact',
     CART : 'cart',
-    SEARCH : 'search'
+    SEARCH : 'search',
+    PAYMENT: 'payments',
+    ADMIN_PRODUCT: 'products',
+    ADMIN_ADD_PRODUCT: 'product-add',
+    ADMIN_TABLE: 'tables',
+    ADMIN_TABLE_ORDER: 'tables-order'
 }
