@@ -91,23 +91,20 @@ export const HeaderMain = () => {
         placement="left"
         onClose={hooks.toggleDraw}
         open={hooks.open}
-        bodyStyle={{
-          padding: 0,
-        }}
+        styles={{ body: { padding: 0 } }}
         width={230}
       >
         <div className={`m-1 justify-around py-3 flex items-center`}>
           <div className="flex justify-around items-center gap-3">
             <div className="flex gap-2 items-center">
               <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
-              <h1 className="text-xl font-bold">Logo Branch</h1>
+              <h1 className="text-xl font-bold">Yagi</h1>
             </div>
             <CloseOutlined className="text-ghost text-base cursor-pointer" onClick={hooks.toggleDraw} />
           </div>
         </div>
         <Menu
           defaultSelectedKeys={['1']}
-          // defaultOpenKeys={['sub1']}
           mode="inline"
           theme="light"
           items={LISTMENU}
