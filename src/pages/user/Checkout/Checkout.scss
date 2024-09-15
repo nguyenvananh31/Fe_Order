@@ -1,5 +1,6 @@
 // Variables
 $primary-color: #007bff;
+$primary-color-dark: darken($primary-color, 15%);
 $border-color: #dcdcdc;
 $background-color: #ffffff;
 $background-alt-color: #f8f9fa;
@@ -35,7 +36,7 @@ $radius: 4px;
   }
 
   .section-padding {
-    padding: 40px 0;
+    padding: 52px 0; // Adjusted padding to move the section up by approximately 12px
   }
 
   .border-bottom {
@@ -46,8 +47,11 @@ $radius: 4px;
   .container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; // Align items to the start of the container
     flex-direction: column;
+    width: 100%;
+    max-width: 1200px; // Added a max-width to center the content
+    margin: 0 auto; // Center the container
   }
 
   .row {
@@ -63,8 +67,9 @@ $radius: 4px;
 
   .checkout-radio {
     width: 100%;
-    max-width: 500px; // Adjust as needed
+    max-width: 600px; // Adjust as needed
     margin: 0 auto;
+    margin-bottom: 40px; // Added margin to separate from the Billing address section
 
     .primary-text {
       font-size: 18px;
@@ -77,8 +82,8 @@ $radius: 4px;
       .checkout-radio-single {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
-
+        margin-bottom: 20px; // Adjusted margin for spacing
+        
         input[type="radio"] {
           margin-right: 10px;
         }
@@ -95,10 +100,10 @@ $radius: 4px;
   .checkout-single-wrapper {
     width: 100%;
     max-width: 900px; // Adjust as needed
-    margin: 0 auto;
+    margin: 0 auto; // Center the wrapper
 
     .checkout-single {
-      background-color: $background-color;
+      background-color: $background-color; // White background
       box-shadow: 0 4px 8px $shadow-color;
       border-radius: $radius;
       padding: 20px;
@@ -162,8 +167,70 @@ $radius: 4px;
       }
 
       .theme-btn {
-        @include button-style($primary-color, darken($primary-color, 15%));
+        @include button-style($primary-color, $primary-color-dark);
       }
     }
   }
+}
+
+// Additional styling for the Payment Methods section
+.payment-methods {
+  background-color: $background-color; // Ensure white background
+  padding: 20px;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  box-shadow: 0 4px 8px $shadow-color;
+  width: 100%; // Ensure full width of its container
+  max-width: 600px; // Adjust width as needed
+  margin: 0 auto; // Center horizontally
+  margin-top: 40px; // Add space above the payment methods section
+
+  h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 15px;
+  }
+
+  .payment-methods-list {
+    list-style: none;
+    padding: 0;
+    
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      
+      input[type="radio"] {
+        margin-right: 10px;
+      }
+      
+      label {
+        font-size: 16px;
+        color: $text-color;
+      }
+    }
+  }
+}
+
+// Scrollbar customization
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $primary-color;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: $primary-color-dark;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #DF0A0A0D;
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 129, 61, 0.2);
 }

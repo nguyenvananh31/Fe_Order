@@ -1,38 +1,35 @@
-
+// Define theme color variables
 $theme-color: #dc332d;
 $theme-color-dark: darken($theme-color, 10%);
 $text-color: #5C5C5B;
 $border-color: #F4F1EA;
 
-
 *, ::after, ::before {
     box-sizing: border-box;
 }
 
-
 .cart-section {
     background-color: #F4F1EA;
-    padding: 120px 0;
+    padding: 48px 0; // Adjusted padding to move the section up by 12px
     overflow: hidden;
 
-  
     display: flex;
     justify-content: center;
     align-items: center;
 
-    
     @media (max-width: 1199px) {
-        padding: 100px 0;
+        padding: 38px 0; // Adjusted padding for smaller screens
     }
 
     @media (max-width: 991px) {
-        padding: 80px 0;
+        padding: 28px 0; // Adjusted padding for smaller screens
     }
 
     .container {
         width: 100%;
         max-width: 1200px; 
         padding: 0 15px; 
+        
         .main-cart-wrapper {
             .cart-wrapper {
                 border: 1px solid $border-color;

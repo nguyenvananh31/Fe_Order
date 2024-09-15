@@ -2,7 +2,7 @@ import React from 'react';
  import './Cart.scss'
 
 const Cart: React.FC = () => {
-  console.log("123");
+ 
   
     return (
         <header>
