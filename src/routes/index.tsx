@@ -17,8 +17,9 @@ import Contact from "../pages/user/Contact/Contact";
 import AddProduct from "../pages/admin/products/AddProduct";
 import ListProduct from "../pages/admin/products/ListProduct";
 import ListPayment from "../pages/admin/payments/ListPayment";
-import DashboardCustomers from "../pages/admin/customers/DashboardCustomers";
+// import DashboardCustomers from "../pages/admin/customers/DashboardCustomers";
 import DashboardSizes from "../pages/admin/sizes/DashboardSizes";
+import ListProducts from "../pages/user/Product/Products";
 
 const Router = () => {
   const { auth } = useAuth();
@@ -33,6 +34,8 @@ const Router = () => {
           <Route path={RoutePath.ABOUT} element={<About />} />
           <Route path={RoutePath.SEARCH} element={<Search />} />
           <Route path={RoutePath.CONTACT} element={<Contact />} />
+          <Route path={RoutePath.PRODUCTS} element={<ListProducts />} />
+
 
         </Route>
         <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
