@@ -4,7 +4,7 @@ import localStorageUtils, { KeyStorage } from '../local-storage.utils';
 
 interface CustomHeaders {
     isAuth: boolean;
-    token?: string | undefined | null;
+    access_token?: string | undefined | null;
 }
 
 const REQ_TIMEOUT = 25 * 1000;
@@ -22,9 +22,9 @@ const initHeader: CustomHeaders = { isAuth: true };
 
 export const getAccessToken = () => {
     const auth = localStorageUtils.getObject(KeyStorage.AUTH);
-    const token = auth?.token;
-    if (token) {
-        return token;
+    const access_token = auth?.access_token;
+    if (access_token) {
+        return access_token;
     }
     return null;
 };
@@ -37,7 +37,7 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
     } else {
         let authToken = await getAccessToken();
         if (!authToken) {
-            authToken = customHeaders?.token || null;
+            authToken = customHeaders?.access_token || null;
         }
         if (authToken) {
             header.Authorization = `Bearer ${authToken}`;

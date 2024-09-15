@@ -32,14 +32,13 @@ const Sidebar: React.FC = () => {
               className={`transition-all duration-500 ${!collapsed ? 'animate-slideIn' : 'animate-slideOut'
                 }`}
             >
-              <h1 className="text-xl font-bold">Logo Branch</h1>
+              <h1 className="text-xl font-bold">Yagi</h1>
             </div>
           )}
         </div>
       </div>
       <Menu
         defaultSelectedKeys={['1']}
-        // defaultOpenKeys={['sub1']}
         mode="inline"
         theme="light"
         items={LISTMENU}
