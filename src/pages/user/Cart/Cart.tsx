@@ -2,6 +2,8 @@ import React from 'react';
  import './Cart.scss'
 
 const Cart: React.FC = () => {
+  console.log("123");
+  
     return (
         <header>
             <section className="cart-section section-padding fix">
@@ -74,6 +76,7 @@ const Cart: React.FC = () => {
                                 <div className="cart-pragh-box">
                                     <div className="cart-graph">
                                         <h4>Cart Total</h4>
+                                        
                                         <ul>
                                             <li>
                                                 <span>Subtotal</span>

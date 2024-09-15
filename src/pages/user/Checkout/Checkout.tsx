@@ -6,6 +6,8 @@ const Checkout: React.FC = () => {
 
   const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedPaymentMethod(event.target.value);
+    console.log("ahihi");
+    
   };
 
   return (
