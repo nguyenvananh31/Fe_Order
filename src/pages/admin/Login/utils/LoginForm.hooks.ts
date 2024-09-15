@@ -28,10 +28,7 @@ export const LoginForm = () => {
       if (dataLogin.remember == true) {
         localStorage.setItem("rememberedEmail", dataLogin.email);
       }
-      // setAuth({ ...dataLogin.user, access_token: dataLogin.access_token });
       setAuth({ ...dataLogin.user, access_token: dataLogin.access_token });
-
-
       notification.success({
         message: "Đăng nhập thành công!",
         description: "Xin chào Admin!",

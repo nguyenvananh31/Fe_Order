@@ -16,14 +16,12 @@ const Router = () => {
   return (
     <>
       <Routes>
-
         {/* page without authen */}
         <Route>
           {publicProtectedFlattenRoutes.map((route, index) => (
             <Route path={route.path} element={route.element} key={index} />
           ))}
         </Route>
-
         <Route path="/" element={<BaseLayoutUser />}>
           <Route index element={<Home />} />
           <Route path={RoutePath.ABOUT} element={<About />} />
@@ -34,7 +32,6 @@ const Router = () => {
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
-              
             ))
           }
         </Route>
