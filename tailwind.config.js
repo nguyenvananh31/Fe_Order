@@ -8,6 +8,7 @@ export default {
       gridTemplateColumns: {
         'gridLayout': '1fr 300px', 
         'gridTopNav': '2fr 1fr', 
+        'gridCartItem' : 'auto 125px'
       },
       transitionDuration: {
         '1s': '0.3s',
