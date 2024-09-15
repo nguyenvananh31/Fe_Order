@@ -1,6 +1,9 @@
 import { RouteProps } from "react-router-dom";
 import { RoutePath } from "../constants/path";
 import { lazy } from "react";
+import ListProduct from "../pages/admin/Products/ListProduct";
+import ListTable from "../pages/admin/Tables/ListTable";
+import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -13,7 +16,7 @@ const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 //Quản lý phương thức thanh toán
 const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
 //Quản lý sản phẩm
-const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
+// const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
 const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
 //Quản lý bàn
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
@@ -61,9 +64,19 @@ const accountRoutes: IRoutesProperties[] = [
         element: <PaymentsScreen />,
     },
     {
+        path: RoutePath.ADMIN_TABLE,
+        name: 'Quản lý bàn',
+        element: <ListTable />,
+    },
+    {
+        path: RoutePath.ADMIN_TABLE_ORDER,
+        name: 'Quản lý bàn đặt',
+        element: <DetailOrderTable />,
+    },
+    {
         path: RoutePath.ADMIN_PRODUCT,
         name: 'Quản lý sản phẩm',
-        element: <ProductScreen />,
+        element: <ListProduct />,
     },
     {
         path: RoutePath.ADMIN_ADD_PRODUCT,
