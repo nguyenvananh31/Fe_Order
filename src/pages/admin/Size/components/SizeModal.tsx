@@ -38,7 +38,7 @@ const initState: IState = {
     data: [],
 }
 
-export default function CateModel({ onClose, onRefresh, showToast, itemId = undefined }: IProps) {
+export default function SizeModel({ onClose, onRefresh, showToast, itemId = undefined }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
     const [form] = Form.useForm();
@@ -64,7 +64,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                             name: 'default.png',
                             status: 'done',
                             url: getImageUrl(res.data.image),
-                        }]);
+                        }])
                     }
                 }
             } catch (error) {
@@ -136,15 +136,12 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
             if (values.parent_id) {
                 formData.append('parent_id', values.parent_id);
             }
-            console.log(fileList);
-            
-            if (fileList[0].originFileObj) {
+            if (!!fileList) {
                 fileList.forEach((item) => formData.append('image', item.originFileObj as any));
             }
-            console.log(fileList);
             if (itemId) {
-                await apiUpdateCate(itemId, formData, '_method=PUT');
-            } else {
+                await apiUpdateCate(itemId, formData);
+            }else {
                 await apiCreateCate(formData);
             }
             showToast('success', `${itemId ? 'Cập nhật' : 'Thêm'} danh mục thành công!`);

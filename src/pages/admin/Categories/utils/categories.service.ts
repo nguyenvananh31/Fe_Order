@@ -9,7 +9,7 @@ const apiName = {
 };
 
 export const apiGetCates = async (params?: any) => {
-    const res = await ApiUtils.fetch<any , ResponeBase<ICate[]>>(apiName.cate, params);
+    const res = await ApiUtils.fetch<any, ResponeBase<ICate[]>>(apiName.cate, params);
     return res;
 }
 
@@ -18,13 +18,13 @@ export const apiCreateCate = async (body: FormData) => {
     return res;
 }
 
-export const apiUpdateCate = async (id:number, body: FormData) => {
-    const res = await ApiUtils.putForm<FormData, ResponeBase<ICate>>(`${apiName.cate}/${id}`, body);
+export const apiUpdateCate = async (id: number, body: FormData, params?: any) => {
+    const res = await ApiUtils.postForm<FormData, ResponeBase<ICate>>(`${apiName.cate}/${id}?${params}`, body);
     return res;
 }
 
 export const apiGetOneCate = async (id: number) => {
-    const res = await ApiUtils.fetch<number , ResponeBase<ICate>>(`${apiName.cate}/${id}`);
+    const res = await ApiUtils.fetch<number, ResponeBase<ICate>>(`${apiName.cate}/${id}`);
     return res;
 }
 
