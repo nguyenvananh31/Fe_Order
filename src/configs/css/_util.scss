@@ -29,7 +29,7 @@
 .text-type-3 {
   @include fontStyle(16px, 26px);
   color: var(--textColor2);
-  letter-spacing: 0.3px
+  letter-spacing: 0.3px;
 }
 // Thẻ text normal thông thường
 .text-type-4 {
@@ -101,6 +101,32 @@
       scale: 0.1;
       transition: 0.3s ease-in-out;
       opacity: 0;
+    }
+  }
+  &-error {
+    > * {
+      color: var(--mainColor1);
+      transition: 0.25s ease-in-out;
+      &:hover {
+        color: var(--mainColor1);
+        scale: 1.3;
+      };
+      &:active{
+        color: var(--mainColor2);
+      }
+    }
+  }
+  &-success {
+    > * {
+      color: var(--mainColor2);
+      transition: 0.25s ease-in-out;
+      &:hover {
+        color: var(--mainColor2);
+        scale: 1.3;
+      };
+      &:active{
+        color: var(--mainColor1);
+      }
     }
   }
 }

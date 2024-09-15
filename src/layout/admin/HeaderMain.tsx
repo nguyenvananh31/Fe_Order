@@ -91,9 +91,6 @@ export const HeaderMain = () => {
         placement="left"
         onClose={hooks.toggleDraw}
         open={hooks.open}
-        bodyStyle={{
-          padding: 0,
-        }}
         width={230}
       >
         <div className={`m-1 justify-around py-3 flex items-center`}>

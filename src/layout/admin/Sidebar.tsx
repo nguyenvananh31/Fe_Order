@@ -42,7 +42,6 @@ const Sidebar: React.FC = () => {
         // defaultOpenKeys={['sub1']}
         mode="inline"
         theme="light"
-        inlineCollapsed={collapsed}
         items={LISTMENU}
       />
     </Sider>

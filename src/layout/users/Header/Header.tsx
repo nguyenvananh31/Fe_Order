@@ -23,7 +23,7 @@ const Header = () => {
           </div>
         </div>
         <div className="container-center lg:flex items-center justify-center hidden ">
-          <Navigation/>
+          <Navigation />
         </div>
         <div className="container-right ">
           <div className="action-header flex items-center gap-10">
@@ -31,38 +31,26 @@ const Header = () => {
               <Badge count="1" offset={[2, 0]} showZero>
                 <ShoppingCartOutlined className='text-3xl text-mainColor1' />
               </Badge>
-              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor hidden group-hover:block z-[99] shadow-md ">
+              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor  group-hover:block z-[99] shadow-md ">
                 <div className="mini-cart-body w-max ">
-                  <div className="cart-item flex items-center gap-5 pb-3 mb-3 border-b-[1px] border-borderColor1">
+                  <div className="cart-item grid grid-cols-gridCartItem items-center gap-4 pb-3 mb-3 border-b-[1px] border-borderColor1">
                     <div className="cart-item-img">
                       <img className='w-20 h-20 object-cover' src="https://modinatheme.com/html/foodking-html/assets/img/food/burger.png" alt="" />
                     </div>
-                    <div className="cart-item-main flex items-center justify-between">
-                      <div className="">
-                        <h3 className="cart-item-main__title text-[16px] text-textColor1">Girrel Chicken</h3>
-                        <span className="cart-item-man__price text-[15px] text-textColor1 block mt-1">$168</span>
+                    <div className="cart-item-main flex items-center justify-between max-w-[100px]">
+                      <div className="w-full">
+                        <h3 className="cart-item-main__title text-[16px] line-clamp-1 text-type-1">
+                          <Link to={`anv`}> AN day ne</Link>
+                        </h3>
+                        <span className="cart-item-man__price text-[15px] text-type-1 block mt-1">$168</span>
                       </div>
                       <div className="absolute right-5">
-                        <button className="cursor-pointer"><CloseCircleFilled className='text-mainColor1' /></button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="cart-item flex items-center gap-5 pb-3 mb-3 border-b-[1px] border-borderColor1">
-                    <div className="cart-item-img">
-                      <img className='w-20 h-20 object-cover' src="https://modinatheme.com/html/foodking-html/assets/img/food/burger.png" alt="" />
-                    </div>
-                    <div className="cart-item-main flex items-center justify-between">
-                      <div className="">
-                        <h3 className="cart-item-main__title text-[16px] text-textColor1">Girrel Chicken</h3>
-                        <span className="cart-item-man__price text-[15px] text-textColor1 block mt-1">$168</span>
-                      </div>
-                      <div className="absolute right-5">
-                        <button className="cursor-pointer"><CloseCircleFilled className='text-mainColor1' /></button>
+                        <button className="cursor-pointer btn-type-error"><CloseCircleFilled className='' /></button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="mini-cart-action flex gap-2">
+                <div className="mini-cart-action flex gap-2 items-center justify-evenly">
                   <div className="mini-cart-action-left">
                     <h4 className='text-[14px] py-2 text-center'>Shopping : <span>$400</span></h4>
                     <button className="btn-type-1"><span>View cart</span></button>
@@ -160,10 +148,10 @@ const Header = () => {
           </div>
           <div className="container">
             <ul className="box-social flex gap-4 mb-4 border-t-[1px] border-borderColor1 pt-6">
-              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group"><TwitterOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
-              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group"><TikTokOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
-              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group"><PinterestOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
-              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><TwitterOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><TikTokOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><PinterestOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
+              <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
             </ul>
           </div>
 

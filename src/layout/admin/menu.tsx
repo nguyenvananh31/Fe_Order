@@ -2,6 +2,7 @@
 import { FileTextOutlined, MailOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { RoutePath } from "../../constants/path";
+import { Link } from "react-router-dom";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -46,14 +47,18 @@ export const LISTMENU: MenuItem[] = [
     icon: <FileTextOutlined />,
   },
   {
-    key: 'sub4',
-    label: 'Navigation Three',
+    key: 'product',
+    label: 'Quản lý sản phẩm',
     icon: <SettingOutlined />,
     children: [
-      { key: '9', label: 'Option 9' },
-      { key: '10', label: 'Option 10' },
-      { key: '11', label: 'Option 11' },
-      { key: '12', label: 'Option 12' },
+      { key: 'product-list', label: (
+        <Link to={`products`}>Danh sách sản phẩm</Link>
+      ) },
+      {
+        key: 'product-add', label: (
+          <Link to={`product-add`}>Thêm sản phẩm</Link>
+        )
+      }
     ],
   },
   {
