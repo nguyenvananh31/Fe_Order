@@ -18,6 +18,7 @@ const DashboardSizes = () => {
       return await instance.get("/admin/sizes");
     },
     refetchInterval: 60000,
+  
   });
 
   const dataTable = data?.data.data.map((item: Isize) => ({
@@ -34,13 +35,13 @@ const DashboardSizes = () => {
       }
     },
     onSuccess: () => {
-      messageApi.success("Xóa khách hàng thành công.");
+      messageApi.success("Xóa thành công.");
       queryClient.invalidateQueries({
         queryKey: ["sizes"],
       });
     },
     onError: () => {
-      messageApi.error("Xóa khách hàng không thành công.");
+      messageApi.error("Xóa không thành công.");
     },
   });
 

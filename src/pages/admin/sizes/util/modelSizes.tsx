@@ -27,14 +27,14 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
       return await instanceAxios.post("/admin/sizes", newSize);
     },
     onSuccess: () => {
-      messageApi.success("Thêm khách hàng thành công.");
+      messageApi.success("Thêm  thành công.");
       form.resetFields()
 
       queryClient.invalidateQueries({ queryKey: ["sizes"] });
       onClose();
     },
     onError: () => {
-      messageApi.error("Thêm khách hàng không thành công.");
+      messageApi.error("Thêm  không thành công.");
     },
   });
 
@@ -45,13 +45,13 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
       return await instanceAxios.put(`/admin/sizes/${updatedSizes.id}`, updatedSizes);
     },
     onSuccess: () => {
-      messageApi.success("Chỉnh sửa khách hàng thành công.");
+      messageApi.success("Chỉnh sửa thành công.");
       queryClient.invalidateQueries({ queryKey: ["sizes"] });
       form.resetFields()
       onClose();
     },
     onError: () => {
-      messageApi.error("Chỉnh sửa khách hàng không thành công.");
+      messageApi.error("Chỉnh sửa  không thành công.");
     },
   });
 
