@@ -22,6 +22,12 @@ const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct')
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
 
+//customers
+const CustomerScreen = lazy(() => import('../pages/admin/customers/DashboardCustomers'))
+
+//sizes
+const SizeScreen = lazy(() => import('../pages/admin/sizes/DashboardSizes'))
+
 
 
 export interface IRoutesProperties {

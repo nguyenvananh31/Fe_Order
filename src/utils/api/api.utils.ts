@@ -48,9 +48,9 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
 
 const requestHandler = (request: AxiosRequestConfig) => {
     if (__DEV__) {
-        // console.log(`Req API: ${request.url}`);
-        // console.log(`  + Params:     `, request.params);
-        // console.log(`  + Data:       `, request.data);
+        console.log(`Req API: ${request.url}`);
+        console.log(`  + Params:     `, request.params);
+        console.log(`  + Data:       `, request.data);
     }
     return request;
 };
@@ -81,8 +81,8 @@ const errorHandler = (error: AxiosError) => {
 const successHandler = (response: AxiosResponse) => {
     if (__DEV__) {
         console.log(
-            // `SUCESS ${response.config.method?.toUpperCase()} - ${response.config.url}`,
-            // response.data
+            `SUCESS ${response.config.method?.toUpperCase()} - ${response.config.url}`,
+            response.data
         );
     }
     const data: any = response.data;
