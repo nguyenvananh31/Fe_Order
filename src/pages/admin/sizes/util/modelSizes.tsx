@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Button, message, Select } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Isize } from "../../../../interFaces/size";
 import instanceAxios from "../../../../configs/Axios/AxiosConfig";
+import { Isize } from "../../../../interFaces/size";
 
 interface ModalComponentProps {
   visible: boolean;
@@ -18,7 +18,8 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
-  const { Option } = Select; 
+  
+
 
   // Mutation cho POST (Thêm mới)
   const { mutate: addSize, isPending: isAdding } = useMutation({
@@ -26,35 +27,35 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
       return await instanceAxios.post("/admin/sizes", newSize);
     },
     onSuccess: () => {
-      messageApi.success("Thêm thành công.");
-      queryClient.invalidateQueries({ queryKey: ["size"] });
-      form.resetFields();
+      messageApi.success("Thêm khách hàng thành công.");
+      form.resetFields()
+
+      queryClient.invalidateQueries({ queryKey: ["sizes"] });
       onClose();
     },
-    onError: (error: any) => {
-      console.error("Lỗi khi thêm size:", error.response?.data);  // In lỗi chi tiết từ server
-      messageApi.error("Thêm không thành công.");
+    onError: () => {
+      messageApi.error("Thêm khách hàng không thành công.");
     },
   });
 
+  // Mutation
   // Mutation cho PUT (Chỉnh sửa)
   const { mutate: editSize, isPending: isEditing } = useMutation({
-    mutationFn: async (updatedSize: Isize) => {
-      return await instanceAxios.put(`/admin/sizes/${updatedSize.id}`, updatedSize);
+    mutationFn: async (updatedSizes: Isize) => {
+      return await instanceAxios.put(`/admin/sizes/${updatedSizes.id}`, updatedSizes);
     },
     onSuccess: () => {
-      messageApi.success("Chỉnh sửa thành công.");
-      queryClient.invalidateQueries({ queryKey: ["size"] });
-      form.resetFields();
+      messageApi.success("Chỉnh sửa khách hàng thành công.");
+      queryClient.invalidateQueries({ queryKey: ["sizes"] });
+      form.resetFields()
       onClose();
     },
-    onError: (error: any) => {
-      console.error("Lỗi khi chỉnh sửa size:", error.response?.data);  // In lỗi chi tiết từ server
-      messageApi.error("Chỉnh sửa không thành công.");
+    onError: () => {
+      messageApi.error("Chỉnh sửa khách hàng không thành công.");
     },
   });
 
-  // Khi modal mở ra để chỉnh sửa, điền dữ liệu size vào form
+  // Khi modal mở ra để chỉnh sửa, điền dữ liệu khách hàng vào form
   useEffect(() => {
     if (size) {
       form.setFieldsValue(size);
@@ -65,26 +66,20 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 
   // Xử lý khi submit form
   const handleSubmit = (values: Isize) => {
-    // Nếu không có giá trị `status` trong `values`, đặt mặc định là 0
-    const payload = {
-      ...values,
-      status: values.status !== undefined ? values.status : 0,
-    };
-
-    console.log("Submitting values:", payload); // Kiểm tra payload gửi lên
-
     if (size) {
       // Chỉnh sửa
-      editSize({ ...size, ...payload });
+      editSize({ ...size, ...values });
     } else {
       // Thêm mới
-      addSize(payload);
+      addSize(values);
+      console.log("values" , values);
+      
     }
   };
 
   return (
     <Modal
-      title={size ? "Chỉnh sửa kích thước" : "Thêm mới kích thước"}
+      title={size ? "Chỉnh sửa khách hàng" : "Thêm mới khách hàng"}
       visible={visible}
       onCancel={onClose}
       footer={null}
@@ -97,26 +92,35 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
         initialValues={size || {}}
       >
         <Form.Item
-          label="Tên"
+          label="Tên "
           name="name"
           rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
         >
           <Input />
         </Form.Item>
 
-        {/* Thêm trường status */}
         <Form.Item
-          label="Trạng thái"
+        label="Trạng Thái "
           name="status"
-          initialValue={0}  // Giá trị mặc định là 0
         >
-          <Select>
-            <Option value={0}>Không hoạt động</Option>
-            <Option value={1}>Hoạt động</Option>
-          </Select>
-        </Form.Item>
 
-        <Form.Item>
+        <Select
+              style={{ width: "100%" }}
+              placeholder="Please select"
+              options={[
+                {
+                  value: 0,
+                  label: 'Không hoạt Động',
+                },
+                {
+                    value: 1,
+                    label: 'Hoạt Động',
+                },
+              ]}
+            />
+        
+        </Form.Item>
+        <Form.Item className="mt-2">
           <Button type="primary" htmlType="submit" loading={isAdding || isEditing}>
             {size ? "Lưu chỉnh sửa" : "Thêm mới"}
           </Button>

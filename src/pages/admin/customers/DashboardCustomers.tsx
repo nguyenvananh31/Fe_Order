@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Icustomer } from "../../../interFaces/custommers";
 import { Button, message, Popconfirm, Skeleton, Spin, Table } from "antd";
 import { DeleteOutlined, EditFilled, FileAddOutlined } from "@ant-design/icons";
-import ModalComponent from "./components/model";
-import instanceAxios from "../../../configs/Axios/AxiosConfig";
+import ModalComponent from "./util/modelCustomers";
+import instance from "../../../configs/Axios/AxiosConfig";
 
 const DashboardCustomers = () => {
   const queryClient = useQueryClient();
@@ -15,7 +15,7 @@ const DashboardCustomers = () => {
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
-      return await instanceAxios.get("/admin/customers");
+      return await instance.get("/admin/customers");
     },
     refetchInterval: 60000,
   });
@@ -28,7 +28,7 @@ const DashboardCustomers = () => {
   const { mutate: deleteCustomers, isPending: isDeleting } = useMutation({
     mutationFn: async (id: number) => {
       try {
-        await instanceAxios.delete(`/admin/customers/${id}`);
+        await instance.delete(`/admin/customers/${id}`);
       } catch (error) {
         console.error(error);
       }

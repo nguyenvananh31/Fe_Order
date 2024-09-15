@@ -17,8 +17,8 @@ import Contact from "../pages/user/Contact/Contact";
 import AddProduct from "../pages/admin/products/AddProduct";
 import ListProduct from "../pages/admin/products/ListProduct";
 import ListPayment from "../pages/admin/payments/ListPayment";
-import DashboardSize from "../pages/admin/size/DashboardSize";
 import DashboardCustomers from "../pages/admin/customers/DashboardCustomers";
+import DashboardSizes from "../pages/admin/sizes/DashboardSizes";
 
 const Router = () => {
   const { auth } = useAuth();
@@ -44,8 +44,8 @@ const Router = () => {
           <Route path="tables" element={<ListTable />} />
           <Route path="product-add" element={<AddProduct />} />
           <Route path="tables-order" element={<DetailOrderTable />} />
-          <Route path="customers" element={<DashboardSize />} />
-          <Route path="customers" element={<DashboardCustomers/>} />
+          <Route path="customers" element={<DashboardSizes />} />
+          {/* <Route path="customers" element={<DashboardCustomers/>} /> */}
          </Route>
       </Routes>
     </>

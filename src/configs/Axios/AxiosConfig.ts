@@ -1,11 +1,11 @@
 import axios from "axios";
 import localStorageUtils, { KeyStorage } from "../../utils/local-storage.utils";
 
-const instanceAxios = axios.create({
+const instance = axios.create({
   baseURL: "http://127.0.0.1:8000/api",
 });
 
-instanceAxios.interceptors.request.use(
+instance.interceptors.request.use(
   (config) => {
     const token = localStorageUtils.getObject(KeyStorage.AUTH)?.token;
     if (token) {
@@ -19,5 +19,4 @@ instanceAxios.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export default instanceAxios;
-
+export default instance;
