@@ -137,7 +137,7 @@ export default function CatePage() {
                         className='mx-6'
                         onClick={() => hooks.handleOpenModal()}
                     >
-                        Tạo tài khoản
+                        Tạo danh mục
                     </Button>
                 </div>
                 <Table
