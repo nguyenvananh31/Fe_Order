@@ -23,10 +23,10 @@ const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
 
 //customers
-const CustomerScreen = lazy(() => import('../pages/admin/customers/DashboardCustomers'))
+const CustomerScreen = lazy(() => import('../pages/admin/customers/DashboardCustomers'));
 
 //sizes
-const SizeScreen = lazy(() => import('../pages/admin/sizes/DashboardSizes'))
+const SizeScreen = lazy(() => import('../pages/admin/sizes/DashboardSizes'));
 
 
 
@@ -99,6 +99,16 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý đặt bàn',
         element: <OrderTableScreen />,
     },
+    {
+        path:  RoutePath.CUSTOMERS,
+        name: 'Quản lý khách hàng',
+        element: <CustomerScreen />,
+    },
+    {
+        path:  RoutePath.SIZES,
+        name: 'Quản lý kích cỡ',
+        element: <SizeScreen />,
+    }
 ];
 
 export const flattenRoutes = (routes: IRoutesProperties[]) => {
