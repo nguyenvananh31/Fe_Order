@@ -1,0 +1,169 @@
+// Variables
+$primary-color: #007bff;
+$border-color: #dcdcdc;
+$background-color: #ffffff;
+$background-alt-color: #f8f9fa;
+$text-color: #333;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$radius: 4px;
+
+// Mixin for button
+@mixin button-style($bg-color, $hover-color) {
+  display: inline-block;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: $bg-color;
+  border: none;
+  border-radius: $radius;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+}
+
+// Main styles
+.checkout-section {
+  &.fix {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-padding {
+    padding: 40px 0;
+  }
+
+  .border-bottom {
+    border-bottom: 1px solid $border-color;
+  }
+
+  // Container Centering
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; // Center horizontally
+    margin: 0;
+  }
+
+  .col-12 {
+    width: 100%;
+  }
+
+  .checkout-radio {
+    width: 100%;
+    max-width: 500px; // Adjust as needed
+    margin: 0 auto;
+
+    .primary-text {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: $text-color;
+    }
+
+    .checkout-radio-wrapper {
+      .checkout-radio-single {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        input[type="radio"] {
+          margin-right: 10px;
+        }
+
+        label {
+          font-size: 16px;
+          cursor: pointer;
+          color: $text-color;
+        }
+      }
+    }
+  }
+
+  .checkout-single-wrapper {
+    width: 100%;
+    max-width: 900px; // Adjust as needed
+    margin: 0 auto;
+
+    .checkout-single {
+      background-color: $background-color;
+      box-shadow: 0 4px 8px $shadow-color;
+      border-radius: $radius;
+      padding: 20px;
+      margin-bottom: 20px;
+
+      h4 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: $text-color;
+      }
+
+      .checkout-single-form {
+        .row {
+          .col-lg-6, .col-lg-12 {
+            .input-single {
+              margin-bottom: 15px;
+
+              input,
+              textarea,
+              select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid $border-color;
+                border-radius: $radius;
+                font-size: 16px;
+                outline: none;
+
+                &:focus {
+                  border-color: $primary-color;
+                  box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.25);
+                }
+              }
+
+              textarea {
+                resize: vertical;
+                min-height: 100px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .checkout-single-bg {
+      background-color: $background-alt-color;
+
+      .input-check {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+
+        input[type="checkbox"] {
+          margin-right: 10px;
+        }
+
+        label {
+          font-size: 16px;
+          color: $text-color;
+        }
+      }
+
+      .theme-btn {
+        @include button-style($primary-color, darken($primary-color, 15%));
+      }
+    }
+  }
+}
