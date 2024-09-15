@@ -7,7 +7,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorageUtils.getObject(KeyStorage.AUTH)?.token;
+    const token = localStorageUtils.getObject(KeyStorage.AUTH)?.access_token
+    ;
     if (token) {
       config.headers = {
         ...config.headers,
