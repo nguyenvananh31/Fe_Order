@@ -14,7 +14,7 @@ export const getAllProduct = async () => {
   } catch (error: any) {
     notification.error({
       message: error.message,
-      description: error.errors[0],
+      description: error.errors
     });
   }
 };
@@ -27,7 +27,7 @@ export const getAllCategory = async () => {
   } catch (error: any) {
     notification.error({
       message: error.message,
-      description: error.errors[0],
+      description: error.errors,
     });
   }
 };

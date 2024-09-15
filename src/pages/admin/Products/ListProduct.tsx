@@ -163,11 +163,11 @@ const ListProduct: React.FC = () => {
             </div>
             <div className="w-2/3 pl-6">
               <h2 className="text-xl font-bold">{selectedProduct.name}</h2>
-              <p className="text-lg font-semibold text-gray-700 mb-2">{selectedProduct.price} $</p>
+              {/* <p className="text-lg font-semibold text-gray-700 mb-2">{selectedProduct.price} $</p>
               <p className="text-sm text-gray-600 mb-1">Danh mục: {selectedProduct.category}</p>
               <p className="text-sm text-gray-600 mb-3">Số lượng: {selectedProduct.quantity}</p>
               <hr className="my-4" />
-              <p className="text-gray-700">{selectedProduct.description}</p>
+              <p className="text-gray-700">{selectedProduct.description}</p> */}
             </div>
           </div>
         )}

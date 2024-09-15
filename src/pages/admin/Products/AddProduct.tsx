@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
-import ApiUtils from '../../../utils/api/api.utils';
+import useProducts from './utils/ListProduct.hooks';
+import { FileRule } from '../../../constants/common';
+import useToast from '../../../hooks/useToast';
 
 const { Option } = Select;
 
@@ -11,35 +12,45 @@ const AddProduct: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const [thumbnailFileList, setThumbnailFileList] = useState<any[]>([]);
+  const { showToast } = useToast();
 
-  
   const getThumbnailUrl = (file: any) => {
-    // Kiểm tra các thuộc tính có thể chứa URL của file upload
     return file?.response?.url || file?.thumbUrl || file?.url;
   };
 
+  const getImageUrls = (fileList: any[]) => {
+    return fileList.map(file => getThumbnailUrl(file));
+  };
+
+  const { cate } = useProducts();
+
   const onFinish = async (values: any) => {
     let thumbnailUrl = '';
+    let imageUrls = [];
 
-    // Nếu thumbnailFileList có ảnh, lấy ảnh đầu tiên từ thumbnailFileList
+    // Lấy đường dẫn của ảnh thumbnail
     if (thumbnailFileList.length > 0) {
       thumbnailUrl = getThumbnailUrl(thumbnailFileList[0]);
-    }
-    // Nếu không có ảnh thumbnail riêng, lấy ảnh đầu tiên từ fileList
-    else if (fileList.length > 0) {
+    } else if (fileList.length > 0) {
       thumbnailUrl = getThumbnailUrl(fileList[0]);
     }
 
-    // Nếu không có ảnh nào, báo lỗi
+    // Kiểm tra nếu không có thumbnail nào
     if (!thumbnailUrl) {
-      message.error('Vui lòng tải lên ít nhất một ảnh.');
+      message.error('Vui lòng tải lên ít nhất một ảnh thumbnail.');
       return;
     }
 
-    console.log('Received values:', { ...values, thumbnail: thumbnailUrl });
-    const formData = { ...values, thumbnail: thumbnailUrl }
-    const dataPost = await ApiUtils.post('/api/admin/products',formData);
-    
+    // Lấy danh sách đường dẫn ảnh
+    imageUrls = getImageUrls(fileList);
+
+    // Log dữ liệu nhận được
+    console.log('Received values:', { ...values, thumbnail: thumbnailUrl, images: imageUrls });
+
+    // Tạo dữ liệu để gửi lên server
+    const formData = { ...values, thumbnail: thumbnailUrl, images: imageUrls };
+    console.log(formData);
+
     message.success('Product added successfully!');
   };
 
@@ -61,35 +72,61 @@ const AddProduct: React.FC = () => {
     setThumbnailFileList(info.fileList);
   };
 
+  const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
+  const handleBeforeUpload = async (file: any) => {
+    if (!FileRule.accepts.includes(file.type)) {
+      showToast('error', 'Định dạng hình ảnh không hợp lệ, vui lòng chọn hình ảnh khác');
+      return Upload.LIST_IGNORE;
+    }
+
+    return false;
+  };
+
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 bg-white shadow-sm">
       <h1 className="text-2xl font-bold mb-4">Thêm Sản Phẩm</h1>
       <Form form={form} onFinish={onFinish} layout="vertical">
-        <Form.Item label="Tên sản phẩm" name="productName" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}>
+        <Form.Item label="Tên sản phẩm" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}>
           <Input />
         </Form.Item>
 
-        {/* Thêm trường upload ảnh thumbnail */}
-        <Form.Item label="Ảnh Thumbnail" name="thumbnail">
+        <Form.Item label="Ảnh Thumbnail" name="thumbnail"
+          valuePropName="fileList" getValueFromEvent={normFile}
+        >
           <Upload
-            action="/upload" // Replace with your upload URL
             listType="picture-card"
             fileList={thumbnailFileList}
             onChange={handleThumbnailChange}
-            onRemove={(file) => setThumbnailFileList(thumbnailFileList.filter(f => f.uid !== file.uid))}
+            accept={FileRule.accepts}
+            beforeUpload={handleBeforeUpload}
           >
-            {thumbnailFileList.length >= 1 ? null : <div><PlusOutlined /> Thêm Thumbnail</div>}
+            {thumbnailFileList?.length >= 1 ? null :
+              (
+                <button style={{ border: 0, background: 'none' }} type="button">
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </button>
+              )
+            }
           </Upload>
         </Form.Item>
 
         <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
           <Select placeholder="Chọn danh mục">
-            <Option value="category1">Danh mục 1</Option>
-            <Option value="category2">Danh mục 2</Option>
+            <Option value="" hidden selected>Danh mục</Option>
+            {cate.map(item => (
+              <Option key={item.id} value={item.id}>{item.name}</Option>
+            ))}
           </Select>
         </Form.Item>
 
-        {/* Luôn hiển thị nút thêm biến thể */}
+        {/* Phần biến thể */}
         <Form.List name="variants">
           {(fields, { add, remove }) => (
             <>
@@ -153,9 +190,12 @@ const AddProduct: React.FC = () => {
           <Input.TextArea rows={4} placeholder="Mô tả sản phẩm" />
         </Form.Item>
 
-        <Form.Item label="Ảnh" name="image">
+        <Form.Item label="Số lượng" name="quantity">
+          <Input type='number' placeholder="Số lượng" />
+        </Form.Item>
+
+        <Form.Item label="Ảnh" name="images">
           <Upload
-            action="/upload" // Replace with your upload URL
             listType="picture-card"
             fileList={fileList}
             onChange={handleChange}

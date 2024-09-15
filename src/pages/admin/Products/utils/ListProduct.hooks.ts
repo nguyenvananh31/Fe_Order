@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { deleteProduct, getAllProduct } from "./ListProduct.services";
-import { apiGetCates } from "../../Categories/utils/categories.services";
 import { IProduct } from "../../../../interFaces/product";
 import { ICate } from "../../../../interFaces/categories";
 import { useNavigate } from "react-router-dom";
-import { setState } from "../../../../hooks/redux/buttonSlice";
 import useToast from "../../../../hooks/useToast";
+import { apiGetCates } from "../../Categories/utils/categories.service";
 
 const useProducts = () => {
   const [products, setProducts] = useState<IProduct | []>([]);
@@ -14,7 +13,7 @@ const useProducts = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { showToast, contextHolder } = useToast();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchProducts = async () => {
