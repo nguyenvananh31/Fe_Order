@@ -1,7 +1,8 @@
 import { Button, Checkbox, Col, Form, Input, Modal, Row } from "antd";
 import { useEffect, useState } from "react";
 import { IRole, IUser } from "../../../../interFaces/common.types";
-import { apiGetOneUser, apiGetRoles, apiUpadateRoles } from "../utils/account.services";
+import { apiGetOneUser, apiGetRoles, apiUpadateRoles } from "../utils/account.service";
+import Avatar from "react-avatar";
 
 interface IProps {
     itemId?: number;
@@ -124,6 +125,7 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     disabled={!state.isEdit}
                 >
                     <div className='flex justify-center items-center gap-6 my-6'>
+                        <Avatar className="cursor-pointer" name={state.account?.name || state.account?.email} size="60" round={true} />
                         <div className="flex flex-col gap-2">
                             <div className="flex gap-2 items-center">
                                 <span className="text-base font-semibold">{state.account?.name ? 'Name' : 'Email'}:</span>

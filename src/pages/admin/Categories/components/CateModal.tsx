@@ -3,7 +3,7 @@ import { Form, GetProp, Image, Input, Modal, Spin, TreeSelect, Upload, UploadFil
 import { useEffect, useState } from "react";
 import { FileRule, getImageUrl } from "../../../../constants/common";
 import { ICate } from "../../../../interFaces/categories";
-import { apiCreateCate, apiGetCates, apiGetOneCate, apiUpdateCate } from "../utils/categories.services";
+import { apiCreateCate, apiGetCates, apiGetOneCate, apiUpdateCate } from "../utils/categories.service";
 import { DefaultOptionType } from "antd/es/select";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -64,7 +64,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                             name: 'default.png',
                             status: 'done',
                             url: getImageUrl(res.data.image),
-                        }])
+                        }]);
                     }
                 }
             } catch (error) {
@@ -136,12 +136,15 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
             if (values.parent_id) {
                 formData.append('parent_id', values.parent_id);
             }
-            if (!!fileList) {
+            console.log(fileList);
+            
+            if (fileList[0].originFileObj) {
                 fileList.forEach((item) => formData.append('image', item.originFileObj as any));
             }
+            console.log(fileList);
             if (itemId) {
-                await apiUpdateCate(itemId, formData);
-            }else {
+                await apiUpdateCate(itemId, formData, '_method=PUT');
+            } else {
                 await apiCreateCate(formData);
             }
             showToast('success', `${itemId ? 'Cập nhật' : 'Thêm'} danh mục thành công!`);
