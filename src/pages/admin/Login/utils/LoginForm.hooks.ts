@@ -34,7 +34,7 @@ export const LoginForm = () => {
         message: "Đăng nhập thành công!",
         description: "Xin chào Admin!",
       });
-      await navigate("/admin/dashboard");
+      await navigate("/admin");
     }
   };
   // Trường hợp mặc định là sai

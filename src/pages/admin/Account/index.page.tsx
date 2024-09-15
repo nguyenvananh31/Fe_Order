@@ -59,7 +59,7 @@ export default function AccountPage() {
                             );
                         })}
                         {
-                            roles.length === 0 && (
+                            roles?.length === 0 && (
                                 <Tag color={hooks.colors[hooks.hashStringToColorIndex('khách hàng')]} key={'user'}>
                                     KHÁCH HÀNG
                                 </Tag>
