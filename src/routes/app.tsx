@@ -4,6 +4,7 @@ import { lazy } from "react";
 import ListProduct from "../pages/admin/Products/ListProduct";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
+import EditProduct from "../pages/admin/Products/EditProducts";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -72,6 +73,11 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.ADMIN_TABLE_ORDER,
         name: 'Quản lý bàn đặt',
         element: <DetailOrderTable />,
+    },
+    {
+        path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
+        name: 'Sửa sản phẩm',
+        element: <EditProduct />,
     },
     {
         path: RoutePath.ADMIN_PRODUCT,

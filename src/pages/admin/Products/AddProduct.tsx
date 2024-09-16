@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd';
+import { Form, Input, Button, Select, Upload, message, Row, Col, Descriptions } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import useProducts from './utils/ListProduct.hooks';
 import { FileRule } from '../../../constants/common';
 import useToast from '../../../hooks/useToast';
+import useSize from '../Size/utils/size.hook';
 
 const { Option } = Select;
 
@@ -49,7 +50,22 @@ const AddProduct: React.FC = () => {
 
     // Tạo dữ liệu để gửi lên server
     const formData = { ...values, thumbnail: thumbnailUrl, images: imageUrls };
-    console.log(formData);
+    const data = {
+      name: values.name,
+      thumbnail: thumbnailUrl,
+      status: 1,
+      category_id: values.category_id,
+      product_details: [
+        {
+          size: values.variants,
+          quantity: values.quantity,
+          sale: null,
+          status: 1,
+          images: imageUrls,
+        }
+      ]
+    };
+    console.log(data);
 
     message.success('Product added successfully!');
   };
@@ -117,7 +133,7 @@ const AddProduct: React.FC = () => {
           </Upload>
         </Form.Item>
 
-        <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
+        <Form.Item label="Danh mục" name="category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
           <Select placeholder="Chọn danh mục">
             <Option value="" hidden selected>Danh mục</Option>
             {cate.map(item => (
@@ -127,45 +143,72 @@ const AddProduct: React.FC = () => {
         </Form.Item>
 
         {/* Phần biến thể */}
-        <Form.List name="variants">
+        <Form.List name="variants ">
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name, fieldKey, ...restField }) => (
                 <Row key={key} gutter={16} className="mb-4 items-center">
-                  <Col span={6}>
+                  <Col span={4}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'variantName']}
-                      fieldKey={[fieldKey as any, 'variantName']}
+                      name={[name, 'name']}
+                      fieldKey={[fieldKey as any, 'name']}
                       label="Tên biến thể"
                       rules={[{ required: true, message: 'Vui lòng nhập tên biến thể!' }]}
                     >
-                      <Input placeholder="Tên biến thể" />
+                      <Select placeholder="Size">
+                        <Option value="" hidden selected>Size</Option>
+                        {/* {state.map(item => (
+                          <Option key={item.id} value={item.id}>{item.name}</Option>
+                        ))} */}
+                      </Select>
                     </Form.Item>
                   </Col>
-                  <Col span={6}>
+                  <Col span={4}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'variantDescription']}
-                      fieldKey={[fieldKey as any, 'variantDescription']}
+                      name={[name, 'description']}
+                      fieldKey={[fieldKey as any, 'description']}
                       label="Mô tả biến thể"
                       rules={[{ required: true, message: 'Vui lòng nhập mô tả biến thể!' }]}
                     >
                       <Input placeholder="Mô tả biến thể" />
                     </Form.Item>
                   </Col>
-                  <Col span={6}>
+                  <Col span={4}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'variantPrice']}
-                      fieldKey={[fieldKey as any, 'variantPrice']}
+                      name={[name, 'price']}
+                      fieldKey={[fieldKey as any, 'price']}
                       label="Giá biến thể"
                       rules={[{ required: true, message: 'Vui lòng nhập giá biến thể!' }]}
                     >
                       <Input type="number" placeholder="Giá biến thể" />
                     </Form.Item>
                   </Col>
-                  <Col span={6} className="flex items-center">
+                  <Col span={4}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'qualtity']}
+                      fieldKey={[fieldKey as any, 'qualtity']}
+                      label="Giá biến thể"
+                      rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
+                    >
+                      <Input type="number" placeholder="Số lượng" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'sale']}
+                      fieldKey={[fieldKey as any, 'sale']}
+                      label="Giá biến thể"
+                      rules={[{ required: true, message: 'Vui lòng nhập trạng thái sale' }]}
+                    >
+                      <Input type="number" placeholder="Sale" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={3} className="flex items-center">
                     <Button onClick={() => remove(name)} danger type="text">
                       Xóa
                     </Button>
@@ -190,9 +233,6 @@ const AddProduct: React.FC = () => {
           <Input.TextArea rows={4} placeholder="Mô tả sản phẩm" />
         </Form.Item>
 
-        <Form.Item label="Số lượng" name="quantity">
-          <Input type='number' placeholder="Số lượng" />
-        </Form.Item>
 
         <Form.Item label="Ảnh" name="images">
           <Upload

@@ -16,5 +16,7 @@ export const RoutePath = {
     ADMIN_PRODUCT: 'products',
     ADMIN_ADD_PRODUCT: 'product-add',
     ADMIN_TABLE: 'tables',
-    ADMIN_TABLE_ORDER: 'tables-order'
+    ADMIN_TABLE_ORDER: 'tables-order',
+    ADMIN_EDIT_PRODUCT: 'product-edit'
+
 }
