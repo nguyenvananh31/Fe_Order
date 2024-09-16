@@ -1,12 +1,11 @@
 import React from 'react'
 import Loading from '../../../layout/users/Loading/Loading'
-import AddProduct from '../../admin/Products/AddProduct'
 
 const Home = () => {
   return (
     <div>
       {/* <Loading/> */}
-      <AddProduct />
+      {/* <AddProduct /> */}
     </div>
   )
 }

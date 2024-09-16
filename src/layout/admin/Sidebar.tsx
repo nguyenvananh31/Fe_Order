@@ -8,7 +8,6 @@ const { Sider } = Layout;
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-
   return (
     <Sider
       className="drop-shadow-primary max-xl:hidden"
@@ -16,7 +15,8 @@ const Sidebar: React.FC = () => {
         position: "sticky",
         top: 0,
         left: 0,
-        bottom: 0
+        bottom: 0,
+        height: '100vh'
       }}
       theme="light"
       collapsible

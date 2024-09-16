@@ -127,8 +127,6 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
     }
 
     const onFinish = async (values: any) => {
-        console.log(values);
-
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
             const formData = new FormData();
@@ -136,9 +134,8 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
             if (values.parent_id) {
                 formData.append('parent_id', values.parent_id);
             }
-            console.log(fileList);
             
-            if (fileList[0].originFileObj) {
+            if (fileList[0]?.originFileObj) {
                 fileList.forEach((item) => formData.append('image', item.originFileObj as any));
             }
             console.log(fileList);

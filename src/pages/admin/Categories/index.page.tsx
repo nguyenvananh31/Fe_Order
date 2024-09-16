@@ -20,9 +20,10 @@ export default function CatePage() {
                 width: 100,
                 align: 'center',
                 fixed: 'left',
-                render: (_: any, __: ICate, index: number) => {
+                render: (_: any, cate: ICate, index: number) => {
+                    const space = `pl-${cate.level || 0 * 10}px]`;
                     return (
-                        <span>
+                        <span className={space}>
                             {Number(state.pageIndex) > 1 ? (Number(state.pageIndex) - 1) * state.pageSize + (index + 1) : index + 1}
                         </span>
                     );
@@ -32,10 +33,11 @@ export default function CatePage() {
                 title: 'Tên danh mục',
                 dataIndex: 'name',
                 key: 'name',
-                render: (_: any, item: ICate) => {
+                render: (_: any, cate: ICate) => {
+                    const space = `pl-[${(cate.level || 0) * 10}px]`;
                     return (
-                        <div onClick={() => { hooks.handleOpenModal(item.id) }} className='text-purple font-semibold cursor-pointer'>
-                            {item.name}
+                        <div onClick={() => { hooks.handleOpenModal(cate.id) }} className={`text-purple font-semibold cursor-pointer ${space}`}>
+                            {cate.name}
                         </div>
                     )
                 }
@@ -49,7 +51,7 @@ export default function CatePage() {
                     return (
                         <Image
                             style={{ objectFit: 'cover', width: '120px', height: '80px', borderRadius: "5px" }}
-                            src={item.image ? getImageUrl(item.image) : '/images/no-image.png'}
+                            src={item.image ? getImageUrl(item.image) : ''}
                             preview={{
                                 mask: (
                                     <Space direction="vertical" align="center">
