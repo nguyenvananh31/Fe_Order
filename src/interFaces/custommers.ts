@@ -4,4 +4,5 @@ export interface Icustomer{
     phone_number:number,
     diemthuong:number,
     user_id:string
+    email: string;
 }

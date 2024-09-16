@@ -15,4 +15,5 @@ export interface ICate {
     created_at: Date;
     updated_at: Date;
     parent_id: number;
+    level? : number;
 }
