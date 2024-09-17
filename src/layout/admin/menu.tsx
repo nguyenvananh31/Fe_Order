@@ -1,8 +1,8 @@
 // components/SharedMenu.tsx
-import { FileTextOutlined, MailOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { FileTextOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
-import { RoutePath } from "../../constants/path";
 import { Link } from "react-router-dom";
+import { RoutePath } from "../../constants/path";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -10,21 +10,21 @@ export const LISTMENU: MenuItem[] = [
   {
     key: RoutePath.ACCOUNT,
     label: (
-      <a href={RoutePath.ACCOUNT}>Quản lý tài khoản</a>
+      <Link to={RoutePath.ACCOUNT}>Quản lý tài khoản</Link>
     ),
     icon: <UserOutlined />,
   },
   {
     key: RoutePath.CUSTOMERS,
     label: (
-      <a href={RoutePath.CUSTOMERS}>Quản lý khách hàng</a>
+      <Link to={RoutePath.CUSTOMERS}>Quản lý khách hàng</Link>
     ),
     icon: <UsergroupAddOutlined />,
   },
   {
     key: RoutePath.CATEGORY,
     label: (
-      <a href={RoutePath.CATEGORY}>Quản lý danh mục</a>
+      <Link to={RoutePath.CATEGORY}>Quản lý danh mục</Link>
     ),
     icon: <FileTextOutlined />,
   },

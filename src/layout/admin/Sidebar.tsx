@@ -1,12 +1,21 @@
 import { Avatar, Layout, Menu } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LISTMENU } from "./menu";
+import { useLocation } from "react-router-dom";
 
 const { Sider } = Layout;
 
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+
+  const loaction = useLocation();
+  const [activeMenu, setActiveMenu] = useState<string[]>(['']);
+
+  useEffect(() => {
+      const menu: string = loaction.pathname.split('/').pop() || '';
+      setActiveMenu([menu]);
+  }, [loaction])
 
   return (
     <Sider
@@ -38,7 +47,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
       <Menu
-        defaultSelectedKeys={['1']}
+        selectedKeys={activeMenu}
         mode="inline"
         theme="light"
         items={LISTMENU}
