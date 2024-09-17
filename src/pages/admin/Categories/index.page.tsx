@@ -1,5 +1,5 @@
 import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Image, Popconfirm, Space, Tooltip } from "antd";
+import { Breadcrumb, Button, Image, Popconfirm, Space, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
 import { ICate } from "../../../interFaces/categories";
@@ -15,17 +15,16 @@ export default function CatePage() {
     const columns = useMemo(() => {
         const tblColumns: ColumnProps<ICate>[] = [
             {
-                title: 'STT',
-                dataIndex: 'stt',
-                width: 100,
+                title: 'Cấp danh mục',
+                dataIndex: 'level',
+                width: 150,
                 align: 'center',
                 fixed: 'left',
-                render: (_: any, cate: ICate, index: number) => {
-                    const space = `pl-${cate.level || 0 * 10}px]`;
+                render: (_: any, cate: ICate) => {
                     return (
-                        <span className={space}>
-                            {Number(state.pageIndex) > 1 ? (Number(state.pageIndex) - 1) * state.pageSize + (index + 1) : index + 1}
-                        </span>
+                        <Tag color="#7367f0" key={'F0'}>
+                            {`F${cate.level || 0}`}
+                        </Tag>
                     );
                 },
             },
@@ -34,11 +33,20 @@ export default function CatePage() {
                 dataIndex: 'name',
                 key: 'name',
                 render: (_: any, cate: ICate) => {
-                    const space = `pl-[${(cate.level || 0) * 10}px]`;
                     return (
-                        <div onClick={() => { hooks.handleOpenModal(cate.id) }} className={`text-purple font-semibold cursor-pointer ${space}`}>
+                        <div onClick={() => { hooks.handleOpenModal(cate.id) }} className={`text-purple font-semibold cursor-pointer`}>
                             {cate.name}
                         </div>
+                    )
+                }
+            },
+            {
+                title: 'Danh mục cha',
+                dataIndex: 'parent_name',
+                align: 'center',
+                render: (_:any, {name_parent}: ICate) => {
+                    return (
+                        <span className={`font-semibold`}>{name_parent || 'danh mục F0'}</span>
                     )
                 }
             },
@@ -148,9 +156,9 @@ export default function CatePage() {
                     columns={columns}
                     rowKey="id"
                     pagination={{
-                        pageSize: state.pageSize,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+                        // pageSize: state.pageSize,
+                        // showSizeChanger: true,
+                        // pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
                         total: state.total,
                         current: state.pageIndex,
                         style: {
@@ -162,7 +170,6 @@ export default function CatePage() {
                     }}
                 />
             </div>
-
             {
                 state.showModal &&
                 <CateModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />

@@ -8,11 +8,10 @@ interface CustomHeaders {
 }
 
 const REQ_TIMEOUT = 25 * 1000;
-// export const __DEV__ = !process.env.REACT_APP_NODE_ENV || process.env.REACT_APP_NODE_ENV === 'development';
-export const __DEV__ = 'development';
+export const __DEV__ = !import.meta.env.VITE_NODE_ENV || import.meta.env.VITE_NODE_ENV === 'development';
 
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: import.meta.env.VITE_API_DOMAIN,
     timeout: REQ_TIMEOUT
 });
 

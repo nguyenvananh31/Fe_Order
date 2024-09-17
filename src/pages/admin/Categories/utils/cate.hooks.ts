@@ -75,8 +75,6 @@ const useCate = () => {
                 if (cate.subcategory.length > 0) {
                     result = result.concat(convertCategories(cate.subcategory, level + 1));
                 }
-
-                level = 0;
             });
     
             return result;
