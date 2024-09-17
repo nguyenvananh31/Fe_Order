@@ -1,12 +1,15 @@
-import React from 'react'
-import Loading from '../../../layout/users/Loading/Loading'
+import React from 'react';
 
 const Home = () => {
-  return (
-    <div>
-      <Loading/>
-    </div>
-  )
-}
+  
+    
 
-export default Home
+    return (
+        <div>Home</div>
+    )
+};
+
+
+
+
+export default Home;

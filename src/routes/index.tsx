@@ -19,6 +19,7 @@ import Checkout from "../pages/user/Checkout/Checkout";
 
 import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
+import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 
 
 const Router = () => {
@@ -35,7 +36,7 @@ const Router = () => {
           ))}
         </Route>
 
-        <Route path="/" element={<BaseLayoutAdmin />}>
+        <Route path="/" element={<BaseLayoutUser />}>
           <Route index element={<Home />} />
           <Route path={RoutePath.ABOUT} element={<About />} />
           <Route path={RoutePath.SEARCH} element={<Search />} />
