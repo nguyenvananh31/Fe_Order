@@ -18,7 +18,7 @@ export const RegisterForm = () => {
       if (dataRegister.remember == true) {
         // localStorage.setItem('rememberedEmail', dataRegister.email);
       }
-      setAuth({ ...dataRegister.remember, token: dataRegister.token });
+      setAuth({ ...dataRegister.user, token: dataRegister.token });
       notification.success({
         message: "Đăng ký thành công!",
         description: "Xin chào Admin!",

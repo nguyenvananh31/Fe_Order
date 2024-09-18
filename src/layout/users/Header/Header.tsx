@@ -57,11 +57,11 @@ const Header = () => {
                   <div className="mini-cart-action flex gap-2 items-center justify-evenly">
                     <div className="mini-cart-action-left">
                       <h4 className='text-[14px] py-2 text-center'>Shopping : <span>$400</span></h4>
-                      <Link to="/cart" className="btn-type-3 rounded-md bg-red-400 p-2">View cart</Link>
+                      <Link to="/cart" className="btn-type-1 rounded-md bg-red-400 p-2">View cart</Link>
                     </div>
                     <div className="mini-cart-action-right">
                       <h4 className='text-[14px] py-2 text-center '>Shopping : <span>$400</span></h4>
-                      <Link to="/checkout" className="btn-type-4 bg-blue-400 p-2 rounded-md"><span>Checkout</span></Link>
+                      <Link to="/checkout" className="btn-type-2 bg-blue-400 p-2 rounded-md"><span>Checkout</span></Link>
                     </div>
                   </div>
                 </div>

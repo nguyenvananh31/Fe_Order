@@ -3,8 +3,8 @@ import { Form, GetProp, Image, Input, Modal, Spin, TreeSelect, Upload, UploadFil
 import { useEffect, useState } from "react";
 import { FileRule, getImageUrl } from "../../../../constants/common";
 import { ICate } from "../../../../interFaces/categories";
-import { apiCreateCate, apiGetCates, apiGetOneCate, apiUpdateCate } from "../utils/categories.service";
 import { DefaultOptionType } from "antd/es/select";
+import { apiCreateCate, apiGetCates, apiGetOneCate, apiUpdateCate } from "../../Categories/utils/categories.service";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 

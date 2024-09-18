@@ -1,4 +1,8 @@
 export const RoutePath = {
+    //Client
+    HOME: '/',
+
+    //Admin
     ADMIN: 'admin',
     ACCOUNT: 'accounts',
     CATEGORY: 'categories',
@@ -18,5 +22,9 @@ export const RoutePath = {
     ADMIN_TABLE_ORDER: 'tables-order',
     CUSTOMERS: 'customers',
     SIZES: 'sizes',
-    ERROR: 'error'
+
+    ERROR: 'error',
+
+    ADMIN_EDIT_PRODUCT: 'product-edit'
+
 }
