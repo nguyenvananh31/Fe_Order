@@ -4,19 +4,19 @@ import { changeAuth, getAuth, removeAuth } from "./reducer";
 
 export default function useAuth() {
     const dispatch = useDispatch();
-    const auth: IUser = useSelector(getAuth);
+    const user: IUser = useSelector(getAuth);
 
     //Đăng xuất tài khoản
     const clearStore = () => {
         dispatch(removeAuth());
     }
 
-    const setAuth = (auth: IUser) => {
-        dispatch(changeAuth(auth));
+    const setAuth = (user: IUser) => {
+        dispatch(changeAuth(user));
     }
 
     return {
-        auth,
+        user,
         setAuth,
         clearStore
     }
