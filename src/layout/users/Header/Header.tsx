@@ -31,7 +31,7 @@ const Header = () => {
               <Badge count="1" offset={[2, 0]} showZero>
                 <ShoppingCartOutlined className='text-3xl text-mainColor1' />
               </Badge>
-              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor  group-hover:block z-[99] shadow-md ">
+              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor hidden group-hover:block z-[99] shadow-md ">
                 <div className="mini-cart-body w-max ">
                   <div className="cart-item grid grid-cols-gridCartItem items-center gap-4 pb-3 mb-3 border-b-[1px] border-borderColor1">
                     <div className="cart-item-img">
