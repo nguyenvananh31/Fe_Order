@@ -4,7 +4,7 @@ import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
-import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
+import { apiChangeStatus, apiDeleteCate, apiGetCates, apiGetCatesWithChild } from "./categories.service";
 
 
 interface ISate {
@@ -46,7 +46,7 @@ const useCate = () => {
         const fetchData = async () => {
             setState({ ...state, loading: true });
             try {
-                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
+                const res = await apiGetCatesWithChild({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
                     setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
                 }

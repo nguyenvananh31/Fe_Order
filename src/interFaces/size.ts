@@ -1,5 +1,6 @@
-export interface ISize {
-    id: number;
-    name: string;
-    
+
+export interface Isize{
+    id:number,
+    name:string,
+    status:number,
 }

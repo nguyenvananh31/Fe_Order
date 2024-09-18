@@ -65,7 +65,7 @@ const mockOrders: Order[] = [
 
 const DetailOrderTable: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<Order | null>([]);
   const navigate = useNavigate();
 
   useEffect(() => {

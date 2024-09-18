@@ -13,7 +13,7 @@ export const loginService = async (body: IFormUser) => {
   } catch (error : any) {
     notification.error({
       message: error.message,
-      description:error.errors[0],
+      description:error.errors,
     });
   }
 };

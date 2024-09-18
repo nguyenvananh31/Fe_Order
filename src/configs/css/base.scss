@@ -4,5 +4,7 @@
 @import "./font";
 @import "./themes";
 body {
+  // font-family: "Barlow Condensed", sans-serif;
+  // @include fontStyle(16px, 26px);
   font-family: var(--font-1);
 }
