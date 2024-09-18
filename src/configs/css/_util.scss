@@ -1,4 +1,6 @@
 @import './responsive';
+@import './themes';
+
 // Custom scss
 @mixin fontStyle($sz, $lh) {
   font-size: $sz;

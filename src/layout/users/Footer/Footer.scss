@@ -29,7 +29,11 @@ footer {
       width: 50%;
       display: flex;
       gap: 24px;
+      @include lg{
+        width: 70%;
+      }
       @include md {
+        width: 100%;
         flex-wrap: wrap;
       }
       .menu-list {
