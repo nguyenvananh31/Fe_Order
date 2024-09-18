@@ -4,6 +4,9 @@ import { lazy } from "react";
 // import ListProduct from "../pages/admin/Products/ListProduct";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
+import EditProduct from "../pages/admin/Products/EditProducts";
+import ListProduct from "../pages/admin/Products/ListProduct";
+import AddProduct from "../pages/admin/Products/AddProduct";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -79,16 +82,21 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý bàn đặt',
         element: <DetailOrderTable />,
     },
-    // {
-    //     path: RoutePath.ADMIN_PRODUCT,
-    //     name: 'Quản lý sản phẩm',
-    //     element: <ListProduct />,
-    // },
-    // {
-    //     path: RoutePath.ADMIN_ADD_PRODUCT,
-    //     name: 'Quản lý thêm sản phẩm',
-    //     element: <AddProductScreen />,
-    // },
+    {
+        path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
+        name: 'Sửa sản phẩm',
+        element: <EditProduct />,
+    },
+    {
+        path: RoutePath.ADMIN_PRODUCT,
+        name: 'Quản lý sản phẩm',
+        element: <ListProduct />,
+    },
+    {
+        path: RoutePath.ADMIN_ADD_PRODUCT,
+        name: 'Quản lý thêm sản phẩm',
+        element: <AddProduct />,
+    },
     {
         path: RoutePath.ADMIN_TABLE,
         name: 'Quản lý bàn',

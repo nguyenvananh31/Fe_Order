@@ -1,11 +1,12 @@
 import React from 'react'
-import Loading from '../../../layout/users/Loading/Loading'
+import ListVoucher from '../../admin/Vouchers/ListVoucher'
 
 const Home = () => {
   return (
     <div>
-      {/* <Loading/> */}
+      {/* <EditProduct/> */}
       {/* <AddProduct /> */}
+      <ListVoucher/>
     </div>
   )
 }
