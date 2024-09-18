@@ -1,12 +1,12 @@
 import React from 'react'
-
-import ListPayment from '../../admin/Payments/ListPayment'
+import ListVoucher from '../../admin/Vouchers/ListVoucher'
 
 const Home = () => {
   return (
     <div>
       {/* <EditProduct/> */}
       {/* <AddProduct /> */}
+      <ListVoucher/>
     </div>
   )
 }
