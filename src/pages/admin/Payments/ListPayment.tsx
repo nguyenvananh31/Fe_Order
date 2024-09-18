@@ -161,12 +161,10 @@ const ListPayment: React.FC = () => {
                             </div>
                         </div>
                         <h2 className="mt-8 text-2xl font-bold leading-tight text-black lg:mt-12 sm:text-3xl lg:text-4xl">
-                            Join <span className="border-b-8 border-yellow-300">5,482</span> other
-                            developers
+                            Thêm các phương thức thanh toán
                         </h2>
                         <p className="max-w-xl mx-auto mt-6 text-xl text-gray-600 md:mt-10">
-                            Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet
-                            sint. Velit officia consequat duis.
+                           Bảo mật an toàn
                         </p>
                         <Button type="primary" onClick={handleAdd} className='inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700'>
                             Thêm phương thức
