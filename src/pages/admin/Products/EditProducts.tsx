@@ -1,209 +1,276 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, InputNumber, Upload, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import 'antd/dist/reset.css';
 import useProducts from './utils/ListProduct.hooks';
-import { IProduct } from '../../../interFaces/product';
-import ApiUtils from '../../../utils/api/api.utils';
-import { ResponeBase } from '../../../interFaces/common.types';
+import { FileRule } from '../../../constants/common';
+import useToast from '../../../hooks/useToast';
+import { useEditProduct, useProductDetails } from './utils/EditProduct.hooks'; // Import the hooks
 
 const { Option } = Select;
 
-const EditProduct: React.FC = () => {
-  const { id } = useParams<{ id: string }>();  
-  const navigate = useNavigate();
-  const { products, cate } = useProducts(); 
+const EditProduct: React.FC<{ productId: string }> = ({ productId }) => {
+  const { cate } = useProducts();
+  const { showToast } = useToast();
+  const { productDetails, fetchProductDetails } = useProductDetails();
+  const { updateProduct } = useEditProduct();
   const [form] = Form.useForm();
-  const [product, setProduct] = useState<IProduct | null>(null);
-  const [fileList, setFileList] = useState<any[]>([]);  
-  const [previewImage, setPreviewImage] = useState<string>('');  
-
-  const [variations, setVariations] = useState<any[]>([]);  // Biến thể sản phẩm
+  const [thumbnailFileList, setThumbnailFileList] = useState<any[]>([]);
+  const [variantFileLists, setVariantFileLists] = useState<any[][]>([]); // Store images for each variant
 
   useEffect(() => {
-    const selectedProduct = products.find((p: IProduct) => p.id === Number(id));
-    if (selectedProduct) {
-      setProduct(selectedProduct);
-      setPreviewImage(selectedProduct.thumbnail);  
-      form.setFieldsValue({
-        name: selectedProduct.name,
-        price: selectedProduct.price,
-        sub_categories_id: selectedProduct.sub_categories_id,
-        description: selectedProduct.description,
-        variations: selectedProduct.variations || [], // Set biến thể nếu có
-      });
-    }
-  }, [id, products, form]);
-
-  const onFinish = (values: any) => {
-    const updatedProduct = { ...product, ...values, thumbnail: previewImage, variations };
-    onUpdate(updatedProduct);
-    navigate('/products');
-  };
-
-  const handleUpload = (info: any) => {
-    if (info.file.status === 'done') {
-      setPreviewImage(info.file.response.url);
-      message.success(`${info.file.name} tải lên thành công.`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} tải lên thất bại.`);
-    }
-  };
-
-  const apiUpdatePro = async (id: number, body: FormData, params?: any) => { 
-    const res = await ApiUtils.postForm<FormData, ResponeBase<IProduct>>(`/api/admin/products/${id}?${params}`, body); 
-    return res;
-  };
-
-  const onUpdate = async (updatedProduct: any) => {
-    try {
-      const { id, name, price, sub_categories_id, description, thumbnail, variations } = updatedProduct;
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('price', String(price)); 
-      formData.append('sub_categories_id', String(sub_categories_id));
-      formData.append('description', description || ''); 
-      formData.append('variations', JSON.stringify(variations)); // Add variations
-      if (thumbnail) {
-        formData.append('thumbnail', thumbnail); 
+    const loadProductDetails = async () => {
+      const details = await fetchProductDetails(productId);
+      if (details) {
+        form.setFieldsValue({
+          name: details.name,
+          category_id: details.category_id,
+          variants: details.product_details.map((detail: any) => ({
+            ...detail,
+            images: detail.images.map((image: any) => ({
+              uid: image.id,
+              name: image.name,
+              status: 'done',
+              url: image.url
+            }))
+          }))
+        });
+        setThumbnailFileList([{ uid: '-1', name: 'thumbnail', status: 'done', url: details.thumbnail }]);
+        setVariantFileLists(details.product_details.map((detail: any) => detail.images.map((image: any) => ({
+          uid: image.id,
+          name: image.name,
+          status: 'done',
+          url: image.url
+        }))));
       }
+    };
+    loadProductDetails();
+  }, [fetchProductDetails, form, productId]);
 
-      const response = await apiUpdatePro(id, formData);
+  const handleThumbnailChange = (info: any) => {
+    let fileList = [...info.fileList];
+    fileList = fileList.slice(-1);
+    setThumbnailFileList(fileList);
+  };
 
-      if (response.success) {
-        message.success('Cập nhật sản phẩm thành công!');
-      } else {
-        message.error('Cập nhật sản phẩm thất bại!');
-      }
-    } catch (error) {
-      message.error('Đã xảy ra lỗi khi cập nhật sản phẩm.');
-      console.error(error);
+  const handleBeforeUpload = (file: any) => {
+    if (!FileRule.accepts.includes(file.type)) {
+      showToast('error', 'Định dạng hình ảnh không hợp lệ, vui lòng chọn hình ảnh khác');
+      return Upload.LIST_IGNORE;
     }
+    return false; // Prevent automatic upload
   };
 
-  // Hàm thêm biến thể mới
-  const addVariation = () => {
-    setVariations([...variations, { size: '', color: '', stock: 0 }]);
+  const handleVariantImageChange = (info: any, index: number) => {
+    const updatedFileList = [...variantFileLists];
+    updatedFileList[index] = info.fileList;
+    setVariantFileLists(updatedFileList);
   };
 
-  // Hàm cập nhật thông tin biến thể
-  const updateVariation = (index: number, key: string, value: any) => {
-    const newVariations = [...variations];
-    newVariations[index][key] = value;
-    setVariations(newVariations);
+  const onFinish = async (values: any) => {
+    let thumbnailUrl = '';
+
+    const hasVariants = values.variants && values.variants.length > 0;
+
+    if (!thumbnailFileList.length && hasVariants) {
+      const firstVariantWithImages = variantFileLists.find((fileList) => fileList.length > 0);
+      if (firstVariantWithImages) {
+        thumbnailUrl = hooks.getThumbnailUrl(firstVariantWithImages[0]);
+      }
+    } else if (thumbnailFileList.length > 0) {
+      thumbnailUrl = hooks.getThumbnailUrl(thumbnailFileList[0]);
+    }
+
+    if (!thumbnailUrl) {
+      message.error('Vui lòng tải lên ít nhất một ảnh thumbnail hoặc thêm ảnh cho biến thể.');
+      return;
+    }
+
+    const productDetails = values.variants.map((variant: any, index: number) => ({
+      size: variant.size,
+      quantity: variant.quantity,
+      sale: variant.sale,
+      status: 1,
+      images: hooks.getImageUrls(variantFileLists[index] || []),
+    }));
+
+    const data = {
+      name: values.name,
+      thumbnail: thumbnailUrl,
+      status: 1,
+      category_id: values.category_id,
+      product_details: productDetails,
+    };
+
+    await updateProduct(productId, data);
+    message.success('Product updated successfully!');
   };
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto p-4 bg-white shadow-sm font-semibold md:mx-4 md:px-3">
       <h1 className="text-2xl font-bold mb-4">Sửa Sản Phẩm</h1>
-      {product && (
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{
-            name: product.name,
-            price: product.price,
-            sub_categories_id: product.sub_categories_id,
-            description: product.description,
-          }}
-        >
-          <Form.Item
-            label="Tên sản phẩm"
-            name="name"
-            rules={[{ required: true, message: 'Tên sản phẩm là bắt buộc!' }]}
+      <Form form={form} onFinish={onFinish} layout="vertical">
+        <Form.Item label="Tên sản phẩm" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}>
+          <Input />
+        </Form.Item>
+
+        {/* Upload Thumbnail */}
+        <Form.Item label="Ảnh Thumbnail" name="thumbnail">
+          <Upload
+            listType="picture-card"
+            fileList={thumbnailFileList}
+            onChange={handleThumbnailChange}
+            beforeUpload={handleBeforeUpload}
+            accept={FileRule.accepts}
           >
-            <Input placeholder="Nhập tên sản phẩm" />
-          </Form.Item>
-
-          <Form.Item
-            label="Giá sản phẩm"
-            name="price"
-            rules={[{ required: true, message: 'Giá sản phẩm là bắt buộc!' }]}
-          >
-            <InputNumber
-              min={0}
-              formatter={(value) => `${value} VND`}
-              parser={(value) => value!.replace(' VND', '')}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Danh mục"
-            name="sub_categories_id"
-            rules={[{ required: true, message: 'Danh mục là bắt buộc!' }]}
-          >
-            <Select placeholder="Chọn danh mục">
-              {cate.map((item) => (
-                <Option key={item.id} value={item.id}>
-                  {item.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Mô tả" name="description">
-            <Input.TextArea rows={4} placeholder="Nhập mô tả sản phẩm" />
-          </Form.Item>
-
-          <Form.Item label="Ảnh sản phẩm">
-            {previewImage && (
-              <div className="mb-4">
-                <img src={previewImage} alt="Product Thumbnail" className="w-48 h-32 object-cover rounded" />
+            {thumbnailFileList.length >= 1 ? null : (
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải lên</div>
               </div>
             )}
-            <Upload
-              name="thumbnail"
-              listType="picture"
-              className="upload-list-inline"
-              maxCount={1}
-              fileList={fileList}
-              onChange={handleUpload}
-              beforeUpload={(file) => {
-                const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-                if (!isJpgOrPng) {
-                  message.error('You can only upload JPG/PNG file!');
-                }
-                return isJpgOrPng;
-              }}
-            >
-              <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
-            </Upload>
-          </Form.Item>
+          </Upload>
+        </Form.Item>
 
-          {/* Biến thể */}
-          <h3 className="text-lg font-medium mb-2">Biến thể sản phẩm</h3>
-          {variations.map((variation, index) => (
-            <div key={index} className="mb-4">
-              <Form.Item label="Kích thước">
-                <Input
-                  placeholder="Nhập kích thước"
-                  value={variation.size}
-                  onChange={(e) => updateVariation(index, 'size', e.target.value)}
-                />
-              </Form.Item>
+        <Form.Item label="Danh mục" name="category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
+          <Select placeholder="Chọn danh mục">
+            <Option value="1">Danh mục</Option>
+            {cate.map((item) => (
+              <Option key={item.id} value={item.id}>
+                {item.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-              <Form.Item label="Màu sắc">
-                <Input
-                  placeholder="Nhập màu sắc"
-                  value={variation.color}
-                  onChange={(e) => updateVariation(index, 'color', e.target.value)}
-                />
-              </Form.Item>
+        {/* Phần biến thể */}
+        <div className="bg-blue-100 rounded-md px-4 py-2 mb-4 shadow-md">
+          <Form.List name="variants">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, fieldKey, ...restField }, index) => (
+                  <Row key={key} gutter={16} className="mb-4 items-center bg-white p-3 rounded-md shadow-md">
+                    {/* Size */}
+                    <Col span={8}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'size']}
+                        fieldKey={[fieldKey as any, 'size']}
+                        label="Size"
+                        rules={[{ required: true, message: 'Vui lòng nhập tên biến thể!' }]}
+                      >
+                        <Select placeholder="Size">
+                          <Option value="1">Size</Option>
+                          {/* Add your size options */}
+                        </Select>
+                      </Form.Item>
+                    </Col>
 
-              
-            </div>
-          ))}
-          <Button onClick={addVariation}>Thêm biến thể</Button>
+                    {/* Description */}
+                    <Col span={16}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'description']}
+                        fieldKey={[fieldKey as any, 'description']}
+                        label="Mô tả"
+                      >
+                        <Input.TextArea placeholder="Mô tả biến thể" />
+                      </Form.Item>
+                    </Col>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Cập nhật
-            </Button>
-          </Form.Item>
-        </Form>
-      )}
+                    {/* Price */}
+                    <Col span={8}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'price']}
+                        fieldKey={[fieldKey as any, 'price']}
+                        label="Giá"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá biến thể!' }]}
+                      >
+                        <Input type="number" placeholder="Giá biến thể" />
+                      </Form.Item>
+                    </Col>
+
+                    {/* Quantity */}
+                    <Col span={8}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'quantity']}
+                        fieldKey={[fieldKey as any, 'quantity']}
+                        label="Kho"
+                        rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
+                      >
+                        <Input type="number" placeholder="Kho" />
+                      </Form.Item>
+                    </Col>
+
+                    {/* Sale */}
+                    <Col span={8}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'sale']}
+                        fieldKey={[fieldKey as any, 'sale']}
+                        label="Sale"
+                        rules={[{ required: true, message: 'Vui lòng nhập trạng thái sale' }]}
+                      >
+                        <Select placeholder="Sale">
+                          <Option value="1">Hỗ trợ</Option>
+                          <Option value="0">Không hỗ trợ</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+
+                    {/* Image Upload for Each Variant */}
+                    <Col span={24}>
+                      <Form.Item label="Ảnh" name={[name, 'images']}>
+                        <Upload
+                          listType="picture-card"
+                          fileList={variantFileLists[index] || []}
+                          onChange={(info) => handleVariantImageChange(info, index)}
+                          multiple
+                        >
+                          {variantFileLists[index]?.length >= 8 ? null : (
+                            <div>
+                              <PlusOutlined /> Thêm ảnh
+                            </div>
+                          )}
+                        </Upload>
+                      </Form.Item>
+                    </Col>
+
+                    {/* Remove Button */}
+                    <Col span={24} className="flex items-center">
+                      <Button
+                        className="btn w-full bg-red-600 font-bold text-[#fff]"
+                        onClick={() => remove(name)}
+                        type="text"
+                      >
+                        Xóa
+                      </Button>
+                    </Col>
+                  </Row>
+                ))}
+                <Form.Item>
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    icon={<PlusOutlined />}
+                    className="w-full"
+                  >
+                    Thêm biến thể
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        </div>
+
+        <Form.Item>
+          <Button className="w-full py-5 font-bold text-white bg-green-800 hover:bg-green-950" htmlType="submit">
+            Cập nhật sản phẩm
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
