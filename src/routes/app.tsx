@@ -32,7 +32,7 @@ const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTab
 const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'));
 
 //sizes
-const SizeScreen = lazy(() => import('../pages/admin/sizes/DashboardSizes'));
+const SizeScreen = lazy(() => import('../pages/admin/Size/index.page'));
 
 
 
