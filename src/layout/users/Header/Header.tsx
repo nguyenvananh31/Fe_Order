@@ -3,7 +3,7 @@ import { Badge, Drawer, Image } from 'antd'
 import { useState } from 'react'
 import Navigation from '../component/Navigation/Navigation';
 import { Link } from 'react-router-dom';
-
+import './Header.scss';
 const Header = () => {
   const [visible, setVisible] = useState(false);
 
@@ -15,7 +15,7 @@ const Header = () => {
     setVisible(false);
   };
   return (
-    <header className='bg-bgColor1 w-full relative'>
+    <header className='bg-bgColor1 w-full'>
       <div className="container max-w-[1140px] mx-auto px-[20px] py-6 border-b-[1px] border-borderColor1 flex items-center justify-between">
         <div className="container-left">
           <div className="logo-wrapper pr-12">

@@ -1,0 +1,9 @@
+@import "../../../configs/css/responsive";
+@import "../../../configs/css/util";
+@import "../../../configs/css/themes";
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
