@@ -13,6 +13,7 @@ import Checkout from "../pages/user/Checkout/Checkout";
 import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
+import ListProducts from "../pages/user/Product/Products";
 
 
 const Router = () => {
@@ -34,6 +35,7 @@ const Router = () => {
           <Route path={RoutePath.CONTACT} element={<Contact />} />
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
+          <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
         </Route>
         <Route path={RoutePath.ADMIN} element={user ? !!user.roles.length ? <BaseLayoutAdmin /> : <Navigate to={RoutePath.HOME} /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           {

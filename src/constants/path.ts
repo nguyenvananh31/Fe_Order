@@ -1,6 +1,7 @@
 export const RoutePath = {
     //Client
     HOME: '/',
+    CLINET_PRODUCTS: 'product',
 
     //Admin
     ADMIN: 'admin',
