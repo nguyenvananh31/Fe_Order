@@ -1,13 +1,13 @@
 import React from 'react'
-import Loading from '../../../layout/users/Loading/Loading'
-import AddProduct from '../../admin/Products/AddProduct'
-import EditProduct from '../../admin/Products/EditProducts'
+
+import ListPayment from '../../admin/Payments/ListPayment'
 
 const Home = () => {
   return (
     <div>
-      <EditProduct/>
+      {/* <EditProduct/> */}
       {/* <AddProduct /> */}
+      <ListPayment/>
     </div>
   )
 }

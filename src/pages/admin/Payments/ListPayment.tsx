@@ -1,10 +1,12 @@
 // src/App.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Popconfirm, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
+import axios from 'axios';
+import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
 
@@ -14,16 +16,23 @@ interface PaymentMethod {
     status: boolean;
 }
 
-const initialData: PaymentMethod[] = [
-    { key: '1', name: 'Thẻ tín dụng', status: true },
-    { key: '2', name: 'PayPal', status: false },
-];
-
 const ListPayment: React.FC = () => {
-    const [data, setData] = useState<PaymentMethod[]>(initialData);
+    const [data, setData] = useState<PaymentMethod[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState<null | PaymentMethod>(null);
     const [form] = Form.useForm();
+
+    // Fetch data from API
+    useEffect(() => {
+        ApiUtils.fetch('/api/admin/payments')
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                notification.error({ message: 'Lỗi khi tải dữ liệu!' });
+                console.error('Error fetching data:', error);
+            });
+    }, []);
 
     const handleAdd = () => {
         setEditingRecord(null);
@@ -38,26 +47,41 @@ const ListPayment: React.FC = () => {
     };
 
     const handleDelete = (key: string) => {
-        Popconfirm({
-            title: 'Bạn có chắc chắn muốn xóa phương thức thanh toán này?',
-            onConfirm: () => {
+        axios.delete(`/api/payment-methods/${key}`)
+            .then(() => {
                 setData(data.filter(item => item.key !== key));
                 notification.success({ message: 'Xóa phương thức thanh toán thành công!' });
-            },
-            okText: 'Có',
-            cancelText: 'Không',
-        });
+            })
+            .catch(error => {
+                notification.error({ message: 'Lỗi khi xóa phương thức thanh toán!' });
+                console.error('Error deleting data:', error);
+            });
     };
 
     const handleSubmit = (values: { name: string; status: boolean }) => {
         if (editingRecord) {
-            setData(data.map(item => item.key === editingRecord.key ? { ...item, ...values } : item));
-            notification.success({ message: 'Sửa phương thức thanh toán thành công!' });
+            axios.put(`/api/admin/payments/${editingRecord.key}`, values)
+                .then(() => {
+                    setData(data.map(item => item.key === editingRecord.key ? { ...item, ...values } : item));
+                    notification.success({ message: 'Sửa phương thức thanh toán thành công!' });
+                    setModalVisible(false);
+                })
+                .catch(error => {
+                    notification.error({ message: 'Lỗi khi cập nhật phương thức thanh toán!' });
+                    console.error('Error updating data:', error);
+                });
         } else {
-            setData([...data, { key: (data.length + 1).toString(), ...values }]);
-            notification.success({ message: 'Thêm phương thức thanh toán thành công!' });
+            ApiUtils.post('/api/admin/payments', values)
+                .then(response => {
+                    setData([...data, { key: response.data.key, ...values }]);
+                    notification.success({ message: 'Thêm phương thức thanh toán thành công!' });
+                    setModalVisible(false);
+                })
+                .catch(error => {
+                    notification.error({ message: 'Lỗi khi thêm phương thức thanh toán!' });
+                    console.error('Error adding data:', error);
+                });
         }
-        setModalVisible(false);
     };
 
     const columns: ColumnsType<PaymentMethod> = [
@@ -93,7 +117,7 @@ const ListPayment: React.FC = () => {
                         type="default"
                     />
                     <Popconfirm
-                        title="Bạn có chắc chắn muốn xóa?"
+                        title="Bạn có chắc chắn muốn xóa phương thức thanh toán này?"
                         onConfirm={() => handleDelete(record.key)}
                         okText="Có"
                         cancelText="Không"
@@ -194,7 +218,6 @@ const ListPayment: React.FC = () => {
                 </div>
             </section>
         </>
-
     );
 };
 
