@@ -3,7 +3,25 @@
 @import "./layout";
 @import "./font";
 @import "./themes";
+@import "./responsive.scss";
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+}
+
+.bebas-neue-regular {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
-  // font-family: "Barlow Condensed", sans-serif;
-  // @include fontStyle(16px, 26px);
+  z-index: 1;
+}
+body {
+  font-family: var(--font-1);
 }
