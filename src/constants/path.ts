@@ -1,4 +1,8 @@
 export const RoutePath = {
+    //Client
+    HOME: '/',
+
+    //Admin
     ADMIN: 'admin',
     ACCOUNT: 'accounts',
     CATEGORY: 'categories',

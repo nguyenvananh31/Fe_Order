@@ -35,7 +35,7 @@ const initState: ISate = {
 }
 
 const useAccount = () => {
-    const { auth } = useAuth();
+    const { user } = useAuth();
     const [state, setState] = useState<ISate>(initState);
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
@@ -63,7 +63,7 @@ const useAccount = () => {
 
     // handle xoá tài khoản
     const handleDelAccount = async (id: number) => {
-        if (auth.id == id) {
+        if (user.id == id) {
             showToast('error', 'Không thể xoá tài khoản đang đăng nhập!');
             return;
         }
@@ -80,7 +80,7 @@ const useAccount = () => {
 
     // handle thay đổi trạng thái 
     const handleChangeLock = async (id: number) => {
-        if (auth.id == id) {
+        if (user.id == id) {
             showToast('error', 'Không thể khoá tài khoản đang đăng nhập!');
             return;
         }

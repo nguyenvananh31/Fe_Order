@@ -16,7 +16,7 @@ import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 
 
 const Router = () => {
-  const { auth } = useAuth();
+  const { user } = useAuth();
 
   return (
     <>
@@ -27,7 +27,7 @@ const Router = () => {
             <Route path={route.path} element={route.element} key={index} />
           ))}
         </Route>
-        <Route path="/" element={<BaseLayoutUser />}>
+        <Route path={RoutePath.HOME} element={<BaseLayoutUser />}>
           <Route index element={<Home />} />
           <Route path={RoutePath.ABOUT} element={<About />} />
           <Route path={RoutePath.SEARCH} element={<Search />} />
@@ -35,7 +35,7 @@ const Router = () => {
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
         </Route>
-        <Route path={RoutePath.ADMIN} element={auth ? <BaseLayoutAdmin /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
+        <Route path={RoutePath.ADMIN} element={user ? user.roles ? <BaseLayoutAdmin /> : <Navigate to={RoutePath.HOME} /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
