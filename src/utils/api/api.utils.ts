@@ -8,11 +8,10 @@ interface CustomHeaders {
 }
 
 const REQ_TIMEOUT = 25 * 1000;
-// export const __DEV__ = !process.env.REACT_APP_NODE_ENV || process.env.REACT_APP_NODE_ENV === 'development';
-export const __DEV__ = 'development';
+export const __DEV__ = !import.meta.env.VITE_NODE_ENV || import.meta.env.VITE_NODE_ENV === 'development';
 
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: import.meta.env.VITE_API_DOMAIN,
     timeout: REQ_TIMEOUT
 });
 
@@ -48,9 +47,9 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
 
 const requestHandler = (request: AxiosRequestConfig) => {
     if (__DEV__) {
-        // console.log(`Req API: ${request.url}`);
-        // console.log(`  + Params:     `, request.params);
-        // console.log(`  + Data:       `, request.data);
+        console.log(`Req API: ${request.url}`);
+        console.log(`  + Params:     `, request.params);
+        console.log(`  + Data:       `, request.data);
     }
     return request;
 };
@@ -81,8 +80,8 @@ const errorHandler = (error: AxiosError) => {
 const successHandler = (response: AxiosResponse) => {
     if (__DEV__) {
         console.log(
-            // `SUCESS ${response.config.method?.toUpperCase()} - ${response.config.url}`,
-            // response.data
+            `SUCESS ${response.config.method?.toUpperCase()} - ${response.config.url}`,
+            response.data
         );
     }
     const data: any = response.data;

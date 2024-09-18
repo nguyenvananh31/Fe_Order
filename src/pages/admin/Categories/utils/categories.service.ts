@@ -6,10 +6,16 @@ import ApiUtils from "../../../../utils/api/api.utils";
 const apiName = {
     cate: '/api/admin/category',
     updateStatus: '/api/admin/category/update',
+    cateWithChild: '/api/admin/list/category',
 };
 
 export const apiGetCates = async (params?: any) => {
     const res = await ApiUtils.fetch<any, ResponeBase<ICate[]>>(apiName.cate, params);
+    return res;
+}
+
+export const apiGetCatesWithChild = async (params?: any) => {
+    const res = await ApiUtils.fetch<any, ResponeBase<ICate[]>>(apiName.cateWithChild, params);
     return res;
 }
 

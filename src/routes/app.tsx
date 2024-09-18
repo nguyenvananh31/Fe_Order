@@ -1,7 +1,7 @@
 import { RouteProps } from "react-router-dom";
 import { RoutePath } from "../constants/path";
 import { lazy } from "react";
-import ListProduct from "../pages/admin/Products/ListProduct";
+// import ListProduct from "../pages/admin/Products/ListProduct";
 import ListTable from "../pages/admin/Tables/ListTable";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import EditProduct from "../pages/admin/Products/EditProducts";
@@ -18,10 +18,16 @@ const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
 //Quản lý sản phẩm
 // const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
-const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
+// const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
 //Quản lý bàn
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
+
+//customers
+const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'));
+
+//sizes
+const SizeScreen = lazy(() => import('../pages/admin/sizes/DashboardSizes'));
 
 
 
@@ -74,6 +80,7 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý bàn đặt',
         element: <DetailOrderTable />,
     },
+<<<<<<< HEAD
     {
         path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
@@ -89,6 +96,18 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý thêm sản phẩm',
         element: <AddProductScreen />,
     },
+=======
+    // {
+    //     path: RoutePath.ADMIN_PRODUCT,
+    //     name: 'Quản lý sản phẩm',
+    //     element: <ListProduct />,
+    // },
+    // {
+    //     path: RoutePath.ADMIN_ADD_PRODUCT,
+    //     name: 'Quản lý thêm sản phẩm',
+    //     element: <AddProductScreen />,
+    // },
+>>>>>>> 4b52d792dec1514c5d2b7ccfe947cd87c0ecf090
     {
         path: RoutePath.ADMIN_TABLE,
         name: 'Quản lý bàn',
@@ -99,6 +118,16 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý đặt bàn',
         element: <OrderTableScreen />,
     },
+    {
+        path:  RoutePath.CUSTOMERS,
+        name: 'Quản lý khách hàng',
+        element: <CustomerScreen />,
+    },
+    {
+        path:  RoutePath.SIZES,
+        name: 'Quản lý kích cỡ',
+        element: <SizeScreen />,
+    }
 ];
 
 export const flattenRoutes = (routes: IRoutesProperties[]) => {

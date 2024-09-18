@@ -3,14 +3,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
-import { ICate } from "../../../../interFaces/categories";
-import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
+import { Icustomer } from "../../../../interFaces/custommers";
+import { apiGetCustomers } from "./customers.service";
 
 
 interface ISate {
     loadingSubmit: boolean;
     loading: boolean;
-    data: ICate[];
+    data: Icustomer[];
     pageSize: number;
     pageIndex: number;
     total: number;
@@ -33,7 +33,7 @@ const initState: ISate = {
     search: false
 }
 
-const useCate = () => {
+const useCustomer = () => {
     const [state, setState] = useState<ISate>(initState);
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
@@ -46,10 +46,9 @@ const useCate = () => {
         const fetchData = async () => {
             setState({ ...state, loading: true });
             try {
-                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
+                const res = await apiGetCustomers({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
-                    const cates = convertCategories(res.data);                
-                    setState({ ...state, data: cates || [], loading: false, total: cates.length });
+                    setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
                 }
             } catch (error: any) {
                 console.log(error);
@@ -59,52 +58,6 @@ const useCate = () => {
         }
         fetchData();
     }, [state.refresh]);
-
-        // Hàm đệ quy chuyển đổi dữ liệu cây danh mục
-        const convertCategories = (categories: ICate[], level: number = 0) => {
-            let result: any = [];
-    
-            categories.forEach((cate) => {
-                // Thêm danh mục hiện tại vào kết quả
-                result.push({
-                    ...cate,
-                    level
-                });
-    
-                // Đệ quy với danh mục con nếu có
-                if (cate.subcategory.length > 0) {
-                    result = result.concat(convertCategories(cate.subcategory, level + 1));
-                }
-            });
-    
-            return result;
-        };
-
-    // handle xoá danh mục
-    const handleDeleteCate = async (id: number) => {
-        try {
-            setState(prev => ({ ...prev, loadingSubmit: true }));
-            await apiDeleteCate(id);
-            showToast('success', 'Xoá danh mục thành công!');
-        } catch (error) {
-            console.log(error);
-            showToast('error', 'Có lỗi xảy ra!');
-        }
-        setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
-    }
-
-    // handle thay đổi trạng thái 
-    const handleChangeStatus = async (id: number, status: boolean) => {
-        try {
-            setState(prev => ({ ...prev, loadingSubmit: true }));
-            const res = await apiChangeStatus(id, { status: !status });
-            showToast('success', res.message);
-        } catch (error) {
-            console.log(error);
-            showToast('error', 'Có lỗi xảy ra!');
-        }
-        setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
-    }
 
     // làm mới data
     const refreshPage = useCallback(() => {
@@ -145,10 +98,8 @@ const useCate = () => {
         handleDismissModal,
         handleOpenModal,
         handlePageChange,
-        handleDeleteCate,
         showToast,
-        handleChangeStatus
     }
 }
 
-export default useCate;
+export default useCustomer;

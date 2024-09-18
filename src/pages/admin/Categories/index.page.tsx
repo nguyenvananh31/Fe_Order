@@ -1,5 +1,5 @@
 import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Image, Popconfirm, Space, Tooltip } from "antd";
+import { Breadcrumb, Button, Image, Popconfirm, Space, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
 import { ICate } from "../../../interFaces/categories";
@@ -15,16 +15,16 @@ export default function CatePage() {
     const columns = useMemo(() => {
         const tblColumns: ColumnProps<ICate>[] = [
             {
-                title: 'STT',
-                dataIndex: 'stt',
-                width: 100,
+                title: 'Cấp danh mục',
+                dataIndex: 'level',
+                width: 150,
                 align: 'center',
                 fixed: 'left',
-                render: (_: any, __: ICate, index: number) => {
+                render: (_: any, cate: ICate) => {
                     return (
-                        <span>
-                            {Number(state.pageIndex) > 1 ? (Number(state.pageIndex) - 1) * state.pageSize + (index + 1) : index + 1}
-                        </span>
+                        <Tag color="#7367f0" key={'F0'}>
+                            {`F${cate.level || 0}`}
+                        </Tag>
                     );
                 },
             },
@@ -32,11 +32,21 @@ export default function CatePage() {
                 title: 'Tên danh mục',
                 dataIndex: 'name',
                 key: 'name',
-                render: (_: any, item: ICate) => {
+                render: (_: any, cate: ICate) => {
                     return (
-                        <div onClick={() => { hooks.handleOpenModal(item.id) }} className='text-purple font-semibold cursor-pointer'>
-                            {item.name}
+                        <div onClick={() => { hooks.handleOpenModal(cate.id) }} className={`text-purple font-semibold cursor-pointer`}>
+                            {cate.name}
                         </div>
+                    )
+                }
+            },
+            {
+                title: 'Danh mục cha',
+                dataIndex: 'parent_name',
+                align: 'center',
+                render: (_:any, {name_parent}: ICate) => {
+                    return (
+                        <span className={`font-semibold`}>{name_parent || 'danh mục F0'}</span>
                     )
                 }
             },
@@ -49,7 +59,7 @@ export default function CatePage() {
                     return (
                         <Image
                             style={{ objectFit: 'cover', width: '120px', height: '80px', borderRadius: "5px" }}
-                            src={item.image ? getImageUrl(item.image) : '/images/no-image.png'}
+                            src={item.image ? getImageUrl(item.image) : ''}
                             preview={{
                                 mask: (
                                     <Space direction="vertical" align="center">
@@ -137,7 +147,7 @@ export default function CatePage() {
                         className='mx-6'
                         onClick={() => hooks.handleOpenModal()}
                     >
-                        Tạo tài khoản
+                        Tạo danh mục
                     </Button>
                 </div>
                 <Table
@@ -146,9 +156,9 @@ export default function CatePage() {
                     columns={columns}
                     rowKey="id"
                     pagination={{
-                        pageSize: state.pageSize,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+                        // pageSize: state.pageSize,
+                        // showSizeChanger: true,
+                        // pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
                         total: state.total,
                         current: state.pageIndex,
                         style: {
@@ -160,7 +170,6 @@ export default function CatePage() {
                     }}
                 />
             </div>
-
             {
                 state.showModal &&
                 <CateModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />
