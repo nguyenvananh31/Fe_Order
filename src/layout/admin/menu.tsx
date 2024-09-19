@@ -57,4 +57,16 @@ export const LISTMENU: MenuItem[] = [
       }
     ],
   },
+  {
+    key: RoutePath.PAYMENT,
+    label: (
+      <Link to={RoutePath.PAYMENT}>Payment</Link>
+    ),
+  },
+  {
+    key: RoutePath.VOUCHER,
+    label: (
+      <Link to={RoutePath.VOUCHER}>Voucher</Link>
+    ),
+  },
 ];
