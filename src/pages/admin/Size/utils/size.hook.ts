@@ -3,14 +3,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
-import { ICate } from "../../../../interFaces/categories";
+import { Isize } from "../../../../interFaces/size";
 import { apiChangeStatus, apiDeleteCate, apiGetCates } from "../../Categories/utils/categories.service";
+import { apiDeleteSize, apiGetSizes, apiUpdateSize, apiUpdateStatusSize } from "./size.service";
 
 
 interface ISate {
     loadingSubmit: boolean;
     loading: boolean;
-    data: ICate[];
+    data: Isize[];
     pageSize: number;
     pageIndex: number;
     total: number;
@@ -46,7 +47,7 @@ const useSize = () => {
         const fetchData = async () => {
             setState({ ...state, loading: true });
             try {
-                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
+                const res = await apiGetSizes({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
                     setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
                 }
@@ -59,12 +60,12 @@ const useSize = () => {
         fetchData();
     }, [state.refresh]);
 
-    // handle xoá danh mục
+    // handle xoá kích thước
     const handleDeleteCate = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            await apiDeleteCate(id);
-            showToast('success', 'Xoá danh mục thành công!');
+            await apiDeleteSize(id);
+            showToast('success', 'Xoá kích thước thành công!');
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');
@@ -73,11 +74,11 @@ const useSize = () => {
     }
 
     // handle thay đổi trạng thái 
-    const handleChangeStatus = async (id: number, status: boolean) => {
+    const handleChangeStatus = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            const res = await apiChangeStatus(id, { status: !status });
-            showToast('success', res.message);
+            await apiUpdateStatusSize(id);
+            showToast('success', 'Cập nhật thành công kích thước!');
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');

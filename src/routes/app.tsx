@@ -21,9 +21,8 @@ const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
 const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 //Quản lý phương thức thanh toán
 const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
-//Quản lý sản phẩm
-// const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
-// const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
+//Quản lý kích thước
+const SizesScreen = lazy(() => import('../pages/admin/Size/index.page'));
 //Quản lý bàn
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
@@ -75,6 +74,11 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.CATEGORY,
         name: 'Quản lý danh mục',
         element: <CateScreen />,
+    },
+    {
+        path: RoutePath.SIZES,
+        name: 'Quản lý kích thước',
+        element: <SizesScreen />,
     },
     {
         path: RoutePath.PAYMENT,

@@ -12,7 +12,7 @@ export default function ProtectedRoute ({ allowedRoles, children }: IProps) {
 
     if (user == null || (allowedRoles && !allowedRoles.includes(user?.roles[0]?.name))) {
         return (
-            <div>Không đủ tuổi</div>
+            <div>Tuổi lol</div>
         )
     }
 
