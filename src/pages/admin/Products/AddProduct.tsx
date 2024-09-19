@@ -77,11 +77,7 @@ const AddProduct: React.FC = () => {
 
     // Map over the variants to build the product details array
     const productDetails = values.variants.map((variant: any, index: number) => ({
-      size: {
-        "id": 2,
-        "name": "L",
-        "status": 1
-      },
+      size: Number(variant.size),
       quantity: Number(variant.quantity),
       price: Number(variant.price),
       sale: Number(variant.sale),
@@ -169,7 +165,9 @@ const AddProduct: React.FC = () => {
                         rules={[{ required: true, message: 'Vui lòng nhập tên biến thể!' }]}
                       >
                         <Select placeholder="Size">
-                          <Option value="1">Size</Option>
+                          {size.map((item: any) => (
+                            <Option value={item.id}>{item.name}</Option>
+                          ))}
                           {/* Add your size options */}
                         </Select>
                       </Form.Item>
@@ -220,12 +218,9 @@ const AddProduct: React.FC = () => {
                         name={[name, 'sale']}
                         fieldKey={[fieldKey as any, 'sale']}
                         label="Sale"
-                        rules={[{ required: true, message: 'Vui lòng nhập trạng thái sale' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập giá sale' }]}
                       >
-                        <Select placeholder="Sale">
-                          <Option value="1">Hỗ trợ</Option>
-                          <Option value="0">Không hỗ trợ</Option>
-                        </Select>
+                         <Input type="number" placeholder="Sale" />
                       </Form.Item>
                     </Col>
 
