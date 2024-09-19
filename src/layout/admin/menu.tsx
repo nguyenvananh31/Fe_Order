@@ -69,4 +69,10 @@ export const LISTMENU: MenuItem[] = [
       <Link to={RoutePath.VOUCHER}>Voucher</Link>
     ),
   },
+  {
+    key: RoutePath.SIZES,
+    label: (
+      <Link to={RoutePath.SIZES}>Quản lý Size</Link>
+    ),
+  },
 ];

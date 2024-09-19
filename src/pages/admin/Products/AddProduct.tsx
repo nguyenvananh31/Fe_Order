@@ -1,44 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import useProducts from './utils/ListProduct.hooks';
 import { FileRule } from '../../../constants/common';
 import useToast from '../../../hooks/useToast';
-import { useAddProduct } from './utils/AddProduct.hooks';
+
 import ApiUtils from '../../../utils/api/api.utils';
-import { log } from 'node:console';
 import { ResponeBase } from '../../../interFaces/common.types';
 
 const { Option } = Select;
 
 const AddProduct: React.FC = () => {
-  const { ...hooks } = useAddProduct()
   const [form] = Form.useForm();
   const [thumbnailFileList, setThumbnailFileList] = useState<any[]>([]);
   const [variantFileLists, setVariantFileLists] = useState<any[][]>([]); // Store images for each variant
   const { showToast } = useToast();
   const { cate } = useProducts();
-  const [size, setSize] = useState<any>([]);
-  useEffect(() => {
+  const [size, setSize] = useState<any[]>([]);
 
-    (async (params?: any) => {
-      const { data } = await ApiUtils.fetch<any, ResponeBase<any[]>>(`/api/admin/sizes`, params);
-      setSize(data)
+  useEffect(() => {
+    (async () => {
+      const { data } = await ApiUtils.fetch<any, ResponeBase<any[]>>('/api/admin/sizes');
+      setSize(data);
     })();
-    // (async (id?: any) => {
-    //   const { data } = await ApiUtils.fetch<any, ResponeBase<any[]>>(`/api/admin/sizes/${id}`);
-    //   setSize(data)
-    // })()
-  }, [setSize]);
+  }, []);
+
+  const sizeOptions = useMemo(() => size.map((item) => (
+    <Option key={item.id} value={item.id}>
+      {item.name}
+    </Option>
+  )), [size]);
+
+  const cateOptions = useMemo(() => cate.map((item) => (
+    <Option key={item.id} value={item.id}>
+      {item.name}
+    </Option>
+  )), [cate]);
+
   const handleThumbnailChange = (info: any) => {
     let fileList = [...info.fileList];
-
-    // chấp nhận img [1]
     fileList = fileList.slice(-1);
-
-    // cập nhập
     setThumbnailFileList(fileList);
   };
 
@@ -53,14 +56,13 @@ const AddProduct: React.FC = () => {
   const handleVariantImageChange = (info: any, index: number) => {
     const updatedFileList = [...variantFileLists];
     updatedFileList[index] = info.fileList;
-
     setVariantFileLists(updatedFileList);
   };
 
   const onFinish = async (values: any) => {
     const formData = new FormData();
-    let thumbnailFile = thumbnailFileList[0];
 
+    let thumbnailFile = thumbnailFileList[0];
     if (!thumbnailFile && values.variants && values.variants.length > 0) {
       const firstVariantWithImages = variantFileLists.find((fileList) => fileList.length > 0);
       if (firstVariantWithImages) {
@@ -75,41 +77,38 @@ const AddProduct: React.FC = () => {
 
     formData.append('thumbnail', thumbnailFile.originFileObj);
 
-    // Map over the variants to build the product details array
-    const productDetails = values.variants.map((variant: any, index: number) => ({
-      size: Number(variant.size),
-      quantity: Number(variant.quantity),
-      price: Number(variant.price),
-      sale: Number(variant.sale),
-      status: 1,
-      images: variantFileLists[index]?.map((file) => file.originFileObj) || [],
-    }));
+    const productDetails = values.variants.map((variant: any, index: number) => {
+      const variantImages = variantFileLists[index]?.map((file) => file.originFileObj) || [];
 
-    // Append product details as an array of objects
-    formData.append('product_details', JSON.stringify(productDetails));
+      variantImages.forEach((file, idx) => {
+        formData.append(`product_details[${index}][images][${idx}]`, file);
+      });
+
+      return {
+        size_id: variant.size,
+        quantity: Number(variant.quantity),
+        price: Number(variant.price),
+        sale: Number(variant.sale),
+        images: variantImages,
+        status: 1,
+      };
+    });
 
     formData.append('name', values.name);
     formData.append('status', '1');
     formData.append('category_id', values.category_id);
-
-    // Log FormData content for verification
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+    formData.append('product_details', productDetails);
 
     try {
       const response = await ApiUtils.postForm('/api/admin/products', formData);
-      console.log(response);
-      message.success('Product added successfully!');
+      if (response) {
+        message.success('Sản phẩm đã được thêm thành công!');
+      }
     } catch (error) {
       console.error('Failed to add product:', error);
       message.error('Failed to add product. Please try again.');
     }
-    console.log(productDetails);
-
   };
-
-
 
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm font-semibold md:mx-4 md:px-3">
@@ -139,17 +138,12 @@ const AddProduct: React.FC = () => {
 
         <Form.Item label="Danh mục" name="category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
           <Select placeholder="Chọn danh mục">
-            <Option value="1">Danh mục</Option>
-            {cate.map((item) => (
-              <Option key={item.id} value={item.id}>
-                {item.name}
-              </Option>
-            ))}
+            {cateOptions}
           </Select>
         </Form.Item>
 
         {/* Phần biến thể */}
-        <div className="bg-blue-100 rounded-md px-4 py-2 mb-4 shadow-md ">
+        <div className="bg-blue-100 rounded-md px-4 py-2 mb-4 shadow-md">
           <Form.List name="variants">
             {(fields, { add, remove }) => (
               <>
@@ -165,10 +159,7 @@ const AddProduct: React.FC = () => {
                         rules={[{ required: true, message: 'Vui lòng nhập tên biến thể!' }]}
                       >
                         <Select placeholder="Size">
-                          {size.map((item: any) => (
-                            <Option value={item.id}>{item.name}</Option>
-                          ))}
-                          {/* Add your size options */}
+                          {sizeOptions}
                         </Select>
                       </Form.Item>
                     </Col>
@@ -220,7 +211,7 @@ const AddProduct: React.FC = () => {
                         label="Sale"
                         rules={[{ required: true, message: 'Vui lòng nhập giá sale' }]}
                       >
-                         <Input type="number" placeholder="Sale" />
+                        <Input type="number" placeholder="Sale" />
                       </Form.Item>
                     </Col>
 
