@@ -5,7 +5,7 @@ import React from 'react';
 const Contact: React.FC = () => {
     return (
         <>
-            <section className="bg-[#F4F1EA] py-10">
+            <section className="bg-[#fff] py-10">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                         <div className="w-full max-w-xs px-4 mb-6 md:mb-8">
@@ -52,7 +52,7 @@ const Contact: React.FC = () => {
                 </div>
             </section>
 
-            <section className="bg-[#F4F1EA] py-16">
+            <section className="bg-[#fff] py-16">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                         <div className="w-full max-w-md px-4 mb-6 md:mb-8">
