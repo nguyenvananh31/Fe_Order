@@ -1,6 +1,7 @@
 
 import React from 'react';
 
+
 const Contact: React.FC = () => {
     return (
         <>
@@ -10,7 +11,7 @@ const Contact: React.FC = () => {
                         <div className="w-full max-w-xs px-4 mb-6 md:mb-8">
                             <div className="bg-white p-5 rounded-lg shadow-md text-center transition-colors duration-300 hover:bg-[#00813D] hover:text-white">
                                 <div className="mb-3 ">
-                                    <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/location.svg" alt="Location icon" className="mx-auto h-10 w-10 md:h-11 md:w-11 " />
+                                    <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/location.svg" alt="Phone icon" className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0 " />
                                 </div>
                                 <h3 className="text-sm md:text-base font-semibold">Address Line</h3>
                                 <p className="mt-2 text-xs md:text-sm">
@@ -22,7 +23,7 @@ const Contact: React.FC = () => {
                         <div className="w-full max-w-xs px-4 mb-6 md:mb-8">
                             <div className="bg-white p-5 rounded-lg shadow-md text-center transition-colors duration-300 hover:bg-[#00813D] hover:text-white">
                                 <div className="mb-3">
-                                    <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/phone.svg" alt="Phone icon" className="mx-auto h-10 w-10 md:h-11 md:w-11" />
+                                    <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/phone.svg" alt="Phone icon" className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0" />
                                 </div>
                                 <h3 className="text-sm md:text-base font-semibold">Phone Number</h3>
                                 <p className="mt-2 text-xs md:text-sm">
@@ -34,7 +35,11 @@ const Contact: React.FC = () => {
                         <div className="w-full max-w-xs px-4 mb-6 md:mb-8">
                             <div className="bg-white p-5 rounded-lg shadow-md text-center transition-colors duration-300 hover:bg-[#00813D] hover:text-white">
                                 <div className="mb-3">
-                                    <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/email.svg" alt="Email icon" className=" mx-auto h-10 w-10 md:h-11 md:w-11 " />
+                                    <img
+                                        src="https://modinatheme.com/html/foodking-html/assets/img/icon/email.svg"
+                                        alt="Email icon"
+                                        className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0 "
+                                    />
                                 </div>
                                 <h3 className="text-sm md:text-base font-semibold">Mail Address</h3>
                                 <p className="mt-2 text-xs md:text-sm">

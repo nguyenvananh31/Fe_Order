@@ -3,12 +3,6 @@
 @import "./layout";
 @import "./font";
 @import "./themes";
-<<<<<<< HEAD
-body {
-  // font-family: "Barlow Condensed", sans-serif;
-  // @include fontStyle(16px, 26px);
-  font-family: var(--font-1);
-=======
 @import "./responsive.scss";
 
 * {
@@ -29,5 +23,4 @@ body {
   font-family: var(--font-1);
   color: #5C5C5B;
   z-index: 1;
->>>>>>> 3919f0abdcd3d3f0ad662ff4565fe9ee9d04da6e
 }
