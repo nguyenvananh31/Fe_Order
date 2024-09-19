@@ -1,4 +1,5 @@
 import React from 'react'
+
 import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
 import SliderTop from '../../../layout/users/component/SliderTop/SliderTop';
 const Home = () => {
@@ -12,8 +13,9 @@ const Home = () => {
         <ItemProduct />
 
       </div>
+
     </div>
   )
 }
 
-export default Home
+export default Home;

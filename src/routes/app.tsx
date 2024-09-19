@@ -30,7 +30,9 @@ const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
 
 //customers
+
 const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'));
+
 
 //sizes
 
@@ -95,6 +97,7 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý bàn đặt',
         element: <DetailOrderTable />,
     },
+
     {
         path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
@@ -110,6 +113,7 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý thêm sản phẩm',
         element: <AddProduct />,
     },
+
     {
         path: RoutePath.ADMIN_TABLE,
         name: 'Quản lý bàn',
