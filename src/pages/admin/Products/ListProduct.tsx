@@ -4,6 +4,7 @@ import { Table, Modal, Button, Input, Select, Image, Space, Popconfirm } from 'a
 import { PlusOutlined } from '@ant-design/icons';
 import useProducts from './utils/ListProduct.hooks';
 import { IProduct } from '../../../interFaces/product';
+import { getImageUrl } from '../../../constants/common';
 
 const { Option } = Select;
 
@@ -60,9 +61,9 @@ const ListProduct: React.FC = () => {
         <div className="w-[130px] h-[100px]">
           <Image
             className="object-cover rounded-md shadow-sm hover:scale-110 transition-transform cursor-pointer"
-            src={thumbnail}
+            src={getImageUrl(thumbnail)}
             alt={record.name}
-            preview={{ src: thumbnail, className: 'rounded-md' }}
+            preview={{ src: getImageUrl(thumbnail), className: 'rounded-md' }}
           />
         </div>
       ),

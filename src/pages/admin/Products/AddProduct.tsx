@@ -79,14 +79,15 @@ const AddProduct: React.FC = () => {
 
     formData.append('thumbnail', thumbnailFile.originFileObj);
 
-    values.variants.foreach((variant: any, index: number) => {
+    values.variants.forEach((variant: any, index: number) => {
 
       formData.append(`product_details[${index}][size_id]`, variant.size)
       formData.append(`product_details[${index}][price]`, variant.price)
       formData.append(`product_details[${index}][quantity]`, variant.quantity)
+      formData.append(`product_details[${index}][sale]`, variant.sale)
 
-      variant.images.forech((item) => {
-        formData.append(`product_details[${index}][images]`, item.file.originFileObj)
+      variant.images.fileList.forEach((item) => {
+        formData.append(`product_details[${index}][images][][file]`, item.originFileObj)
       })
       // return {
       //   size_id: variant.size,
