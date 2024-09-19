@@ -10,6 +10,8 @@ import AddProduct from "../pages/admin/Products/AddProduct";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
+import ListVoucher from "../pages/admin/Vouchers/ListVoucher";
+import ListSize from "../pages/admin/Size/ListSize";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -21,9 +23,8 @@ const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
 const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 //Quản lý phương thức thanh toán
 const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
-//Quản lý sản phẩm
-// const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
-// const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
+//Quản lý kích thước
+const SizesScreen = lazy(() => import('../pages/admin/Size/index.page'));
 //Quản lý bàn
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
@@ -34,8 +35,6 @@ const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'))
 
 
 //sizes
-const SizeScreen = lazy(() => import('../pages/admin/Size/index.page'));
-
 
 
 export interface IRoutesProperties {
@@ -77,6 +76,11 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.CATEGORY,
         name: 'Quản lý danh mục',
         element: <CateScreen />,
+    },
+    {
+        path: RoutePath.SIZES,
+        name: 'Quản lý kích thước',
+        element: <SizesScreen />,
     },
     {
         path: RoutePath.PAYMENT,
@@ -128,7 +132,12 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.SIZES,
         name: 'Quản lý kích cỡ',
-        element: <SizeScreen />,
+        element: <ListSize />,
+    },
+    {
+        path: RoutePath.VOUCHER,
+        name: 'Quản lý Voucher',
+        element: <ListVoucher />,
     }
 ];
 

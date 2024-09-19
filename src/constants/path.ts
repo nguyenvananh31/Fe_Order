@@ -22,9 +22,7 @@ export const RoutePath = {
     ADMIN_TABLE_ORDER: 'tables-order',
     CUSTOMERS: 'customers',
     SIZES: 'sizes',
-
     ERROR: 'error',
-
-    ADMIN_EDIT_PRODUCT: 'product-edit'
-
+    ADMIN_EDIT_PRODUCT: 'product-edit',
+    VOUCHER : 'vouchers'
 }
