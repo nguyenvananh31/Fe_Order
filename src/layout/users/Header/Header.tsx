@@ -3,7 +3,7 @@ import { Badge, Drawer, Image } from 'antd'
 import { useState } from 'react'
 import Navigation from '../component/Navigation/Navigation';
 import { Link } from 'react-router-dom';
-
+import './Header.scss';
 const Header = () => {
   const [visible, setVisible] = useState(false);
 
@@ -15,7 +15,7 @@ const Header = () => {
     setVisible(false);
   };
   return (
-    <header className='bg-bgColor1 w-full relative'>
+    <header className='bg-bgColor1 w-full'>
       <div className="container max-w-[1140px] mx-auto px-[20px] py-6 border-b-[1px] border-borderColor1 flex items-center justify-between">
         <div className="container-left">
           <div className="logo-wrapper pr-12">
@@ -31,7 +31,7 @@ const Header = () => {
               <Badge count="1" offset={[2, 0]} showZero>
                 <ShoppingCartOutlined className='text-3xl text-mainColor1' />
               </Badge>
-              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor  group-hover:block z-[99] shadow-md ">
+              <div className="mini-cart absolute left-[-20px] p-4 border-[1px] border-borderColor1 rounded-md bg-bodyColor hidden group-hover:block z-[99] shadow-md ">
                 <div className="mini-cart-body w-max ">
                   <div className="cart-item grid grid-cols-gridCartItem items-center gap-4 pb-3 mb-3 border-b-[1px] border-borderColor1">
                     <div className="cart-item-img">

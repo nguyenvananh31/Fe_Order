@@ -4,7 +4,7 @@ import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
-import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
+import { apiChangeStatus, apiDeleteCate, apiGetCates } from "../../Categories/utils/categories.service";
 
 
 interface ISate {

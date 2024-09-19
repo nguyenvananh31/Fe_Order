@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios';
-import { ResponseCode } from './api.types';
+import { useNavigate } from 'react-router-dom';
 import localStorageUtils, { KeyStorage } from '../local-storage.utils';
+import { ResponseCode } from './api.types';
 
 interface CustomHeaders {
     isAuth: boolean;
@@ -8,11 +9,10 @@ interface CustomHeaders {
 }
 
 const REQ_TIMEOUT = 25 * 1000;
-// export const __DEV__ = !process.env.REACT_APP_NODE_ENV || process.env.REACT_APP_NODE_ENV === 'development';
-export const __DEV__ = 'development';
+export const __DEV__ = !import.meta.env.VITE_NODE_ENV || import.meta.env.VITE_NODE_ENV === 'development';
 
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: import.meta.env.VITE_API_DOMAIN,
     timeout: REQ_TIMEOUT
 });
 
@@ -25,6 +25,15 @@ export const getAccessToken = () => {
     const access_token = auth?.access_token;
     if (access_token) {
         return access_token;
+    }
+    return null;
+};
+
+export const getRefreshToken = () => {
+    const auth = localStorageUtils.getObject(KeyStorage.AUTH);
+    const refresh_token = auth?.refresh_token;
+    if (refresh_token) {
+        return refresh_token;
     }
     return null;
 };
@@ -60,17 +69,37 @@ instance.interceptors.response.use(
     (error: any) => errorHandler(error)
 );
 
-const errorHandler = (error: AxiosError) => {
+const refreshToken = async () => {
+    const refresh_token = getRefreshToken();
+    const res = ApiUtils.post<any, any>('/api/refresh', { refresh_token }, { isAuth: false });
+    return res;
+}
+
+const errorHandler = async (error: AxiosError) => {
     const resError: AxiosResponse<any> | undefined = error.response;
 
     const config: any = error.config;
-    if (resError?.data?.code === ResponseCode.UNAUTHORIZED) {
+    
+    if (resError?.status === 401 && !config._isRefreshToken) {
         config._isRefreshToken = true;
+        try {
+            const res = await refreshToken();
+            if (res.access_token) {
+                const auth = localStorageUtils.getObject(KeyStorage.AUTH); 
+                localStorageUtils.setObject(KeyStorage.AUTH, {...auth, access_token: res.access_token});
+                config.headers['Authorization'] = `Bearer ${res.access_token}`;
+                return instance(config);
+            }
+        } catch (error) {
+            console.log(error);
+            const navigate = useNavigate();
+            navigate('/login');
+        }
     }
 
     if (__DEV__) {
         console.log(
-            `ERROR ${error.config.method?.toUpperCase()} - ${error.config.url}:`,
+            `ERROR ${error?.config?.method?.toUpperCase()} - ${error?.config?.url}:`,
             resError?.data
         );
     }

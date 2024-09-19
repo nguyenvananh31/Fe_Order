@@ -1,0 +1,118 @@
+@import "../../../configs/css/responsive";
+@import "../../../configs/css/util";
+@import "../../../configs/css/themes";
+
+
+footer {
+  width: 100%;
+  background-color: var(--bg);
+  .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px 20px;
+    max-width: 1140px;
+    padding-inline: 20px;
+    margin: auto;
+    @include lg {
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-inline: 16px;
+    }
+    &-left {
+      width: 250px;
+      //   @include md{
+      //     display: flex;
+      //     justify-content: center;
+      //   }
+    }
+    &-center {
+      width: 50%;
+      display: flex;
+      gap: 24px;
+      @include lg{
+        width: 70%;
+      }
+      @include md {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      .menu-list {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding-inline: 16px;
+        @include md {
+          column-gap: 16px;
+          row-gap: 24px;
+          padding: 0;
+        }
+        &-item {
+          text-align: left;
+          &:not(:nth-child(1), :nth-child(2)) {
+            &:hover {
+              rotate: 10deg;
+              transition: 0.25s ease-in-out;
+            }
+          }
+          &:nth-child(2),
+          &:nth-child(1) {
+            font-weight: bold;
+            margin-bottom: 6px;
+          }
+          &__link {
+            font-family: var(--font-1);
+
+            @include md {
+              text-wrap: nowrap;
+              font-size: 16px;
+              line-height: 20px;
+            }
+          }
+        }
+      }
+      .address-box {
+        .address-list {
+          &:nth-child(n + 2) {
+            padding-top: 18px;
+          }
+          &-item {
+            &__link {
+              font-size: 18px;
+              line-height: 26px;
+              font-family: var(--font-1);
+              @include md {
+                text-wrap: nowrap;
+                font-size: 14px;
+                line-height: 20px;
+              }
+            }
+            &:nth-child(n + 1) {
+              .address-list-item__desc {
+                font-family: "Barlow Condensed", sans-serif;
+              }
+            }
+            &__desc {
+              margin-top: 25px;
+            }
+          }
+        }
+      }
+    }
+    &-right {
+      width: 250px;
+      .contact-box {
+        > * {
+          margin-bottom: 24px;
+        }
+        &__heading{
+
+        }
+        &__desc{
+            
+        }
+      }
+      
+    }
+  }
+}

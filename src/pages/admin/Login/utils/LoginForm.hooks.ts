@@ -28,12 +28,12 @@ export const LoginForm = () => {
       if (dataLogin.remember == true) {
         localStorage.setItem("rememberedEmail", dataLogin.email);
       }
-      setAuth({ ...dataLogin.user, access_token: dataLogin.access_token });
+      setAuth({ ...dataLogin.user, access_token: dataLogin.access_token, refresh_token: dataLogin.refresh_token });
       notification.success({
         message: "Đăng nhập thành công!",
         description: "Xin chào Admin!",
       });
-      await navigate("/admin/dashboard");
+      await navigate("/admin");
     }
   };
   // Trường hợp mặc định là sai

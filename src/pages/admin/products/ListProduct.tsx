@@ -16,6 +16,8 @@ const ListProduct: React.FC = () => {
 
   // Fetch product data
   const { products, cate, onDelete } = useProducts();
+  console.log(products);
+  
   // console.log(cate.subcategory);
 
   // Filtered products based on search term, category, and price range
@@ -75,7 +77,7 @@ const ListProduct: React.FC = () => {
       key: 'actions',
       render: (id: number, record: IProduct) => (
         <Space>
-          <Button onClick={() => showProductDetails(record)}>Sửa</Button>
+          <Button href={`/admin/product-edit/${id}`}>Sửa</Button>
           <Button danger onClick={() => onDelete(id)}>Xóa</Button>
         </Space>
       ),

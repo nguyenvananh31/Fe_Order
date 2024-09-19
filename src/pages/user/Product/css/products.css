@@ -19,6 +19,10 @@
   --bg2: #DF0A0A0D;
 }
 
+.bg-about{
+  background-color: var(--bg);
+}
+
 .theme-btn {
   position: relative;
   display: inline-block;
@@ -4029,13 +4033,20 @@ input.main-search-input::placeholder {
 .about-wrapper .about-image {
   position: relative;
 }
-.about-wrapper .about-image img {
-  width: 100%;
-  height: 100%;
-}
+
 @media (max-width: 991px) {
   .about-wrapper .about-image img {
     width: 70%;
+  }
+}
+
+@media (max-width: 500px) {
+  .about-wrapper .about-image img {
+    width: 90%;
+    padding: 12px;
+  }
+  .about-reponsive{
+    padding-left: 15px;
   }
 }
 .about-wrapper .about-image .burger-text {

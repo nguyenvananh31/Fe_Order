@@ -48,7 +48,8 @@ const useCate = () => {
             try {
                 const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
-                    setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
+                    const cates = convertCategories(res.data);                
+                    setState({ ...state, data: cates || [], loading: false, total: cates.length });
                 }
             } catch (error: any) {
                 console.log(error);
@@ -58,6 +59,26 @@ const useCate = () => {
         }
         fetchData();
     }, [state.refresh]);
+
+        // Hàm đệ quy chuyển đổi dữ liệu cây danh mục
+        const convertCategories = (categories: ICate[], level: number = 0) => {
+            let result: any = [];
+    
+            categories.forEach((cate) => {
+                // Thêm danh mục hiện tại vào kết quả
+                result.push({
+                    ...cate,
+                    level
+                });
+    
+                // Đệ quy với danh mục con nếu có
+                if (cate.subcategory.length > 0) {
+                    result = result.concat(convertCategories(cate.subcategory, level + 1));
+                }
+            });
+    
+            return result;
+        };
 
     // handle xoá danh mục
     const handleDeleteCate = async (id: number) => {

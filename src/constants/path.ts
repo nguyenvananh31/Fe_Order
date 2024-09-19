@@ -1,11 +1,15 @@
 export const RoutePath = {
+    //Client
+    HOME: '/',
+    ABOUT : 'about',
+    PRODUCTS : 'products',
+
+    //Admin
     ADMIN: 'admin',
     ACCOUNT: 'accounts',
     CATEGORY: 'categories',
-    SIZE: 'sizes',
     LOGIN : 'login',
     REGISTER : 'register',
-    ABOUT : 'about',
     CHECKOUT : 'checkout',
     ORDER : 'order',
     TABLE : 'table',
@@ -19,5 +23,5 @@ export const RoutePath = {
     ADMIN_TABLE_ORDER: 'tables-order',
     CUSTOMERS: 'customers',
     SIZES: 'sizes',
-    ADMIN_TABLE_ORDER: 'tables-order'
+    ADMIN_EDIT_PRODUCT: 'product-edit'
 }
