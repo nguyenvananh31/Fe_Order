@@ -19,6 +19,7 @@ const AddProduct: React.FC = () => {
   const { showToast } = useToast();
   const { cate } = useProducts();
   const [size, setSize] = useState<any[]>([]);
+  const [files, setFiles] = useState<any[]>([])
 
   useEffect(() => {
     (async () => {
@@ -61,6 +62,7 @@ const AddProduct: React.FC = () => {
 
   const onFinish = async (values: any) => {
     const formData = new FormData();
+    console.log(values);
 
     let thumbnailFile = thumbnailFileList[0];
     if (!thumbnailFile && values.variants && values.variants.length > 0) {
@@ -77,27 +79,29 @@ const AddProduct: React.FC = () => {
 
     formData.append('thumbnail', thumbnailFile.originFileObj);
 
-    const productDetails = values.variants.map((variant: any, index: number) => {
-      const variantImages = variantFileLists[index]?.map((file) => file.originFileObj) || [];
+    values.variants.foreach((variant: any, index: number) => {
 
-      variantImages.forEach((file, idx) => {
-        formData.append(`product_details[${index}][images][${idx}]`, file);
-      });
+      formData.append(`product_details[${index}][size_id]`, variant.size)
+      formData.append(`product_details[${index}][price]`, variant.price)
+      formData.append(`product_details[${index}][quantity]`, variant.quantity)
 
-      return {
-        size_id: variant.size,
-        quantity: Number(variant.quantity),
-        price: Number(variant.price),
-        sale: Number(variant.sale),
-        images: variantImages,
-        status: 1,
-      };
+      variant.images.forech((item) => {
+        formData.append(`product_details[${index}][images]`, item.file.originFileObj)
+      })
+      // return {
+      //   size_id: variant.size,
+      //   quantity: Number(variant.quantity),
+      //   price: Number(variant.price),
+      //   sale: Number(variant.sale),
+      //   images: variantImages,
+      //   status: 1,
+      // };
     });
 
     formData.append('name', values.name);
     formData.append('status', '1');
     formData.append('category_id', values.category_id);
-    formData.append('product_details', productDetails);
+    // formData.append('product_details', productDetails);
 
     try {
       const response = await ApiUtils.postForm('/api/admin/products', formData);
