@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
@@ -7,6 +7,9 @@ import useProducts from './utils/ListProduct.hooks';
 import { FileRule } from '../../../constants/common';
 import useToast from '../../../hooks/useToast';
 import { useAddProduct } from './utils/AddProduct.hooks';
+import ApiUtils from '../../../utils/api/api.utils';
+import { log } from 'node:console';
+import { ResponeBase } from '../../../interFaces/common.types';
 
 const { Option } = Select;
 
@@ -17,7 +20,18 @@ const AddProduct: React.FC = () => {
   const [variantFileLists, setVariantFileLists] = useState<any[][]>([]); // Store images for each variant
   const { showToast } = useToast();
   const { cate } = useProducts();
+  const [size, setSize] = useState<any>([]);
+  useEffect(() => {
 
+    (async (params?: any) => {
+      const { data } = await ApiUtils.fetch<any, ResponeBase<any[]>>(`/api/admin/sizes`, params);
+      setSize(data)
+    })();
+    // (async (id?: any) => {
+    //   const { data } = await ApiUtils.fetch<any, ResponeBase<any[]>>(`/api/admin/sizes/${id}`);
+    //   setSize(data)
+    // })()
+  }, [setSize]);
   const handleThumbnailChange = (info: any) => {
     let fileList = [...info.fileList];
 
@@ -44,51 +58,58 @@ const AddProduct: React.FC = () => {
   };
 
   const onFinish = async (values: any) => {
-    let thumbnailUrl = '';
+    const formData = new FormData();
+    let thumbnailFile = thumbnailFileList[0];
 
-    // Kiểm tra nếu có biến thể nào được thêm vào
-    const hasVariants = values.variants && values.variants.length > 0;
-    
-    // Nếu không có thumbnail và có biến thể thì lấy ảnh đầu tiên của biến thể làm thumbnail
-    if (!thumbnailFileList.length && hasVariants) {
-      // Kiểm tra xem biến thể có ảnh không
+    if (!thumbnailFile && values.variants && values.variants.length > 0) {
       const firstVariantWithImages = variantFileLists.find((fileList) => fileList.length > 0);
       if (firstVariantWithImages) {
-        thumbnailUrl = hooks.getThumbnailUrl(firstVariantWithImages[0]);
+        thumbnailFile = firstVariantWithImages[0].originFileObj;
       }
-    } else if (thumbnailFileList.length > 0) {
-      // Nếu có ảnh thumbnail được tải lên, lấy nó
-      thumbnailUrl = hooks.getThumbnailUrl(thumbnailFileList[0]);
     }
 
-    // Nếu không có ảnh thumbnail và không có ảnh từ biến thể, hiển thị thông báo lỗi
-    if (!thumbnailUrl) {
+    if (!thumbnailFile) {
       message.error('Vui lòng tải lên ít nhất một ảnh thumbnail hoặc thêm ảnh cho biến thể.');
       return;
     }
 
-    // map
-    const productDetails = values.variants.map((variant: any, index: number) => {
-      return {
-        size: variant.size,
-        quantity: variant.quantity,
-        sale: variant.sale,
-        status: 1,
-        images: hooks.getImageUrls(variantFileLists[index] || []), // Get images for each variant
-      };
-    });
+    formData.append('thumbnail', thumbnailFile.originFileObj);
 
-    const data = {
-      name: values.name,
-      thumbnail: thumbnailUrl,
+    // Map over the variants to build the product details array
+    const productDetails = values.variants.map((variant: any, index: number) => ({
+      size: Number(variant.size),
+      quantity: Number(variant.quantity),
+      price: Number(variant.price),
+      sale: Number(variant.sale),
       status: 1,
-      category_id: values.category_id,
-      product_details: productDetails,
-    };
-    
-    console.log(data);
-    message.success('Product added successfully!');
+      images: variantFileLists[index]?.map((file) => file.originFileObj) || [],
+    }));
+
+    // Append product details as an array of objects
+    formData.append('product_details', JSON.stringify(productDetails));
+
+    formData.append('name', values.name);
+    formData.append('status', '1');
+    formData.append('category_id', values.category_id);
+
+    // Log FormData content for verification
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    try {
+      const response = await ApiUtils.postForm('/api/admin/products', formData);
+      console.log(response);
+      message.success('Product added successfully!');
+    } catch (error) {
+      console.error('Failed to add product:', error);
+      message.error('Failed to add product. Please try again.');
+    }
+    console.log(productDetails);
+
   };
+
+
 
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm font-semibold md:mx-4 md:px-3">
@@ -144,7 +165,9 @@ const AddProduct: React.FC = () => {
                         rules={[{ required: true, message: 'Vui lòng nhập tên biến thể!' }]}
                       >
                         <Select placeholder="Size">
-                          <Option value="1">Size</Option>
+                          {size.map((item: any) => (
+                            <Option value={item.id}>{item.name}</Option>
+                          ))}
                           {/* Add your size options */}
                         </Select>
                       </Form.Item>
@@ -195,12 +218,9 @@ const AddProduct: React.FC = () => {
                         name={[name, 'sale']}
                         fieldKey={[fieldKey as any, 'sale']}
                         label="Sale"
-                        rules={[{ required: true, message: 'Vui lòng nhập trạng thái sale' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập giá sale' }]}
                       >
-                        <Select placeholder="Sale">
-                          <Option value="1">Hỗ trợ</Option>
-                          <Option value="0">Không hỗ trợ</Option>
-                        </Select>
+                         <Input type="number" placeholder="Sale" />
                       </Form.Item>
                     </Col>
 

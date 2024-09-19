@@ -35,7 +35,7 @@ const Router = () => {
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
         </Route>
-        <Route path={RoutePath.ADMIN} element={user ? !!user.roles.length ? <BaseLayoutAdmin /> : <Navigate to={RoutePath.HOME} /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
+        <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
