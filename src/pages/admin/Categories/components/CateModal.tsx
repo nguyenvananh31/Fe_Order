@@ -251,7 +251,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                             accept={FileRule.accepts}
                             beforeUpload={handleBeforeUpload}
                         >
-                            {fileList?.length >= 1 ? null :
+                            {fileList?.length >= 1 ? null : 
                                 (
                                     <button style={{ border: 0, background: 'none' }} type="button">
                                         <PlusOutlined />

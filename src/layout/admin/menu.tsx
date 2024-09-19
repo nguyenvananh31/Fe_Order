@@ -1,5 +1,5 @@
 // components/SharedMenu.tsx
-import { FileTextOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { FileTextOutlined, LineHeightOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { Link } from "react-router-dom";
 import { RoutePath } from "../../constants/path";
@@ -27,6 +27,13 @@ export const LISTMENU: MenuItem[] = [
       <Link to={RoutePath.CATEGORY}>Quản lý danh mục</Link>
     ),
     icon: <FileTextOutlined />,
+  },
+  {
+    key: RoutePath.SIZES,
+    label: (
+      <Link to={RoutePath.SIZES}>Quản lý kích thước</Link>
+    ),
+    icon: <LineHeightOutlined />,
   },
   {
     key: 'product',
