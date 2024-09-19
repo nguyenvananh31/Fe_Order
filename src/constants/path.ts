@@ -22,5 +22,6 @@ export const RoutePath = {
     ADMIN_TABLE_ORDER: 'tables-order',
     CUSTOMERS: 'customers',
     SIZES: 'sizes',
-    ADMIN_EDIT_PRODUCT: 'product-edit'
+    ADMIN_EDIT_PRODUCT: 'product-edit',
+    VOUCHER : 'vouchers'
 }
