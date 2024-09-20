@@ -14,11 +14,11 @@ function App() {
     return (
         <>
             <Provider store={reduxStoreUtils}>
-                <Suspense fallback={<SpinnerLoader />}>
-                    <ConfigProvider locale={locale} theme={{ token: themeToken }}>
+                <ConfigProvider locale={locale} theme={{ token: themeToken }}>
+                    <Suspense fallback={<SpinnerLoader />}>
                         <Router />
-                    </ConfigProvider>
-                </Suspense>
+                    </Suspense>
+                </ConfigProvider>
             </Provider>
         </>
     );

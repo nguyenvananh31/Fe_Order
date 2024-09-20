@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Popconfirm, notification } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, Popconfirm, notification, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import ApiUtils from '../../../utils/api/api.utils';
 
@@ -26,8 +26,7 @@ const ListPayment: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const res = await ApiUtils.fetch('/api/admin/payments');
-            console.log("Data fetched:", res.data); // Kiểm tra dữ liệu trả về
+            const res: any = await ApiUtils.fetch('/api/admin/payments');
             const transformedData = res.data.map((payment: any, index: number) => ({
                 key: payment.id,
                 name: payment.name,
@@ -106,12 +105,25 @@ const ListPayment: React.FC = () => {
         {
             title: 'Trạng thái',
             dataIndex: 'status',
-            key: 'status',
-            render: (status: number) => (
-                <span className={`p-2 text-white rounded-md ${status === 1 ? 'bg-green-500' : 'bg-red-500'}`}>
-                    {status === 1 ? 'Hoạt động' : 'Ngừng hoạt động'}
-                </span>
-            ),
+            align: 'center',
+            width: '15%',
+            render: (_: any, { id, status }: any) => (
+                <Tooltip title="Thay đổi trạng thái">
+                    <Popconfirm
+                        placement='topRight'
+                        title={`${!status ? 'Hiển thị' : 'Ẩn'} danh mục`}
+                        description={`Bạn có muốn ${!status ? 'hiển thị' : 'ẩn'} danh mục này?`}
+                        icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                        okText="Có"
+                        cancelText="Không"
+                    // onConfirm={() => hooks.handleChangeStatus(id, status)}
+                    >
+                        <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
+                            {!!status ? "Hiển thị" : 'Ẩn'}
+                        </Button>
+                    </Popconfirm>
+                </Tooltip>
+            )
         },
         {
             title: 'Hành động',
@@ -140,53 +152,16 @@ const ListPayment: React.FC = () => {
     return (
         <>
             <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
-                <section className="py-4 bg-white sm:py-6 lg:py-8">
-                    <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
-                        <div className="max-w-2xl mx-auto text-center">
-                            <div className="flex items-center justify-center">
-                                <div className="w-20 h-20 -mr-6 overflow-hidden bg-gray-300 rounded-full">
-                                    <img
-                                        className="object-cover w-full h-full"
-                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/female-avatar-1.jpg"
-                                        alt=""
-                                    />
-                                </div>
-                                <div className="relative overflow-hidden bg-gray-300 border-8 border-white rounded-full w-28 h-28">
-                                    <img
-                                        className="object-cover w-full h-full"
-                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/male-avatar-1.jpg"
-                                        alt=""
-                                    />
-                                </div>
-                                <div className="w-20 h-20 -ml-6 overflow-hidden bg-gray-300 rounded-full">
-                                    <img
-                                        className="object-cover w-full h-full"
-                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/female-avatar-2.jpg"
-                                        alt=""
-                                    />
-                                </div>
-                            </div>
-                            <h2 className="mt-8 text-3xl font-bold leading-tight text-black lg:mt-12 sm:text-4xl lg:text-5xl">
-                                Join <span className="border-b-8 border-yellow-300">5,482</span> other
-                                developers
-                            </h2>
-                            <p className="max-w-xl mx-auto mt-6 text-xl text-gray-600 md:mt-10">
-                                Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet
-                                sint. Velit officia consequat duis.
-                            </p>
-                            <Button
-                                type="primary"
-                                onClick={handleAdd}
-                                className="inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700"
-                            >
-                                Thêm phương thức
-                            </Button>
-                        </div>
-                    </div>
-                </section>
+                <Button
+                    type="primary"
+                    onClick={handleAdd}
+                    className="inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700"
+                >
+                    Thêm phương thức
+                </Button>
 
-                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl border-t-2 mt-6">
-                    <Table columns={columns} dataSource={data} rowKey="key" pagination={{ pageSize: 5 }} />
+                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl mt-6">
+                    <Table columns={columns} dataSource={data} rowKey="key" />
 
                     <Modal
                         visible={modalVisible}

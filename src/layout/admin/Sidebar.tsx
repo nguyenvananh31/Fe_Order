@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
               className={`transition-all duration-500 ${!collapsed ? 'animate-slideIn' : 'animate-slideOut'
                 }`}
             >
-              <h1 className="text-xl font-bold">Yagi</h1>
+              <h1 className="text-xl font-bold">Nhà Hàng Yagi</h1>
             </div>
           )}
         </div>

@@ -48,7 +48,8 @@ const useCate = () => {
             try {
                 const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
-                    const cates = convertCategories(res.data);                
+                    const cates = convertCategoryToTree(res.data);
+                    
                     setState({ ...state, data: cates || [], loading: false, total: cates.length });
                 }
             } catch (error: any) {
@@ -60,25 +61,26 @@ const useCate = () => {
         fetchData();
     }, [state.refresh]);
 
-        // Hàm đệ quy chuyển đổi dữ liệu cây danh mục
-        const convertCategories = (categories: ICate[], level: number = 0) => {
-            let result: any = [];
-    
-            categories.forEach((cate) => {
-                // Thêm danh mục hiện tại vào kết quả
-                result.push({
-                    ...cate,
-                    level
-                });
-    
-                // Đệ quy với danh mục con nếu có
-                if (cate.subcategory.length > 0) {
-                    result = result.concat(convertCategories(cate.subcategory, level + 1));
-                }
-            });
-    
-            return result;
-        };
+    // Hàm đệ quy chuyển đổi dữ liệu danh mục
+    const convertCategoryToTree = (categories: any[]): any[] => {
+        return categories.map(category => {
+          const { id, name, image, status, parent_id, name_parent, subcategory, created_at, updated_at } = category;
+      
+          const children = subcategory && subcategory.length > 0 ? convertCategoryToTree(subcategory) : [];
+          
+          return {
+            id,
+            name,
+            image,
+            status,
+            parent_id,
+            name_parent,
+            created_at,
+            updated_at,
+            children // Thay subcategory bằng children
+          };
+        });
+      };
 
     // handle xoá danh mục
     const handleDeleteCate = async (id: number) => {
