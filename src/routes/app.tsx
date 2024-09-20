@@ -11,7 +11,7 @@ import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
 import ListVoucher from "../pages/admin/Vouchers/index";
-import ListSize from "../pages/admin/Size/ListSize";
+import ListSize from "../pages/admin/Size/index.page";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -22,7 +22,7 @@ const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
 //Quản lý danh mục
 const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 //Quản lý phương thức thanh toán
-const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
+const PaymentsScreen = lazy(() => import('../pages/admin/Payments/index.page'));
 //Quản lý kích thước
 const SizesScreen = lazy(() => import('../pages/admin/Size/index.page'));
 //Quản lý bàn
