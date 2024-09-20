@@ -10,7 +10,7 @@ import AddProduct from "../pages/admin/Products/AddProduct";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
-import ListVoucher from "../pages/admin/Vouchers/ListVoucher";
+import ListVoucher from "../pages/admin/Vouchers/index";
 import ListSize from "../pages/admin/Size/ListSize";
 
 //Auth
