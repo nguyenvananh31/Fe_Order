@@ -6,6 +6,7 @@ import SliderCate from '../../../layout/users/component/SliderCate/SliderCate';
 import axios from 'axios';
 const Home = () => {
   const [products, setProducts] = useState([])
+
   // const  products, setProducts ]= useProductContext();
   useEffect(() => {
     (async () => {
@@ -24,6 +25,7 @@ const Home = () => {
       }
     })()
   }, [setProducts]);
+
   return (
     <div>
       <SliderTop />
