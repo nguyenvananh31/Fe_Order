@@ -1,33 +1,43 @@
 // src/components/ListTable.tsx
-import React, { useState } from 'react';
-import { Table, Button, Input, Select, Modal, Form, Input as AntInput, QRCode } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Input, Select, Modal, Form, Input as AntInput, notification, QRCode } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-
-interface TableData {
-  id: number;
-  name: string;
-  description: string;
-  status: string;
-  idForQRCode: number; // ID để tạo URL QR code
-}
-
-const initialData: TableData[] = [
-  { id: 1, name: 'Bàn 1', description: 'Bàn gần cửa sổ', status: 'Available', idForQRCode: 1 },
-  { id: 2, name: 'Bàn 2', description: 'Bàn ở giữa phòng', status: 'Occupied', idForQRCode: 2 },
-  { id: 3, name: 'Bàn 3', description: 'Bàn gần quầy bar', status: 'Available', idForQRCode: 3 },
-];
+import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
 
+interface TableData {
+  id: number;
+  table: string;
+  description: string;
+  status: number; // Thay đổi thành số
+  idForQRCode: number; // ID để tạo URL QR code
+}
+
 const ListTable: React.FC = () => {
-  const [data, setData] = useState<TableData[]>(initialData);
-  const [filteredData, setFilteredData] = useState<TableData[]>(initialData);
+  const [data, setData] = useState<TableData[]>([]);
+  const [filteredData, setFilteredData] = useState<TableData[]>([]);
   const [searchText, setSearchText] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<number | undefined>(undefined);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<TableData | null>(null);
   const [form] = Form.useForm(); // Khởi tạo form
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await ApiUtils.fetch('/api/admin/tables');
+      setData(res.data);
+      setFilteredData(res.data);
+    } catch (error) {
+      console.error('Error fetching tables:', error);
+      notification.error({ message: 'Error fetching tables' });
+    }
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
@@ -36,13 +46,14 @@ const ListTable: React.FC = () => {
   };
 
   const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
-    filterData(searchText, value);
+    const status = value === '' ? undefined : Number(value); // Chuyển đổi giá trị thành số
+    setStatusFilter(status);
+    filterData(searchText, status); // Chuyển đổi giá trị thành số
   };
 
-  const filterData = (searchText: string, status?: string) => {
-    let filtered = initialData.filter(item => item.name.toLowerCase().includes(searchText));
-    if (status) {
+  const filterData = (searchText: string, status?: number) => {
+    let filtered = data.filter(item => item.table.toLowerCase().includes(searchText));
+    if (status !== undefined) {
       filtered = filtered.filter(item => item.status === status);
     }
     setFilteredData(filtered);
@@ -59,22 +70,27 @@ const ListTable: React.FC = () => {
       title: 'Xóa Bàn',
       content: 'Bạn có chắc chắn muốn xóa bàn này?',
       onOk: () => {
-        const newData = data.filter(item => item.id !== id);
-        setData(newData);
-        setFilteredData(newData);
+        ApiUtils.remove(`/api/admin/tables/${id}`)
+          .then(() => {
+            fetchData();
+            notification.success({ message: 'Deleted table successfully!' });
+          })
+          .catch((error) => {
+            notification.error({ message: 'Error deleting table!' });
+            console.error('Error deleting table:', error);
+          });
       },
     });
   };
 
   const handleAdd = () => {
     // Tạo dữ liệu mặc định cho bàn mới
-    const newId = data.length > 0 ? data[data.length - 1].id + 1 : 1;
     const newTableData: TableData = {
-      id: newId,
-      name: `Bàn ${newId}`,
+      id: 0, // Đặt ID tạm thời để xử lý trong form submit
+      table: '',
       description: '',
-      status: 'Available',
-      idForQRCode: newId
+      status: 0, // Mặc định là còn trống
+      idForQRCode: 0
     };
     setEditItem(newTableData);
     form.resetFields(); // Reset form fields
@@ -85,27 +101,36 @@ const ListTable: React.FC = () => {
   const handleOk = () => {
     form.validateFields().then(values => {
       if (editItem) {
-        if (editItem.id) {
+        console.log(values);
+        
+        if (editItem.id > 0) {
           // Cập nhật thông tin bàn
-          const updatedData = data.map(item => 
-            item.id === editItem.id ? { ...item, ...values } : item
-          );
-          setData(updatedData);
-          setFilteredData(updatedData);
+          ApiUtils.put(`/api/admin/tables/${editItem.id}`, values)
+            .then(() => {
+              fetchData();
+              notification.success({ message: 'Table updated successfully!' });
+              setIsModalVisible(false);
+              setEditItem(null);
+            })
+            .catch((error) => {
+              notification.error({ message: 'Error updating table!' });
+              console.error('Error updating table:', error);
+            });
         } else {
           // Thêm bàn mới
-          const newTableData: TableData = {
-            ...values,
-            id: data.length > 0 ? data[data.length - 1].id + 1 : 1,
-            idForQRCode: data.length > 0 ? data[data.length - 1].id + 1 : 1
-          };
-          const updatedData = [...data, newTableData];
-          setData(updatedData);
-          setFilteredData(updatedData);
+          ApiUtils.post('/api/admin/tables', { ...values, idForQRCode: data.length + 1 })
+            .then(() => {
+              fetchData();
+              notification.success({ message: 'Table added successfully!' });
+              setIsModalVisible(false);
+              setEditItem(null);
+            })
+            .catch((error) => {
+              notification.error({ message: 'Error adding table!' });
+              console.error('Error adding table:', error);
+            });
         }
       }
-      setIsModalVisible(false);
-      setEditItem(null);
     });
   };
 
@@ -116,14 +141,14 @@ const ListTable: React.FC = () => {
 
   const columns: ColumnsType<TableData> = [
     {
-      title: 'ID',
+      title: 'Index',
       dataIndex: 'id',
       key: 'id',
     },
     {
       title: 'Tên Bàn',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'table',
+      key: 'table', // Đảm bảo đúng tên thuộc tính
     },
     {
       title: 'Mô Tả',
@@ -134,24 +159,45 @@ const ListTable: React.FC = () => {
       title: 'Trạng Thái',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <span className={`px-2 py-1 text-white rounded-full ${status === 'Available' ? 'bg-green-500' : 'bg-red-500'}`}>
-          {status}
-        </span>
-      ),
+      render: (status: number) => {
+        let statusText = '';
+        let statusClass = '';
+        switch (status) {
+          case 1:
+            statusText = 'Đã đặt';
+            statusClass = 'bg-red-500'; // Hoặc màu bạn muốn
+            break;
+          case 0:
+            statusText = 'Còn trống';
+            statusClass = 'bg-green-500'; // Hoặc màu bạn muốn
+            break;
+          case 2:
+            statusText = 'Bàn đang bảo trì';
+            statusClass = 'bg-yellow-500'; // Hoặc màu bạn muốn
+            break;
+          default:
+            statusText = 'Không xác định';
+            statusClass = 'bg-gray-500'; // Hoặc màu bạn muốn
+        }
+        return (
+          <span className={`px-2 py-1 text-white rounded-full ${statusClass}`}>
+            {statusText}
+          </span>
+        );
+      },
     },
     {
       title: 'QR Code',
-      dataIndex: 'idForQRCode',
-      key: 'idForQRCode',
-      render: (idForQRCode) => (
-        <QRCode value={`https://yourdomain.com/tables/${idForQRCode}`} size={100} />
+      dataIndex: 'id',
+      key: 'id',
+      render: (id: number) => (
+        <QRCode value={`http://localhost:5173/tables/${id}`} size={100} />
       ),
     },
     {
       title: 'Hành Động',
       key: 'actions',
-      render: (_, record) => (
+      render: (_, record: TableData) => (
         <div className="flex space-x-2">
           <Button 
             icon={<EditOutlined />} 
@@ -184,8 +230,9 @@ const ListTable: React.FC = () => {
             className="w-48" // Điều chỉnh chiều rộng
           >
             <Option value="">Tất cả</Option>
-            <Option value="Available">Có sẵn</Option>
-            <Option value="Occupied">Đã đặt</Option>
+            <Option value="0">Còn trống</Option>
+            <Option value="1">Đã đặt</Option>
+            <Option value="2">Bàn đang bảo trì</Option>
           </Select>
         </div>
         <Button 
@@ -202,7 +249,7 @@ const ListTable: React.FC = () => {
         title={editItem?.id ? 'Chỉnh Sửa Bàn' : 'Thêm Bàn'}
         visible={isModalVisible}
         onCancel={handleCancel}
-        footer={[
+        footer={[ 
           <Button key="back" onClick={handleCancel}>
             Hủy
           </Button>,
@@ -218,21 +265,31 @@ const ListTable: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={editItem}
         >
-          <Form.Item name="name" label="Tên Bàn" rules={[{ required: true, message: 'Tên bàn là bắt buộc' }]}>
+          <Form.Item 
+            label="Tên Bàn"
+            name="table"
+            rules={[{ required: true, message: 'Vui lòng nhập tên bàn!' }]}
+          >
             <AntInput />
           </Form.Item>
-          <Form.Item name="description" label="Mô Tả">
+          <Form.Item 
+            label="Mô Tả"
+            name="description"
+          >
             <AntInput />
           </Form.Item>
-          <Form.Item name="status" label="Trạng Thái" rules={[{ required: true, message: 'Trạng thái là bắt buộc' }]}>
+          <Form.Item 
+            label="Trạng Thái"
+            name="status"
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+          >
             <Select>
-              <Option value="Available">Có sẵn</Option>
-              <Option value="Occupied">Đã đặt</Option>
+              <Option value={0}>Còn trống</Option>
+              <Option value={1}>Đã đặt</Option>
+              <Option value={2}>Bàn đang bảo trì</Option>
             </Select>
           </Form.Item>
-          {/* Không cần trường QR Code trong form */}
         </Form>
       </Modal>
     </div>

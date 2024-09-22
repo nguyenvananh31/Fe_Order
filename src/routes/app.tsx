@@ -10,6 +10,8 @@ import AddProduct from "../pages/admin/Products/AddProduct";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
+import ListVoucher from "../pages/admin/Vouchers/ListVoucher";
+import ListSize from "../pages/admin/Size/ListSize";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -34,8 +36,6 @@ const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'))
 
 
 //sizes
-const SizeScreen = lazy(() => import('../pages/admin/Size/index.page'));
-
 
 
 export interface IRoutesProperties {
@@ -128,7 +128,12 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.SIZES,
         name: 'Quản lý kích cỡ',
-        element: <SizeScreen />,
+        element: <ListSize />,
+    },
+    {
+        path: RoutePath.VOUCHER,
+        name: 'Quản lý Voucher',
+        element: <ListVoucher />,
     }
 ];
 

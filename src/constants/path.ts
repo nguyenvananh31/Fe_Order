@@ -23,8 +23,13 @@ export const RoutePath = {
     CUSTOMERS: 'customers',
     SIZES: 'sizes',
 
-    ERROR: 'error',
 
-    ADMIN_EDIT_PRODUCT: 'product-edit'
+   
+
+    
+
+
+    ADMIN_EDIT_PRODUCT: 'product-edit',
+    VOUCHER : 'vouchers'
 
 }
