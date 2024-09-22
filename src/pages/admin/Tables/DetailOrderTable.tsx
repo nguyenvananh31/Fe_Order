@@ -164,7 +164,7 @@ const DetailOrderTable: React.FC = () => {
                     <Table columns={columns} dataSource={data} rowKey="id" pagination={{ pageSize: 5 }} />
 
                     <Modal
-                        visible={modalVisible}
+                        open={modalVisible}
                         title={editingRecord ? 'Edit Order' : 'Add Order'}
                         onCancel={() => setModalVisible(false)}
                         footer={null}

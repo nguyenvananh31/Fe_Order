@@ -13,9 +13,9 @@ export default function GuestGuard({ children }: IProps) {
 
     useEffect(() => {
         if (!!user?.roles.length) {
-            navigate(RoutePath.ADMIN);
+            navigate(`/${RoutePath.ADMIN}`);
         } else if (user) {
-            navigate(RoutePath.HOME);
+            navigate(`/${RoutePath.HOME}`);
         }
     }, []);
 

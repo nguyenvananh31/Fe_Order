@@ -164,7 +164,7 @@ const ListPayment: React.FC = () => {
                     <Table columns={columns} dataSource={data} rowKey="key" />
 
                     <Modal
-                        visible={modalVisible}
+                        open={modalVisible}
                         title={editingRecord ? 'Sửa phương thức thanh toán' : 'Thêm phương thức thanh toán'}
                         onCancel={() => setModalVisible(false)}
                         footer={null}

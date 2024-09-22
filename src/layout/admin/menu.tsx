@@ -1,5 +1,5 @@
 // components/SharedMenu.tsx
-import { ClockCircleOutlined, FileTextOutlined, GiftOutlined, LineHeightOutlined, PayCircleOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, FileTextOutlined, GiftOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { Link } from "react-router-dom";
 import { RoutePath } from "../../constants/path";
@@ -36,31 +36,31 @@ export const LISTMENU: MenuItem[] = [
     icon: <LineHeightOutlined />,
   },
   {
-    key: 'product',
-    label: 'Sản phẩm',
-    icon: <SettingOutlined />,
+    key: RoutePath.ADMIN_PRODUCT_MAIN,
+    label: 'Quản lý sản phẩm',
+    icon: <InboxOutlined />,
     children: [
-      { key: 'product-list', label: (
-        <Link to={`products`}>Danh sách sản phẩm</Link>
+      { key: RoutePath.ADMIN_PRODUCT, label: (
+        <Link to={RoutePath.ADMIN_PRODUCT}>Danh sách sản phẩm</Link>
       ) },
       {
-        key: 'product-add', label: (
-          <Link to={`product-add`}>Thêm sản phẩm</Link>
+        key: RoutePath.ADMIN_ADD_PRODUCT, label: (
+          <Link to={RoutePath.ADMIN_ADD_PRODUCT}>Thêm sản phẩm</Link>
         )
       }
     ],
   },
   {
-    key: 'table',
+    key: RoutePath.ADMIN_TABLE_MAIN,
     label: 'Quản lý bàn',
     icon: <ClockCircleOutlined />,
     children: [
-      { key: 'tables', label: (
-        <Link to={`tables`}>Danh sách bàn</Link>
+      { key: RoutePath.ADMIN_TABLE, label: (
+        <Link to={RoutePath.ADMIN_TABLE}>Danh sách bàn</Link>
       ) },
       {
-        key: 'tables-order', label: (
-          <Link to={`tables-order`}>Danh sách Order bàn</Link>
+        key: RoutePath.ADMIN_TABLE_ORDER, label: (
+          <Link to={RoutePath.ADMIN_TABLE_ORDER}>Danh sách Order bàn</Link>
         )
       }
     ],

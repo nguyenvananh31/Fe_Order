@@ -50,7 +50,7 @@ const useCate = () => {
                 if (res.data) {
                     const cates = convertCategoryToTree(res.data);
                     
-                    setState({ ...state, data: cates || [], loading: false, total: cates.length });
+                    setState({ ...state, data: cates || [], loading: false, total: res.meta.total });
                 }
             } catch (error: any) {
                 console.log(error);
