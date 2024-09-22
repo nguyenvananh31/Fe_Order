@@ -10,8 +10,8 @@ import AddProduct from "../pages/admin/Products/AddProduct";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
-import ListVoucher from "../pages/admin/Vouchers/ListVoucher";
-import ListSize from "../pages/admin/Size/ListSize";
+import ListVoucher from "../pages/admin/Vouchers/index";
+import ListSize from "../pages/admin/Size/index.page";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -22,16 +22,17 @@ const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
 //Quản lý danh mục
 const CateScreen = lazy(() => import('../pages/admin/Categories/index.page'));
 //Quản lý phương thức thanh toán
-const PaymentsScreen = lazy(() => import('../pages/admin/Payments/ListPayment'));
-//Quản lý sản phẩm
-// const ProductScreen = lazy(() => import('../pages/admin/Products/ListProduct'));
-// const AddProductScreen = lazy(() => import('../pages/admin/Products/AddProduct'));
+const PaymentsScreen = lazy(() => import('../pages/admin/Payments/index.page'));
+//Quản lý kích thước
+const SizesScreen = lazy(() => import('../pages/admin/Size/index.page'));
 //Quản lý bàn
 const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
 const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
 
 //customers
+
 const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'));
+
 
 //sizes
 
@@ -77,6 +78,11 @@ const accountRoutes: IRoutesProperties[] = [
         element: <CateScreen />,
     },
     {
+        path: RoutePath.SIZES,
+        name: 'Quản lý kích thước',
+        element: <SizesScreen />,
+    },
+    {
         path: RoutePath.PAYMENT,
         name: 'Quản lý phương thức thanh toán',
         element: <PaymentsScreen />,
@@ -91,6 +97,7 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý bàn đặt',
         element: <DetailOrderTable />,
     },
+
     {
         path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
@@ -106,6 +113,7 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý thêm sản phẩm',
         element: <AddProduct />,
     },
+
     {
         path: RoutePath.ADMIN_TABLE,
         name: 'Quản lý bàn',

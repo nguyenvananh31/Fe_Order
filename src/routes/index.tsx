@@ -14,6 +14,8 @@ import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import Table from "../pages/user/Table/Table";
+import Error from "../pages/user/Error/Error";
 
 
 const Router = () => {
@@ -36,6 +38,8 @@ const Router = () => {
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
+          <Route path={RoutePath.TABLE} element={<Table />} />
+          <Route path={RoutePath.ERROR} element={<Error/>} />
         </Route>
         <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {

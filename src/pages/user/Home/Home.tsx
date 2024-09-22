@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
 import SliderTop from '../../../layout/users/component/SliderTop/SliderTop';
@@ -38,7 +39,8 @@ const Home = () => {
           <ItemProduct key={index} product={item}  />
         ))}
       </div>
+
     </div>
   )
 }
-export default Home
+export default Home;

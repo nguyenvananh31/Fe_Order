@@ -1,5 +1,5 @@
 // components/SharedMenu.tsx
-import { FileTextOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, FileTextOutlined, GiftOutlined, LineHeightOutlined, PayCircleOutlined, SettingOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { Link } from "react-router-dom";
 import { RoutePath } from "../../constants/path";
@@ -29,6 +29,13 @@ export const LISTMENU: MenuItem[] = [
     icon: <FileTextOutlined />,
   },
   {
+    key: RoutePath.SIZES,
+    label: (
+      <Link to={RoutePath.SIZES}>Quản lý kích thước</Link>
+    ),
+    icon: <LineHeightOutlined />,
+  },
+  {
     key: 'product',
     label: 'Sản phẩm',
     icon: <SettingOutlined />,
@@ -46,6 +53,7 @@ export const LISTMENU: MenuItem[] = [
   {
     key: 'table',
     label: 'Quản lý bàn',
+    icon: <ClockCircleOutlined />,
     children: [
       { key: 'tables', label: (
         <Link to={`tables`}>Danh sách bàn</Link>
@@ -59,20 +67,16 @@ export const LISTMENU: MenuItem[] = [
   },
   {
     key: RoutePath.PAYMENT,
+    icon: <PayCircleOutlined />,
     label: (
       <Link to={RoutePath.PAYMENT}>Payment</Link>
     ),
   },
   {
     key: RoutePath.VOUCHER,
+    icon: <GiftOutlined />,
     label: (
       <Link to={RoutePath.VOUCHER}>Voucher</Link>
-    ),
-  },
-  {
-    key: RoutePath.SIZES,
-    label: (
-      <Link to={RoutePath.SIZES}>Quản lý Size</Link>
     ),
   },
 ];

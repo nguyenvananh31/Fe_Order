@@ -3,14 +3,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
-import { ICate } from "../../../../interFaces/categories";
-import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
+import { Isize } from "../../../../interFaces/size";
+import { apiChangeStatus, apiDeleteCate, apiGetCates } from "../../Categories/utils/categories.service";
+import { apiDeleteSize, apiGetSizes, apiUpdateSize, apiUpdateStatusSize } from "./size.service";
 
 
 interface ISate {
     loadingSubmit: boolean;
     loading: boolean;
-    data: ICate[];
+    data: Isize[];
     pageSize: number;
     pageIndex: number;
     total: number;
@@ -33,7 +34,7 @@ const initState: ISate = {
     search: false
 }
 
-const useCate = () => {
+const useSize = () => {
     const [state, setState] = useState<ISate>(initState);
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
@@ -46,11 +47,9 @@ const useCate = () => {
         const fetchData = async () => {
             setState({ ...state, loading: true });
             try {
-                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
+                const res = await apiGetSizes({ page: state.pageIndex, per_page: state.pageSize });
                 if (res.data) {
-                    const cates = convertCategoryToTree(res.data);
-                    
-                    setState({ ...state, data: cates || [], loading: false, total: cates.length });
+                    setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
                 }
             } catch (error: any) {
                 console.log(error);
@@ -61,33 +60,12 @@ const useCate = () => {
         fetchData();
     }, [state.refresh]);
 
-    // Hàm đệ quy chuyển đổi dữ liệu danh mục
-    const convertCategoryToTree = (categories: any[]): any[] => {
-        return categories.map(category => {
-          const { id, name, image, status, parent_id, name_parent, subcategory, created_at, updated_at } = category;
-      
-          const children = subcategory && subcategory.length > 0 ? convertCategoryToTree(subcategory) : [];
-          
-          return {
-            id,
-            name,
-            image,
-            status,
-            parent_id,
-            name_parent,
-            created_at,
-            updated_at,
-            children // Thay subcategory bằng children
-          };
-        });
-      };
-
-    // handle xoá danh mục
+    // handle xoá kích thước
     const handleDeleteCate = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            await apiDeleteCate(id);
-            showToast('success', 'Xoá danh mục thành công!');
+            await apiDeleteSize(id);
+            showToast('success', 'Xoá kích thước thành công!');
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');
@@ -96,11 +74,11 @@ const useCate = () => {
     }
 
     // handle thay đổi trạng thái 
-    const handleChangeStatus = async (id: number, status: boolean) => {
+    const handleChangeStatus = async (id: number) => {
         try {
             setState(prev => ({ ...prev, loadingSubmit: true }));
-            const res = await apiChangeStatus(id, { status: !status });
-            showToast('success', res.message);
+            await apiUpdateStatusSize(id);
+            showToast('success', 'Cập nhật thành công kích thước!');
         } catch (error) {
             console.log(error);
             showToast('error', 'Có lỗi xảy ra!');
@@ -153,4 +131,4 @@ const useCate = () => {
     }
 }
 
-export default useCate;
+export default useSize;

@@ -16,6 +16,7 @@ const auth = createSlice({
             return state;
         },
         removeAuth: (state: IUser | null) => {
+            localStorageUtils.remove(KeyStorage.AUTH);
             state = null;
             return state;
         }
