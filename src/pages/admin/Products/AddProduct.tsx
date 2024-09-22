@@ -85,7 +85,6 @@ const AddProduct: React.FC = () => {
       formData.append(`product_details[${index}][price]`, variant.price)
       formData.append(`product_details[${index}][quantity]`, variant.quantity)
       formData.append(`product_details[${index}][sale]`, variant.sale)
-
       variant.images.fileList.forEach((item) => {
         formData.append(`product_details[${index}][images][][file]`, item.originFileObj)
       })
