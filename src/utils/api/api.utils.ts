@@ -57,7 +57,7 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
     if (!authToken) {
       authToken = customHeaders?.access_token || null;
     }
-    if (authToken && !API_KEY ) {
+    if (authToken && !API_KEY) {
       header.Authorization = `Bearer ${authToken}`;
     }
     if (API_KEY) {

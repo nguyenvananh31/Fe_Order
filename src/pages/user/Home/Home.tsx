@@ -14,7 +14,7 @@ const Home = () => {
       try {
         const res = await axios.get(url, {
           headers: {
-            'Api_key': 'PPhZygIbLHiaA7PhRCTvqEf4fdQ3MH5jowQDD4DK275ph4co88qkeynWOjPB',
+            'Api_key': 'Mej9ao3hfxn68l70DImqcreshf06nU84S7qvY481yZrEWTpcOiLzPtdzBqzg',
           },
         });
         console.log(res.data.data.data);
