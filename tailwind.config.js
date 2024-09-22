@@ -9,7 +9,9 @@ export default {
         'gridLayout': '1fr 300px', 
         'gridLayout2': ' 300px 1fr', 
         'gridTopNav': '2fr 1fr', 
-        'gridCartItem' : 'auto 125px'
+        'gridCartItem' : 'auto 125px',
+        'gridProductDetail' : '1.5fr 2fr'
+
       },
       transitionDuration: {
         '1s': '0.3s',

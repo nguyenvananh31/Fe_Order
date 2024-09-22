@@ -13,6 +13,7 @@ import Checkout from "../pages/user/Checkout/Checkout";
 import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
+import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 
 
 const Router = () => {
@@ -34,6 +35,7 @@ const Router = () => {
           <Route path={RoutePath.CONTACT} element={<Contact />} />
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
+          <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
         </Route>
         <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
