@@ -1,5 +1,5 @@
 import { BellOutlined, CloseOutlined, LogoutOutlined, MenuUnfoldOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
-import { Affix, Avatar, Badge, Drawer, Dropdown, Menu, MenuProps } from "antd";
+import { Avatar, Badge, Drawer, Dropdown, Menu, MenuProps } from "antd";
 import useHeader from "./header.hooks";
 import { LISTMENU } from "./menu";
 
@@ -105,7 +105,8 @@ export const HeaderMain = () => {
           </div>
         </div>
         <Menu
-          defaultSelectedKeys={hooks.activeMenu}
+          defaultSelectedKeys={[hooks.activeMenu[0]]}
+          openKeys={hooks.activeMenu[1] ? [hooks.activeMenu[1]] : undefined}
           mode="inline"
           theme="light"
           items={LISTMENU}

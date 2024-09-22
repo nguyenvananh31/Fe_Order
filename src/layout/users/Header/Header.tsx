@@ -80,7 +80,7 @@ const Header = () => {
             placement="right"
             onClose={onClose}
             closable={false}
-            visible={visible}
+            open={visible}
             className="w-full relative"
         >
           <div className="sideBar-heading px-4 py-6 w-full flex items-center justify-between border-b-[1px] shadow-sm">
