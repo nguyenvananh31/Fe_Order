@@ -22,7 +22,7 @@ interface Product {
         setLiked(!liked);
     };
     // const { products } = useProductContext();
-    console.log(product);
+    // console.log(product);
 
     return (
         <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>

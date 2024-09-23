@@ -46,6 +46,10 @@
   color: var(--textColor2);
   font-family: var(--font-2);
 }
+.text-type-auto {
+  color: var(--textColor1);
+  font-family: var(--font-2);
+}
 // button loại 1 (".btn-type-1")
 .btn-type {
   &-1 {

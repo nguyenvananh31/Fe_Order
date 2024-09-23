@@ -5,19 +5,21 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      font: {
+        font1: '"Bebas Neue", sans-serif',
+      },
       gridTemplateColumns: {
-        'gridLayout': '1fr 300px', 
-        'gridLayout2': ' 300px 1fr', 
-        'gridTopNav': '2fr 1fr', 
-        'gridCartItem' : 'auto 125px',
-        'gridProductDetail' : '1.5fr 2fr'
-
+        gridLayout: "1fr 300px",
+        gridLayout2: " 300px 1fr",
+        gridTopNav: "2fr 1fr",
+        gridCartItem: "auto 125px",
+        gridProductDetail: "1.5fr 2fr",
       },
       transitionDuration: {
-        '1s': '0.3s',
+        "1s": "0.3s",
       },
       transitionTimingFunction: {
-        'ease-in-out': 'ease-in-out', 
+        "ease-in-out": "ease-in-out",
       },
       backgroundColor: {
         primary: "#ffffff",
