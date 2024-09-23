@@ -39,8 +39,9 @@ const Router = () => {
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
           <Route path={RoutePath.TABLE} element={<Table />} />
-          <Route path={RoutePath.ERROR} element={<Error/>} />
+          
         </Route>
+        <Route path="*" element={<Error/>} />
         <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
