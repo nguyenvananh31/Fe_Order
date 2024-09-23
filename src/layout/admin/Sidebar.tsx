@@ -2,6 +2,7 @@ import { Avatar, Layout, Menu } from "antd";
 import React, { useEffect, useState } from "react";
 import { LISTMENU } from "./menu";
 import { useLocation } from "react-router-dom";
+import { menuActive, menuPath } from "../../constants/path";
 
 const { Sider } = Layout;
 
@@ -10,12 +11,21 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const loaction = useLocation();
-  const [activeMenu, setActiveMenu] = useState<string[]>(['']);
+  const [activeMenu, setActiveMenu] = useState<(string)[]>(['']);
 
   useEffect(() => {
-      const menu: string = loaction.pathname.split('/').pop() || '';
+    let menu: string = loaction.pathname.split('/').pop() || '';
+
+    if (+menu) {
+      let pathParts = location.pathname.split('/');
+      menu = pathParts[pathParts.length - 2] || '';
+    }
+    if (menuPath[menu] && collapsed) {
+      setActiveMenu([menuActive[menu] || menu, menuPath[menu]]);
+    } else {
       setActiveMenu([menu]);
-  }, [loaction])
+    }
+  }, [loaction, collapsed])
 
   return (
     <Sider
@@ -41,13 +51,14 @@ const Sidebar: React.FC = () => {
               className={`transition-all duration-500 ${!collapsed ? 'animate-slideIn' : 'animate-slideOut'
                 }`}
             >
-              <h1 className="text-xl font-bold">Yagi</h1>
+              <h1 className="text-xl font-bold">Nhà Hàng Yagi</h1>
             </div>
           )}
         </div>
       </div>
       <Menu
-        selectedKeys={activeMenu}
+        selectedKeys={[activeMenu[0] || '']}
+        openKeys={activeMenu[1] ? [activeMenu[1]] : undefined}
         mode="inline"
         theme="light"
         items={LISTMENU}

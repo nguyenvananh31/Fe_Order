@@ -1,45 +1,70 @@
-// SliderTop.tsx
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/pagination'; // Import pagination styles
 import 'tailwindcss/tailwind.css';
-import { Button } from 'antd';
-
-import { Autoplay, Pagination } from 'swiper/modules'; // Import Pagination
+import './SliderTop.scss';
 
 const SliderTop: React.FC = () => {
   return (
-    <div className="relative w-full h-screen bg-red-900">
+    <div className="sliderTop relative w-full h-screen">
       <Swiper
-        modules={[Autoplay, Pagination]} // Add Pagination module
-        loop={true}
-        pagination={{ clickable: true }} // Enable clickable dots
+        modules={[Autoplay, Pagination]} // Autoplay and Pagination modules
+        loop={true} // Enable infinite loop
+        pagination={{ clickable: true, dynamicBullets: true }} // Clickable pagination dots with dynamic size
+        autoplay={{ delay: 3000, disableOnInteraction: false }} // Autoplay with 3 seconds delay
         className="h-full"
+        spaceBetween={50} // Space between slides
       >
-        <SwiperSlide className="flex justify-center items-center">
-          <div className="text-white flex flex-col items-center space-y-4">
-            <h1 className="text-4xl font-bold">Best Roof Top Cafe in Patna</h1>
-            <p className="text-xl">Hot Spicy Murg Dum Biryani</p>
-            <p className="text-3xl font-semibold">₹399</p>
-            <Button type="primary" size="large" className="bg-green-600">
-              Order Now
-            </Button>
+        {/* Slide 1 */}
+        <SwiperSlide className="flex justify-center items-center p-12">
+          <div className="text-black max-w-[1140px] mx-auto grid grid-cols-gridProductDetail p-12 gap-20">
+            <div className="slider-img">
+              <img className='w-full h-[400px] object-contain' src="https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png" alt="" />
+            </div>
+            <div className="slider-content pt-[20%]">
+              <h1 className="text-5xl font-bold text-white">Best Roof Top Cafe in Patna</h1>
+              <p className="text-2xl mt-3 text-white">Hot Spicy Murg Dum Biryani</p>
+              <p className="text-3xl font-semibold text-white mt-3">$399</p>
+              <button className='btn-type-2 mt-8'><span>Order now</span></button>
+            </div>
+
           </div>
         </SwiperSlide>
 
-        <SwiperSlide className="flex justify-center items-center">
-          <div className="text-white flex flex-col items-center space-y-4">
-            <h1 className="text-4xl font-bold">Delicious Paneer Butter Masala</h1>
-            <p className="text-xl">Only available for a limited time</p>
-            <p className="text-3xl font-semibold">₹299</p>
-            <Button type="primary" size="large" className="bg-green-600">
-              Order Now
-            </Button>
+        {/* Slide 2 */}
+        <SwiperSlide className="flex justify-center items-center p-12">
+          <div className="text-black max-w-[1140px] mx-auto grid grid-cols-gridProductDetail p-12 gap-20">
+            <div className="slider-img">
+              <img className='w-full h-[400px] object-contain' src="https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png" alt="" />
+            </div>
+            <div className="slider-content pt-[20%]">
+              <h1 className="text-5xl font-bold text-white">Best Roof Top Cafe in Patna</h1>
+              <p className="text-2xl mt-3 text-white">Hot Spicy Murg Dum Biryani</p>
+              <p className="text-3xl font-semibold text-white mt-3">$399</p>
+              <button className='btn-type-2 mt-8'><span>Order now</span></button>
+            </div>
+
           </div>
         </SwiperSlide>
 
-        {/* Add more slides as needed */}
+        {/* Slide 3 */}
+        <SwiperSlide className="flex justify-center items-center p-12">
+          <div className="text-black max-w-[1140px] mx-auto grid grid-cols-gridProductDetail p-12 gap-20">
+            <div className="slider-img">
+              <img className='w-full h-[400px] object-contain' src="https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png" alt="" />
+            </div>
+            <div className="slider-content pt-[20%]">
+              <h1 className="text-5xl font-bold text-white">Best Roof Top Cafe in Patna</h1>
+              <p className="text-2xl mt-3 text-white">Hot Spicy Murg Dum Biryani</p>
+              <p className="text-3xl font-semibold text-white mt-3">$399</p>
+              <button className='btn-type-2 mt-8'><span>Order now</span></button>
+            </div>
+
+          </div>
+        </SwiperSlide>
       </Swiper>
     </div>
   );

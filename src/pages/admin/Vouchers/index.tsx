@@ -31,7 +31,7 @@ const ListVoucher: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const res = await ApiUtils.fetch('/api/admin/vouchers');
+            const res: any = await ApiUtils.fetch('/api/admin/vouchers');
             const transformedData = res.data.map((voucher: any, index: number) => ({
                 key: voucher.id,
                 name: voucher.name,
