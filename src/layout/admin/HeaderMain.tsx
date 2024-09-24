@@ -7,7 +7,7 @@ import { LISTMENU } from "./menu";
 export const HeaderMain = () => {
 
   const { ...hooks } = useHeader();
-  
+
   // Menu item Account
   const items: MenuProps['items'] = [
     {
@@ -53,7 +53,7 @@ export const HeaderMain = () => {
       ),
     },
   ];
-  
+
   return (
     <>
       <div className="bg-white drop-shadow-primary rounded-primary mx-6 px-5 leading-none py-3 mt-4">
@@ -106,11 +106,12 @@ export const HeaderMain = () => {
         </div>
         <Menu
           defaultSelectedKeys={[hooks.activeMenu[0]]}
-          openKeys={hooks.activeMenu[1] ? [hooks.activeMenu[1]] : undefined}
+          openKeys={hooks.activeMenu[1] ? hooks.activeMenu[1] : undefined}
           mode="inline"
           theme="light"
           items={LISTMENU}
           onClick={hooks.toggleDraw}
+          onOpenChange={hooks.handleChange}
         />
       </Drawer>
     </>
