@@ -1,31 +1,19 @@
 import { Avatar, Layout, Menu } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { LISTMENU } from "./menu";
-import { useLocation } from "react-router-dom";
-import { menuActive, menuPath } from "../../constants/path";
+import useMenu from "./useMenu";
 
 const { Sider } = Layout;
 
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { activeMenu, handleChange } = useMenu();
 
-  const loaction = useLocation();
-  const [activeMenu, setActiveMenu] = useState<(string)[]>(['']);
-
-  useEffect(() => {
-    let menu: string = loaction.pathname.split('/').pop() || '';
-
-    if (+menu) {
-      let pathParts = location.pathname.split('/');
-      menu = pathParts[pathParts.length - 2] || '';
-    }
-    if (menuPath[menu] && collapsed) {
-      setActiveMenu([menuActive[menu] || menu, menuPath[menu]]);
-    } else {
-      setActiveMenu([menu]);
-    }
-  }, [loaction, collapsed])
+  const closeNav = (value: boolean) => {
+    setCollapsed(value);
+    handleChange([], !value);
+  }
 
   return (
     <Sider
@@ -40,7 +28,7 @@ const Sidebar: React.FC = () => {
       theme="light"
       collapsible
       collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
+      onCollapse={closeNav}
       width={260}
     >
       <div className={`m-1 justify-around py-3 flex items-center`}>
@@ -58,10 +46,11 @@ const Sidebar: React.FC = () => {
       </div>
       <Menu
         selectedKeys={[activeMenu[0] || '']}
-        openKeys={activeMenu[1] ? [activeMenu[1]] : undefined}
+        openKeys={activeMenu[1] ? activeMenu[1] : undefined}
         mode="inline"
         theme="light"
         items={LISTMENU}
+        onOpenChange={handleChange}
       />
     </Sider>
   );

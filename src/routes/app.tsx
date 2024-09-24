@@ -38,6 +38,8 @@ const ProductScreen = lazy(() => import('../pages/admin/Products/index.page'));
 const AddProductScreen= lazy(() => import('../pages/admin/Products/components/AddProduct'));
 const EditProductScreen= lazy(() => import('../pages/admin/Products/components/EditProduct'));
 
+//Quản lý đơn
+const BillScreen = lazy(() => import('../pages/admin/Bill/index.page'));
 
 export interface IRoutesProperties {
     path: RouteProps['path'];
@@ -140,6 +142,11 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.VOUCHER,
         name: 'Quản lý Voucher',
         element: <ListVoucher />,
+    },
+    {
+        path: RoutePath.AD_BILL,
+        name: 'Quản lý đơn',
+        element: <BillScreen />,
     }
 ];
 
