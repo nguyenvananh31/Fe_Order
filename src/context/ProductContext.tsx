@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { notification } from 'antd';
 
 interface ProductContextType {
   products: any[];
@@ -6,7 +7,8 @@ interface ProductContextType {
   setProducts: (products: any[]) => void;
   addToCart: (product: any) => void;
   removeFromCart: (id: number | string) => void;
-  updateQuantity: (id: number | string, action: 'increase' | 'decrease') => void;  // Hàm cập nhật số lượng
+  updateQuantity: (id: number | string, action: 'increase' | 'decrease') => void;
+  getTotalPrice: () => number;  // Hàm tính tổng giá trị giỏ hàng
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -28,18 +30,35 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     setCart((prevCart) => {
       const existingProduct = prevCart.find((item) => item.id === product.id);
       if (existingProduct) {
+        // Nếu sản phẩm đã tồn tại, tăng số lượng lên
         return prevCart.map((item) =>
             item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
+        // Thêm sản phẩm mới vào giỏ hàng
         return [...prevCart, { ...product, quantity: 1 }];
       }
+    });
+
+    // Thông báo chỉ xuất hiện một lần khi thêm sản phẩm vào giỏ hàng
+    notification.success({
+      message: 'Added to Cart',
+      description: `${product.name} has been added to your cart.`,
+      placement: 'bottomRight',
     });
   };
 
   // Hàm xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = (id: number | string) => {
+    const product = cart.find((item) => item.id === id);
+    if (!product) return;
+
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    notification.warning({
+      message: 'Removed from Cart',
+      description: `${product.name} has been removed from your cart.`,
+      placement: 'bottomRight',
+    });
   };
 
   // Hàm cập nhật số lượng sản phẩm
@@ -56,10 +75,20 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
           return item;
         })
     );
+    notification.success({
+      message: 'Updated to Cart',
+      description: `The cart has been updated !`,
+      placement: 'bottomRight',
+    });
+  };
+
+  // Hàm tính tổng giá trị giỏ hàng
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
-      <ProductContext.Provider value={{ products, setProducts, cart, addToCart, removeFromCart, updateQuantity }}>
+      <ProductContext.Provider value={{ products, setProducts, cart, addToCart, removeFromCart, updateQuantity, getTotalPrice }}>
         {children}
       </ProductContext.Provider>
   );
