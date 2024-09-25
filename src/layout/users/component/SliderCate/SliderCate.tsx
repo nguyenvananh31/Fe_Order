@@ -19,7 +19,7 @@ const SliderCate: React.FC = () => {
             try {
                 const res = await axios.get(url, {
                     headers: {
-                        'Api_key': 'Mej9ao3hfxn68l70DImqcreshf06nU84S7qvY481yZrEWTpcOiLzPtdzBqzg',
+                        'Api_key': 'X5eAbbdgwaEWF2fC2u6ZYSN8rLUCbtBzROW92ngJauftSO5gJ27HGsCzL9sw',
                     },
                 });
 
@@ -70,99 +70,6 @@ const SliderCate: React.FC = () => {
                         </div>
                     </SwiperSlide>
                 ))}
-
-                {/* 
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide>
-
-                <SwiperSlide className="flex justify-center items-center">
-                    <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
-                        <div className="cate-item-img">
-                            <img src='https://modinatheme.com/html/foodking-html/assets/img/food/pizza-3.png' className="cate-item__img w-full h-[200px] object-contain"></img>
-                        </div>
-                        <div className="cate-item-content text-center">
-                            <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                            <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>Pizza</h3>
-                            <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> 10 Product</span>
-                        </div>
-                    </div>
-                </SwiperSlide> */}
-
             </Swiper>
         </div>
     );

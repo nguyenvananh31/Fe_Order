@@ -21,7 +21,7 @@ const ProductDetail = () => {
             try {
                 const res = await axios.get(url, {
                     headers: {
-                        'Api_key': 'Mej9ao3hfxn68l70DImqcreshf06nU84S7qvY481yZrEWTpcOiLzPtdzBqzg',
+                        'Api_key': import.meta.env.VITE_API_KEY,
                     },
                 });
 

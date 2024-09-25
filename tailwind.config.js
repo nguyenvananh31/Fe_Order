@@ -5,8 +5,13 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      font: {
+      fontFamily: {
         font1: '"Bebas Neue", sans-serif',
+        font2: "inter-regular",
+        font3: '"Bebas Neue", sans-serif',
+        font4: '"Barlow Condensed", sans-serif',
+        font5: '"SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace',
+        font6: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji',
       },
       gridTemplateColumns: {
         gridLayout: "1fr 300px",
