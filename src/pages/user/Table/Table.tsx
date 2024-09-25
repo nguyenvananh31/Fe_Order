@@ -13,7 +13,7 @@ const Table = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(''); // Lọc theo trạng thái
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2); // Số item mỗi trang
+  const [pageSize, setPageSize] = useState(8); // Số item mỗi trang
 
   const [bookingModalVisible, setBookingModalVisible] = useState(false); // Modal visibility
   const [selectedTable, setSelectedTable] = useState(null); // Selected table ID
@@ -143,7 +143,7 @@ const Table = () => {
                 #{index + 1} - {table.status == 1 ? `Available` : `Unavailable`}
               </span>
               <div className="table-content relative w-full group-hover:scale-[1.2] duration-300 mt-[30px]">
-                <div className={`table-img mx-auto text-center w-[60px] h-[60px] flex items-center justify-center border-[2px] ${table.status == 1 ? ` border-mainColor2` : ` border-mainColor1`} rounded-lg group-hover:border-bodyColor`}>
+                <div className={`table-img mx-auto text-center w-[60px] h-[60px] sm:w-[100px] sm:h-[100px] flex items-center justify-center border-[2px] ${table.status == 1 ? ` border-mainColor2` : ` border-mainColor1`} rounded-lg group-hover:border-bodyColor`}>
                   <span className="text-black text-2xl border-b-[2px] group-hover:text-white">{table.table}</span>
                 </div>
                 <p className="text-sm text-center mt-2 group-hover:opacity-0">{table.description}</p>

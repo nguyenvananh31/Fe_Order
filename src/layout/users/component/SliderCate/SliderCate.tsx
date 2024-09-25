@@ -19,7 +19,7 @@ const SliderCate: React.FC = () => {
             try {
                 const res = await axios.get(url, {
                     headers: {
-                        'Api_key': 'X5eAbbdgwaEWF2fC2u6ZYSN8rLUCbtBzROW92ngJauftSO5gJ27HGsCzL9sw',
+                        'Api_key': import.meta.env.VITE_API_KEY,
                     },
                 });
 
@@ -27,7 +27,7 @@ const SliderCate: React.FC = () => {
                     if (item.id > 0) {
                         const count = await axios.get(`${url2}${item.id}`, {
                             headers: {
-                                'Api_key': 'Mej9ao3hfxn68l70DImqcreshf06nU84S7qvY481yZrEWTpcOiLzPtdzBqzg',
+                                'Api_key': import.meta.env.VITE_API_KEY,
                             },
                         });
                         setCountCates(count.data.data);
@@ -65,7 +65,7 @@ const SliderCate: React.FC = () => {
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
                                 <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3>
-                                <span className="cate-item-quantity text-mainColor1 text-md block mt-2">10 Product</span>
+                                <span className="cate-item-quantity text-mainColor1 text-md block mt-2">{countCates.length} Product</span>
                             </div>
                         </div>
                     </SwiperSlide>
