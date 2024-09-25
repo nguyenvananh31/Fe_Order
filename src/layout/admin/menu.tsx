@@ -1,5 +1,5 @@
 // components/SharedMenu.tsx
-import { ClockCircleOutlined, FileTextOutlined, GiftOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, FileSearchOutlined, FileTextOutlined, GiftOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { Link } from "react-router-dom";
 import { RoutePath } from "../../constants/path";
@@ -66,17 +66,24 @@ export const LISTMENU: MenuItem[] = [
     ],
   },
   {
+    key: RoutePath.AD_BILL,
+    icon: <FileSearchOutlined />,
+    label: (
+      <Link to={RoutePath.AD_BILL}>Quản lý đơn</Link>
+    ),
+  },
+  {
     key: RoutePath.PAYMENT,
     icon: <PayCircleOutlined />,
     label: (
-      <Link to={RoutePath.PAYMENT}>Payment</Link>
+      <Link to={RoutePath.PAYMENT}>Quản lý thanh toán</Link>
     ),
   },
   {
     key: RoutePath.VOUCHER,
     icon: <GiftOutlined />,
     label: (
-      <Link to={RoutePath.VOUCHER}>Voucher</Link>
+      <Link to={RoutePath.VOUCHER}>Quản lý khuyến mại</Link>
     ),
   },
 ];

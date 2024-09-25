@@ -56,16 +56,16 @@ const SliderCate: React.FC = () => {
                 slidesPerView={4}
             >
                 {/* Slide 1 */}
-                {cates.map((cate) => (
-                    <SwiperSlide className="flex justify-center items-center">
+                {cates.map((cate, index) => (
+                    <SwiperSlide key={cate.id || index} className="flex justify-center items-center">
                         <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
                             <div className="cate-item-img">
-                                <img src={cate?.image} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain"></img>
+                                <img src={cate?.image} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
                             </div>
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
                                 <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3>
-                                <span className="cate-item-quantity text-mainColor1 text-md block mt-2"> {countCates.length} Product</span>
+                                <span className="cate-item-quantity text-mainColor1 text-md block mt-2">10 Product</span>
                             </div>
                         </div>
                     </SwiperSlide>

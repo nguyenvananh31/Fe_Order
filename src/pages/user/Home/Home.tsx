@@ -18,31 +18,32 @@ const Home = () => {
           },
         });
         console.log(res.data.data.data);
-        setProducts(res.data.data.data)
-        // return data.data;
+          setProducts(res.data.data.products || []); // Sử dụng dấu || [] để đảm bảo products luôn là mảng
       } catch (error) {
-        console.error('Error fetching products:', error);
+          console.error('Error fetching products:', error);
+          setProducts([]); // Trong trường hợp có lỗi, gán mảng rỗng
       }
     })()
   }, [setProducts]);
 
   return (
-    <div>
-      <SliderTop />
-      <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
-        <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
-      </div>
-      <SliderCate />
-      <div className="container max-w-[1140px] my-16 grid grid-cols-4 px-20 gap-3 mx-auto">
-        {/* <ItemProduct />
-        <ItemProduct />
-        <ItemProduct /> */}
-        {products.map((item,index) => (
-          <ItemProduct key={index} product={item}  />
-        ))}
-      </div>
+      <div>
+          <SliderTop/>
+          <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
+              <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
+          </div>
+          <SliderCate/>
+          <div>
+              {products && products.length > 0 ? (
+                  products.map((item, index) => (
+                      <ItemProduct key={index} product={item}/>
+                  ))
+              ) : (
+                  <p>No products available</p> // Thông báo hoặc xử lý khi dữ liệu chưa có
+              )}
+          </div>
 
-    </div>
+      </div>
   )
 }
 export default Home;

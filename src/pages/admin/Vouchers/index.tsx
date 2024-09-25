@@ -83,6 +83,8 @@ const ListVoucher: React.FC = () => {
     };
 
     const handleSubmit = async (values: { name: string; value: string; expiration_date: string; status: number }) => {
+        console.log(values);
+        
         const formData = new FormData();
         formData.append('name', values.name);
         formData.append('value', values.value);
@@ -104,7 +106,7 @@ const ListVoucher: React.FC = () => {
                     console.error('Error updating voucher:', error);
                 });
         } else {
-            ApiUtils.post('/api/admin/vouchers', formData)
+            ApiUtils.postForm('/api/admin/vouchers', formData)
                 .then(() => {
                     fetchData();
                     notification.success({ message: 'Voucher added successfully!' });
