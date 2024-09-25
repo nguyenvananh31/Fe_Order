@@ -9,6 +9,7 @@ interface Product {
     thumbnail?: string;
     name: string;
     id?: number|string;
+    product_details: ProductDetail[];
 }
 
 interface ItemProductProps {
@@ -27,8 +28,9 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
     // Xử lý sự kiện khi nhấn nút Add to Cart
     const handleAddToCart = () => {
         addToCart(product);  // Thêm sản phẩm vào giỏ hàng
-        console.log(`${product.name} đã được thêm vào giỏ hàng`);
     };
+    // Lấy thông tin product_details từ product
+    const firstDetail = product.product_details[0];  // Lấy giá từ phần tử đầu tiên của mảng product_details
 
     return (
         <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>
@@ -63,7 +65,7 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
             </div>
             <div className="sale-preview flex text-white items-center justify-center gap-[10px] py-[16px]">
                 <span className="discount bg-mainColor3 text-[16px] text-textColor1 font-light py-[4px] px-[6px] group-hover:bg-bodyColor rounded-[3px] ">-5%</span>
-                <span className="default text-mainColor1 text-[16px] font-light">$60</span>
+                <span className="default text-mainColor1 text-[16px] font-light">${firstDetail.price}</span>
                 <span className="price text-textColor2 text-[16px]">$100</span>
             </div>
             <Link to={`product/${product.id}`} className='pro-info__title text-center text-[18px] text-textColor1'>
