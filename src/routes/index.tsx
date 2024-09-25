@@ -16,6 +16,7 @@ import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import Error from "../pages/user/Error/Error";
+import Order from "../pages/user/Order/Order";
 
 
 const Router = () => {
@@ -39,6 +40,8 @@ const Router = () => {
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
           <Route path={RoutePath.TABLE} element={<Table />} />
+          <Route path={RoutePath.ORDER} element={<Order />} />
+
           
         </Route>
         <Route path="*" element={<Error/>} />
