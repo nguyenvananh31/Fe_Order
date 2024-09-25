@@ -121,11 +121,18 @@ export default function BillModel({ onClose, showToast, itemId = undefined, data
             >
                 <Row gutter={20}>
                     <Col span={24}>
-                        Thông tin
+                        <Row gutter={20}>
+                            <Col xs={24} md={12}>
+
+                            </Col>
+                            <Col xs={24} md={12}>
+                                
+                            </Col>
+                        </Row>
                     </Col>
                     <Col span={24}>
                         <div className='flex items-center justify-between'>
-                            <h1 className='p-6 text-xl font-semibold'>Quản lý đơn</h1>
+                            <h1 className='text-xl font-semibold'>Quản lý đơn</h1>
                         </div>
                         {/* <Table
                             loading={state.loading}

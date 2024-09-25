@@ -173,6 +173,7 @@ export default function AddProduct() {
         formData.append('name', values.product_name);
         formData.append('category_id', values.category_id);
         formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
+        values.description && formData.append('description', values.description);
 
         values.variant.forEach((variant: any, index: number) => {
             formData.append(`product_details[${index}][size_id]`, variant.size_id)
@@ -180,11 +181,11 @@ export default function AddProduct() {
             formData.append(`product_details[${index}][quantity]`, variant.quantity)
             formData.append(`product_details[${index}][sale]`, variant.sale)
             variant.images.forEach((item: any) => {
-              formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
+                formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
             });
         });
         try {
-            setState((prev) => ({ ...prev, loadingBtn: false }));         
+            setState((prev) => ({ ...prev, loadingBtn: false }));
             const res = await apiAddProduct(formData);
 
             if (res.data) {
@@ -194,7 +195,7 @@ export default function AddProduct() {
         } catch (error) {
             showToast('error', 'Thêm sản phẩm thất bại!');
         }
-        setState((prev) => ({ ...prev, loadingBtn: false }));         
+        setState((prev) => ({ ...prev, loadingBtn: false }));
     }
 
     return <>
@@ -253,6 +254,17 @@ export default function AddProduct() {
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                 placeholder="Chọn danh mục"
                                 treeData={state.cate}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item
+                            name={'description'}
+                            label="Mô tả sản phẩm"
+                        >
+                            <Input.TextArea
+                                placeholder="Mô tả sản phẩm"
+                                autoSize={{ minRows: 3, maxRows: 5 }}
                             />
                         </Form.Item>
                     </Col>

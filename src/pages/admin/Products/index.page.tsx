@@ -38,7 +38,7 @@ export default function ProductPage() {
                 title: 'Số lượng',
                 dataIndex: 'sl',
                 align: 'center',
-                render: (_: any, {product_details}:any) => {
+                render: (_: any, { product_details }: any) => {
                     return (
                         <Tooltip title="Số lượng biến thể">
                             <span>{product_details ? product_details.length : 0}</span>
@@ -66,6 +66,16 @@ export default function ProductPage() {
                         />
                     );
                 },
+            },
+            {
+                title: 'Danh mục',
+                dataIndex: 'cate',
+                align: 'center',
+                render: (_: any, { category: {name} }: any) => {
+                    return (
+                        <span>{name}</span>
+                    )
+                }
             },
             {
                 title: 'Trạng thái',
@@ -98,7 +108,7 @@ export default function ProductPage() {
                 fixed: 'right',
                 render: (_: any, { id }: any) => (
                     <Tooltip title="Chi tiết và cập nhập">
-                        <Button  onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
+                        <Button onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
                     </Tooltip>
                 )
             },
@@ -129,7 +139,7 @@ export default function ProductPage() {
                     type='primary'
                     icon={<PlusOutlined />}
                     className='mx-6'
-                onClick={() => hooks.handleToAdd()}
+                    onClick={() => hooks.handleToAdd()}
                 >
                     Thêm sản phẩm
                 </Button>
