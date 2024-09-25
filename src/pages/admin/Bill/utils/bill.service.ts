@@ -13,16 +13,16 @@ export const apiGetBils = async (params?: any) => {
 }
 
 export const apiGetOneBill = async (id: number) => {
-    const res = await ApiUtils.fetch<any, ResponeBase<IBillDetail>>(`${apiName.bill}/${id}`);
+    const res = await ApiUtils.fetch<any, ResponeBase<IBill>>(`${apiName.bill}/${id}`);
     return res;
 }
 
 export const apiGetOneBillDetail = async (id: number) => {
-    const res = await ApiUtils.fetch<any, ResponeBase<IBillDetail>>(`${apiName.billDetail}/${id}`);
+    const res = await ApiUtils.fetch<any, ResponeBase<IBillDetail[]>>(`${apiName.billDetail}/${id}`);
     return res;
 }
 
 export const apiUpdateStatus = async (id: number, status: number) => {
-    const res = await ApiUtils.put<number, ResponeBase<IBillDetail>>(`${apiName.bill}/${id}`, status);
+    const res = await ApiUtils.put<number, ResponeBase<IBill>>(`${apiName.bill}/${id}`, status);
     return res;
 }

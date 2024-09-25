@@ -1,10 +1,19 @@
 import { Button, Col, Modal, Row } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
-import { IBill } from "../../../../interFaces/bill";
+import { IBill, IBillDetail } from "../../../../interFaces/bill";
 import { apiGetOneBillDetail } from "../utils/bill.service";
+import { EOrderType } from "../../../../constants/enum";
 
-
+const statusBill = {
+    pending: { color: 'magenta', title: 'Đang chờ' },
+    confirmed: { color: 'cyan', title: 'Đã xác nhận' },
+    preparing: { color: 'gold', title: 'Chuẩn bị' },
+    shipping: { color: 'purple', title: 'Đang giao' },
+    completed: { color: 'green', title: 'Đã hoàn thành' },
+    cancelled: { color: 'red', title: 'Đã huỷ' },
+    failed: { color: 'volcano', title: 'Thất bại' }
+};
 interface IProps {
     itemId?: number;
     onRefresh: () => void;
@@ -17,7 +26,7 @@ interface IState {
     loading: boolean;
     loadingBtn: boolean;
     isEdit: boolean;
-    item?: IBill;
+    item?: IBillDetail[];
 }
 
 const initState: IState = {
@@ -32,7 +41,7 @@ export default function BillModel({ onClose, showToast, itemId = undefined, data
 
     useEffect(() => {
         console.log(data);
-        
+
         if (!itemId) {
             setState(prev => ({ ...prev, isEdit: true, loading: false }));
             return;
@@ -122,11 +131,41 @@ export default function BillModel({ onClose, showToast, itemId = undefined, data
                 <Row gutter={20}>
                     <Col span={24}>
                         <Row gutter={20}>
-                            <Col xs={24} md={12}>
-
+                            <Col xs={24} sm={12}>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Mã đơn:</span>
+                                    <span>#{data?.ma_bill}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Tên khách hàng:</span>
+                                    <span>{data?.khachhang.name || data?.khachhang.email}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Địa chỉ:</span>
+                                    <span>{data?.addresses || 'Chưa có'}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Ngày đặt:</span>
+                                    <span>{data?.order_date}</span>
+                                </div>
                             </Col>
-                            <Col xs={24} md={12}>
-                                
+                            <Col xs={24} sm={12}>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Cách thức:</span>
+                                    <span>{data?.order_type == EOrderType.In_restaurant ? 'Tại nhà hàng' : 'Online'}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Trạng thái:</span>
+                                    <span>{data?.khachhang.name || data?.khachhang.email}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Địa chỉ:</span>
+                                    <span>{data?.addresses || 'Chưa có'}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Ngày đặt:</span>
+                                    <span>{data?.order_date}</span>
+                                </div>
                             </Col>
                         </Row>
                     </Col>
