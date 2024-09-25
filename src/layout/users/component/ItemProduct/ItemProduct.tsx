@@ -19,7 +19,7 @@ interface ItemProductProps {
 const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
     const [liked, setLiked] = useState(false);
 
-    const { addToCart } = useProductContext();  // Lấy hàm addToCart từ context (giả sử bạn đã định nghĩa)
+    // const { addToCart } = useProductContext();  // Lấy hàm addToCart từ context (giả sử bạn đã định nghĩa)
 
     const handleClick = () => {
         setLiked(!liked);
