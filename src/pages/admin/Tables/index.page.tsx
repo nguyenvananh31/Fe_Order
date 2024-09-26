@@ -1,5 +1,6 @@
-import { Breadcrumb } from "antd"
+import { Breadcrumb, Button } from "antd"
 import useTable from "./utils/table.hooks"
+import { showSideOder } from "../../../utils/event-bus/event-bus.events";
 
 export default function TablePage() {
 
@@ -21,5 +22,6 @@ export default function TablePage() {
                 },
             ]}
         />
+        <Button onClick={() => {showSideOder(true, 12)}}>Test</Button>
     </>
 }

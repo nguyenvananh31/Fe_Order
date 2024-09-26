@@ -40,7 +40,7 @@ export default function CatePage() {
                 render: (_: any, item: IBill) => {
                     return (
                         <div className={`text-purple font-semibold`}>
-                            {item.branch_address}
+                            {item.branch_address || 'Chưa có'}
                         </div>
                     )
                 }
