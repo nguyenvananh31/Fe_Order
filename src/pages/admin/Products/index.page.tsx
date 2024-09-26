@@ -1,6 +1,6 @@
 import { Breadcrumb, Button, Image, Popconfirm, Space, Tooltip } from "antd";
 import useProduct from "./utils/product.hooks";
-import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { IProduct } from "../../../interFaces/product";
 import { ColumnProps } from "antd/es/table";
@@ -71,7 +71,7 @@ export default function ProductPage() {
                 title: 'Danh mục',
                 dataIndex: 'cate',
                 align: 'center',
-                render: (_: any, { category: {name} }: any) => {
+                render: (_: any, { category: { name } }: any) => {
                     return (
                         <span>{name}</span>
                     )
@@ -82,19 +82,19 @@ export default function ProductPage() {
                 dataIndex: 'status',
                 align: 'center',
                 width: '15%',
-                render: (_: any, cate: any) => (
+                render: (_: any, item: any) => (
                     <Tooltip title="Thay đổi trạng thái">
                         <Popconfirm
                             placement='topRight'
-                            title={`${!cate.status ? 'Hiển thị' : 'Ẩn'} sản phẩm`}
-                            description={`Bạn có muốn ${!cate.status ? 'hiển thị' : 'ẩn'} sản phẩm này?`}
+                            title={`${!item.status ? 'Hiển thị' : 'Ẩn'} sản phẩm`}
+                            description={`Bạn có muốn ${!item.status ? 'hiển thị' : 'ẩn'} sản phẩm này?`}
                             icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                             okText="Có"
                             cancelText="Không"
-                        // onConfirm={() => hooks.handleChangeStatus(cate.id, cate.status)}
+                            onConfirm={() => hooks.handleChangeStatus(item.id)}
                         >
-                            <Button loading={state.loadingSubmit} danger={!cate.status} className={`${!!cate.status && 'border-green-600 text-green-600'} min-w-[80px]`}>
-                                {!!cate.status ? "Hiển thị" : 'Ẩn'}
+                            <Button loading={state.loadingSubmit} danger={!item.status} className={`${!!item.status && 'border-green-600 text-green-600'} min-w-[80px]`}>
+                                {!!item.status ? "Hiển thị" : 'Ẩn'}
                             </Button>
                         </Popconfirm>
                     </Tooltip>
@@ -107,9 +107,24 @@ export default function ProductPage() {
                 width: '15%',
                 fixed: 'right',
                 render: (_: any, { id }: any) => (
-                    <Tooltip title="Chi tiết và cập nhập">
-                        <Button onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
-                    </Tooltip>
+                    <>
+                        <Tooltip title="Chi tiết và cập nhập">
+                            <Button onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
+                        </Tooltip>
+                        <Tooltip title="Xoá">
+                            <Popconfirm
+                                placement='topRight'
+                                title={`Xoá sản phẩm`}
+                                description={`Bạn có muốn xoá sản phẩm này?`}
+                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                                okText="Có"
+                                cancelText="Không"
+                                onConfirm={() => hooks.handleDelePro(id)}
+                            >
+                                <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
+                            </Popconfirm>
+                        </Tooltip>
+                    </>
                 )
             },
         ];

@@ -265,10 +265,10 @@ export default function EditProduct() {
             const res = await apiUpdatePro(+productId!, formData);
 
             if (res.data) {
-                showToast('success', 'Thêm sản phẩm thành công!');
+                showToast('success', 'Cập nhật sản phẩm thành công!');
             }
         } catch (error) {
-            showToast('error', 'Sửa sản phẩm thất bại!');
+            showToast('error', 'Cập nhật sản phẩm thất bại!');
         }
         setState((prev) => ({ ...prev, loadingBtn: false }));
     }
@@ -277,7 +277,10 @@ export default function EditProduct() {
     const backToList = useCallback(() => { navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_PRODUCT}`); }, []);
 
     //Handle làm lại
-    const handleRefresh = useCallback(() => { setState(prev => ({ ...prev, refresh: !prev.refresh, loadingBtn: true })) }, []);
+    const handleRefresh = useCallback(() => {
+        form.resetFields();
+        setState(prev => ({ ...prev, refresh: !prev.refresh, loadingBtn: true }))
+    }, []);
 
     return <>
         {contextHolder}
@@ -373,6 +376,7 @@ export default function EditProduct() {
                                 fileList={thumbnail}
                                 onPreview={handlePreview}
                                 beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                             >
                                 {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>

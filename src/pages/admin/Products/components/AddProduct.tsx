@@ -1,9 +1,9 @@
-import { CloseOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import { CloseOutlined, LeftOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Card, Col, Form, Image, Input, Row, TreeSelect, Upload, UploadFile, UploadProps } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import { RcFile } from "antd/es/upload";
 import { GetProp, Select } from "antd/lib";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FileRule } from "../../../../constants/common";
 import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
@@ -198,6 +198,12 @@ export default function AddProduct() {
         setState((prev) => ({ ...prev, loadingBtn: false }));
     }
 
+    //Handle back list
+    const backToList = useCallback(() => { navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_PRODUCT}`); }, []);
+
+    //Handle làm lại
+    const handleRefresh = useCallback(() => { form.resetFields(); }, []);
+
     return <>
         {contextHolder}
         <Breadcrumb
@@ -215,12 +221,20 @@ export default function AddProduct() {
             ]}
         />
         <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <div className='flex items-center justify-end p-6'>
+            <div className='flex items-center justify-end p-6 gap-4'>
                 <Button
                     icon={<RedoOutlined />}
                     type='default'
+                    onClick={handleRefresh}
                 >
                     Làm mới
+                </Button>
+                <Button
+                    icon={<LeftOutlined />}
+                    type='default'
+                    onClick={backToList}
+                >
+                    Quay lại
                 </Button>
             </div>
             <Form
@@ -281,6 +295,7 @@ export default function AddProduct() {
                                 fileList={thumbnail}
                                 onPreview={handlePreview}
                                 beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                             >
                                 {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>
