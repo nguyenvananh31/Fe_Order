@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
 import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
 
 import Search from "antd/es/transfer/search";
@@ -14,6 +14,7 @@ import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import ListProducts from "../pages/user/Product/Products";
+import Profiles from "../pages/user/profiles/Profiles";
 
 
 const Router = () => {
@@ -37,13 +38,14 @@ const Router = () => {
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.PRODUCTS} element={<ListProducts />} />
         </Route>
-        <Route path={RoutePath.ADMIN} element={user ? !!user.roles.length ? <BaseLayoutAdmin /> : <Navigate to={RoutePath.HOME} /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
+        <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
             ))
           }
         </Route>
+          <Route path={RoutePath.PROFILE} element={<Profiles />} />
       </Routes>
     </>
   );

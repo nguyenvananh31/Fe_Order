@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
-import { Table, Modal, Button, Input, Select, Image, Space } from 'antd';
+import { Table, Modal, Button, Input, Select, Image, Space, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import useProducts from './utils/ListProduct.hooks';
 import { IProduct } from '../../../interFaces/product';
+import { getImageUrl } from '../../../constants/common';
 
 const { Option } = Select;
 
@@ -17,14 +18,16 @@ const ListProduct: React.FC = () => {
   // Fetch product data
   const { products, cate, onDelete } = useProducts();
   console.log(products);
-  
-  // console.log(cate.subcategory);
 
   // Filtered products based on search term, category, and price range
-
-  const filteredProducts = products.filter((product: { name: string; }) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter((product: { sub_categories_id: string; }) => selectedCategory ? product.sub_categories_id === selectedCategory : true)
-    .filter((product: { price: number; }) =>
+  const filteredProducts = products
+    .filter((product: { name: string }) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((product: { sub_categories_id: string }) =>
+      selectedCategory ? product.sub_categories_id === selectedCategory : true
+    )
+    .filter((product: { price: number }) =>
       priceRange === null || (product.price >= priceRange[0] && product.price <= priceRange[1])
     );
 
@@ -34,14 +37,18 @@ const ListProduct: React.FC = () => {
       title: 'STT',
       dataIndex: 'id',
       key: 'sno',
-      render: ( index: number) => <span>{index + 1}</span>,
+      render: (index: number) => <span>{index + 1}</span>,
     },
     {
       title: 'Tên',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: IProduct) => (
-        <Button type="link" className='text-md font-semibold text-[#000] hover:text-blue-800 ' onClick={() => showProductDetails(record)}>
+        <Button
+          type="link"
+          className="text-md font-semibold text-[#000] hover:text-blue-800"
+          onClick={() => showProductDetails(record)}
+        >
           {text}
         </Button>
       ),
@@ -51,12 +58,12 @@ const ListProduct: React.FC = () => {
       dataIndex: 'thumbnail',
       key: 'thumbnail',
       render: (thumbnail: string, record: IProduct) => (
-        <div className='w-[130px] h-[100px]'>
+        <div className="w-[130px] h-[100px]">
           <Image
-            className='object-cover rounded-md shadow-sm hover:scale-110 transition-transform cursor-pointer'
-            src={thumbnail}
+            className="object-cover rounded-md shadow-sm hover:scale-110 transition-transform cursor-pointer"
+            src={getImageUrl(thumbnail)}
             alt={record.name}
-            preview={{ src: thumbnail, className: 'rounded-md' }}
+            preview={{ src: getImageUrl(thumbnail), className: 'rounded-md' }}
           />
         </div>
       ),
@@ -66,9 +73,15 @@ const ListProduct: React.FC = () => {
       dataIndex: 'sub_categories_id',
       key: 'category',
       render: (sub_categories_id: any, index: number) => (
-        <p>{cate.map(item => (
-          <span key={index}>{item.id == sub_categories_id || item.subcategory.id == sub_categories_id ? item.name : ""}</span>
-        ))}</p>
+        <p>
+          {cate.map((item) => (
+            <span key={index}>
+              {item.id == sub_categories_id || item.subcategory.id == sub_categories_id
+                ? item.name
+                : ''}
+            </span>
+          ))}
+        </p>
       ),
     },
     {
@@ -78,7 +91,14 @@ const ListProduct: React.FC = () => {
       render: (id: number, record: IProduct) => (
         <Space>
           <Button href={`/admin/product-edit/${id}`}>Sửa</Button>
-          <Button danger onClick={() => onDelete(id)}>Xóa</Button>
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa sản phẩm này không?"
+            onConfirm={() => onDelete(id)}
+            okText="Có"
+            cancelText="Không"
+          >
+            <Button danger>Xóa</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -113,8 +133,10 @@ const ListProduct: React.FC = () => {
             onChange={(value) => setSelectedCategory(value)}
           >
             <Option value="">Tất cả</Option>
-            {cate.map(item => (
-              <Option key={item.id} value={item.id}>{item.name}</Option>
+            {cate.map((item) => (
+              <Option key={item.id} value={item.id}>
+                {item.name}
+              </Option>
             ))}
           </Select>
           <Select
@@ -123,7 +145,7 @@ const ListProduct: React.FC = () => {
             allowClear
             onChange={(value) => {
               if (value === 'low') setPriceRange([0, 50000]);
-              else if (value === 'medium') setPriceRange([500000, 100000]);
+              else if (value === 'medium') setPriceRange([50000, 100000]);
               else if (value === 'high') setPriceRange([100000, 2000000000000]);
               else setPriceRange(null);
             }}
@@ -149,6 +171,7 @@ const ListProduct: React.FC = () => {
       {/* Product Details Modal */}
       <Modal
         title={selectedProduct?.name}
+        visible={isModalVisible}
         onCancel={handleModalCancel}
         footer={null}
         width={600}
@@ -165,11 +188,7 @@ const ListProduct: React.FC = () => {
             </div>
             <div className="w-2/3 pl-6">
               <h2 className="text-xl font-bold">{selectedProduct.name}</h2>
-              {/* <p className="text-lg font-semibold text-gray-700 mb-2">{selectedProduct.price} $</p>
-              <p className="text-sm text-gray-600 mb-1">Danh mục: {selectedProduct.category}</p>
-              <p className="text-sm text-gray-600 mb-3">Số lượng: {selectedProduct.quantity}</p>
-              <hr className="my-4" />
-              <p className="text-gray-700">{selectedProduct.description}</p> */}
+              {/* Additional product details can go here */}
             </div>
           </div>
         )}

@@ -1,11 +1,9 @@
-// src/App.tsx
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Popconfirm, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
-import axios from 'axios';
 import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
@@ -13,7 +11,7 @@ const { Option } = Select;
 interface PaymentMethod {
     key: string;
     name: string;
-    status: boolean;
+    status: number;
 }
 
 const ListPayment: React.FC = () => {
@@ -22,17 +20,26 @@ const ListPayment: React.FC = () => {
     const [editingRecord, setEditingRecord] = useState<null | PaymentMethod>(null);
     const [form] = Form.useForm();
 
-    // Fetch data from API
     useEffect(() => {
-        ApiUtils.fetch('/api/admin/payments')
-            .then(response => {
-                setData(response.data);
-            })
-            .catch(error => {
-                notification.error({ message: 'Lỗi khi tải dữ liệu!' });
-                console.error('Error fetching data:', error);
-            });
+        fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            const res = await ApiUtils.fetch('/api/admin/payments');
+            console.log("Data fetched:", res.data); // Kiểm tra dữ liệu trả về
+            const transformedData = res.data.map((payment: any, index: number) => ({
+                key: payment.id,
+                name: payment.name,
+                status: payment.status,
+                index: index + 1 // Thêm số thứ tự (STT) cho mỗi bản ghi
+            }));
+            console.log("Transformed Data:", transformedData); // Kiểm tra dữ liệu đã chuyển đổi
+            setData(transformedData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     const handleAdd = () => {
         setEditingRecord(null);
@@ -47,9 +54,9 @@ const ListPayment: React.FC = () => {
     };
 
     const handleDelete = (key: string) => {
-        axios.delete(`/api/payment-methods/${key}`)
+        ApiUtils.remove(`/api/admin/payments/${key}`)
             .then(() => {
-                setData(data.filter(item => item.key !== key));
+                fetchData(); // Cập nhật danh sách dữ liệu ngay sau khi xóa thành công
                 notification.success({ message: 'Xóa phương thức thanh toán thành công!' });
             })
             .catch(error => {
@@ -58,11 +65,11 @@ const ListPayment: React.FC = () => {
             });
     };
 
-    const handleSubmit = (values: { name: string; status: boolean }) => {
+    const handleSubmit = (values: { name: string; status: number }) => {
         if (editingRecord) {
-            axios.put(`/api/admin/payments/${editingRecord.key}`, values)
+            ApiUtils.put(`/api/admin/payments/${editingRecord.key}`, values)
                 .then(() => {
-                    setData(data.map(item => item.key === editingRecord.key ? { ...item, ...values } : item));
+                    fetchData(); // Cập nhật danh sách dữ liệu ngay sau khi sửa thành công
                     notification.success({ message: 'Sửa phương thức thanh toán thành công!' });
                     setModalVisible(false);
                 })
@@ -73,13 +80,14 @@ const ListPayment: React.FC = () => {
         } else {
             ApiUtils.post('/api/admin/payments', values)
                 .then(response => {
-                    setData([...data, { key: response.data.key, ...values }]);
+                    console.log('Response from server:', response); // Xem phản hồi từ server
+                    fetchData(); // Lấy lại dữ liệu mới nhất sau khi thêm thành công
                     notification.success({ message: 'Thêm phương thức thanh toán thành công!' });
                     setModalVisible(false);
                 })
                 .catch(error => {
+                    console.error('Error adding data:', error); // In chi tiết lỗi
                     notification.error({ message: 'Lỗi khi thêm phương thức thanh toán!' });
-                    console.error('Error adding data:', error);
                 });
         }
     };
@@ -87,8 +95,8 @@ const ListPayment: React.FC = () => {
     const columns: ColumnsType<PaymentMethod> = [
         {
             title: 'STT',
-            dataIndex: 'key',
-            key: 'key',
+            dataIndex: 'index', // Sử dụng số thứ tự (index) cho cột STT
+            key: 'index',
         },
         {
             title: 'Tên phương thức thanh toán',
@@ -99,9 +107,9 @@ const ListPayment: React.FC = () => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            render: (status: boolean) => (
-                <span className={`p-2 text-white rounded-md ${status ? 'bg-green-500' : 'bg-red-500'}`}>
-                    {status ? 'Hoạt động' : 'Ngừng hoạt động'}
+            render: (status: number) => (
+                <span className={`p-2 text-white rounded-md ${status === 1 ? 'bg-green-500' : 'bg-red-500'}`}>
+                    {status === 1 ? 'Hoạt động' : 'Ngừng hoạt động'}
                 </span>
             ),
         },
@@ -122,10 +130,7 @@ const ListPayment: React.FC = () => {
                         okText="Có"
                         cancelText="Không"
                     >
-                        <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                        />
+                        <Button icon={<DeleteOutlined />} danger />
                     </Popconfirm>
                 </span>
             ),
@@ -134,46 +139,54 @@ const ListPayment: React.FC = () => {
 
     return (
         <>
-            <section className="py-4 bg-white sm:py-16 lg:py-10 mt-8 rounded-lg shadow-md">
-                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <div className="flex items-center justify-center">
-                            <div className="w-20 h-20 -mr-6 overflow-hidden bg-gray-300 rounded-full shadow-lg">
-                                <img
-                                    className="object-fill w-full h-full ob"
-                                    src="https://www.brookings.edu/wp-content/uploads/2021/07/shutterstock_712977508_small.jpg"
-                                    alt=""
-                                />
+            <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
+                <section className="py-4 bg-white sm:py-6 lg:py-8">
+                    <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+                        <div className="max-w-2xl mx-auto text-center">
+                            <div className="flex items-center justify-center">
+                                <div className="w-20 h-20 -mr-6 overflow-hidden bg-gray-300 rounded-full">
+                                    <img
+                                        className="object-cover w-full h-full"
+                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/female-avatar-1.jpg"
+                                        alt=""
+                                    />
+                                </div>
+                                <div className="relative overflow-hidden bg-gray-300 border-8 border-white rounded-full w-28 h-28">
+                                    <img
+                                        className="object-cover w-full h-full"
+                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/male-avatar-1.jpg"
+                                        alt=""
+                                    />
+                                </div>
+                                <div className="w-20 h-20 -ml-6 overflow-hidden bg-gray-300 rounded-full">
+                                    <img
+                                        className="object-cover w-full h-full"
+                                        src="https://cdn.rareblocks.xyz/collection/celebration/images/cta/2/female-avatar-2.jpg"
+                                        alt=""
+                                    />
+                                </div>
                             </div>
-                            <div className="relative overflow-hidden bg-gray-300 border-8 border-white rounded-full shadow-lg w-28 h-28">
-                                <img
-                                    className="object-fill w-full h-full"
-                                    src="https://img.utdstc.com/icon/d49/c48/d49c4851fcbdecccece71a27cddf0a6bddb23173461e763ec32cd08eeb778c69:200"
-                                    alt=""
-                                />
-                            </div>
-                            <div className="w-20 h-20 -ml-6 overflow-hidden bg-gray-300 rounded-full shadow-lg">
-                                <img
-                                    className="object-fill w-full h-full"
-                                    src="https://news.nganluong.vn/wp-content/uploads/nhung-uu-diem-dang-noi-cua-hinh-thuc-thanh-toan-qr-pay1-300x200.jpg"
-                                    alt=""
-                                />
-                            </div>
+                            <h2 className="mt-8 text-3xl font-bold leading-tight text-black lg:mt-12 sm:text-4xl lg:text-5xl">
+                                Join <span className="border-b-8 border-yellow-300">5,482</span> other
+                                developers
+                            </h2>
+                            <p className="max-w-xl mx-auto mt-6 text-xl text-gray-600 md:mt-10">
+                                Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet
+                                sint. Velit officia consequat duis.
+                            </p>
+                            <Button
+                                type="primary"
+                                onClick={handleAdd}
+                                className="inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700"
+                            >
+                                Thêm phương thức
+                            </Button>
                         </div>
-                        <h2 className="mt-8 text-2xl font-bold leading-tight text-black lg:mt-12 sm:text-3xl lg:text-4xl">
-                            Thêm các phương thức thanh toán
-                        </h2>
-                        <p className="max-w-xl mx-auto mt-6 text-xl text-gray-600 md:mt-10">
-                           Bảo mật an toàn
-                        </p>
-                        <Button type="primary" onClick={handleAdd} className='inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700'>
-                            Thêm phương thức
-                        </Button>
                     </div>
-                </div>
-                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl border-t-2 mt-6">
+                </section>
 
-                    <Table columns={columns} dataSource={data} rowKey="key" />
+                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl border-t-2 mt-6">
+                    <Table columns={columns} dataSource={data} rowKey="key" pagination={{ pageSize: 5 }} />
 
                     <Modal
                         visible={modalVisible}
@@ -182,32 +195,26 @@ const ListPayment: React.FC = () => {
                         footer={null}
                         destroyOnClose
                     >
-                        <Form
-                            form={form}
-                            onFinish={handleSubmit}
-                            layout="vertical"
-                        >
+                        <Form form={form} onFinish={handleSubmit} layout="vertical">
                             <Form.Item
                                 name="name"
-                                className='text-base font-medium text-gray-900'
+                                className="text-base font-medium text-gray-900"
                                 label="Tên phương thức thanh toán"
-                                rules={[{ required: true, message: 'Vui lòng nhập tên phương thức!' }]}
-                            >
-                                <Input className='block w-full text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-blue-600 caret-blue-600' />
+                                rules={[{ required: true, message: 'Vui lòng nhập tên phương thức!' }]} >
+                                <Input className="block w-full text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-blue-600 caret-blue-600" />
                             </Form.Item>
                             <Form.Item
                                 name="status"
-                                className='text-base font-medium text-gray-900'
+                                className="text-base font-medium text-gray-900"
                                 label="Trạng thái"
-                                rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
-                            >
+                                rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}>
                                 <Select placeholder="Chọn trạng thái">
-                                    <Option value={true}>Hoạt động</Option>
-                                    <Option value={false}>Ngừng hoạt động</Option>
+                                    <Option value={1}>Hoạt động</Option>
+                                    <Option value={0}>Ngừng hoạt động</Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item>
-                                <Button type="primary" htmlType="submit" className='w-full mt-1'>
+                                <Button type="primary" htmlType="submit" className="w-full mt-1">
                                     Lưu
                                 </Button>
                             </Form.Item>
