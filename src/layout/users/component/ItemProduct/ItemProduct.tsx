@@ -26,11 +26,8 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
     };
 
     // Xử lý sự kiện khi nhấn nút Add to Cart
-    const handleAddToCart = () => {
-        addToCart(product);  // Thêm sản phẩm vào giỏ hàng
-    };
     // Lấy thông tin product_details từ product
-    const firstDetail = product.product_details[0];  // Lấy giá từ phần tử đầu tiên của mảng product_details
+    // const firstDetail = product.product_details[0];  // Lấy giá từ phần tử đầu tiên của mảng product_details
 
     return (
         <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>

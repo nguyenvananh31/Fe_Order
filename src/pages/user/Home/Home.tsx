@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
 import SliderTop from '../../../layout/users/component/SliderTop/SliderTop';
 import SliderCate from '../../../layout/users/component/SliderCate/SliderCate';
@@ -17,32 +17,31 @@ const Home = () => {
             'Api_key': import.meta.env.VITE_API_KEY,
           },
         });
-        console.log(res.data.data.data);
-          setProducts(res.data.data.products || []); // Sử dụng dấu || [] để đảm bảo products luôn là mảng
+        console.log(res.data.data);
+        setProducts(res.data.data); // Sử dụng dấu || [] để đảm bảo products luôn là mảng
       } catch (error) {
-          console.error('Error fetching products:', error);
-          setProducts([]); // Trong trường hợp có lỗi, gán mảng rỗng
+        console.error('Error fetching products:', error);
+        setProducts([]); // Trong trường hợp có lỗi, gán mảng rỗng
       }
     })()
   }, [setProducts]);
+  console.log(products);
 
   return (
+    <div>
+      <SliderTop />
+      <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
+        <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
+      </div>
+      <SliderCate />
       <div>
-          <SliderTop/>
-          <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
-              <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
-          </div>
-          <SliderCate/>
-          <div>
-              {products && products.length > 0 ? (
-                  products.map((item, index) => (
-                      <ItemProduct key={index} product={item}/>
-                  ))
-              ) : (
-                  <p>No products available</p> // Thông báo hoặc xử lý khi dữ liệu chưa có
-              )}
-          </div>
-          <section className="py-10 bg-white sm:py-16 lg:py-24">
+        {
+          products.map((item, index) => (
+            <ItemProduct key={index} product={item} />
+          ))
+        }
+      </div>
+      <section className="py-10 bg-white sm:py-16 lg:py-24">
         <div className="max-w-5xl px-4 mx-auto sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-xl font-medium text-gray-900">
@@ -81,7 +80,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      </div>
+    </div>
   )
 }
 export default Home;
