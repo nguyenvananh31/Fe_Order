@@ -6,20 +6,21 @@ import SpinnerLoader from './components/loader';
 import { themeToken } from "./constants/common";
 import Router from "./routes";
 import reduxStoreUtils from './utils/redux-store.utils';
+import { ProductProvider } from './context/ProductContext';  // Import ProductProvider
 
 function App() {
-
-    // const customizeRenderEmpty = () => <Typography.Text>Dữ liệu không tồn tại!</Typography.Text>;
-
     return (
         <>
-            <Provider store={reduxStoreUtils}>
-                <Suspense fallback={<SpinnerLoader />}>
+            {/* Bao bọc ứng dụng với ProductProvider */}
+            <ProductProvider>
+                <Provider store={reduxStoreUtils}>
                     <ConfigProvider locale={locale} theme={{ token: themeToken }}>
-                        <Router />
+                        <Suspense fallback={<SpinnerLoader />}>
+                            <Router />
+                        </Suspense>
                     </ConfigProvider>
-                </Suspense>
-            </Provider>
+                </Provider>
+            </ProductProvider>
         </>
     );
 }

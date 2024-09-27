@@ -5,17 +5,28 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        font1: '"Bebas Neue", sans-serif',
+        font2: "inter-regular",
+        font3: '"Bebas Neue", sans-serif',
+        font4: '"Barlow Condensed", sans-serif',
+        font5: '"SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace',
+        font6: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji',
+      },
       gridTemplateColumns: {
-        'gridLayout': '1fr 300px', 
-        'gridLayout2': ' 300px 1fr', 
-        'gridTopNav': '2fr 1fr', 
-        'gridCartItem' : 'auto 125px'
+        gridLayout: "1fr 300px",
+        gridLayout2: " 300px 1fr",
+        gridTopNav: "2fr 1fr",
+        gridCartItem: "auto 125px",
+        gridProductDetail: "1.5fr 2fr",
+        gridOrder: "1.5fr 2fr",
+
       },
       transitionDuration: {
-        '1s': '0.3s',
+        "1s": "0.3s",
       },
       transitionTimingFunction: {
-        'ease-in-out': 'ease-in-out', 
+        "ease-in-out": "ease-in-out",
       },
       backgroundColor: {
         primary: "#ffffff",

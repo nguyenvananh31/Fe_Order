@@ -14,7 +14,7 @@
   @include lg {
     @include fontStyle(16px, 24px);
   }
-  color: var(--textColor2);
+  // color: var(--textColor2);
   &:hover {
     color: var(--mainColor1);
   }
@@ -44,6 +44,10 @@
 .text-type-4 {
   @include fontStyle(16px, 26px);
   color: var(--textColor2);
+  font-family: var(--font-2);
+}
+.text-type-auto {
+  color: var(--textColor1);
   font-family: var(--font-2);
 }
 // button loại 1 (".btn-type-1")

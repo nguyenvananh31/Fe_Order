@@ -7,3 +7,11 @@
 @tailwind utilities;
 
 @import './configs/css/base.scss';
+.ant-tabs-tab{
+    padding: 0 !important;
+    margin: 0px 5px !important;
+}
+.ant-tabs-nav{
+    padding: 0 !important;
+    margin: 0!important;
+}

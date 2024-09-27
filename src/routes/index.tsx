@@ -14,6 +14,10 @@ import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import ListProducts from "../pages/user/Product/Products";
+import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import Table from "../pages/user/Table/Table";
+import Error from "../pages/user/Error/Error";
+import Order from "../pages/user/Order/Order";
 
 
 const Router = () => {
@@ -36,8 +40,14 @@ const Router = () => {
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
+          <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
+          <Route path={RoutePath.TABLE} element={<Table />} />
+          <Route path={RoutePath.ORDER} element={<Order />} />
+
+          
         </Route>
-        <Route path={RoutePath.ADMIN} element={user ? !!user.roles.length ? <BaseLayoutAdmin /> : <Navigate to={RoutePath.HOME} /> : <Navigate to={`/${RoutePath.LOGIN}`} />} >
+        <Route path="*" element={<Error/>} />
+        <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
