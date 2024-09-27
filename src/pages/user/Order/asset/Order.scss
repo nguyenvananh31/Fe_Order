@@ -1,0 +1,41 @@
+.banner-ads-order {
+  background-image: url("https://www.vrihiskydeck.com/assets/img/banner/banner-bg.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.tabs-order {
+  .ant-tabs-nav-wrap {
+    .ant-tabs-nav-list {
+      .ant-tabs-tab {
+        .ant-tabs-tab-btn {
+          font-size: 20px;
+          margin: 12px;
+          color: var(--mainColor2);
+        }
+        [aria-selected="true"] {
+          color: var(--mainColor1);
+        }
+      }
+    }
+  }
+}
+// aria-selected="true"
+/* Custom scrollbar */
+// .custom-scrollbar::-webkit-scrollbar {
+//     width: 6px; /* Đặt chiều rộng của thanh cuộn */
+//   }
+  
+//   .custom-scrollbar::-webkit-scrollbar-thumb {
+//     background-color: #4a90e2; /* Đặt màu cho phần cuộn */
+//     border-radius: 10px; /* Tạo góc bo tròn cho thanh cuộn */
+//   }
+  
+//   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+//     background-color: #357ABD; /* Màu khi hover */
+//   }
+  
+//   .custom-scrollbar::-webkit-scrollbar-track {
+//     background-color: #ff0000; /* Đặt màu cho track (background của scrollbar) */
+//   }
+  

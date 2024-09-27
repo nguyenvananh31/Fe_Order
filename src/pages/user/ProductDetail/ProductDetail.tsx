@@ -5,6 +5,7 @@ import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import './asset/ProductDetail.scss'
 // import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
 const { TabPane } = Tabs;
 
@@ -51,12 +52,12 @@ const ProductDetail = () => {
     };
     return (
         <>
-            <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto mt-12 gap-[24px]">
+            <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">
                 {productDetails.length > 0 ?
                     productDetails.map((item, index) => (
                         (activeVariant === (Number(index) + 1) || activeVariant === String(Number(index) + 1)) && (
-                            <div key={index} className='container grid grid-cols-gridProductDetail max-w-[1140px] px-[16px] lg:px-[20px] mx-auto mt-12 gap-[24px]'>
-                                <div className="container-left px-8">
+                            <div key={index} className='container md:grid grid-cols-gridProductDetail block max-w-[1140px] mx-auto md:mt-12 mt-0 gap-[24px]'>
+                                <div className="container-left md:px-8 px-0">
                                     <div className="box-image-wrapper">
                                         <div className="box-image-thumbnail w-full h-1/3">
                                             <Image
@@ -66,7 +67,7 @@ const ProductDetail = () => {
                                                 preview={{ src: 'https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png', className: 'rounded-md' }}
                                             />
                                         </div>
-                                        <div className="box-image-list grid grid-cols-3 gap-[24px] mt-[24px] px-4">
+                                        <div className="box-image-list grid grid-cols-3 gap-[24px] md:mt-[24px] mt-3 md:px-4 p-0">
                                             <Image
                                                 className="box-image-list__img w-40 h-40 object-cover"
                                                 src={'https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png'}
@@ -88,10 +89,9 @@ const ProductDetail = () => {
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className="container-right">
                                     <div className="box-info-wrapper">
-                                        <div className="box-vote flex items-center gap-[8px] mt-12">
+                                        <div className="box-vote flex items-center gap-[8px] md:mt-2 mt-6">
                                             <span className='box-vote__discount px-3 py-2 bg-mainColor3 rounded-sm'>-5%</span>
                                             <div className="pro-ratting text-[16px] text-mainColor3 group-hover:text-bgColor1">
                                                 <StarFilled />
@@ -102,14 +102,14 @@ const ProductDetail = () => {
                                             </div>
                                             <span className='text-xl capitalize'>(5 Review)</span>
                                         </div>
-                                        <h1 className='product__title text-3xl font-bold mt-[20px]'>{product?.name}</h1>
-                                        <p className='priduct__desc text-type-4 mt-[16px]'>There are many variations of passages of Lorem Ipsum available, but majority have suffered teration in some form, by injected humour, or randomised</p>
-                                        <div className="product-cost mt-[20px] flex gap-3">
-                                            <span className='product__price text-3xl text-textColor1'>${item.price}</span>
-                                            <del className='text-2xl text-type-4 opacity-60 text-mainColor1'>${Number(item.price) + Number(item.sale)}</del>
+                                        <h1 className='product__title text-3xl font-bold mt-[20px] uppercase text-textColor1'>{product?.name}</h1>
+                                        <p className='priduct__desc text-type-4 mt-[16px]'>{product?.descrption}</p>
+                                        <div className="product-cost mt-[20px] flex items-center gap-3">
+                                            <span className='product__price text-2xl text-textColor1 font-semibold'>${item.price}</span>
+                                            <del className='text-2xl font-font1 text-type-4 opacity-60 text-mainColor1'>${Number(item.price) + Number(item.sale)}</del>
                                         </div>
                                         <div className="quantity flex items-center space-x-2 mt-[16px] gap-2">
-                                            <span className="font-bold text-sm text-type-3">QUANTITY:</span>
+                                            <span className="font-bold text-sm text-type-3 text-textColor1">QUANTITY :</span>
                                             <div className="flex items-center border py-1 border-mainColor2 rounded-md text-type-3">
                                                 <Button
                                                     className="flex items-center justify-center w-8 h-8 border-none shadow-none z-[100] text-type-3"
@@ -132,26 +132,26 @@ const ProductDetail = () => {
                                             <button className="btn-type-1"><span>Order now</span></button>
                                             <button className="btn-type-2"><span>Add to cart</span></button>
                                         </div>
-                                        <div className="product-variant mt-[40px] text-textColor1">
-                                            <h4 className='text-md  mb-3'>Quantity : {item?.category}</h4>
-                                            <div className='text-md flex items-center'>
+                                        <div className="product-variant md:mt-[40px] mt-4 text-textColor1">
+                                            <span className='text-lg block mb-3'>Quantity : {item?.category}</span>
+                                            <div className='text-lg flex items-center'>
                                                 Size : <Tabs
                                                     activeKey={activeVariant}
                                                     onChange={handleVariantChange}
                                                     centered
                                                     tabBarGutter={40}
                                                     // tabBarStyle={{width: "100px"}} // Keep the tab bar style inline
-                                                    className="ml-4  text-type-4 font-bold">
+                                                    className="ml-4 tabs-variants font-font1 font-bold tracking-wider">
                                                     {productDetails.map((item, index) => (
                                                         <TabPane
-                                                            tab={<span className="text-type-auto text-type-4">{item?.size.name}</span>}
+                                                            tab={<span className="">{item?.size.name}</span>}
                                                             key={index + 1}
                                                         />
                                                     ))}
                                                 </Tabs>
                                             </div>
-                                            <span className='block mt-[12px]  text-md'>Categories: {product?.category?.name}</span>
-                                            <span className='block mt-[12px] text-md'>Tags: Burgers, Tacos</span>
+                                            <span className='block mt-[12px]  text-lg'>Categories: {product?.category?.name}</span>
+                                            <span className='block mt-[12px] text-lg'>Tags: Burgers, Tacos</span>
                                         </div>
                                     </div>
                                 </div>
@@ -258,16 +258,16 @@ const ProductDetail = () => {
                     centered
                     tabBarGutter={40}
                     tabBarStyle={{ fontWeight: 'bold', fontSize: '16px' }}
-                    className='text-type-3 mt-12'
+                    className='tabs-detail text-type-3 md:mt-12 mt-6'
                 >
                     <TabPane tab={"DESCRIPTION"} key="1" />
-                    <TabPane tab="ADDITIONAL INFORMATION" key="2" />
+                    <TabPane tab="INFORMATION" key="2" />
                     <TabPane tab="REVIEWS (4)" key="3" />
 
                 </Tabs>
 
                 {/* Content Based on Selected Tab */}
-                <div className="my-6 px-12 w-full">
+                <div className="my-6 md:px-12 w-full">
                     {activeTab === '1' && (
                         <div className='w-full'>
                             <h2 className="text-2xl font-bold">EXPERIENCE IS OVER THE WORLD VISIT</h2>
@@ -301,7 +301,7 @@ const ProductDetail = () => {
                     )}
                     {activeTab === '2' && (
                         <div className='text-type-4'>
-                            <h2 className="text-type-3">ADDITIONAL INFORMATION</h2>
+                            <h2 className="text-type-3">INFORMATION</h2>
                             <table className="w-full mt-4 border-collapse">
                                 <tbody>
                                     <tr>
@@ -334,8 +334,8 @@ const ProductDetail = () => {
                                 <div className="p-4 border rounded-lg">
                                     <div className="w-full flex items-center">
                                         <img src="https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png" alt="Reviewer" className="w-24 h-24 rounded-sm mr-4" />
-                                        <div className='w-full flex items-center justify-between'>
-                                            <div className='w-full flex items-center gap-[24px]'>
+                                        <div className='w-full md:flex items-center justify-between'>
+                                            <div className='w-full md:flex items-center gap-[24px]'>
                                                 <div >
                                                     <h3 className="font-bold text-type-3">MIKLOS SALSA</h3>
                                                     <p className="text-sm text-gray-500">27 JUNE 2024 AT 5:44 PM</p>
@@ -377,9 +377,6 @@ const ProductDetail = () => {
                     <h2 className='text-5xl text-textColor1 mt-3'>RELATED PRODUCTS</h2>
                 </div>
                 <div className="related-product grid grid-cols-4 px-20 py-12 gap-3 max-w-[1140px] mx-auto">
-                    {/* <ItemProduct/> */}
-                    {/* <ItemProduct/> */}
-                    {/* <ItemProduct/> */}
                     {/* <ItemProduct/> */}
                 </div>
             </div>
