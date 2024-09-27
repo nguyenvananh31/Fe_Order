@@ -4,7 +4,7 @@ import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { RoutePath } from "../../../../constants/path";
 import useToast from "../../../../hooks/useToast";
 import { IProduct } from "../../../../interFaces/product";
-import { apiGetPros } from "./product.service";
+import { apiDelePro, apiGetPros, apiUpdateStatusPro } from "./product.service";
 
 interface ISate {
     loadingSubmit: boolean;
@@ -68,11 +68,38 @@ export default function useProduct() {
         setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
     };
 
+    // handle thay đổi trạng thái 
+    const handleChangeStatus = async (id: number) => {
+        try {
+            setState(prev => ({ ...prev, loadingSubmit: true }));
+            const res = await apiUpdateStatusPro(id);
+            showToast('success', (res.message == 'ẩn' ? 'Ẩn' : 'Hiện') + ' sản phẩm thành công!');
+        } catch (error) {
+            console.log(error);
+            showToast('error', 'Có lỗi xảy ra!');
+        }
+        setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
+    }
+
+    const handleDelePro = async (id: number) => {
+        try {
+            setState(prev => ({ ...prev, loadingSubmit: true }));
+            await apiDelePro(id);
+            showToast('success', 'Xoá sản phẩm thành công!');
+        } catch (error) {
+            console.log(error);
+            showToast('error', 'Có lỗi xảy ra!');
+        }
+        setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
+    }
+
     return {
         state,
         contextHolder,
         handlePageChange,
         handleToAdd,
-        handleToEdit
+        handleToEdit,
+        handleChangeStatus,
+        handleDelePro
     }
 }

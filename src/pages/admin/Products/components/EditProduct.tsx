@@ -37,6 +37,7 @@ interface IState {
     cate: Omit<DefaultOptionType, 'label'>[];
     size: { label: string, value: string | number }[];
     refresh: boolean;
+    starusPro?: number;
 }
 
 const initState: IState = {
@@ -71,9 +72,10 @@ export default function EditProduct() {
                     setThumbnail(thumbnail);
                     form.setFieldsValue({
                         product_name: res.data.name,
-                        category_id: res.data.category_id,
+                        category_id: res.data.category.id,
                         thumbnail,
                         variant: res.data.product_details.map(detail => ({
+                            id: detail.id,
                             size_id: detail.size.id,
                             quantity: detail.quantity,
                             price: detail.price,
@@ -81,13 +83,14 @@ export default function EditProduct() {
                             images: handleProcessImage(detail.images),
                         })),
                     });
+                    setState(prev => ({ ...prev, loading: false, loadingBtn: false, starusPro: res.data.status }));
                 }
             } catch (error) {
                 console.log(error);
                 showToast('error', 'Có lỗi xảy ra!');
+                setState(prev => ({ ...prev, loading: false, loadingBtn: false }));
             }
         }
-        setState(prev => ({ ...prev, loading: false, loadingBtn: false }));
         fetchApi();
     }, [state.refresh]);
 
@@ -108,7 +111,7 @@ export default function EditProduct() {
         setState(prev => ({ ...prev, loading: false }));
         fetchApi();
     }, []);
-    
+
     //Lấy size
     useEffect(() => {
         const fetchApi = async () => {
@@ -166,11 +169,11 @@ export default function EditProduct() {
             }];
         }
 
-        return files.map((img: string, index: number) => ({
-            uid: `-${index + 1}`,
+        return files.map((img: any, index: number) => ({
+            uid: img.id,
             name: `Ảnh ${index + 1}`,
             status: 'done',
-            url: getImageUrl(img),
+            url: getImageUrl(img.name),
         }));
     }, []);
 
@@ -229,30 +232,43 @@ export default function EditProduct() {
     }
 
     const handleEdit = async (values: any) => {
+        console.log(values);
 
         const formData = new FormData();
         formData.append('name', values.product_name);
         formData.append('category_id', values.category_id);
-        formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
+        formData.append('status', `${state.starusPro}`);
+        values.description && formData.append('description', values.description);
+
+        if (values.thumbnail[0].originFileObj) {
+            formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
+        }
 
         values.variant.forEach((variant: any, index: number) => {
+            if (variant.id) {
+                formData.append(`product_details[${index}][id]`, variant.id)
+            }
             formData.append(`product_details[${index}][size_id]`, variant.size_id)
             formData.append(`product_details[${index}][price]`, variant.price)
             formData.append(`product_details[${index}][quantity]`, variant.quantity)
             formData.append(`product_details[${index}][sale]`, variant.sale)
             variant.images.forEach((item: any) => {
-                formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
+                if (!item.originFileObj) {
+                    formData.append(`product_details[${index}][image_old][]`, item.uid);
+                } else {
+                    formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
+                }
             });
         });
         try {
             setState((prev) => ({ ...prev, loadingBtn: false }));
-            const res = await apiUpdatePro(+productId! ,formData);
+            const res = await apiUpdatePro(+productId!, formData);
 
             if (res.data) {
-                showToast('success', 'Thêm sản phẩm thành công!');
+                showToast('success', 'Cập nhật sản phẩm thành công!');
             }
         } catch (error) {
-            showToast('error', 'Sửa sản phẩm thất bại!');
+            showToast('error', 'Cập nhật sản phẩm thất bại!');
         }
         setState((prev) => ({ ...prev, loadingBtn: false }));
     }
@@ -261,7 +277,10 @@ export default function EditProduct() {
     const backToList = useCallback(() => { navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_PRODUCT}`); }, []);
 
     //Handle làm lại
-    const handleRefresh = useCallback(() => { setState(prev => ({ ...prev, refresh: !prev.refresh, loadingBtn: true })) }, []);
+    const handleRefresh = useCallback(() => {
+        form.resetFields();
+        setState(prev => ({ ...prev, refresh: !prev.refresh, loadingBtn: true }))
+    }, []);
 
     return <>
         {contextHolder}
@@ -334,9 +353,20 @@ export default function EditProduct() {
                     </Col>
                     <Col span={24}>
                         <Form.Item
+                            name={'description'}
+                            label="Mô tả sản phẩm"
+                        >
+                            <Input.TextArea
+                                placeholder="Mô tả sản phẩm"
+                                autoSize={{ minRows: 3, maxRows: 5 }}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item
                             name={'thumbnail'}
                             label="Ảnh sản phẩm"
-                            rules={[{ required: true, message: 'Ảnh sản phẩm không được bỏ trống!' }]}
+                            rules={[{ required: !!thumbnail.length, message: 'Ảnh sản phẩm không được bỏ trống!' }]}
                             valuePropName="fileList"
                             getValueFromEvent={normFile}
                         >
@@ -346,6 +376,7 @@ export default function EditProduct() {
                                 fileList={thumbnail}
                                 onPreview={handlePreview}
                                 beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                             >
                                 {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>
@@ -369,6 +400,7 @@ export default function EditProduct() {
                                         />
                                     }
                                 >
+                                    <Form.Item name={[field.name, 'id']} hidden></Form.Item>
                                     <Row gutter={40} className="px-4">
                                         <Col xs={24} md={12}>
                                             <Form.Item

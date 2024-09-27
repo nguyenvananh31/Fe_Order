@@ -1,9 +1,9 @@
-import { CloseOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import { CloseOutlined, LeftOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Card, Col, Form, Image, Input, Row, TreeSelect, Upload, UploadFile, UploadProps } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import { RcFile } from "antd/es/upload";
 import { GetProp, Select } from "antd/lib";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FileRule } from "../../../../constants/common";
 import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
@@ -173,6 +173,7 @@ export default function AddProduct() {
         formData.append('name', values.product_name);
         formData.append('category_id', values.category_id);
         formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
+        values.description && formData.append('description', values.description);
 
         values.variant.forEach((variant: any, index: number) => {
             formData.append(`product_details[${index}][size_id]`, variant.size_id)
@@ -180,11 +181,11 @@ export default function AddProduct() {
             formData.append(`product_details[${index}][quantity]`, variant.quantity)
             formData.append(`product_details[${index}][sale]`, variant.sale)
             variant.images.forEach((item: any) => {
-              formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
+                formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
             });
         });
         try {
-            setState((prev) => ({ ...prev, loadingBtn: false }));         
+            setState((prev) => ({ ...prev, loadingBtn: false }));
             const res = await apiAddProduct(formData);
 
             if (res.data) {
@@ -194,8 +195,14 @@ export default function AddProduct() {
         } catch (error) {
             showToast('error', 'Thêm sản phẩm thất bại!');
         }
-        setState((prev) => ({ ...prev, loadingBtn: false }));         
+        setState((prev) => ({ ...prev, loadingBtn: false }));
     }
+
+    //Handle back list
+    const backToList = useCallback(() => { navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_PRODUCT}`); }, []);
+
+    //Handle làm lại
+    const handleRefresh = useCallback(() => { form.resetFields(); }, []);
 
     return <>
         {contextHolder}
@@ -214,12 +221,20 @@ export default function AddProduct() {
             ]}
         />
         <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <div className='flex items-center justify-end p-6'>
+            <div className='flex items-center justify-end p-6 gap-4'>
                 <Button
                     icon={<RedoOutlined />}
                     type='default'
+                    onClick={handleRefresh}
                 >
                     Làm mới
+                </Button>
+                <Button
+                    icon={<LeftOutlined />}
+                    type='default'
+                    onClick={backToList}
+                >
+                    Quay lại
                 </Button>
             </div>
             <Form
@@ -258,6 +273,17 @@ export default function AddProduct() {
                     </Col>
                     <Col span={24}>
                         <Form.Item
+                            name={'description'}
+                            label="Mô tả sản phẩm"
+                        >
+                            <Input.TextArea
+                                placeholder="Mô tả sản phẩm"
+                                autoSize={{ minRows: 3, maxRows: 5 }}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item
                             name={'thumbnail'}
                             label="Ảnh sản phẩm"
                             rules={[{ required: true, message: 'Ảnh sản phẩm không được bỏ trống!' }]}
@@ -269,6 +295,7 @@ export default function AddProduct() {
                                 fileList={thumbnail}
                                 onPreview={handlePreview}
                                 beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                             >
                                 {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>

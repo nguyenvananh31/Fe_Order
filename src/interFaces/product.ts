@@ -4,10 +4,15 @@ export interface IProduct {
   name: string;
   thumbnail: string;
   status: number;
-  category_id: number;
+  category: ICate;
   product_details: ProductDetail[];
   created_at: string;
   updated_at: string;
+}
+
+interface ICate {
+  id: number;
+  name: string;
 }
 
 export interface IProductParams {
@@ -23,15 +28,21 @@ interface ProductSize {
   status: number;
 }
 
-interface ProductDetail {
+export interface ProductDetail {
   id: number;
   size: ProductSize;
   price: string;
   quantity: number;
   sale: string;
   status: number;
-  images: string[];
+  images: IImg[];
   product_id: number;
   created_at: string;
   updated_at: string;
+}
+
+interface IImg {
+  id: number;
+  product_detail_id: number;
+  name: string;
 }
