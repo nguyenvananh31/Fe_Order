@@ -22,7 +22,7 @@ export const apiGetOneBillDetail = async (id: number) => {
     return res;
 }
 
-export const apiUpdateStatus = async (id: number, status: number) => {
-    const res = await ApiUtils.put<number, ResponeBase<IBill>>(`${apiName.bill}/${id}`, status);
+export const apiUpdateStatusBill = async (id: number, status: any) => {
+    const res = await ApiUtils.put<any, ResponeBase<IBill>>(`${apiName.bill}/${id}`, status);
     return res;
 }

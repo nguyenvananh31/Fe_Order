@@ -1,11 +1,11 @@
+import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Image, Popconfirm, Space, Tooltip } from "antd";
-import useProduct from "./utils/product.hooks";
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
+import { ColumnProps } from "antd/es/table";
+import { Table } from "antd/lib";
+import { useMemo } from "react";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { IProduct } from "../../../interFaces/product";
-import { ColumnProps } from "antd/es/table";
-import { useMemo } from "react";
-import { Table } from "antd/lib";
+import useProduct from "./utils/product.hooks";
 
 export default function ProductPage() {
 
@@ -111,7 +111,7 @@ export default function ProductPage() {
                         <Tooltip title="Chi tiết và cập nhập">
                             <Button onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
                         </Tooltip>
-                        <Tooltip title="Xoá">
+                        {/* <Tooltip title="Xoá">
                             <Popconfirm
                                 placement='topRight'
                                 title={`Xoá sản phẩm`}
@@ -123,7 +123,7 @@ export default function ProductPage() {
                             >
                                 <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
                             </Popconfirm>
-                        </Tooltip>
+                        </Tooltip> */}
                     </>
                 )
             },

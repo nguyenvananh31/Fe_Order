@@ -6,15 +6,16 @@ import { EOrderStatus, EOrderType } from "../../../constants/enum";
 import { IBill } from "../../../interFaces/bill";
 import BillModel from "./components/BillModal";
 import useBill from "./utils/bill.hook";
+import { convertPriceVND } from "../../../utils/common";
 
-const statusBill = {
-    pending: { color: 'magenta', title: 'Đang chờ' },
-    confirmed: { color: 'cyan', title: 'Đã xác nhận' },
-    preparing: { color: 'gold', title: 'Chuẩn bị' },
-    shipping: { color: 'purple', title: 'Đang giao' },
-    completed: { color: 'green', title: 'Đã hoàn thành' },
-    cancelled: { color: 'red', title: 'Đã huỷ' },
-    failed: { color: 'volcano', title: 'Thất bại' }
+const statusBill: any = {
+    'pending': { color: 'magenta', title: 'Đang chờ' },
+    'confirmed': { color: 'cyan', title: 'Đã xác nhận' },
+    'preparing': { color: 'gold', title: 'Chuẩn bị' },
+    'shipping': { color: 'purple', title: 'Đang giao' },
+    'completed': { color: 'green', title: 'Đã hoàn thành' },
+    'cancelled': { color: 'red', title: 'Đã huỷ' },
+    'failed': { color: 'volcano', title: 'Thất bại' }
 };
 
 export default function CatePage() {
@@ -71,7 +72,7 @@ export default function CatePage() {
                 align: 'center',
                 render: (_: any, item: IBill) => {
                     return <span>
-                        {item.total_amount}
+                        {convertPriceVND(+item.total_amount)}
                     </span>
                 }
             },
@@ -82,7 +83,7 @@ export default function CatePage() {
                 width: '15%',
                 render: (_: any, item: IBill) => (
                     <Tooltip title="Thay đổi trạng thái">
-                        <Tag onClick={() => hooks.handleOpenModalStatus(item.status)} color={statusBill[item.status].color} className={`min-w-[80px] cursor-pointer`} >
+                        <Tag onClick={() => hooks.handleOpenModalStatus(item.id, item.status)} color={statusBill[item.status].color} className={`min-w-[80px] cursor-pointer`} >
                             {statusBill[item.status].title}
                         </Tag>
                     </Tooltip>
@@ -155,8 +156,9 @@ export default function CatePage() {
                 open={state.showModalStatus}
                 okText='Lưu'
                 centered
+                onOk={hooks.handleChangeStatus}
             >
-                <Radio.Group onChange={hooks.onChanegStatus} value={hooks.status}>
+                <Radio.Group onChange={hooks.onChanegStatus} value={hooks?.status?.type}>
                     <Space direction="vertical">
                         <Radio value={EOrderStatus.Pending}>Đang chờ</Radio>
                         <Radio value={EOrderStatus.Confirmed}>Đã xác nhận</Radio>
