@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Popconfirm, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
@@ -69,19 +69,24 @@ export default function SizePage() {
                 width: '15%',
                 fixed: 'right',
                 render: (_: any, { id }: any) => (
-                    <Tooltip title="Xoá kích thước">
-                        <Popconfirm
-                            placement='topRight'
-                            title="Xoá kích thước"
-                            description="Bạn có muốn xoá kích thước này?"
-                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                            okText="Có"
-                            cancelText="Không"
-                            onConfirm={() => hooks.handleDeleteCate(id)}
-                        >
-                            <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
-                        </Popconfirm>
-                    </Tooltip>
+                    <>
+                        <Tooltip title="Chi tiết và cập nhập">
+                            <Button onClick={() => hooks.handleOpenModal(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
+                        </Tooltip>
+                        <Tooltip title="Xoá kích thước">
+                            <Popconfirm
+                                placement='topRight'
+                                title="Xoá kích thước"
+                                description="Bạn có muốn xoá kích thước này?"
+                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                                okText="Có"
+                                cancelText="Không"
+                                onConfirm={() => hooks.handleDeleteCate(id)}
+                            >
+                                <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
+                            </Popconfirm>
+                        </Tooltip>
+                    </>
                 )
             },
         ];

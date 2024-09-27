@@ -7,7 +7,7 @@ import { LISTMENU } from "./menu";
 export const HeaderMain = () => {
 
   const { ...hooks } = useHeader();
-  
+
   // Menu item Account
   const items: MenuProps['items'] = [
     {
@@ -53,10 +53,10 @@ export const HeaderMain = () => {
       ),
     },
   ];
-  
+
   return (
     <>
-      <div className="bg-white drop-shadow-primary rounded-primary mt-4 mx-6 px-5 leading-none py-3">
+      <div className="bg-white drop-shadow-primary rounded-primary mx-6 px-5 leading-none py-3 mt-4">
         <div className="flex max-xl:gap-4 items-center justify-between">
           <div className="">
             <MenuUnfoldOutlined onClick={hooks.toggleDraw} className="text-xl text-ghost cursor-pointer xl:hidden" />
@@ -99,17 +99,19 @@ export const HeaderMain = () => {
           <div className="flex justify-around items-center gap-3">
             <div className="flex gap-2 items-center">
               <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
-              <h1 className="text-xl font-bold">Yagi</h1>
+              <h1 className="text-xl font-bold">Nhà Hàng Yagi</h1>
             </div>
             <CloseOutlined className="text-ghost text-base cursor-pointer" onClick={hooks.toggleDraw} />
           </div>
         </div>
         <Menu
-          defaultSelectedKeys={hooks.activeMenu}
+          defaultSelectedKeys={[hooks.activeMenu[0]]}
+          openKeys={hooks.activeMenu[1] ? hooks.activeMenu[1] : undefined}
           mode="inline"
           theme="light"
           items={LISTMENU}
           onClick={hooks.toggleDraw}
+          onOpenChange={hooks.handleChange}
         />
       </Drawer>
     </>

@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Popconfirm, Tag, Tooltip } from "antd";
 import useAccount from "./utils/account.hooks";
 import { useMemo } from "react";
@@ -97,19 +97,9 @@ export default function AccountPage() {
                 align: 'center',
                 width: '15%',
                 fixed: 'right',
-                render: (_: any, { id }: IUser) => (
-                    <Tooltip title="Xoá tài khoản">
-                        <Popconfirm
-                            placement='topRight'
-                            title="Xoá tài khoản"
-                            description="Bạn có muốn xoá tài khoản này?"
-                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                            okText="Có"
-                            cancelText="Không"
-                            onConfirm={() => hooks.handleDelAccount(id)}
-                        >
-                            <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
-                        </Popconfirm>
+                render: (_: any, { id }: any) => (
+                    <Tooltip title="Chi tiết và cập nhập">
+                        <Button onClick={() => hooks.handleOpenModal(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
                     </Tooltip>
                 )
             },

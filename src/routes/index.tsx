@@ -16,6 +16,11 @@ import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import ListProducts from "../pages/user/Product/Products";
 import Profiles from "../pages/user/profiles/Profiles";
 
+import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import Table from "../pages/user/Table/Table";
+import Error from "../pages/user/Error/Error";
+import Order from "../pages/user/Order/Order";
+
 
 const Router = () => {
   const { user } = useAuth();
@@ -23,7 +28,6 @@ const Router = () => {
   return (
     <>
       <Routes>
-        {/* page without authen */}
         <Route>
           {publicProtectedFlattenRoutes.map((route, index) => (
             <Route path={route.path} element={route.element} key={index} />
@@ -37,7 +41,16 @@ const Router = () => {
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
           <Route path={RoutePath.PRODUCTS} element={<ListProducts />} />
+
+          <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
+          <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
+          
+          <Route path={RoutePath.TABLE} element={<Table />} />
+          <Route path={RoutePath.ORDER} element={<Order />} />
+
+          
         </Route>
+        <Route path="*" element={<Error/>} />
         <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (

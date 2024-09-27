@@ -247,7 +247,7 @@ const ListTable: React.FC = () => {
       
       <Modal
         title={editItem?.id ? 'Chỉnh Sửa Bàn' : 'Thêm Bàn'}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={[ 
           <Button key="back" onClick={handleCancel}>
