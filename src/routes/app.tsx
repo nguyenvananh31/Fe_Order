@@ -5,6 +5,7 @@ import { RoutePath } from "../constants/path";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
+
 import ListSize from "../pages/admin/Size/index.page";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import ListVoucher from "../pages/admin/Vouchers";
@@ -124,6 +125,7 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.SIZES,
         name: 'Quản lý kích cỡ',
         element: <ListSize />,
+
     },
     {
         path: RoutePath.VOUCHER,

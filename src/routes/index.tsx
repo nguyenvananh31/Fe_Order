@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
 import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
 
 import Search from "antd/es/transfer/search";
@@ -13,6 +13,9 @@ import Checkout from "../pages/user/Checkout/Checkout";
 import Home from "../pages/user/Home/Home";
 import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
 import BaseLayoutUser from "../pages/user/BaseLayoutUser";
+import ListProducts from "../pages/user/Product/Products";
+import Profiles from "../pages/user/profiles/Profiles";
+
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import Error from "../pages/user/Error/Error";
@@ -25,7 +28,6 @@ const Router = () => {
   return (
     <>
       <Routes>
-        {/* page without authen */}
         <Route>
           {publicProtectedFlattenRoutes.map((route, index) => (
             <Route path={route.path} element={route.element} key={index} />
@@ -38,7 +40,11 @@ const Router = () => {
           <Route path={RoutePath.CONTACT} element={<Contact />} />
           <Route path={RoutePath.CART} element={<Cart />} />
           <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
+          <Route path={RoutePath.PRODUCTS} element={<ListProducts />} />
+
+          <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
+          
           <Route path={RoutePath.TABLE} element={<Table />} />
           <Route path={RoutePath.ORDER} element={<Order />} />
 
@@ -52,6 +58,7 @@ const Router = () => {
             ))
           }
         </Route>
+          <Route path={RoutePath.PROFILE} element={<Profiles />} />
       </Routes>
     </>
   );

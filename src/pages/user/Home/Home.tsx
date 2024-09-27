@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
+
 import SliderTop from '../../../layout/users/component/SliderTop/SliderTop';
 import SliderCate from '../../../layout/users/component/SliderCate/SliderCate';
 import axios from 'axios';
@@ -27,6 +28,7 @@ const Home = () => {
   }, [setProducts]);
 
   return (
+
       <div>
           <SliderTop/>
           <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
