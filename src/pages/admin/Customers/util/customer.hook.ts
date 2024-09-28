@@ -65,8 +65,8 @@ const useCustomer = () => {
                 const conds: any = { page: state.pageIndex, per_page: state.pageSize };
 
                 if (state.textSearch) {
-                    // conds.name = debouncedSearch;
-                    conds.email = debouncedSearch;
+                    conds.name = debouncedSearch;
+                    // conds.email = debouncedSearch;
                 }
 
                 if (!state.textSearch && state.search && !state.enterSearch) {
