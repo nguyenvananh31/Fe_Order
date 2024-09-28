@@ -15,8 +15,9 @@ export default {
       },
       gridTemplateColumns: {
         gridLayout: "1fr 300px",
-        gridLayout2: " 300px 1fr",
+        gridLayout2: "300px 1fr",
         gridTopNav: "2fr 1fr",
+        gridOrder: "auto 1fr",
         gridCartItem: "auto 125px",
         gridProductDetail: "1.5fr 2fr",
         gridOrder: "1.5fr 2fr",

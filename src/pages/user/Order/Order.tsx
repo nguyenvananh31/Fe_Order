@@ -49,7 +49,7 @@ const Order = () => {
     console.log('Form Values: ', values);
   };
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  
+
   const scrollToButton = useCallback(() => {
     const button = document.getElementById('btn-bottom');
     if (button && scrollRef.current) {
@@ -61,7 +61,7 @@ const Order = () => {
   }, []);
   return (
     <>
-      <div className='container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto gap-[24px] py-6'>
+      <div className='container max-w-[1140px] h-screen overflow-y-auto px-[16px] lg:px-[20px] mx-auto gap-[24px] py-6'>
         <div className="box-content md:grid block grid-cols-gridOrder gap-4 ">
           <div className="box-table-info">
             <h2 className='text-xl py-2 px-4 bg-blue-700 text-white'>Table Information</h2>
@@ -99,6 +99,213 @@ const Order = () => {
           <div className="banner-ads-order w-full h-full md:mt-0 mt-4">
 
           </div>
+        </div>
+        <div className="list-product">
+          <h2 className='text-white w-full text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
+          <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+              <Image
+                className='rounded-lg cursor-pointer w-full h-full object-cover'
+                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
+              />
+              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
+              <button className='w-full  '>
+                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+              </button>
+            </div>
+          </div>
+          <h2 className='text-white text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>SUPPER SLAE</h2>
+          <div className=" w-full box-list-item group overflow-y-auto h-[50vh] p-2">
+            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
+              <div className="box-image">
+                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
+              </div>
+              <div className="box-content pt-2">
+                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
+                <span className='flex gap-2 items-center'>
+                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
+                  <del className='text-textColor2 text-md font-font1'>$2000</del>
+                </span>
+                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
+              </div>
+              <div className="box-action">
+                <button onClick={toggleDetailVisibility}>
+                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
+                </button>
+              </div>
+            </div>
+            {isDetailVisible && (
+              <div className=" w-full box-order-detail p-3 border rounded-md mt-1">
+                <Form
+                  layout="vertical"
+                  onFinish={onFinish}
+                  initialValues={{ quantity: quantity }}
+                >
+                  {/* Input Text Field */}
+                  <Form.Item
+                    name="description"
+                    className=''
+                  >
+                    <Input className="text-type-2 border border-borderColor1 rounded-md flex items-center justify-between px-4 py-3 hover:border-mainColor2" placeholder="Enter description for staff" />
+                  </Form.Item>
+
+                  {/* Input Number Field */}
+                  <Form.Item
+                    name="quantity"
+                    className='w-full flex '
+                    rules={[{ required: true, message: 'Please input quantity!' }]}
+                  >
+                    <div className="w-full flex items-center justify-between gap-2 mt-[12px]">
+                      <div className="flex items-center space-x-2">
+                        <Button onClick={onDecrease} type="default" className=" px-4">
+                          -
+                        </Button>
+                        <Input
+                          className="w-12 text-center mx-2 text-type-3 border"
+                          value={quantity}
+                          readOnly
+                          onChange={(value) => setQuantity(value || 1)}
+                        />
+                        <Button onClick={onIncrease} type="default" className="px-4">
+                          +
+                        </Button>
+                      </div>
+                      <Button type="primary" htmlType="submit" className="w-full btn-type-2">
+                        <span>Add</span>
+                      </Button>
+                    </div>
+                  </Form.Item>
+
+                </Form>
+              </div>
+            )}
+            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
+              <div className="box-image">
+                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
+              </div>
+              <div className="box-content pt-2">
+                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
+                <span className='flex gap-2 items-center'>
+                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
+                  <del className='text-textColor2 text-md font-font1'>$2000</del>
+                </span>
+                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
+              </div>
+              <div className="box-action">
+                <button onClick={toggleDetailVisibility}>
+                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
+                </button>
+              </div>
+            </div>
+            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
+              <div className="box-image">
+                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
+              </div>
+              <div className="box-content pt-2">
+                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
+                <span className='flex gap-2 items-center'>
+                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
+                  <del className='text-textColor2 text-md font-font1'>$2000</del>
+                </span>
+                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
+              </div>
+              <div className="box-action">
+                <button onClick={toggleDetailVisibility}>
+                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
         <Drawer
           placement="right"
@@ -139,189 +346,6 @@ const Order = () => {
                     <input type="text" placeholder='Search...' className='border-none outline-none rounded-md w-full text-type-3' />
                     <button type='submit' className='border-none group'><SearchOutlined className='text-textColor2 text-xl group-hover:text-mainColor2 ' /></button>
                   </form>
-                  <div className=" w-full box-list-item group overflow-y-auto h-[50vh] p-2">
-                    <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-                      <div className="box-image">
-                        <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-                      </div>
-                      <div className="box-content pt-2">
-                        <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                        <span className='flex gap-2 items-center'>
-                          <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                          <del className='text-textColor2 text-md font-font1'>$2000</del>
-                        </span>
-                        <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-                      </div>
-                      <div className="box-action">
-                        <button onClick={toggleDetailVisibility}>
-                          <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                        </button>
-                      </div>
-                    </div>
-                    {isDetailVisible && (
-                      <div className=" w-full box-order-detail p-3 border rounded-md mt-1">
-                        <Form
-                          layout="vertical"
-                          onFinish={onFinish}
-                          initialValues={{ quantity: quantity }}
-                        >
-                          {/* Input Text Field */}
-                          <Form.Item
-                            name="description"
-                            className=''
-                          >
-                            <Input className="text-type-2 border border-borderColor1 rounded-md flex items-center justify-between px-4 py-3 hover:border-mainColor2" placeholder="Enter description for staff" />
-                          </Form.Item>
-
-                          {/* Input Number Field */}
-                          <Form.Item
-                            name="quantity"
-                            className='w-full flex '
-                            rules={[{ required: true, message: 'Please input quantity!' }]}
-                          >
-                            <div className="w-full flex items-center justify-between gap-2 mt-[12px]">
-                              <div className="flex items-center space-x-2">
-                                <Button onClick={onDecrease} type="default" className=" px-4">
-                                  -
-                                </Button>
-                                <Input
-                                  className="w-12 text-center mx-2 text-type-3 border"
-                                  value={quantity}
-                                  readOnly
-                                  onChange={(value) => setQuantity(value || 1)}
-                                />
-                                <Button onClick={onIncrease} type="default" className="px-4">
-                                  +
-                                </Button>
-                              </div>
-                              <Button type="primary" htmlType="submit" className="w-full btn-type-2">
-                                <span>Add</span>
-                              </Button>
-                            </div>
-                          </Form.Item>
-
-                        </Form>
-                      </div>
-                    )}
-                    <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-                      <div className="box-image">
-                        <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-                      </div>
-                      <div className="box-content pt-2">
-                        <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                        <span className='flex gap-2 items-center'>
-                          <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                          <del className='text-textColor2 text-md font-font1'>$2000</del>
-                        </span>
-                        <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-                      </div>
-                      <div className="box-action">
-                        <button onClick={toggleDetailVisibility}>
-                          <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-                      <div className="box-image">
-                        <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-                      </div>
-                      <div className="box-content pt-2">
-                        <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                        <span className='flex gap-2 items-center'>
-                          <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                          <del className='text-textColor2 text-md font-font1'>$2000</del>
-                        </span>
-                        <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-                      </div>
-                      <div className="box-action">
-                        <button onClick={toggleDetailVisibility}>
-                          <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                        </button>
-                      </div>
-                    </div>
-
-
-                  </div>
-                  <h2 className='text-white text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
-                  <div className="box-related-list grid grid-cols-2 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                    <div className="box-related-item border p-2 rounded-md shadow-lg ">
-                      <Image
-                        className='rounded-lg cursor-pointer w-full h-full object-cover'
-                        src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                        preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-                      />
-                      <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-                      <button className='w-full  '>
-                        <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-                      </button>
-                    </div>
-                  </div>
                   <h2 className='text-white text-3xl font-font1 mt-6 p-2 bg-mainColor2 text-center font-bold tracking-wider'>List Order</h2>
                   <table className="w-full mt-4 border-collapse bg-bgColor1">
                     <tbody>
@@ -407,7 +431,7 @@ const Order = () => {
           </div>
         </Drawer>
         <button
-          
+
           className=" fixed top-[50%] right-[16px] w-[50px] h-[50px] rounded-full bg-mainColor2 flex items-center justify-center text-white cursor-pointer hover:bg-mainColor1 shadow-md"
           onClick={showDrawer}
         >

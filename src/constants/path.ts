@@ -2,6 +2,8 @@ export const RoutePath = {
     //Client
     HOME: '/',
     PRODUCT_DETAIL: 'product/:id',
+    PRODUCT_CATE: 'product/category/:id',
+
 
 
     //Admin

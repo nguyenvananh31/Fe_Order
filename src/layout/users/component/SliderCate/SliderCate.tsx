@@ -6,6 +6,7 @@ import 'swiper/css/autoplay';
 import 'swiper/css/pagination'; // Import pagination styles
 import 'tailwindcss/tailwind.css';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 interface Subcategory {
     id: number;
     name: string;
@@ -65,6 +66,7 @@ const SliderCate: React.FC = () => {
     }, [setCates]);
     // console.log(countCates.length);
     // console.log(cates[0].subcategory);
+console.log(cates);
 
     return (
         <div className="sliderCate bg-bgColor1 relative w-full p-12">
@@ -82,11 +84,11 @@ const SliderCate: React.FC = () => {
                     <SwiperSlide key={cate.id || index} className="flex justify-center items-center">
                         <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
                             <div className="cate-item-img">
-                                <img src={`${urlBase}/${cate?.image}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
+                                <img src={`${urlBase}/${cate?.thumbnail}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
                             </div>
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                                <h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3>
+                                <Link to={`/product/category/${cate.id}`}><h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3></Link>
                                 <span className="cate-item-quantity text-mainColor1 text-md block mt-2">{countCates.length} Product</span>
                             </div>
                         </div>

@@ -7,12 +7,16 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import './asset/ProductDetail.scss'
 // import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
+import Category from '../Category/Category';
+import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
 const { TabPane } = Tabs;
 
 const ProductDetail = () => {
     const [quantity, setQuantity] = useState(0);
     const [product, setProduct] = useState<any>(null); // Giữ thông tin product
     const [productDetails, setProductDetails] = useState([]); // Giữ product_details
+    const [relatedProduct, setRelatedProduct] = useState([]); // Giữ product_details
+
 
     const param = useParams();
 
@@ -27,6 +31,8 @@ const ProductDetail = () => {
                 });
 
                 const fetchedProduct = res.data.data;
+                // console.log(fetchedProduct);
+
                 setProduct(fetchedProduct);
                 console.log(fetchedProduct.product_details);
                 setProductDetails(fetchedProduct.product_details); // Lấy product_details
@@ -34,8 +40,28 @@ const ProductDetail = () => {
             } catch (error) {
                 console.error('Error fetching product:', error);
             }
-        })()
+        })();
+
+
     }, [param.id]);
+    useEffect(() => {
+
+        (async () => {
+            const url = `http://127.0.0.1:8000/api/client/product_cate/${product.category.id}`;
+            try {
+                const res = await axios.get(url, {
+                    headers: {
+                        'Api_key': import.meta.env.VITE_API_KEY,
+                    },
+                });
+                console.log(res.data.data);
+                setRelatedProduct(res.data.data)
+
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            }
+        })()
+    }, [product]);
 
     const increment = () => setQuantity(prev => prev + 1);
     const decrement = () => setQuantity(prev => (prev > 0 ? prev - 1 : 0));
@@ -50,6 +76,7 @@ const ProductDetail = () => {
     const handleVariantChange = (key: any) => {
         setActiveVariant(key);
     };
+
     return (
         <>
             <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">
@@ -109,7 +136,7 @@ const ProductDetail = () => {
                                             <del className='text-2xl font-font1 text-type-4 opacity-60 text-mainColor1'>${Number(item.price) + Number(item.sale)}</del>
                                         </div>
                                         <div className="quantity flex items-center space-x-2 mt-[16px] gap-2">
-                                            <span className="font-bold text-sm text-type-3 text-textColor1">QUANTITY :</span>
+                                            <span className="font-bold text-sm text-type-3 text-textColor1 uppercase">Số lượng :</span>
                                             <div className="flex items-center border py-1 border-mainColor2 rounded-md text-type-3">
                                                 <Button
                                                     className="flex items-center justify-center w-8 h-8 border-none shadow-none z-[100] text-type-3"
@@ -133,7 +160,7 @@ const ProductDetail = () => {
                                             <button className="btn-type-2"><span>Add to cart</span></button>
                                         </div>
                                         <div className="product-variant md:mt-[40px] mt-4 text-textColor1">
-                                            <span className='text-lg block mb-3'>Quantity : {item?.category}</span>
+                                            <span className='text-lg block mb-3'>Quantity : {item?.quantity}</span>
                                             <div className='text-lg flex items-center'>
                                                 Size : <Tabs
                                                     activeKey={activeVariant}
@@ -248,8 +275,6 @@ const ProductDetail = () => {
                     </div>
                 }
             </div>
-
-
             <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto gap-[24px]">
                 {/* Tabs Navigation */}
                 <Tabs
@@ -376,8 +401,10 @@ const ProductDetail = () => {
                     <span className='text-sm text-mainColor1'>crispy, every bite taste</span>
                     <h2 className='text-5xl text-textColor1 mt-3'>RELATED PRODUCTS</h2>
                 </div>
-                <div className="related-product grid grid-cols-4 px-20 py-12 gap-3 max-w-[1140px] mx-auto">
-                    {/* <ItemProduct/> */}
+                <div className="related-product grid lg:grid-cols-4 grid-cols-2 md:px-20 py-12 gap-3 max-w-[1140px] mx-auto">
+                    {relatedProduct.filter((pro) => pro.id !== product.id).map((product, index) => (
+                        <ItemProduct product={product} key={index} />
+                    ))}
                 </div>
             </div>
         </>
