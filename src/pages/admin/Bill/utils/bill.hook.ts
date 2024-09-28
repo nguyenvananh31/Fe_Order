@@ -1,7 +1,8 @@
-import { InputRef } from "antd";
+import { AutoCompleteProps } from "antd";
 import { RadioChangeEvent } from "antd/lib";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import useDebounce from "../../../../hooks/useDeBounce";
 import useToast from "../../../../hooks/useToast";
 import { IBill } from "../../../../interFaces/bill";
 import { apiGetBils, apiUpdateStatusBill } from "./bill.service";
@@ -20,6 +21,11 @@ interface IState {
     search: boolean;
     bill?: IBill;
     showModalStatus: boolean;
+    loadingSearch: boolean;
+    textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string;
+    enterSearch: boolean;
 }
 
 const initState: IState = {
@@ -32,28 +38,59 @@ const initState: IState = {
     showModal: false,
     refresh: false,
     search: false,
-    showModalStatus: false
+    showModalStatus: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
 }
 
 export default function useBill() {
 
     const [state, setState] = useState<IState>(initState);
     const { showToast, contextHolder } = useToast();
-    const [searchText, setSearchText] = useState<string>('');
-    const inputSearchRef = useRef<InputRef>(null);
-    const [selectedStatus, setSelectedStatus] = useState<string>('');
     const [status, setStatus] = useState<any>();
+    const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
+    const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
     //Lấy bill
     useEffect(() => {
         //Lấy tất cả tài khoản
         const fetchData = async () => {
-            setState({ ...state, loading: true });
             try {
-                const res = await apiGetBils({ page: state.pageIndex, per_page: state.pageSize });
-                if (res.data) {
+                if (state.search) {
+                    setState(prev => ({ ...prev, loadingSearch: true }));
+                } else {
+                    setState(prev => ({ ...prev, loading: true }));
+                }
 
-                    setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
+                const conds: any = { page: state.pageIndex, per_page: state.pageSize };
+
+                if (state.textSearch) {
+                    conds.ma_bill = debouncedSearch;
+                }
+
+                if (typeof state.filtertatus != 'undefined') {
+                    conds.status = state.filtertatus;
+                }
+
+                if (state.filterDate) {
+                    conds.order_date = state.filterDate;
+                }
+
+                if (!state.textSearch && state.search && !state.enterSearch) {
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                    return;
+                }
+
+                const res = await apiGetBils(conds);
+
+                if (state.search && !state.enterSearch) {
+                    setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.ma_bill })))
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                } else {
+                    setState(prev => ({ ...prev, data: res.data, loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
                 }
             } catch (error: any) {
                 console.log(error);
@@ -62,19 +99,13 @@ export default function useBill() {
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, debouncedSearch]);
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
         setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
     };
 
-    // làm mới data
-    const refreshPage = useCallback(() => {
-        setSearchText('');
-        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
-        setSelectedStatus('');
-    }, []);
 
     // Dismis Modal
     const handleDismissModal = useCallback(() => {
@@ -109,7 +140,7 @@ export default function useBill() {
             ...prev,
             showModalStatus: true,
         }))
-        setStatus({id, type});
+        setStatus({ id, type });
     }, []);
 
     const onChanegStatus = (e: RadioChangeEvent) => {
@@ -120,7 +151,7 @@ export default function useBill() {
         if (!status) return;
         setState({ ...state, loading: true });
         try {
-            await apiUpdateStatusBill(status?.id, {status: status?.type});
+            await apiUpdateStatusBill(status?.id, { status: status?.type });
             setState((prev) => ({ ...prev, refresh: !prev.refresh, showModalStatus: false }));
             showToast('success', 'Cập nhật trạng thái thành công!');
         } catch (error: any) {
@@ -130,10 +161,58 @@ export default function useBill() {
         }
     }
 
+    //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    //Filter status
+    const handleFilterStatus = (value: boolean) => {
+        setState(prev => ({ ...prev, filtertatus: value, refresh: !prev.refresh, pageIndex: 1 }));
+    }
+
+    //Filter date
+    const handleFilterDate = (_: any, dateString: any) => {
+        if (!dateString) {
+            setState(prev => ({ ...prev, filterDate: undefined, refresh: !prev.refresh, pageIndex: 1 }))
+            return;
+        }
+
+        const filterDate = new Date(dateString).toISOString();
+
+        setState(prev => ({ ...prev, filterDate , refresh: !prev.refresh, pageIndex: 1 }))
+    }
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
+
     return {
         state,
         contextHolder,
         status,
+        options,
         showToast,
         handlePageChange,
         handleOpenModal,
@@ -142,6 +221,10 @@ export default function useBill() {
         handleDismissModalStatus,
         handleOpenModalStatus,
         onChanegStatus,
-        handleChangeStatus
+        handleChangeStatus,
+        handleChangeTextSearch,
+        handleSearchBtn,
+        handleFilterStatus,
+        handleFilterDate,
     }
 }
