@@ -20,6 +20,8 @@ import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
+import ProductByCate from "../pages/user/Product/ProductByCate";
+import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 
 
 const Router = () => {
@@ -46,9 +48,12 @@ const Router = () => {
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
           
           <Route path={RoutePath.TABLE} element={<Table />} />
-          <Route path={RoutePath.ORDER} element={<Order />} />
-
-          
+          {/* <Route path={RoutePath.ORDER} element={<Order />} /> */}
+          <Route path={RoutePath.PRODUCT_CATE} element={<ProductByCate />} />
+        </Route>
+        {/* order page */}
+        <Route path={RoutePath.ORDER} element={<BaseLayoutOrder />}>
+          <Route index element={<Order />} />
         </Route>
         <Route path="*" element={<Error/>} />
         <Route path={RoutePath.ADMIN} element={ <BaseLayoutAdmin />} >
