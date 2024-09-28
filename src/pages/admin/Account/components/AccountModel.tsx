@@ -1,8 +1,8 @@
-import { Button, Checkbox, Col, Form, Input, Modal, Row } from "antd";
+import { Checkbox, Col, Form, Input, Modal, Row } from "antd";
 import { useEffect, useState } from "react";
+import Avatar from "react-avatar";
 import { IRole, IUser } from "../../../../interFaces/common.types";
 import { apiGetOneUser, apiGetRoles, apiUpadateRoles } from "../utils/account.service";
-import Avatar from "react-avatar";
 
 interface IProps {
     itemId?: number;
