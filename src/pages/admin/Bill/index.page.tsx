@@ -1,12 +1,12 @@
-import { EyeOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Modal, Radio, Space, Tag, Tooltip } from "antd";
+import { CloseCircleFilled, EyeOutlined, LoadingOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Modal, Radio, Row, Select, Space, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
 import { EOrderStatus, EOrderType } from "../../../constants/enum";
 import { IBill } from "../../../interFaces/bill";
+import { convertPriceVND } from "../../../utils/common";
 import BillModel from "./components/BillModal";
 import useBill from "./utils/bill.hook";
-import { convertPriceVND } from "../../../utils/common";
 
 const statusBill: any = {
     'pending': { color: 'magenta', title: 'Đang chờ' },
@@ -122,9 +122,79 @@ export default function CatePage() {
                 ]}
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-                <div className='flex items-center justify-between'>
-                    <h1 className='p-6 text-xl font-semibold'>Quản lý đơn</h1>
-                </div>
+            <div className="pl-6 pt-4 text-lg font-semibold">Bộ lọc tìm kiếm</div>
+            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"space-between"} >
+                <Col xs={24} sm={12} md={6}>
+                    <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[
+                            {value: 'pending', label: 'Đang chờ'},
+                            {value: 'confirmed', label: 'Đã xác nhận'},
+                            {value: 'preparing', label: 'Chuẩn bị'},
+                            {value: 'shipping', label: 'Đang giao'},
+                            {value: 'completed', label: 'Đã hoàn thành'},
+                            {value: 'cancelled', label: 'Đã huỷ'},
+                            {value: 'failed', label: 'Thất bại'},
+                        ]}
+                        placeholder="Trạng thái"
+                        onSelect={(value) => hooks.handleFilterStatus(value)}
+                        onClear={hooks.refreshPage}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[{ value: true, label: 'Từ trên xuống' }, { value: false, label: 'Từ dưới lên' }]}
+                        placeholder="Kiểu sắp xếp"
+                        onClear={hooks.refreshPage}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[{ value: true, label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }, { value: false, label: 'Số lượng' }]}
+                        placeholder="Lọc theo cột"
+                        onClear={hooks.refreshPage}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <DatePicker
+                        className="w-full"
+                        size="large"
+                        onChange={hooks.handleFilterDate}
+                    />
+                </Col>
+            </Row>
+            <Divider />
+            <Row gutter={[16, 16]} className="px-6 pb-6" align={"middle"} justify={"start"} >
+                <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
+                    <AutoComplete
+                        size="large"
+                        options={hooks.options}
+                        className="max-sm:w-full md:w-[400px] flex-1"
+                        onSearch={hooks.handleChangeTextSearch}
+                        placeholder={
+                            <div className="flex items-center gap-1 cursor-pointer h-max">
+                                <SearchOutlined className="text-lg text-ghost" />
+                                <span className="text-ghost text-[14px]">Tìm đơn mã bill</span>
+                            </div>
+                        }
+                        allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                        // onSelect={(id) => hooks.handleOpenModal(+id)}
+                        value={state.textSearch}
+                    />
+                    <div className="flex gap-2">
+                        <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                        <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
+                    </div>
+                </Col>
+            </Row>
                 <Table
                     loading={state.loading}
                     dataSource={state.data}

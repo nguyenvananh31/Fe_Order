@@ -1,4 +1,4 @@
-import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, ZoomInOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from "@ant-design/icons";
 import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Image, Popconfirm, Row, Select, Space, Tooltip } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { Table } from "antd/lib";
@@ -137,29 +137,53 @@ export default function ProductPage() {
         <div className='bg-primary drop-shadow-primary rounded-primary'>
             <div className="pl-6 pt-4 text-lg font-semibold">Bộ lọc tìm kiếm</div>
             <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"space-between"} >
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={6}>
                     <Select
                         size="large"
                         className="w-full"
                         allowClear
-                        options={[{ value: true, label: 'Hiển thị' }, { value: false, label: 'Ẩn' }]}
+                        options={[{ value: 1, label: 'Hiển thị' }, { value: 0, label: 'Ẩn' }]}
                         placeholder="Trạng thái"
+                        onSelect={(value) => hooks.handleFilterStatus(value)}
+                        onClear={hooks.refreshPage}
                     />
                 </Col>
-                <Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[{ value: 'asc', label: 'Từ trên xuống' }, { value: 'desc', label: 'Từ dưới lên' }]}
+                        placeholder="Kiểu sắp xếp"
+                        onClear={hooks.refreshPage}
+                        onSelect={(value) => hooks.handSortOrderBy(value)}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[{ value: 'name', label: 'Tên sản phẩm' },{ value: 'category_id', label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }]}
+                        placeholder="Lọc theo cột"
+                        onClear={hooks.refreshPage}
+                        onSelect={(value) => hooks.handSortOrderBy(undefined,value)}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
                     <DatePicker.RangePicker
                         size="large"
-
+                        onChange={hooks.handleFilterDate}
                     />
                 </Col>
             </Row>
             <Divider />
             <Row gutter={[16, 16]} className="px-6 pb-6" align={"middle"} justify={"space-between"} >
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
                     <AutoComplete
                         size="large"
                         options={hooks.options}
-                        className="max-sm:w-full md:w-[400px]"
+                        className="max-sm:w-full md:w-[400px] flex-1"
                         onSearch={hooks.handleChangeTextSearch}
                         placeholder={
                             <div className="flex items-center gap-1 cursor-pointer h-max">
@@ -167,9 +191,14 @@ export default function ProductPage() {
                                 <span className="text-ghost text-[14px]">Tìm sản phẩm</span>
                             </div>
                         }
-                        allowClear={{ clearIcon: state.loadingSubmit ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                        allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
                         onSelect={(id) => hooks.handleToEdit(+id)}
+                        value={state.textSearch}
                     />
+                    <div className="flex gap-2">
+                        <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                        <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
+                    </div>
                 </Col>
                 <Col>
                     <Button

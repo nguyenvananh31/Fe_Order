@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Popconfirm, notification, Tooltip } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { CloseCircleFilled, DeleteOutlined, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons';
+import { AutoComplete, Button, Col, Form, Input, Modal, notification, Popconfirm, Row, Select, Table, Tooltip } from 'antd';
 import 'antd/dist/reset.css';
+import type { ColumnsType } from 'antd/es/table';
+import React, { useCallback, useEffect, useState } from 'react';
 import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
@@ -46,7 +46,7 @@ const ListPayment: React.FC = () => {
         setModalVisible(true);
     };
 
-    const handleEdit = (record: PaymentMethod) => {
+    const handleEdit = (record: any) => {
         setEditingRecord(record);
         form.setFieldsValue(record);
         setModalVisible(true);
@@ -91,6 +91,38 @@ const ListPayment: React.FC = () => {
         }
     };
 
+        //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setOptions([]);
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
+
+
     const columns: ColumnsType<PaymentMethod> = [
         {
             title: 'STT',
@@ -107,7 +139,7 @@ const ListPayment: React.FC = () => {
             dataIndex: 'status',
             align: 'center',
             width: '15%',
-            render: (_: any, { id, status }: any) => (
+            render: (_: any, { status }: any) => (
                 <Tooltip title="Thay đổi trạng thái">
                     <Popconfirm
                         placement='topRight'
@@ -152,13 +184,39 @@ const ListPayment: React.FC = () => {
     return (
         <>
             <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
-                <Button
-                    type="primary"
-                    onClick={handleAdd}
-                    className="inline-flex items-center justify-center px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:mt-6 hover:bg-blue-700 focus:bg-blue-700"
-                >
-                    Thêm phương thức
-                </Button>
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                    <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
+                        <AutoComplete
+                            size="large"
+                            options={options}
+                            className="max-sm:w-full md:w-[400px] flex-1"
+                            onSearch={handleChangeTextSearch}
+                            placeholder={
+                                <div className="flex items-center gap-1 cursor-pointer h-max">
+                                    <SearchOutlined className="text-lg text-ghost" />
+                                    <span className="text-ghost text-[14px]">Tìm kích thước</span>
+                                </div>
+                            }
+                            allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                            onSelect={(id) => handleEdit(+id)}
+                            value={state.textSearch}
+                        />
+                        <div className="flex gap-2">
+                            <Button onClick={handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                            <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={refreshPage}>Làm mới</Button>
+                        </div>
+                    </Col>
+                    <Col>
+                        <Button
+                            size="large"
+                            type='primary'
+                            icon={<PlusOutlined />}
+                            onClick={() => handleAdd()}
+                        >
+                            Thêm phương thức
+                        </Button>
+                    </Col>
+                </Row>
 
                 <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl mt-6">
                     <Table columns={columns} dataSource={data} rowKey="key" />

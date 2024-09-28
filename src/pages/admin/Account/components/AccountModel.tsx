@@ -1,8 +1,8 @@
-import { Button, Checkbox, Col, Form, Input, Modal, Row } from "antd";
+import { Checkbox, Col, Form, Input, Modal, Row } from "antd";
 import { useEffect, useState } from "react";
+import Avatar from "react-avatar";
 import { IRole, IUser } from "../../../../interFaces/common.types";
 import { apiGetOneUser, apiGetRoles, apiUpadateRoles } from "../utils/account.service";
-import Avatar from "react-avatar";
 
 interface IProps {
     itemId?: number;
@@ -109,7 +109,7 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                 onCancel={onClose}
                 onOk={handleSubmit}
                 okText={
-                    <Button type="primary" loading={state.loadingBtn}>{itemId ? state.isEdit ? 'Lưu' : 'Cập nhật' : 'Tạo'}</Button>
+                    <div>{itemId ? state.isEdit ? 'Lưu' : 'Cập nhật' : 'Tạo'}</div>
                 }
                 cancelText='Huỷ'
                 centered
@@ -123,6 +123,9 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     form={form}
                     onFinish={onFinish}
                     disabled={!state.isEdit}
+                    // initialValues={{
+                    //     'roles':  [1]
+                    // }}
                 >
                     <div className='flex justify-center items-center gap-6 my-6'>
                         <Avatar className="cursor-pointer" name={state.account?.name || state.account?.email} size="60" round={true} />
@@ -144,7 +147,6 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     <Form.Item
                         name='roles'
                         label="Vai trò"
-                        valuePropName="roles"
                     >
                         <Checkbox.Group
                             style={{ width: '100%' }}
