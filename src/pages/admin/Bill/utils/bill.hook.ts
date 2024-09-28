@@ -1,10 +1,10 @@
 import { InputRef } from "antd";
+import { RadioChangeEvent } from "antd/lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import useToast from "../../../../hooks/useToast";
 import { IBill } from "../../../../interFaces/bill";
-import { apiGetBils } from "./bill.service";
-import { RadioChangeEvent } from "antd/lib";
+import { apiGetBils, apiUpdateStatusBill } from "./bill.service";
 
 interface IState {
     loadingSubmit: boolean;
@@ -42,7 +42,7 @@ export default function useBill() {
     const [searchText, setSearchText] = useState<string>('');
     const inputSearchRef = useRef<InputRef>(null);
     const [selectedStatus, setSelectedStatus] = useState<string>('');
-    const [status, setStatus] = useState<string>();
+    const [status, setStatus] = useState<any>();
 
     //Lấy bill
     useEffect(() => {
@@ -104,17 +104,31 @@ export default function useBill() {
     }, []);
 
     // Hiển thị model
-    const handleOpenModalStatus = useCallback((status?: string) => {
+    const handleOpenModalStatus = useCallback((id: number, type?: string) => {
         setState(prev => ({
             ...prev,
             showModalStatus: true,
         }))
-        setStatus(status);
+        setStatus({id, type});
     }, []);
 
     const onChanegStatus = (e: RadioChangeEvent) => {
-        setStatus(e.target.value);
+        setStatus((prev: any) => ({ ...prev, type: e.target.value }));
     };
+
+    const handleChangeStatus = async () => {
+        if (!status) return;
+        setState({ ...state, loading: true });
+        try {
+            await apiUpdateStatusBill(status?.id, {status: status?.type});
+            setState((prev) => ({ ...prev, refresh: !prev.refresh, showModalStatus: false }));
+            showToast('success', 'Cập nhật trạng thái thành công!');
+        } catch (error: any) {
+            console.log(error);
+            showToast('error', 'Có lỗi xảy ra!');
+            setState((prev) => ({ ...prev, loading: false }));
+        }
+    }
 
     return {
         state,
@@ -127,6 +141,7 @@ export default function useBill() {
         handleDismissModal,
         handleDismissModalStatus,
         handleOpenModalStatus,
-        onChanegStatus
+        onChanegStatus,
+        handleChangeStatus
     }
 }

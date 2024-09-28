@@ -1,6 +1,10 @@
 export const RoutePath = {
     //Client
     HOME: '/',
+    ABOUT : 'about',
+    PRODUCTS : 'products',
+    PROFILE:'profile',
+    CLINET_PRODUCTS: 'product',
     PRODUCT_DETAIL: 'product/:id',
     PRODUCT_CATE: 'product/category/:id',
 
@@ -12,7 +16,6 @@ export const RoutePath = {
     CATEGORY: 'categories',
     LOGIN : 'login',
     REGISTER : 'register',
-    ABOUT : 'about',
     CHECKOUT : 'checkout',
     ORDER : 'order',
     TABLE : 'table',

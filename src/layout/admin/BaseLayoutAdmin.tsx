@@ -3,6 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { HeaderMain } from './HeaderMain';
 import Sidebar from './Sidebar';
+import SidebarOder from './SidebarOder';
 
 const { Header, Content, Footer } = Layout;
 
@@ -21,6 +22,7 @@ const BaseLayoutAdmin: React.FC = () => {
           DATN ©{new Date().getFullYear()} Yagi
         </Footer>
       </Layout>
+      <SidebarOder />
     </Layout>
   );
 };

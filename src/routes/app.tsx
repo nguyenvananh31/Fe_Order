@@ -5,10 +5,10 @@ import { RoutePath } from "../constants/path";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
+
 import ListSize from "../pages/admin/Size/index.page";
 import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
-import ListTable from "../pages/admin/Tables/ListTable";
-import ListVoucher from "../pages/admin/Vouchers/index";
+import ListVoucher from "../pages/admin/Vouchers";
 
 //Auth
 const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
@@ -27,8 +27,7 @@ const PaymentsScreen = lazy(() => import('../pages/admin/Payments/index.page'));
 const SizesScreen = lazy(() => import('../pages/admin/Size/index.page'));
 
 //Quản lý bàn
-const TableScreen = lazy(() => import('../pages/admin/Tables/ListTable'));
-const OrderTableScreen = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
+const TableScreen = lazy(() => import('../pages/admin/Tables/index.page'));
 
 //customers
 const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'));
@@ -94,7 +93,7 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.ADMIN_TABLE,
         name: 'Quản lý bàn',
-        element: <ListTable />,
+        element: <TableScreen />,
     },
     {
         path: RoutePath.ADMIN_TABLE_ORDER,
@@ -117,17 +116,6 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý thêm sản phẩm',
         element: <AddProductScreen />,
     },
-
-    {
-        path: RoutePath.ADMIN_TABLE,
-        name: 'Quản lý bàn',
-        element: <TableScreen />,
-    },
-    {
-        path: RoutePath.ADMIN_TABLE_ORDER,
-        name: 'Quản lý đặt bàn',
-        element: <OrderTableScreen />,
-    },
     {
         path: RoutePath.CUSTOMERS,
         name: 'Quản lý khách hàng',
@@ -137,6 +125,7 @@ const accountRoutes: IRoutesProperties[] = [
         path: RoutePath.SIZES,
         name: 'Quản lý kích cỡ',
         element: <ListSize />,
+
     },
     {
         path: RoutePath.VOUCHER,
