@@ -153,9 +153,10 @@ export default function ProductPage() {
                         size="large"
                         className="w-full"
                         allowClear
-                        options={[{ value: true, label: 'Từ trên xuống' }, { value: false, label: 'Từ dưới lên' }]}
+                        options={[{ value: 'asc', label: 'Từ trên xuống' }, { value: 'desc', label: 'Từ dưới lên' }]}
                         placeholder="Kiểu sắp xếp"
                         onClear={hooks.refreshPage}
+                        onSelect={(value) => hooks.handSortOrderBy(value)}
                     />
                 </Col>
                 <Col xs={24} sm={12} md={6}>
@@ -163,9 +164,10 @@ export default function ProductPage() {
                         size="large"
                         className="w-full"
                         allowClear
-                        options={[{ value: true, label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }, { value: false, label: 'Số lượng' }]}
+                        options={[{ value: 'name', label: 'Tên sản phẩm' },{ value: 'category_id', label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }]}
                         placeholder="Lọc theo cột"
                         onClear={hooks.refreshPage}
+                        onSelect={(value) => hooks.handSortOrderBy(undefined,value)}
                     />
                 </Col>
                 <Col xs={24} sm={12} md={6}>

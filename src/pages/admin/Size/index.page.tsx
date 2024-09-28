@@ -112,7 +112,7 @@ export default function SizePage() {
                 ]}
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
                     <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
                         <AutoComplete
                             size="large"

@@ -25,6 +25,8 @@ interface ISate {
     filtertatus?: boolean;
     filterDate?: string[];
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -74,6 +76,11 @@ export default function useProduct() {
                 if (state.filterDate) {
                     conds.start_date = state.filterDate[0];
                     conds.end_date = state.filterDate[1];
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
                 }
 
                 if (!state.textSearch && state.search && !state.enterSearch) {
@@ -158,6 +165,16 @@ export default function useProduct() {
         setState(prev => ({ ...prev, textSearch: value, search: true }));
     }
 
+    //Handle search sort and order by
+    const handSortOrderBy = (sort?: string, orderBy?: string) => {
+        if ((!sort || state.filterSort) || (!orderBy || state.filterOrderBy)) {
+            setState(prev => ({...prev, filterSort: sort || prev.filterSort, filterOrderBy: orderBy || prev.filterOrderBy }));
+            return;
+        }
+
+        setState(prev => ({...prev, filterSort: sort, filterOrderBy: orderBy, refresh: !prev.refresh, pageIndex: 1  }));
+    }
+
     //Handle click btn search
     const handleSearchBtn = useCallback(() => {
         setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
@@ -200,6 +217,7 @@ export default function useProduct() {
         refreshPage,
         handleFilterStatus,
         handleFilterDate,
-        handleSearchBtn
+        handleSearchBtn,
+        handSortOrderBy
     }
 }

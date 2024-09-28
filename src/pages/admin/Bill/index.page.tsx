@@ -129,7 +129,15 @@ export default function CatePage() {
                         size="large"
                         className="w-full"
                         allowClear
-                        options={[{ value: 1, label: 'Hiển thị' }, { value: 0, label: 'Ẩn' }]}
+                        options={[
+                            {value: 'pending', label: 'Đang chờ'},
+                            {value: 'confirmed', label: 'Đã xác nhận'},
+                            {value: 'preparing', label: 'Chuẩn bị'},
+                            {value: 'shipping', label: 'Đang giao'},
+                            {value: 'completed', label: 'Đã hoàn thành'},
+                            {value: 'cancelled', label: 'Đã huỷ'},
+                            {value: 'failed', label: 'Thất bại'},
+                        ]}
                         placeholder="Trạng thái"
                         onSelect={(value) => hooks.handleFilterStatus(value)}
                         onClear={hooks.refreshPage}
