@@ -6,17 +6,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        font1: '"Bebas Neue", sans-serif',
+        font1: '"Oswald", sans-serif',
         font2: "inter-regular",
-        font3: '"Bebas Neue", sans-serif',
+        font3: '"Oswald", sans-serif',
         font4: '"Barlow Condensed", sans-serif',
         font5: '"SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace',
         font6: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji',
       },
       gridTemplateColumns: {
         gridLayout: "1fr 300px",
-        gridLayout2: " 300px 1fr",
+        gridLayout2: "300px 1fr",
         gridTopNav: "2fr 1fr",
+        gridOrder: "auto 1fr",
         gridCartItem: "auto 125px",
         gridProductDetail: "1.5fr 2fr",
         gridOrder: "1.5fr 2fr",
