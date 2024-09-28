@@ -20,7 +20,11 @@ interface ISate {
     selectedStatus?: string;
     refresh: boolean;
     search: boolean;
+    loadingSearch: boolean;
     textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string[];
+    enterSearch: boolean;
 }
 
 const initState: ISate = {
@@ -33,6 +37,11 @@ const initState: ISate = {
     showModal: false,
     refresh: false,
     search: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
 }
 
 export default function useProduct() {
@@ -47,7 +56,9 @@ export default function useProduct() {
         const fetchData = async () => {
             try {
                 if (state.search) {
-                    setState(prev => ({ ...prev, loadingSubmit: true }));
+                    setState(prev => ({ ...prev, loadingSearch: true }));
+                } else {
+                    setState(prev => ({ ...prev, loading: true }));
                 }
 
                 const conds: any = { page: state.pageIndex, per_page: state.pageSize };
@@ -56,17 +67,31 @@ export default function useProduct() {
                     conds.name = debouncedSearch;
                 }
 
+                if (typeof state.filtertatus != 'undefined') {
+                    conds.status = state.filtertatus;
+                }
+
+                if (state.filterDate) {
+                    conds.start_date = state.filterDate[0];
+                    conds.end_date = state.filterDate[1];
+                }
+
+                if (!state.textSearch && state.search && !state.enterSearch) {
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                    return;
+                }
+
                 const res = await apiGetPros(conds);
 
-                if (state.search) {
+                if (state.search && !state.enterSearch) {
                     setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.name })))
-                    setState(prev => ({ ...prev, loading: false, search: false, loadingSubmit: false }));
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                 } else {
-                    setState(prev => ({ ...prev, data: res.data, loading: false, total: res.meta.total, search: false }));
+                    setState(prev => ({ ...prev, data: res.data, loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
                 }
             } catch (error) {
                 console.log(error);
-                setState(prev => ({ ...prev, loading: false, search: false }))
+                setState(prev => ({ ...prev, loading: false, search: false, total: 0 }))
                 showToast('error', 'Có lỗi xảy ra!');
             }
         }
@@ -114,10 +139,52 @@ export default function useProduct() {
     }
 
     //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+        
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
 
+    //Search text
     const handleChangeTextSearch = (value: string) => {
         setState(prev => ({ ...prev, textSearch: value, search: true }));
     }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    //Filter status
+    const handleFilterStatus = (value: boolean) => {
+        setState(prev => ({ ...prev, filtertatus: value, refresh: !prev.refresh, pageIndex: 1 }));
+    }
+
+    //Filter date
+    const handleFilterDate = (_: any, dateStrings: [string, string]) => {
+        if (!dateStrings[0] || !dateStrings[1]) {
+            setState(prev => ({ ...prev, filterDate: undefined, refresh: !prev.refresh, pageIndex: 1 }))
+            return;
+        }
+
+        const startDate = new Date(dateStrings[0]).toISOString();
+        const endDate = new Date(dateStrings[1]).toISOString();
+
+        setState(prev => ({ ...prev, filterDate: [startDate, endDate], refresh: !prev.refresh, pageIndex: 1 }))
+    }
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
 
     return {
         state,
@@ -129,6 +196,10 @@ export default function useProduct() {
         handleDelePro,
         options,
         setOptions,
-        handleChangeTextSearch
+        handleChangeTextSearch,
+        refreshPage,
+        handleFilterStatus,
+        handleFilterDate,
+        handleSearchBtn
     }
 }
