@@ -1,7 +1,10 @@
 import { Avatar, Layout, Menu } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LISTMENU } from "./menu";
 import useMenu from "./useMenu";
+import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
+import EventBus from "../../utils/event-bus/event-bus";
+import { Subscription } from "rxjs";
 
 const { Sider } = Layout;
 
@@ -9,6 +12,27 @@ const { Sider } = Layout;
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { activeMenu, handleChange } = useMenu();
+  const subscriptions = useRef(new Subscription());
+
+  useEffect(() => {
+    registerEventBus();
+
+    return () => {
+      subscriptions.current.unsubscribe();
+    };
+  }, []);
+
+  const registerEventBus = () => {
+    subscriptions.current = new Subscription();
+    subscriptions.current.add(
+      EventBus.getInstance().events.subscribe((data: BaseEventPayload<{ isOpen: boolean, orderId: number }>) => {
+        if (data.type === EventBusName.ON_SHOW_SiDE_ORDER) {
+          !collapsed && setCollapsed(true);
+          handleChange([], undefined, collapsed);
+        }
+      })
+    );
+  };
 
   const closeNav = (value: boolean) => {
     setCollapsed(value);
@@ -46,7 +70,7 @@ const Sidebar: React.FC = () => {
       </div>
       <Menu
         selectedKeys={[activeMenu[0] || '']}
-        openKeys={activeMenu[1] ? activeMenu[1] : undefined}
+        openKeys={activeMenu[1] && !collapsed ? activeMenu[1] : undefined}
         mode="inline"
         theme="light"
         items={LISTMENU}

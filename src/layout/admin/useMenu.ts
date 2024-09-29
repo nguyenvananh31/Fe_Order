@@ -22,8 +22,9 @@ export default function useMenu() {
     }
   }, [loaction, refresh]);
 
-  const handleChange = (openKeys: string[], isClose: boolean = false) => {
-    if (isClose) {
+  const handleChange = (openKeys: string[], isClose: boolean = false, noThing?: boolean) => {
+    if (noThing) return;
+    if (isClose || !activeMenu[0]) {
       setRefresh(!refresh);
     }
     setActiveMenu([activeMenu[0], openKeys]);
