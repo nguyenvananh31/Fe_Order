@@ -91,36 +91,36 @@ const ListPayment: React.FC = () => {
         }
     };
 
-        //Search
-    /** Event KeyEnter */
-    useEffect(() => {
+    //     //Search
+    // /** Event KeyEnter */
+    // useEffect(() => {
 
-        const keyDownListener = (event: KeyboardEvent) => {
-            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
-            }
-        };
-        document.addEventListener('keydown', keyDownListener);
-        return () => {
-            document.removeEventListener('keydown', keyDownListener);
-        };
-    }, []);
+    //     const keyDownListener = (event: KeyboardEvent) => {
+    //         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+    //             setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    //         }
+    //     };
+    //     document.addEventListener('keydown', keyDownListener);
+    //     return () => {
+    //         document.removeEventListener('keydown', keyDownListener);
+    //     };
+    // }, []);
 
-    //Search text
-    const handleChangeTextSearch = (value: string) => {
-        setOptions([]);
-        setState(prev => ({ ...prev, textSearch: value, search: true }));
-    }
+    // //Search text
+    // const handleChangeTextSearch = (value: string) => {
+    //     setOptions([]);
+    //     setState(prev => ({ ...prev, textSearch: value, search: true }));
+    // }
 
-    //Handle click btn search
-    const handleSearchBtn = useCallback(() => {
-        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
-    }, []);
+    // //Handle click btn search
+    // const handleSearchBtn = useCallback(() => {
+    //     setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    // }, []);
 
-    // làm mới data
-    const refreshPage = useCallback(() => {
-        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
-    }, []);
+    // // làm mới data
+    // const refreshPage = useCallback(() => {
+    //     setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    // }, []);
 
 
     const columns: ColumnsType<PaymentMethod> = [
@@ -184,7 +184,7 @@ const ListPayment: React.FC = () => {
     return (
         <>
             <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
-                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                {/* <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
                     <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
                         <AutoComplete
                             size="large"
@@ -216,7 +216,7 @@ const ListPayment: React.FC = () => {
                             Thêm phương thức
                         </Button>
                     </Col>
-                </Row>
+                </Row> */}
 
                 <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl mt-6">
                     <Table columns={columns} dataSource={data} rowKey="key" />

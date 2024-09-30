@@ -52,6 +52,11 @@ export default {
         bgColor1: "#F4F1EA",
         bgColor2: "#DF0A0A0D",
       },
+      borderColor: {
+        primary: "#5d596c",
+        ghost: "#6f6b7d",
+        purple: "#7367f0",
+      },
       dropShadow: {
         primary: "0 0.125rem 0.25rem rgba(165, 163, 174, 0.3)",
       },
