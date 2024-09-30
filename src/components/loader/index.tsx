@@ -11,7 +11,7 @@ const SpinnerLoader = ({ title }: IProps) => {
 
   return (
     <div className="fixed inset-0 w-full h-full z-[9999] bg-transparent">
-      <div className="absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] z-[9999] bg-primary p-[8px_10px_4px] rounded-md text-center">
+      <div className="absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] z-[9999] bg-purple p-[8px_10px_4px] rounded-md text-center">
         <Spin indicator={antIcon} className="mb-[5px]" />
         <br />
         <Typography.Text className="mb-0 color-white">{title || 'Tải dữ liệu...'}</Typography.Text>

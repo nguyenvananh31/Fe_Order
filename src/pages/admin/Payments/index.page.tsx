@@ -3,10 +3,50 @@ import { CloseCircleFilled, DeleteOutlined, EditOutlined, LoadingOutlined, PlusO
 import { AutoComplete, Button, Col, Form, Input, Modal, notification, Popconfirm, Row, Select, Table, Tooltip } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
+import { AutoCompleteProps } from 'antd/lib';
 import React, { useCallback, useEffect, useState } from 'react';
+import { PAGINATE_DEFAULT } from '../../../constants/enum';
+import useDebounce from '../../../hooks/useDeBounce';
 import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
+
+
+interface ISate {
+    loadingSubmit: boolean;
+    loading: boolean;
+    data: PaymentMethod[];
+    pageSize: number;
+    pageIndex: number;
+    total: number;
+    showModal: boolean;
+    selectedItemId?: number;
+    selectedStatus?: string;
+    refresh: boolean;
+    search: boolean;
+    loadingSearch: boolean;
+    textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string[];
+    enterSearch: boolean;
+}
+
+const initState: ISate = {
+    loadingSubmit: false,
+    loading: true,
+    data: [],
+    pageSize: PAGINATE_DEFAULT.LIMIT,
+    pageIndex: 1,
+    total: 0,
+    showModal: false,
+    refresh: false,
+    search: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
+}
 
 interface PaymentMethod {
     key: string;
@@ -15,30 +55,55 @@ interface PaymentMethod {
 }
 
 const ListPayment: React.FC = () => {
-    const [data, setData] = useState<PaymentMethod[]>([]);
+
+    const [state, setState] = useState<ISate>(initState);
     const [modalVisible, setModalVisible] = useState(false);
-    const [editingRecord, setEditingRecord] = useState<null | PaymentMethod>(null);
+    const [editingRecord, setEditingRecord] = useState<null | any>(null);
     const [form] = Form.useForm();
+    const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
+    const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [state.refresh, debouncedSearch]);
 
     const fetchData = async () => {
         try {
-            const res: any = await ApiUtils.fetch('/api/admin/payments');
-            const transformedData = res.data.map((payment: any, index: number) => ({
-                key: payment.id,
-                name: payment.name,
-                status: payment.status,
-                index: index + 1 // Thêm số thứ tự (STT) cho mỗi bản ghi
-            }));
-            console.log("Transformed Data:", transformedData); // Kiểm tra dữ liệu đã chuyển đổi
-            setData(transformedData);
+            if (state.search) {
+                setState(prev => ({ ...prev, loadingSearch: true }));
+            } else {
+                setState(prev => ({ ...prev, loading: true }));
+            }
+
+            const conds: any = { page: state.pageIndex, per_page: state.pageSize };
+
+            if (state.textSearch) {
+                conds.name = debouncedSearch;
+            }
+            const res: any = await ApiUtils.fetch('/api/admin/payments', conds);
+
+            if (state.search && !state.enterSearch) {
+                setOptions(res.data.map((i: any) => ({ value: `${i.id}`, label: i.name, data: i })))
+                setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+            } else {
+                setState(prev => ({ ...prev, data: res.data || [], loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
+            setState((prev) => ({ ...prev, data: [], loading: false, total: 0 }));
         }
     };
+
+    const handleChangeStatus = async (id: number, status: number) => {
+        try {
+            setState(prev => ({ ...prev, loading: true }));
+            await ApiUtils.put('/api/admin/payments/' + id, { status });
+            setState(prev => ({ ...prev, loading: false, refresh: !prev.refresh }));
+        } catch (error) {
+            console.log(error);
+            setState(prev => ({ ...prev, loading: false }));
+        }
+    }
 
     const handleAdd = () => {
         setEditingRecord(null);
@@ -66,7 +131,7 @@ const ListPayment: React.FC = () => {
 
     const handleSubmit = (values: { name: string; status: number }) => {
         if (editingRecord) {
-            ApiUtils.put(`/api/admin/payments/${editingRecord.key}`, values)
+            ApiUtils.put(`/api/admin/payments/${editingRecord.id}`, values)
                 .then(() => {
                     fetchData(); // Cập nhật danh sách dữ liệu ngay sau khi sửa thành công
                     notification.success({ message: 'Sửa phương thức thanh toán thành công!' });
@@ -91,64 +156,85 @@ const ListPayment: React.FC = () => {
         }
     };
 
-    //     //Search
-    // /** Event KeyEnter */
-    // useEffect(() => {
+    // Chuyển trang và phân trang
+    const handlePageChange = (page: any, pageSize: any) => {
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+    };
 
-    //     const keyDownListener = (event: KeyboardEvent) => {
-    //         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-    //             setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
-    //         }
-    //     };
-    //     document.addEventListener('keydown', keyDownListener);
-    //     return () => {
-    //         document.removeEventListener('keydown', keyDownListener);
-    //     };
-    // }, []);
+    //Search
+    /** Event KeyEnter */
+    useEffect(() => {
 
-    // //Search text
-    // const handleChangeTextSearch = (value: string) => {
-    //     setOptions([]);
-    //     setState(prev => ({ ...prev, textSearch: value, search: true }));
-    // }
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
 
-    // //Handle click btn search
-    // const handleSearchBtn = useCallback(() => {
-    //     setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
-    // }, []);
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setOptions([]);
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
 
-    // // làm mới data
-    // const refreshPage = useCallback(() => {
-    //     setState((prev) => ({ ...initState, refresh: !prev.refresh }));
-    // }, []);
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
 
 
     const columns: ColumnsType<PaymentMethod> = [
         {
             title: 'STT',
-            dataIndex: 'index', // Sử dụng số thứ tự (index) cho cột STT
-            key: 'index',
+            dataIndex: 'stt',
+            width: 100,
+            align: 'center',
+            fixed: 'left',
+            render: (_: any, __: any, index: number) => {
+                return (
+                    <span>
+                        {Number(state.pageIndex) > 1 ? (Number(state.pageIndex) - 1) * state.pageSize + (index + 1) : index + 1}
+                    </span>
+                );
+            },
         },
         {
             title: 'Tên phương thức thanh toán',
             dataIndex: 'name',
             key: 'name',
+            render: (_: any, item: any) => {
+                return (
+                    <div onClick={() => handleEdit(item)} className='text-purple font-semibold cursor-pointer'>
+                        {item.name}
+                    </div>
+                )
+            }
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             align: 'center',
             width: '15%',
-            render: (_: any, { status }: any) => (
+            render: (_: any, { id, status }: any) => (
                 <Tooltip title="Thay đổi trạng thái">
                     <Popconfirm
                         placement='topRight'
-                        title={`${!status ? 'Hiển thị' : 'Ẩn'} danh mục`}
-                        description={`Bạn có muốn ${!status ? 'hiển thị' : 'ẩn'} danh mục này?`}
+                        title={`${!status ? 'Hiển thị' : 'Ẩn'} phương thức`}
+                        description={`Bạn có muốn ${!status ? 'hiển thị' : 'ẩn'} phương thức này?`}
                         icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                         okText="Có"
                         cancelText="Không"
-                    // onConfirm={() => hooks.handleChangeStatus(id, status)}
+                        onConfirm={() => handleChangeStatus(id, status)}
                     >
                         <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
                             {!!status ? "Hiển thị" : 'Ẩn'}
@@ -160,7 +246,7 @@ const ListPayment: React.FC = () => {
         {
             title: 'Hành động',
             key: 'action',
-            render: (_, record: PaymentMethod) => (
+            render: (_, record: any) => (
                 <span>
                     <Button
                         icon={<EditOutlined />}
@@ -170,7 +256,7 @@ const ListPayment: React.FC = () => {
                     />
                     <Popconfirm
                         title="Bạn có chắc chắn muốn xóa phương thức thanh toán này?"
-                        onConfirm={() => handleDelete(record.key)}
+                        onConfirm={() => handleDelete(record.id)}
                         okText="Có"
                         cancelText="Không"
                     >
@@ -184,7 +270,7 @@ const ListPayment: React.FC = () => {
     return (
         <>
             <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
-                {/* <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
                     <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
                         <AutoComplete
                             size="large"
@@ -194,11 +280,11 @@ const ListPayment: React.FC = () => {
                             placeholder={
                                 <div className="flex items-center gap-1 cursor-pointer h-max">
                                     <SearchOutlined className="text-lg text-ghost" />
-                                    <span className="text-ghost text-[14px]">Tìm kích thước</span>
+                                    <span className="text-ghost text-[14px]">Tìm phương thức</span>
                                 </div>
                             }
                             allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
-                            onSelect={(id) => handleEdit(+id)}
+                            onSelect={(_, a) => handleEdit(a.data)}
                             value={state.textSearch}
                         />
                         <div className="flex gap-2">
@@ -216,10 +302,28 @@ const ListPayment: React.FC = () => {
                             Thêm phương thức
                         </Button>
                     </Col>
-                </Row> */}
+                </Row>
 
-                <div className="px-4 mx-auto sm:px-3 lg:px-4 max-w-7xl mt-6">
-                    <Table columns={columns} dataSource={data} rowKey="key" />
+                <div className="mx-auto mt-6">
+                    <Table
+                        loading={state.loading}
+                        columns={columns}
+                        dataSource={state.data}
+                        rowKey="id"
+                        pagination={{
+                            pageSize: state.pageSize,
+                            showSizeChanger: true,
+                            pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+                            total: state.total,
+                            current: state.pageIndex,
+                            style: {
+                                paddingRight: "24px",
+                            },
+                            onChange(page, pageSize) {
+                                handlePageChange(page, pageSize);
+                            },
+                        }}
+                    />
 
                     <Modal
                         open={modalVisible}
