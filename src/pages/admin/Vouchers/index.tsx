@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Popconfirm, Upload, notification, Row, Col, AutoComplete, Tooltip, Image, Space } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined, UploadOutlined, SearchOutlined, LoadingOutlined, CloseCircleFilled, UndoOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined, UploadOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { AutoComplete, Button, Col, Form, Image, Input, Modal, notification, Popconfirm, Row, Select, Space, Table, Tooltip, Upload } from 'antd';
 import 'antd/dist/reset.css';
-import ApiUtils from '../../../utils/api/api.utils';
-import { PAGINATE_DEFAULT } from '../../../constants/enum';
+import type { ColumnsType } from 'antd/es/table';
 import { AutoCompleteProps } from 'antd/lib';
-import useDebounce from '../../../hooks/useDeBounce';
+import React, { useCallback, useEffect, useState } from 'react';
 import { fallBackImg, getImageUrl } from '../../../constants/common';
+import { PAGINATE_DEFAULT } from '../../../constants/enum';
+import useDebounce from '../../../hooks/useDeBounce';
+import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
 
@@ -113,17 +113,6 @@ const ListVoucher: React.FC = () => {
         setModalVisible(true);
     };
 
-    const handleDelete = (key: string) => {
-        ApiUtils.remove(`/api/admin/vouchers/${key}`)
-            .then(() => {
-                fetchData();
-                notification.success({ message: 'Deleted voucher successfully!' });
-            })
-            .catch(error => {
-                notification.error({ message: 'Error deleting voucher!' });
-                console.error('Error deleting voucher:', error);
-            });
-    };
 
     const handleUpload = (info: any) => {
         if (info.file.status === 'done') {
