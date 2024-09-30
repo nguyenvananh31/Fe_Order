@@ -62,7 +62,6 @@ const useSize = () => {
                 }
 
                 const conds: any = { page: state.pageIndex, per_page: state.pageSize };
-                console.log(state.search, debouncedSearch);
                 
                 if (state.textSearch) {
                     conds.name = debouncedSearch;
