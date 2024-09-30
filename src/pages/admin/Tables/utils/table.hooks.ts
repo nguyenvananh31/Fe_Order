@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useToast from "../../../../hooks/useToast";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { apiGetTables } from "./rable.service";
@@ -44,9 +44,9 @@ export default function useTable() {
         fetchData();
     }, [state.refresh]);
 
-    const openModalTable = async (id: number) => {
+    const openModalTable = useCallback(async (id: number) => {
         showSideOder(true, id);
-    }
+    }, []);
 
     return {
         state,

@@ -50,19 +50,19 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
   const initCustomHeader = customHeaders ? customHeaders : initHeader;
   if (!initCustomHeader?.isAuth) {
     delete header.Authorization;
-    // delete header["x-api-key"];
+    delete header.api_key;
   } else {
     const API_KEY = import.meta.env.VITE_API_KEY || undefined;
     let authToken = await getAccessToken();
     if (!authToken) {
       authToken = customHeaders?.access_token || null;
     }
-    if (authToken && !API_KEY) {
+    if (authToken) {
       header.Authorization = `Bearer ${authToken}`;
     }
-    // if (API_KEY) {
-    //   header["x-api-key"] = API_KEY;
-    // }
+    if (API_KEY) {
+      header.api_key = API_KEY;
+    }
   }
   return { ...header };
 };
