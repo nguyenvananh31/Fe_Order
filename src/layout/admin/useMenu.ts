@@ -24,10 +24,11 @@ export default function useMenu() {
 
   const handleChange = (openKeys: string[], isClose: boolean = false, noThing?: boolean) => {
     if (noThing) return;
-    if (isClose || !activeMenu[0]) {
+    if (isClose) {
       setRefresh(!refresh);
+      return;
     }
-    setActiveMenu([activeMenu[0], openKeys]);
+    setActiveMenu(prev=> [prev[0], openKeys]);
   }
 
   return {

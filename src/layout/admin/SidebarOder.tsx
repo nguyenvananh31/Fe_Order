@@ -32,7 +32,7 @@ export default function SidebarOder() {
 
     useEffect(() => {
         if (!state.orderId) {
-            return;  
+            return;
         }
         const fetchData = async () => {
             try {
@@ -60,7 +60,12 @@ export default function SidebarOder() {
         subscriptions.current.add(
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<{ isOpen: boolean, orderId: number }>) => {
                 if (data.type === EventBusName.ON_SHOW_SiDE_ORDER) {
-                    setState(prev => ({ ...prev, isOpenRight: data.payload.isOpen, orderId: data.payload.orderId, refresh: !prev.refresh }));
+                    setState(prev => {
+                        if (data.payload.orderId != prev.orderId) {
+                            return ({ ...prev, isOpenRight: data.payload.isOpen, orderId: data.payload.orderId, refresh: !prev.refresh });
+                        }
+                        return ({ ...prev, isOpenRight: data.payload.isOpen });
+                    });
                 }
             })
         );
