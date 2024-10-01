@@ -31,6 +31,8 @@ export default function CatePage() {
                 title: 'Họ và tên',
                 dataIndex: 'name',
                 key: 'name',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên'},
                 render: (_: any, custoner: Icustomer) => {
                     return (
                         <div
@@ -44,7 +46,9 @@ export default function CatePage() {
             {
                 title: 'Email',
                 dataIndex: 'email',
-                key: 'name',
+                key: 'email',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo email'},
                 render: (_: any, customer: Icustomer) => {
                     return (
                         <div className={`font-semibold cursor-pointer`}>
@@ -56,7 +60,7 @@ export default function CatePage() {
             {
                 title: 'Số điện thoại',
                 dataIndex: 'phone',
-                key: 'name',
+                key: 'phone',
                 render: (_: any, customer: Icustomer) => {
                     return (
                         <div className={`font-semibold cursor-pointer`}>
@@ -68,7 +72,9 @@ export default function CatePage() {
             {
                 title: 'Điểm thưởng',
                 dataIndex: 'point',
-                key: 'name',
+                key: 'point',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo điểm thưởng'},
                 render: (_: any, customer: Icustomer) => {
                     return (
                         <div className={`font-semibold cursor-pointer`}>
@@ -151,6 +157,7 @@ export default function CatePage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    onChange={hooks.handleTableChange}
                 />
             </div>
 

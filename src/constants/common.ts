@@ -21,3 +21,5 @@ export const themeToken: Partial<AliasToken> | undefined = {
     colorPrimary: '#7367f0',
     colorInfo: '#7367f0',
 };
+
+export const sortType = ['asc', 'desc'];

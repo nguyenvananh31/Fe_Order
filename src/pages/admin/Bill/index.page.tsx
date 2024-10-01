@@ -26,8 +26,11 @@ export default function CatePage() {
         const tblColumns: ColumnProps<IBill>[] = [
             {
                 title: 'Mã',
-                dataIndex: 'stt',
+                dataIndex: 'ma_bill',
+                key: 'ma_bill',
                 align: 'center',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo mã'},
                 render: (_: any, item: IBill) => {
                     return <span>
                         {item.ma_bill}
@@ -36,8 +39,10 @@ export default function CatePage() {
             },
             {
                 title: 'Tên chi nhánh',
-                dataIndex: 'name',
-                key: 'name',
+                dataIndex: 'branch_address',
+                key: 'branch_address',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên chi nhánh'},
                 render: (_: any, item: IBill) => {
                     return (
                         <div className={`text-purple font-semibold`}>
@@ -60,6 +65,8 @@ export default function CatePage() {
                 title: 'Ngày đặt',
                 dataIndex: 'order_date',
                 align: 'center',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo ngày đặt'},
                 render: (_: any, item: IBill) => {
                     return <span>
                         {item.order_date}
@@ -69,7 +76,10 @@ export default function CatePage() {
             {
                 title: 'Tổng',
                 dataIndex: 'total_amount',
+                key: 'total_amount',
                 align: 'center',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tổng số tiền'},
                 render: (_: any, item: IBill) => {
                     return <span>
                         {convertPriceVND(+item.total_amount)}
@@ -123,7 +133,7 @@ export default function CatePage() {
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
             <div className="pl-6 pt-4 text-lg font-semibold">Bộ lọc tìm kiếm</div>
-            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"space-between"} >
+            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"start"} >
                 <Col xs={24} sm={12} md={6}>
                     <Select
                         size="large"
@@ -140,26 +150,6 @@ export default function CatePage() {
                         ]}
                         placeholder="Trạng thái"
                         onSelect={(value) => hooks.handleFilterStatus(value)}
-                        onClear={hooks.refreshPage}
-                    />
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                    <Select
-                        size="large"
-                        className="w-full"
-                        allowClear
-                        options={[{ value: true, label: 'Từ trên xuống' }, { value: false, label: 'Từ dưới lên' }]}
-                        placeholder="Kiểu sắp xếp"
-                        onClear={hooks.refreshPage}
-                    />
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                <Select
-                        size="large"
-                        className="w-full"
-                        allowClear
-                        options={[{ value: true, label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }, { value: false, label: 'Số lượng' }]}
-                        placeholder="Lọc theo cột"
                         onClear={hooks.refreshPage}
                     />
                 </Col>
@@ -213,6 +203,7 @@ export default function CatePage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    onChange={hooks.handleTableChange}
                 />
             </div>
             {

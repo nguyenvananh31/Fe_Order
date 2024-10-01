@@ -1,4 +1,4 @@
-import { AutoCompleteProps } from "antd";
+import { AutoCompleteProps, TableProps } from "antd";
 import { RadioChangeEvent } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
@@ -26,6 +26,8 @@ interface IState {
     filtertatus?: boolean;
     filterDate?: string;
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: IState = {
@@ -82,6 +84,11 @@ export default function useBill() {
                 if (!state.textSearch && state.search && !state.enterSearch) {
                     setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                     return;
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
                 }
 
                 const res = await apiGetBils(conds);
@@ -208,6 +215,12 @@ export default function useBill() {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
+
     return {
         state,
         contextHolder,
@@ -226,5 +239,6 @@ export default function useBill() {
         handleSearchBtn,
         handleFilterStatus,
         handleFilterDate,
+        handleTableChange
     }
 }

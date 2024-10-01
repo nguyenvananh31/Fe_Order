@@ -6,6 +6,7 @@ import { useIsMobile } from "../../../../hooks/useIsMobile";
 import useToast from "../../../../hooks/useToast";
 import { Isize } from "../../../../interFaces/size";
 import { apiDeleteSize, apiGetSizes, apiUpdateStatusSize } from "./size.service";
+import { TableProps } from "antd";
 
 
 interface ISate {
@@ -25,6 +26,8 @@ interface ISate {
     filtertatus?: boolean;
     filterDate?: string[];
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -71,6 +74,12 @@ const useSize = () => {
                     setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                     return;
                 }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
+                }
+
                 const res = await apiGetSizes(conds);
 
                 if (state.search && !state.enterSearch) {
@@ -169,6 +178,12 @@ const useSize = () => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
+
     return {
         state,
         isMobile,
@@ -182,7 +197,8 @@ const useSize = () => {
         showToast,
         handleChangeStatus,
         handleChangeTextSearch,
-        handleSearchBtn
+        handleSearchBtn,
+        handleTableChange
     }
 }
 

@@ -6,6 +6,7 @@ import { Icustomer } from "../../../../interFaces/custommers";
 import { apiGetCustomers } from "./customers.service";
 import { AutoCompleteProps } from "antd";
 import useDebounce from "../../../../hooks/useDeBounce";
+import { TableProps } from "antd/lib";
 
 
 interface ISate {
@@ -25,6 +26,8 @@ interface ISate {
     filtertatus?: boolean;
     filterDate?: string[];
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -72,6 +75,11 @@ const useCustomer = () => {
                 if (!state.textSearch && state.search && !state.enterSearch) {
                     setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                     return;
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
                 }
 
                 const res = await apiGetCustomers(conds);
@@ -146,6 +154,12 @@ const useCustomer = () => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
+
     return {
         state,
         isMobile,
@@ -157,7 +171,8 @@ const useCustomer = () => {
         handlePageChange,
         showToast,
         handleChangeTextSearch,
-        handleSearchBtn
+        handleSearchBtn,
+        handleTableChange
     }
 }
 
