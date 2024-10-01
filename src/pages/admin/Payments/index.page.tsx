@@ -3,7 +3,7 @@ import { CloseCircleFilled, DeleteOutlined, EditOutlined, LoadingOutlined, PlusO
 import { AutoComplete, Button, Col, Form, Input, Modal, notification, Popconfirm, Row, Select, Table, Tooltip } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
-import { AutoCompleteProps } from 'antd/lib';
+import { AutoCompleteProps, TableProps } from 'antd/lib';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PAGINATE_DEFAULT } from '../../../constants/enum';
 import useDebounce from '../../../hooks/useDeBounce';
@@ -29,6 +29,8 @@ interface ISate {
     filtertatus?: boolean;
     filterDate?: string[];
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -80,6 +82,12 @@ const ListPayment: React.FC = () => {
             if (state.textSearch) {
                 conds.name = debouncedSearch;
             }
+  
+            if (state.filterOrderBy && state.filterSort) {
+                conds.sort_by = state.filterSort;
+                conds.orderby = state.filterOrderBy;
+            }
+
             const res: any = await ApiUtils.fetch('/api/admin/payments', conds);
 
             if (state.search && !state.enterSearch) {
@@ -192,6 +200,11 @@ const ListPayment: React.FC = () => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
 
     const columns: ColumnsType<PaymentMethod> = [
         {
@@ -212,6 +225,8 @@ const ListPayment: React.FC = () => {
             title: 'Tên phương thức thanh toán',
             dataIndex: 'name',
             key: 'name',
+            sorter: true,
+            showSorterTooltip: {title: 'Sắp xếp theo tên'},
             render: (_: any, item: any) => {
                 return (
                     <div onClick={() => handleEdit(item)} className='text-purple font-semibold cursor-pointer'>
@@ -323,6 +338,7 @@ const ListPayment: React.FC = () => {
                                 handlePageChange(page, pageSize);
                             },
                         }}
+                        onChange={handleTableChange}
                     />
 
                     <Modal

@@ -26,6 +26,8 @@ export default function ProductPage() {
                 title: 'Tên sản phẩm',
                 dataIndex: 'name',
                 key: 'name',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên sản phẩm'},
                 render: (_: any, item: any) => {
                     return (
                         <div className={`text-purple font-semibold cursor-pointer`}>
@@ -69,8 +71,10 @@ export default function ProductPage() {
             },
             {
                 title: 'Danh mục',
-                dataIndex: 'cate',
+                dataIndex: 'category_id',
                 align: 'center',
+                showSorterTooltip: {title: 'Sắp xếp theo tên danh mục'},
+                sorter: true,
                 render: (_: any, { category: { name } }: any) => {
                     return (
                         <span>{name}</span>
@@ -136,7 +140,7 @@ export default function ProductPage() {
         />
         <div className='bg-primary drop-shadow-primary rounded-primary'>
             <div className="pl-6 pt-4 text-lg font-semibold">Bộ lọc tìm kiếm</div>
-            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"space-between"} >
+            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"start"} >
                 <Col xs={24} sm={12} md={6}>
                     <Select
                         size="large"
@@ -146,28 +150,6 @@ export default function ProductPage() {
                         placeholder="Trạng thái"
                         onSelect={(value) => hooks.handleFilterStatus(value)}
                         onClear={hooks.refreshPage}
-                    />
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                    <Select
-                        size="large"
-                        className="w-full"
-                        allowClear
-                        options={[{ value: 'asc', label: 'Từ trên xuống' }, { value: 'desc', label: 'Từ dưới lên' }]}
-                        placeholder="Kiểu sắp xếp"
-                        onClear={hooks.refreshPage}
-                        onSelect={(value) => hooks.handSortOrderBy(value)}
-                    />
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                <Select
-                        size="large"
-                        className="w-full"
-                        allowClear
-                        options={[{ value: 'name', label: 'Tên sản phẩm' },{ value: 'category_id', label: 'Danh mục' }, { value: false, label: 'Tên sản phẩm' }]}
-                        placeholder="Lọc theo cột"
-                        onClear={hooks.refreshPage}
-                        onSelect={(value) => hooks.handSortOrderBy(undefined,value)}
                     />
                 </Col>
                 <Col xs={24} sm={12} md={6}>
@@ -229,6 +211,7 @@ export default function ProductPage() {
                         hooks.handlePageChange(page, pageSize);
                     },
                 }}
+                onChange={hooks.handleTableChange}
             />
         </div>
     </>

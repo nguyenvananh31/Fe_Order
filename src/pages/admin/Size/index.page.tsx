@@ -31,6 +31,8 @@ export default function SizePage() {
                 title: 'Tên kích thước',
                 dataIndex: 'name',
                 key: 'name',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên'},
                 render: (_: any, item: Isize) => {
                     return (
                         <div onClick={() => { hooks.handleOpenModal(item.id) }} className='text-purple font-semibold cursor-pointer'>
@@ -163,6 +165,7 @@ export default function SizePage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    onChange={hooks.handleTableChange}
                 />
             </div>
 

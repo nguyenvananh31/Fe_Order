@@ -7,6 +7,7 @@ import { IUser } from "../../../../interFaces/common.types";
 import { apiChangeLock, apiDelAccount, apiGetUsers } from "./account.service";
 import { AutoCompleteProps } from "antd";
 import useDebounce from "../../../../hooks/useDeBounce";
+import { TableProps } from "antd/lib";
 
 
 interface ISate {
@@ -25,7 +26,10 @@ interface ISate {
     textSearch?: string;
     filtertatus?: boolean;
     filterDate?: string[];
-    enterSearch: boolean;
+    enterSearch: boolean;    
+    filterSort?: string;
+    filterOrderBy?: string;
+    refreshSort?: boolean;
 }
 
 const initState: ISate = {
@@ -42,7 +46,7 @@ const initState: ISate = {
     textSearch: '',
     filtertatus: undefined,
     filterDate: undefined,
-    enterSearch: false
+    enterSearch: false,
 }
 
 const useAccount = () => {
@@ -73,6 +77,11 @@ const useAccount = () => {
                 if (!state.textSearch && state.search && !state.enterSearch) {
                     setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                     return;
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterOrderBy;
+                    conds.orderby = state.filterSort;
                 }
 
                 const res = await apiGetUsers(conds);
@@ -193,6 +202,11 @@ const useAccount = () => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterSort: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterOrderBy: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
 
     return {
         state,
@@ -209,7 +223,8 @@ const useAccount = () => {
         showToast,
         handleChangeLock,
         handleChangeTextSearch,
-        handleSearchBtn
+        handleSearchBtn,
+        handleTableChange
     }
 }
 

@@ -3,7 +3,7 @@ import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, Questio
 import { AutoComplete, Button, Col, Form, Image, Input, Modal, notification, Popconfirm, Row, Select, Space, Table, Tooltip, Upload } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
-import { AutoCompleteProps } from 'antd/lib';
+import { AutoCompleteProps, TableProps } from 'antd/lib';
 import React, { useCallback, useEffect, useState } from 'react';
 import { fallBackImg, getImageUrl } from '../../../constants/common';
 import { PAGINATE_DEFAULT } from '../../../constants/enum';
@@ -30,6 +30,8 @@ interface ISate {
     filtertatus?: boolean;
     filterDate?: string[];
     enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -86,6 +88,12 @@ const ListVoucher: React.FC = () => {
             if (state.textSearch) {
                 conds.name = debouncedSearch;
             }
+
+            if (state.filterOrderBy && state.filterSort) {
+                conds.sort_by = state.filterSort;
+                conds.orderby = state.filterOrderBy;
+            }
+
             const res: any = await ApiUtils.fetch('/api/admin/vouchers');
 
             if (state.search && !state.enterSearch) {
@@ -167,6 +175,12 @@ const ListVoucher: React.FC = () => {
         }
     };
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
+
     const columns: ColumnsType<Voucher> = [
         {
             title: 'STT',
@@ -183,9 +197,11 @@ const ListVoucher: React.FC = () => {
             },
         },
         {
-            title: 'Voucher Name',
+            title: 'Tên ưu đãi',
             dataIndex: 'name',
             key: 'name',
+            sorter: true,
+            showSorterTooltip: {title: 'Sắp xếp theo tên'},
             render: (_: any, item: any) => {
                 return (
                     <div onClick={() => handleEdit(item)} className='text-purple font-semibold cursor-pointer'>
@@ -195,17 +211,19 @@ const ListVoucher: React.FC = () => {
             }
         },
         {
-            title: 'Value',
+            title: 'Số điểm',
             dataIndex: 'value',
             key: 'value',
+            sorter: true,
+            showSorterTooltip: {title: 'Sắp xếp theo số điểm'},
         },
         {
-            title: 'Expiration Date',
+            title: 'Ngày hết hạn',
             dataIndex: 'expiration_date',
             key: 'expiration_date',
         },
         {
-            title: 'Image',
+            title: 'Hình ảnh',
             dataIndex: 'image',
             key: 'image',
             render: (image: string) => (
@@ -246,7 +264,7 @@ const ListVoucher: React.FC = () => {
             )
         },
         {
-            title: 'Actions',
+            title: 'Hành động',
             key: 'action',
             render: (_, record: any) => (
                 <span>
@@ -362,6 +380,7 @@ const ListVoucher: React.FC = () => {
                                 handlePageChange(page, pageSize);
                             },
                         }}
+                        onChange={handleTableChange}
                     />
                 </div>
 

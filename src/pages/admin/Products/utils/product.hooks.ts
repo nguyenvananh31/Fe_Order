@@ -7,6 +7,7 @@ import { IProduct } from "../../../../interFaces/product";
 import { apiDelePro, apiGetPros, apiUpdateStatusPro } from "./product.service";
 import { AutoCompleteProps } from "antd";
 import useDebounce from "../../../../hooks/useDeBounce";
+import { TableProps } from "antd/lib";
 
 interface ISate {
     loadingSubmit: boolean;
@@ -148,7 +149,7 @@ export default function useProduct() {
     //Search
     /** Event KeyEnter */
     useEffect(() => {
-        
+
         const keyDownListener = (event: KeyboardEvent) => {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
@@ -168,11 +169,11 @@ export default function useProduct() {
     //Handle search sort and order by
     const handSortOrderBy = (sort?: string, orderBy?: string) => {
         if ((!sort || state.filterSort) || (!orderBy || state.filterOrderBy)) {
-            setState(prev => ({...prev, filterSort: sort || prev.filterSort, filterOrderBy: orderBy || prev.filterOrderBy }));
+            setState(prev => ({ ...prev, filterSort: sort || prev.filterSort, filterOrderBy: orderBy || prev.filterOrderBy }));
             return;
         }
 
-        setState(prev => ({...prev, filterSort: sort, filterOrderBy: orderBy, refresh: !prev.refresh, pageIndex: 1  }));
+        setState(prev => ({ ...prev, filterSort: sort, filterOrderBy: orderBy, refresh: !prev.refresh, pageIndex: 1 }));
     }
 
     //Handle click btn search
@@ -203,6 +204,12 @@ export default function useProduct() {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+        }
+    }
+
     return {
         state,
         contextHolder,
@@ -218,6 +225,7 @@ export default function useProduct() {
         handleFilterStatus,
         handleFilterDate,
         handleSearchBtn,
-        handSortOrderBy
+        handSortOrderBy,
+        handleTableChange
     }
 }
