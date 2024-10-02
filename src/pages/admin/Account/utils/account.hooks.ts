@@ -1,13 +1,13 @@
+import { AutoCompleteProps } from "antd";
+import { TableProps } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import useAuth from "../../../../hooks/redux/auth/useAuth";
+import useDebounce from "../../../../hooks/useDeBounce";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { IUser } from "../../../../interFaces/common.types";
 import { apiChangeLock, apiDelAccount, apiGetUsers } from "./account.service";
-import { AutoCompleteProps } from "antd";
-import useDebounce from "../../../../hooks/useDeBounce";
-import { TableProps } from "antd/lib";
 
 
 interface ISate {
@@ -53,7 +53,7 @@ const useAccount = () => {
     const { user } = useAuth();
     const [state, setState] = useState<ISate>(initState);
     const isMobile = useIsMobile();
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 

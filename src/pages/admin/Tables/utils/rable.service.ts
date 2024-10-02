@@ -2,7 +2,7 @@ import ApiUtils from "../../../../utils/api/api.utils"
 
 const apiName = {
     table: '/api/admin/tables',
-    tableOder: '/api/admin/time_order_table'
+    tableOder: '/api/admin/bill_table'
 }
 
 export const apiGetTables = async (params?: any) => {

@@ -60,7 +60,7 @@ export const LISTMENU: MenuItem[] = [
       ) },
       {
         key: RoutePath.ADMIN_TABLE_ORDER, label: (
-          <Link to={RoutePath.ADMIN_TABLE_ORDER}>Danh sách Order bàn</Link>
+          <Link to={RoutePath.ADMIN_TABLE_ORDER}>Danh sách đặt bàn</Link>
         )
       }
     ],

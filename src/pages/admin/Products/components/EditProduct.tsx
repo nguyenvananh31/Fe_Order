@@ -1,17 +1,17 @@
+import { CloseOutlined, LeftOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Card, Col, Form, GetProp, Image, Input, Row, TreeSelect } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import { RcFile } from "antd/es/upload";
 import { Select, Upload, UploadFile, UploadProps } from "antd/lib";
-import { apiGetSizes } from "../../Size/utils/size.service";
 import { useCallback, useEffect, useState } from "react";
-import { apiGetCates } from "../../Categories/utils/categories.service";
-import useToast from "../../../../hooks/useToast";
-import { ICate } from "../../../../interFaces/categories";
-import { FileRule, getImageUrl } from "../../../../constants/common";
-import { CloseOutlined, LeftOutlined, LoadingOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiGetOnePro, apiUpdatePro } from "../utils/product.service";
+import { FileRule, getImageUrl } from "../../../../constants/common";
 import { RoutePath } from "../../../../constants/path";
+import useToastMessage from "../../../../hooks/useToastMessage";
+import { ICate } from "../../../../interFaces/categories";
+import { apiGetCates } from "../../Categories/utils/categories.service";
+import { apiGetSizes } from "../../Size/utils/size.service";
+import { apiGetOnePro, apiUpdatePro } from "../utils/product.service";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -52,7 +52,7 @@ const initState: IState = {
 export default function EditProduct() {
 
     const [state, setState] = useState<IState>(initState);
-    const { contextHolder, showToast } = useToast();
+    const { contextHolder, showToast } = useToastMessage();
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -325,7 +325,7 @@ export default function EditProduct() {
                     variant: [{ quantity: 0, sale: 0 }]
                 }}
             >
-                <Row gutter={40} className="px-4">
+                <Row gutter={40} className="px-4 pb-4">
                     <Col xs={24} md={12}>
                         <Form.Item
                             name={'product_name'}

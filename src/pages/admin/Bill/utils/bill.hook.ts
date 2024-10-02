@@ -3,7 +3,7 @@ import { RadioChangeEvent } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import useDebounce from "../../../../hooks/useDeBounce";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { IBill } from "../../../../interFaces/bill";
 import { apiGetBils, apiUpdateStatusBill } from "./bill.service";
 
@@ -51,7 +51,7 @@ const initState: IState = {
 export default function useBill() {
 
     const [state, setState] = useState<IState>(initState);
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
     const [status, setStatus] = useState<any>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');

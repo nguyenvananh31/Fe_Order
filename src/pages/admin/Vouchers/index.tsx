@@ -240,29 +240,29 @@ const ListVoucher: React.FC = () => {
             />
             ),
         },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            align: 'center',
-            width: '15%',
-            render: (_: any, { id, status }: any) => (
-                <Tooltip title="Thay đổi trạng thái">
-                    <Popconfirm
-                        placement='topRight'
-                        title={`${!status ? 'Hiển thị' : 'Ẩn'} ưu đãi`}
-                        description={`Bạn có muốn ${!status ? 'hiển thị' : 'ẩn'} ưu đãi này?`}
-                        icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                        okText="Có"
-                        cancelText="Không"
-                        onConfirm={() => handleChangeStatus(id, status)}
-                    >
-                        <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
-                            {!!status ? "Hiển thị" : 'Ẩn'}
-                        </Button>
-                    </Popconfirm>
-                </Tooltip>
-            )
-        },
+        // {
+        //     title: 'Trạng thái',
+        //     dataIndex: 'status',
+        //     align: 'center',
+        //     width: '15%',
+        //     render: (_: any, { id, status }: any) => (
+        //         <Tooltip title="Thay đổi trạng thái">
+        //             <Popconfirm
+        //                 placement='topRight'
+        //                 title={`${!status ? 'Hiển thị' : 'Ẩn'} ưu đãi`}
+        //                 description={`Bạn có muốn ${!status ? 'hiển thị' : 'ẩn'} ưu đãi này?`}
+        //                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+        //                 okText="Có"
+        //                 cancelText="Không"
+        //                 onConfirm={() => handleChangeStatus(id, status)}
+        //             >
+        //                 <Button danger={!status} className={`${!!status && 'border-green-600 text-green-600'} min-w-[80px]`}>
+        //                     {!!status ? "Hiển thị" : 'Ẩn'}
+        //                 </Button>
+        //             </Popconfirm>
+        //         </Tooltip>
+        //     )
+        // },
         {
             title: 'Hành động',
             key: 'action',

@@ -1,13 +1,13 @@
+import { AutoCompleteProps } from "antd";
+import { TableProps } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { RoutePath } from "../../../../constants/path";
-import useToast from "../../../../hooks/useToast";
+import useDebounce from "../../../../hooks/useDeBounce";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { IProduct } from "../../../../interFaces/product";
 import { apiDelePro, apiGetPros, apiUpdateStatusPro } from "./product.service";
-import { AutoCompleteProps } from "antd";
-import useDebounce from "../../../../hooks/useDeBounce";
-import { TableProps } from "antd/lib";
 
 interface ISate {
     loadingSubmit: boolean;
@@ -52,7 +52,7 @@ export default function useProduct() {
     const [state, setState] = useState<ISate>(initState);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
-    const { contextHolder, showToast } = useToast();
+    const { contextHolder, showToast } = useToastMessage();
     const navigate = useNavigate();
 
     useEffect(() => {

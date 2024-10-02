@@ -7,6 +7,7 @@ import { themeToken } from "./constants/common";
 import Router from "./routes";
 import reduxStoreUtils from './utils/redux-store.utils';
 import { ProductProvider } from './context/ProductContext';  // Import ProductProvider
+import { ToastProvider } from "./hooks/useToast/handling";
 
 function App() {
     return (
@@ -14,11 +15,13 @@ function App() {
             {/* Bao bọc ứng dụng với ProductProvider */}
             <ProductProvider>
                 <Provider store={reduxStoreUtils}>
-                    <ConfigProvider locale={locale} theme={{ token: themeToken }}>
-                        <Suspense fallback={<SpinnerLoader />}>
-                            <Router />
-                        </Suspense>
-                    </ConfigProvider>
+                    <ToastProvider>
+                        <ConfigProvider locale={locale} theme={{ token: themeToken }}>
+                            <Suspense fallback={<SpinnerLoader />}>
+                                <Router />
+                            </Suspense>
+                        </ConfigProvider>
+                    </ToastProvider>
                 </Provider>
             </ProductProvider>
         </>

@@ -1,12 +1,12 @@
+import { AutoCompleteProps } from "antd";
+import { TableProps } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import useDebounce from "../../../../hooks/useDeBounce";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { Icustomer } from "../../../../interFaces/custommers";
 import { apiGetCustomers } from "./customers.service";
-import { AutoCompleteProps } from "antd";
-import useDebounce from "../../../../hooks/useDeBounce";
-import { TableProps } from "antd/lib";
 
 
 interface ISate {
@@ -50,7 +50,7 @@ const initState: ISate = {
 const useCustomer = () => {
     const [state, setState] = useState<ISate>(initState);
     const isMobile = useIsMobile();
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
