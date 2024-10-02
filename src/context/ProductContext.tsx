@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { notification } from 'antd';
+import axios from 'axios';
 
 interface ProductContextType {
   products: any[];
@@ -9,6 +10,7 @@ interface ProductContextType {
   removeFromCart: (id: number | string) => void;
   updateQuantity: (id: number | string, action: 'increase' | 'decrease') => void;
   getTotalPrice: () => number;  // Hàm tính tổng giá trị giỏ hàng
+  fetchCart: () => void; // Hàm lấy giỏ hàng từ API
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -25,61 +27,141 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
 
-  // Hàm thêm sản phẩm vào giỏ hàng
-  const addToCart = (product: any) => {
-    setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === product.id);
-      if (existingProduct) {
-        // Nếu sản phẩm đã tồn tại, tăng số lượng lên
-        return prevCart.map((item) =>
-            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        // Thêm sản phẩm mới vào giỏ hàng
-        return [...prevCart, { ...product, quantity: 1 }];
-      }
-    });
-
-    // Thông báo chỉ xuất hiện một lần khi thêm sản phẩm vào giỏ hàng
-    notification.success({
-      message: 'Added to Cart',
-      description: `${product.name} has been added to your cart.`,
-      placement: 'bottomRight',
-    });
+  // Hàm lấy token từ localStorage
+  const getToken = () => {
+    const token = localStorage.getItem('access_token');
+    return token ? token : null;
   };
 
-  // Hàm xóa sản phẩm khỏi giỏ hàng
-  const removeFromCart = (id: number | string) => {
-    const product = cart.find((item) => item.id === id);
-    if (!product) return;
+  // Hàm lấy giỏ hàng từ API
+  const fetchCart = async () => {
+    const token = getToken(); // Lấy token mỗi lần gọi hàm
+  
+    if (!token) {
+      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      return;
+    }
+  
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/client/online_cart', {
+        headers: {
+          Authorization: `Bearer ${token}`, // Đảm bảo truyền token đúng ở đây
+          'Api_key': import.meta.env.VITE_API_KEY,
+        },
+      });
+      setCart(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      notification.error({ message: 'Failed to fetch cart', placement: 'bottomRight' });
+    }
+  };
 
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-    notification.warning({
-      message: 'Removed from Cart',
-      description: `${product.name} has been removed from your cart.`,
-      placement: 'bottomRight',
-    });
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  // Hàm thêm sản phẩm vào giỏ hàng
+  const addToCart = async (productDetails: { product_detail_id: number, product_id: number, quantity: number, price: number, size_id: number }) => {
+    const token = getToken();
+    
+    if (!token) {
+      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      return;
+    }
+  
+    try {
+      await axios.post(
+        'http://127.0.0.1:8000/api/client/online_cart',
+        productDetails, // Truyền đầy đủ các trường cần thiết
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Api_key': import.meta.env.VITE_API_KEY,
+          },
+        }
+      );
+      fetchCart();  // Cập nhật giỏ hàng sau khi thêm sản phẩm
+      notification.success({
+        message: 'Added to Cart',
+        description: `The product has been added to your cart.`,
+        placement: 'bottomRight',
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      notification.error({ message: 'Failed to add to cart', placement: 'bottomRight' });
+    }
+  };  
+
+  // Hàm xóa sản phẩm khỏi giỏ hàng
+  const removeFromCart = async (id: number | string) => {
+    const token = getToken();
+
+    if (!token) {
+      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      return;
+    }
+
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/client/online_cart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Api_key': import.meta.env.VITE_API_KEY,
+        },
+      });
+      fetchCart();  // Cập nhật giỏ hàng sau khi xóa sản phẩm
+      notification.warning({
+        message: 'Removed from Cart',
+        description: 'Item has been removed from your cart.',
+        placement: 'bottomRight',
+      });
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      notification.error({ message: 'Failed to remove from cart', placement: 'bottomRight' });
+    }
   };
 
   // Hàm cập nhật số lượng sản phẩm
-  const updateQuantity = (id: number | string, action: 'increase' | 'decrease') => {
-    setCart((prevCart) =>
-        prevCart.map((item) => {
-          if (item.id === id) {
-            if (action === 'increase') {
-              return { ...item, quantity: item.quantity + 1 };
-            } else if (action === 'decrease' && item.quantity > 1) {
-              return { ...item, quantity: item.quantity - 1 };
-            }
-          }
-          return item;
-        })
-    );
-    notification.success({
-      message: 'Updated to Cart',
-      description: `The cart has been updated !`,
-      placement: 'bottomRight',
-    });
+  const updateQuantity = async (id: number | string, action: 'increase' | 'decrease') => {
+    const token = getToken();
+    
+    if (!token) {
+      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      return;
+    }
+
+    const product = cart.find((item) => item.id === id);
+    if (!product) {
+      notification.error({ message: 'Product not found in cart', placement: 'bottomRight' });
+      return;
+    }
+
+    const newQuantity = action === 'increase' ? product.quantity + 1 : product.quantity - 1;
+    if (newQuantity < 1) {
+      await removeFromCart(id);
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://127.0.0.1:8000/api/client/online_cart/${id}`,
+        { quantity: newQuantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Api_key': import.meta.env.VITE_API_KEY,
+          },
+        }
+      );
+      fetchCart();  // Cập nhật giỏ hàng sau khi cập nhật số lượng
+      notification.success({
+        message: 'Quantity updated',
+        description: `The quantity has been updated.`,
+        placement: 'bottomRight',
+      });
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      notification.error({ message: 'Failed to update quantity', placement: 'bottomRight' });
+    }
   };
 
   // Hàm tính tổng giá trị giỏ hàng
@@ -88,8 +170,19 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   return (
-      <ProductContext.Provider value={{ products, setProducts, cart, addToCart, removeFromCart, updateQuantity, getTotalPrice }}>
-        {children}
-      </ProductContext.Provider>
+    <ProductContext.Provider
+      value={{
+        products,
+        setProducts,
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        getTotalPrice,
+        fetchCart,
+      }}
+    >
+      {children}
+    </ProductContext.Provider>
   );
 };
