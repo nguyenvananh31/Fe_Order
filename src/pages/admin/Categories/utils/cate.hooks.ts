@@ -1,11 +1,11 @@
+import { AutoCompleteProps } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import useDebounce from "../../../../hooks/useDeBounce";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { ICate } from "../../../../interFaces/categories";
 import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
-import { AutoCompleteProps } from "antd";
-import useDebounce from "../../../../hooks/useDeBounce";
 
 
 interface ISate {
@@ -47,7 +47,7 @@ const initState: ISate = {
 const useCate = () => {
     const [state, setState] = useState<ISate>(initState);
     const isMobile = useIsMobile();
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 

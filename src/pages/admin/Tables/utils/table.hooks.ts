@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import useToast from "../../../../hooks/useToast";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
-import { apiGetTables } from "./rable.service";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { showSideOder } from "../../../../utils/event-bus/event-bus.events";
+import { apiGetTables } from "./rable.service";
 
 interface IState {
     loadingSubmit: boolean;
@@ -28,7 +28,7 @@ const initState: IState = {
 export default function useTable() {
 
     const [state, setState] = useState<IState>(initState);
-    const { contextHolder, showToast } = useToast();
+    const { contextHolder, showToast } = useToastMessage();
 
     useEffect(() => {
         const fetchData = async () => {

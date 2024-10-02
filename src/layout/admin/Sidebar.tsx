@@ -29,13 +29,13 @@ const Sidebar: React.FC = () => {
         if (data.type === EventBusName.ON_SHOW_SiDE_ORDER) {
           setCollapsed(prev => {
             handleChange([], prev);
-            return true;
+            return data.payload.isOpen;
           });
         }
       })
     );
   };
-
+  
   const closeNav = useCallback((value: boolean) => {
     setCollapsed(value);
     handleChange([], !value);

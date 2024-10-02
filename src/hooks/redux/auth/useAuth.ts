@@ -15,9 +15,9 @@ export default function useAuth() {
         dispatch(changeAuth(user));
     }
 
-    const checkSession = () => {
+    // const checkSession = () => {
         
-    }
+    // }
 
     return {
         user,

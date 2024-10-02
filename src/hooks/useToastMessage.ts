@@ -1,6 +1,6 @@
 import { message } from "antd";
 
-const useToast = () => {
+const useToastMessage = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
     const showToast = (type: any, content: string) => {
@@ -16,4 +16,4 @@ const useToast = () => {
     }
 }
 
-export default useToast;
+export default useToastMessage;
