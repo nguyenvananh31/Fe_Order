@@ -28,7 +28,7 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
         const fetchData = async () => {
             try {
                 setState(prev => ({...prev, loading: true}));
-                const res = await apiGetTableDetail(id);
+                    const res = await apiGetTableDetail(id);
 
             } catch (error) {
                 setState(prev => ({ ...prev, loading: false }));
