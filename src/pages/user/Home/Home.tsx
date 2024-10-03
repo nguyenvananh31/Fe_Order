@@ -11,7 +11,7 @@ const Home = () => {
   // const  products, setProducts ]= useProductContext();
   useEffect(() => {
     (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/products/';
+      const url = 'http://127.0.0.1:8000/api/client/products_details/';
       try {
         const res = await axios.get(url, {
           headers: {
@@ -35,7 +35,7 @@ const Home = () => {
         <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
       </div>
       <SliderCate />
-      <div>
+      <div className="container max-w-[1140px] grid grid-cols-4 gap-10 mx-auto mt-16">
         {
           products.map((item, index) => (
             <ItemProduct key={index} product={item} />
