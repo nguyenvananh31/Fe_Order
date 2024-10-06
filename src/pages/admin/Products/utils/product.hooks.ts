@@ -118,7 +118,7 @@ export default function useProduct() {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
     // handle thay đổi trạng thái 

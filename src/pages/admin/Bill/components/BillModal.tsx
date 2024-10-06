@@ -171,7 +171,7 @@ export default function BillModel({ onClose, showToast, itemId = undefined, data
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tên khách hàng:</span>
-                                    <span>{data?.khachhang.name || data?.khachhang.email}</span>
+                                    <span>{data?.khachhang?.name || data?.khachhang?.email}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Địa chỉ:</span>

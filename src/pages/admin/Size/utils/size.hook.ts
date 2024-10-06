@@ -63,7 +63,7 @@ const useSize = () => {
                 } else {
                     setState(prev => ({ ...prev, loading: true }));
                 }
-
+                
                 const conds: any = { page: state.pageIndex, per_page: state.pageSize };
                 
                 if (state.textSearch) {
@@ -144,7 +144,7 @@ const useSize = () => {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
     //Search

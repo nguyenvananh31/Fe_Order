@@ -155,7 +155,7 @@ const useAccount = () => {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
     // Danh sách màu sắc cố định

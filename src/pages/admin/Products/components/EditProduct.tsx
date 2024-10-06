@@ -261,7 +261,7 @@ export default function EditProduct() {
             });
         });
         try {
-            setState((prev) => ({ ...prev, loadingBtn: false }));
+            setState((prev) => ({ ...prev, loadingBtn: false, isEdit: false  }));
             const res = await apiUpdatePro(+productId!, formData);
 
             if (res.data) {
