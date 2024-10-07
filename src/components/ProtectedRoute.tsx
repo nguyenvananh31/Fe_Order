@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import SpinnerLoader from '../components/loader';
 import { RoutePath } from "../constants/path";
 import useAuth from "../hooks/redux/auth/useAuth";
-import { apiGetOneUser } from "../pages/admin/Account/utils/account.service";
 
 interface IProps {
     allowedRoles: string[];
@@ -25,11 +24,11 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
     const checkSession = async () => {
         try {
             setLoading(true);
-            const res = await apiGetOneUser(user?.id || 0);
-            if (res.data) {
-                setRoles(res.data.roles.map(i => i.name));
-                setLoading(false);
+            // const res = await apiGetOneUser(user?.id || 0);
+            if (user.roles?.length > 0) {
+                setRoles(user.roles.map(i => i.name));
             }
+            setLoading(false);
         } catch {
             console.log('không có quyền');
             setLoading(false);

@@ -202,7 +202,18 @@ const ListPayment: React.FC = () => {
 
     const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
         if (sorter) {
-            setState(prev => ({ ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined, filterSort: sorter.field, refresh: !prev.refresh, pageIndex: 1 }))
+            setState(prev => {
+                let rePage = false;
+                if (
+                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length-3) ||
+                    prev.filterSort !== sorter.field
+                ) {
+                    rePage = true;
+                }
+                return { ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined,
+                     filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
+                }
+            })
         }
     }
 
