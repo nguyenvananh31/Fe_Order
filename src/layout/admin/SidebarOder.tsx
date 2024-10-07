@@ -81,12 +81,12 @@ export default function SidebarOder() {
     }, []);
 
     const items: TabsProps['items'] = [
-        {
-            key: '1',
-            label: <span className="pr-2">Giỏ hàng</span>,
-            icon: <ShoppingCartOutlined />,
-            children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
-        },
+        // {
+        //     key: '1',
+        //     label: <span className="pr-2">Giỏ hàng</span>,
+        //     icon: <ShoppingCartOutlined />,
+        //     children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
+        // },
         {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,
@@ -112,7 +112,7 @@ export default function SidebarOder() {
             theme="light"
         >
                 <Tabs
-                    defaultActiveKey="1"
+                    defaultActiveKey="2"
                     items={items}
                     size="large"
                     tabBarExtraContent={{ left: <CloseOutlined onClick={closeNavRight} className="cursor-pointer p-2" /> }}

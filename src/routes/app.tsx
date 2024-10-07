@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { RouteProps } from "react-router-dom";
 import { RoutePath } from "../constants/path";
-// import ListProduct from "../pages/admin/Products/ListProduct";
 import GuestGuard from "../components/GuestGuard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ROLES } from "../constants/enum";
@@ -34,8 +33,8 @@ const CustomerScreen = lazy(() => import('../pages/admin/Customers/index.page'))
 
 //Quản lý sản phẩm
 const ProductScreen = lazy(() => import('../pages/admin/Products/index.page'));
-const AddProductScreen= lazy(() => import('../pages/admin/Products/components/AddProduct'));
-const EditProductScreen= lazy(() => import('../pages/admin/Products/components/EditProduct'));
+const AddProductScreen = lazy(() => import('../pages/admin/Products/components/AddProduct'));
+const EditProductScreen = lazy(() => import('../pages/admin/Products/components/EditProduct'));
 
 //Quản lý đơn
 const BillScreen = lazy(() => import('../pages/admin/Bill/index.page'));
@@ -71,24 +70,30 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.ACCOUNT,
         name: 'Quản lý tài khoản',
-        element: <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
             <AccountScreen />
         </ProtectedRoute>,
     },
     {
         path: RoutePath.CATEGORY,
         name: 'Quản lý danh mục',
-        element: <CateScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <CateScreen />
+        </ProtectedRoute>,
     },
     {
         path: RoutePath.SIZES,
         name: 'Quản lý kích thước',
-        element: <SizesScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <SizesScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.PAYMENT,
         name: 'Quản lý phương thức thanh toán',
-        element: <PaymentsScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <PaymentsScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.ADMIN_TABLE,
@@ -98,44 +103,60 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.ADMIN_TABLE_ORDER,
         name: 'Quản lý bàn đặt',
-        element: <DetailOrderTable />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <DetailOrderTable />,
+        </ProtectedRoute>
     },
 
     {
         path: `${RoutePath.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
-        element: <EditProductScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <EditProductScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.ADMIN_PRODUCT,
         name: 'Quản lý sản phẩm',
-        element: <ProductScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <ProductScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.ADMIN_ADD_PRODUCT,
         name: 'Quản lý thêm sản phẩm',
-        element: <AddProductScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <AddProductScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.CUSTOMERS,
         name: 'Quản lý khách hàng',
-        element: <CustomerScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <CustomerScreen />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.SIZES,
         name: 'Quản lý kích cỡ',
-        element: <ListSize />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <ListSize />,
+        </ProtectedRoute>
 
     },
     {
         path: RoutePath.VOUCHER,
         name: 'Quản lý Voucher',
-        element: <ListVoucher />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <ListVoucher />,
+        </ProtectedRoute>
     },
     {
         path: RoutePath.AD_BILL,
         name: 'Quản lý đơn',
-        element: <BillScreen />,
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+            <BillScreen />,
+        </ProtectedRoute>
     }
 ];
 

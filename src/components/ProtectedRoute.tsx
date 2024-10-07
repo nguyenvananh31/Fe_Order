@@ -1,18 +1,53 @@
-import { ReactNode } from "react";
+import { StopOutlined } from "@ant-design/icons";
+import { ReactNode, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SpinnerLoader from '../components/loader';
+import { RoutePath } from "../constants/path";
 import useAuth from "../hooks/redux/auth/useAuth";
+import { apiGetOneUser } from "../pages/admin/Account/utils/account.service";
 
 interface IProps {
     allowedRoles: string[];
     children: ReactNode;
 }
 
-export default function ProtectedRoute ({ allowedRoles, children }: IProps) {
+export default function ProtectedRoute({ allowedRoles, children }: IProps) {
 
     const { user } = useAuth();
+    const [roles, setRoles] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-    if (user == null || (allowedRoles && !allowedRoles.includes(user?.roles[0]?.name))) {
+    useEffect(() => {
+        checkSession();
+    }, []);
+
+    const checkSession = async () => {
+        try {
+            setLoading(true);
+            const res = await apiGetOneUser(user?.id || 0);
+            if (res.data) {
+                setRoles(res.data.roles.map(i => i.name));
+                setLoading(false);
+            }
+        } catch {
+            console.log('không có quyền');
+            setLoading(false);
+            // clearStore();
+            navigate(RoutePath.HOME);
+        }
+    };
+
+    if (loading) {
+        return <SpinnerLoader />
+    }
+
+    if (user == null || allowedRoles?.filter(i => roles.includes(i)).length == 0) {
         return (
-            <div>Tuổi lol</div>
+            <div className="bg-primary drop-shadow-primary rounded-primary h-full flex items-center justify-center flex-col gap-3">
+                <StopOutlined className="text-5xl" />
+                <div className="text-lg">Không đủ quyền truy cập!</div>
+            </div>
         )
     }
 

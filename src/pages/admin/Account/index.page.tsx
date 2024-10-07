@@ -150,7 +150,7 @@ export default function AccountPage() {
                             <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
                         </div>
                     </Col>
-                    <Col>
+                    {/* <Col>
                         <Button
                             size="large"
                             type='primary'
@@ -159,7 +159,7 @@ export default function AccountPage() {
                         >
                             Thêm tài khoản
                         </Button>
-                    </Col>
+                    </Col> */}
                 </Row>
                 <Table
                     loading={state.loading}

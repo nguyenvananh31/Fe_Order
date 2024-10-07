@@ -166,7 +166,7 @@ const ListPayment: React.FC = () => {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
     //Search
