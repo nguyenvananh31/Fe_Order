@@ -1,11 +1,11 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Popconfirm, Tag, Tooltip } from "antd";
-import useAccount from "./utils/account.hooks";
-import { useMemo } from "react";
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { AutoComplete, Breadcrumb, Button, Col, Popconfirm, Row, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
-import { IUser } from "../../../interFaces/common.types";
+import { useMemo } from "react";
 import Avatar from "react-avatar";
+import { IUser } from "../../../interFaces/common.types";
 import AccountModel from "./components/AccountModel";
+import useAccount from "./utils/account.hooks";
 
 
 export default function AccountPage() {
@@ -30,7 +30,9 @@ export default function AccountPage() {
             },
             {
                 title: 'Name/Email',
-                dataIndex: 'name/email',
+                dataIndex: 'email',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên và email'},
                 render: (_: any, user: IUser) => {
                     return (
                         <div className='flex items-center gap-3'>
@@ -106,7 +108,7 @@ export default function AccountPage() {
         ];
 
         return tblColumns;
-    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal])
+    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal, ])
 
     return (
         <>
@@ -126,17 +128,39 @@ export default function AccountPage() {
                 ]}
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-                <div className='flex items-center justify-between'>
-                    <h1 className='p-6 text-xl font-semibold'>Tài khoản</h1>
-                    <Button
-                        type='primary'
-                        icon={<PlusOutlined />}
-                        className='mx-6'
-                    // onClick={() => hooks.handleOpenModal()}
-                    >
-                        Tạo tài khoản
-                    </Button>
-                </div>
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                    <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
+                        <AutoComplete
+                            size="large"
+                            options={hooks.options}
+                            className="max-sm:w-full md:w-[400px] flex-1"
+                            onSearch={hooks.handleChangeTextSearch}
+                            placeholder={
+                                <div className="flex items-center gap-1 cursor-pointer h-max">
+                                    <SearchOutlined className="text-lg text-ghost" />
+                                    <span className="text-ghost text-[14px]">Tìm tên hoặc email</span>
+                                </div>
+                            }
+                            allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                            onSelect={(id) => hooks.handleOpenModal(+id)}
+                            value={state.textSearch}
+                        />
+                        <div className="flex gap-2">
+                            <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                            <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
+                        </div>
+                    </Col>
+                    {/* <Col>
+                        <Button
+                            size="large"
+                            type='primary'
+                            icon={<PlusOutlined />}
+                            onClick={() => hooks.handleOpenModal()}
+                        >
+                            Thêm tài khoản
+                        </Button>
+                    </Col> */}
+                </Row>
                 <Table
                     loading={state.loading}
                     dataSource={state.data}
@@ -155,6 +179,7 @@ export default function AccountPage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    onChange={hooks.handleTableChange}
                 />
             </div>
 

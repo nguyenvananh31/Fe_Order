@@ -25,3 +25,32 @@ export enum EOrderStatus {
     Cancelled = 'cancelled',
     Failed = 'failed'
 }
+
+//Permission
+export enum EPermisstion {
+    USER ,
+    CUSTOMER , 
+    CATEGORY ,
+    SIZE , 
+    VOUCHER  , 
+    TABLE , 
+    PRODUCT , 
+    PAYMENT , 
+    BILL
+}
+
+//Permission qtv
+export enum EPermisstionQTV {
+    TABLE , 
+    PRODUCT , 
+    CUSTOMER , 
+    CATEGORY ,
+    SIZE , 
+    VOUCHER  , 
+}
+
+//Permission qtv
+export enum EPermisstionStaff {
+    TABLE , 
+    CUSTOMER ,
+}

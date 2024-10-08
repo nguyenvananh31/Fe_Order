@@ -1,17 +1,26 @@
 @layer tailwind-base, antd;
 
 @layer tailwind-base {
-    @tailwind base;
+  @tailwind base;
 }
 @tailwind components;
 @tailwind utilities;
 
-@import './configs/css/base.scss';
-.ant-tabs-tab{
-    padding: 0 !important;
-    margin: 0px 5px !important;
+@import "./configs/css/base.scss";
+.ant-tabs-tab {
+  padding: 0 !important;
+  margin: 0px 5px !important;
 }
-.ant-tabs-nav{
-    padding: 0 !important;
-    margin: 0!important;
+.ant-tabs-nav {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+// .swiper-slide {
+//   width: fit-content !important;
+// }
+// .swiper-initialized.swiper-horizontal {
+//   width: max-content !important;
+// }
+.ant-form-item{
+    margin-bottom: 0px !important;
 }

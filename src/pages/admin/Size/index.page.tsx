@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Popconfirm, Tooltip } from "antd";
+import { CloseCircleFilled, DeleteOutlined, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { AutoComplete, Breadcrumb, Button, Col, Popconfirm, Row, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
 import { Isize } from "../../../interFaces/size";
@@ -31,6 +31,8 @@ export default function SizePage() {
                 title: 'Tên kích thước',
                 dataIndex: 'name',
                 key: 'name',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên'},
                 render: (_: any, item: Isize) => {
                     return (
                         <div onClick={() => { hooks.handleOpenModal(item.id) }} className='text-purple font-semibold cursor-pointer'>
@@ -112,17 +114,39 @@ export default function SizePage() {
                 ]}
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-                <div className='flex items-center justify-between'>
-                    <h1 className='p-6 text-xl font-semibold'>Kích thước</h1>
-                    <Button
-                        type='primary'
-                        icon={<PlusOutlined />}
-                        className='mx-6'
-                        onClick={() => hooks.handleOpenModal()}
-                    >
-                        Thêm kích thước
-                    </Button>
-                </div>
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                    <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
+                        <AutoComplete
+                            size="large"
+                            options={hooks.options}
+                            className="max-sm:w-full md:w-[400px] flex-1"
+                            onSearch={hooks.handleChangeTextSearch}
+                            placeholder={
+                                <div className="flex items-center gap-1 cursor-pointer h-max">
+                                    <SearchOutlined className="text-lg text-ghost" />
+                                    <span className="text-ghost text-[14px]">Tìm kích thước</span>
+                                </div>
+                            }
+                            allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                            onSelect={(id) => hooks.handleOpenModal(+id)}
+                            value={state.textSearch}
+                        />
+                        <div className="flex gap-2">
+                            <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                            <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
+                        </div>
+                    </Col>
+                    <Col>
+                        <Button
+                            size="large"
+                            type='primary'
+                            icon={<PlusOutlined />}
+                            onClick={() => hooks.handleOpenModal()}
+                        >
+                            Thêm kích thước
+                        </Button>
+                    </Col>
+                </Row>
                 <Table
                     loading={state.loading}
                     dataSource={state.data}
@@ -141,6 +165,7 @@ export default function SizePage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    onChange={hooks.handleTableChange}
                 />
             </div>
 

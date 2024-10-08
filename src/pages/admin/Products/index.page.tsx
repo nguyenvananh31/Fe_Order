@@ -1,11 +1,11 @@
-import { Breadcrumb, Button, Image, Popconfirm, Space, Tooltip } from "antd";
-import useProduct from "./utils/product.hooks";
-import { DeleteOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, ZoomInOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from "@ant-design/icons";
+import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Image, Popconfirm, Row, Select, Space, Tooltip } from "antd";
+import { ColumnProps } from "antd/es/table";
+import { Table } from "antd/lib";
+import { useMemo } from "react";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { IProduct } from "../../../interFaces/product";
-import { ColumnProps } from "antd/es/table";
-import { useMemo } from "react";
-import { Table } from "antd/lib";
+import useProduct from "./utils/product.hooks";
 
 export default function ProductPage() {
 
@@ -26,6 +26,8 @@ export default function ProductPage() {
                 title: 'Tên sản phẩm',
                 dataIndex: 'name',
                 key: 'name',
+                sorter: true,
+                showSorterTooltip: {title: 'Sắp xếp theo tên sản phẩm'},
                 render: (_: any, item: any) => {
                     return (
                         <div className={`text-purple font-semibold cursor-pointer`}>
@@ -69,8 +71,10 @@ export default function ProductPage() {
             },
             {
                 title: 'Danh mục',
-                dataIndex: 'cate',
+                dataIndex: 'category_id',
                 align: 'center',
+                showSorterTooltip: {title: 'Sắp xếp theo tên danh mục'},
+                sorter: true,
                 render: (_: any, { category: { name } }: any) => {
                     return (
                         <span>{name}</span>
@@ -111,19 +115,6 @@ export default function ProductPage() {
                         <Tooltip title="Chi tiết và cập nhập">
                             <Button onClick={() => hooks.handleToEdit(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>
                         </Tooltip>
-                        <Tooltip title="Xoá">
-                            <Popconfirm
-                                placement='topRight'
-                                title={`Xoá sản phẩm`}
-                                description={`Bạn có muốn xoá sản phẩm này?`}
-                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                                okText="Có"
-                                cancelText="Không"
-                                onConfirm={() => hooks.handleDelePro(id)}
-                            >
-                                <Button className='ml-2' danger icon={<DeleteOutlined />}></Button>
-                            </Popconfirm>
-                        </Tooltip>
                     </>
                 )
             },
@@ -148,17 +139,60 @@ export default function ProductPage() {
             ]}
         />
         <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <div className='flex items-center justify-between'>
-                <h1 className='p-6 text-xl font-semibold'>Sản phẩm</h1>
-                <Button
-                    type='primary'
-                    icon={<PlusOutlined />}
-                    className='mx-6'
-                    onClick={() => hooks.handleToAdd()}
-                >
-                    Thêm sản phẩm
-                </Button>
-            </div>
+            <div className="pl-6 pt-4 text-lg font-semibold">Bộ lọc tìm kiếm</div>
+            <Row gutter={[16, 16]} className="px-6 pt-4" align={"middle"} justify={"start"} >
+                <Col xs={24} sm={12} md={6}>
+                    <Select
+                        size="large"
+                        className="w-full"
+                        allowClear
+                        options={[{ value: 1, label: 'Hiển thị' }, { value: 0, label: 'Ẩn' }]}
+                        placeholder="Trạng thái"
+                        onSelect={(value) => hooks.handleFilterStatus(value)}
+                        onClear={hooks.refreshPage}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <DatePicker.RangePicker
+                        size="large"
+                        onChange={hooks.handleFilterDate}
+                    />
+                </Col>
+            </Row>
+            <Divider />
+            <Row gutter={[16, 16]} className="px-6 pb-6" align={"middle"} justify={"space-between"} >
+                <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
+                    <AutoComplete
+                        size="large"
+                        options={hooks.options}
+                        className="max-sm:w-full md:w-[400px] flex-1"
+                        onSearch={hooks.handleChangeTextSearch}
+                        placeholder={
+                            <div className="flex items-center gap-1 cursor-pointer h-max">
+                                <SearchOutlined className="text-lg text-ghost" />
+                                <span className="text-ghost text-[14px]">Tìm sản phẩm</span>
+                            </div>
+                        }
+                        allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                        onSelect={(id) => hooks.handleToEdit(+id)}
+                        value={state.textSearch}
+                    />
+                    <div className="flex gap-2">
+                        <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                        <Button className="w-max" size="large" icon={<UndoOutlined />} onClick={hooks.refreshPage}>Làm mới</Button>
+                    </div>
+                </Col>
+                <Col>
+                    <Button
+                        size="large"
+                        type='primary'
+                        icon={<PlusOutlined />}
+                        onClick={() => hooks.handleToAdd()}
+                    >
+                        Thêm sản phẩm
+                    </Button>
+                </Col>
+            </Row>
             <Table
                 loading={state.loading}
                 dataSource={state.data}
@@ -177,6 +211,7 @@ export default function ProductPage() {
                         hooks.handlePageChange(page, pageSize);
                     },
                 }}
+                onChange={hooks.handleTableChange}
             />
         </div>
     </>

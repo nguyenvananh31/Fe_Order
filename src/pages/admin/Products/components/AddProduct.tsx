@@ -4,14 +4,14 @@ import { DefaultOptionType } from "antd/es/select";
 import { RcFile } from "antd/es/upload";
 import { GetProp, Select } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FileRule } from "../../../../constants/common";
-import useToast from "../../../../hooks/useToast";
+import { RoutePath } from "../../../../constants/path";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { ICate } from "../../../../interFaces/categories";
 import { apiGetCates } from "../../Categories/utils/categories.service";
 import { apiGetSizes } from "../../Size/utils/size.service";
 import { apiAddProduct } from "../utils/product.service";
-import { useNavigate } from "react-router-dom";
-import { RoutePath } from "../../../../constants/path";
 
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -50,7 +50,7 @@ const initState: IState = {
 export default function AddProduct() {
 
     const [state, setState] = useState<IState>(initState);
-    const { contextHolder, showToast } = useToast();
+    const { contextHolder, showToast } = useToastMessage();
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -245,7 +245,7 @@ export default function AddProduct() {
                     variant: [{ quantity: 0, sale: 0 }]
                 }}
             >
-                <Row gutter={40} className="px-4">
+                <Row gutter={40} className="px-4 pb-4">
                     <Col xs={24} md={12}>
                         <Form.Item
                             name={'product_name'}

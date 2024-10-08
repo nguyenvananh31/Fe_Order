@@ -1,8 +1,11 @@
+import { AutoCompleteProps } from "antd";
+import { TableProps } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import { RoutePath } from "../../../../constants/path";
-import useToast from "../../../../hooks/useToast";
+import useDebounce from "../../../../hooks/useDeBounce";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { IProduct } from "../../../../interFaces/product";
 import { apiDelePro, apiGetPros, apiUpdateStatusPro } from "./product.service";
 
@@ -18,6 +21,13 @@ interface ISate {
     selectedStatus?: string;
     refresh: boolean;
     search: boolean;
+    loadingSearch: boolean;
+    textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string[];
+    enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -29,29 +39,72 @@ const initState: ISate = {
     total: 0,
     showModal: false,
     refresh: false,
-    search: false
+    search: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
 }
 
 export default function useProduct() {
 
     const [state, setState] = useState<ISate>(initState);
-    const { contextHolder, showToast } = useToast();
+    const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
+    const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
+    const { contextHolder, showToast } = useToastMessage();
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await apiGetPros({ page: state.pageIndex, per_page: state.pageSize });
+                if (state.search) {
+                    setState(prev => ({ ...prev, loadingSearch: true }));
+                } else {
+                    setState(prev => ({ ...prev, loading: true }));
+                }
 
-                setState(prev => ({ ...prev, data: res.data, loading: false, total: res.meta.total }));
+                const conds: any = { page: state.pageIndex, per_page: state.pageSize };
+
+                if (state.textSearch) {
+                    conds.name = debouncedSearch;
+                }
+
+                if (typeof state.filtertatus != 'undefined') {
+                    conds.status = state.filtertatus;
+                }
+
+                if (state.filterDate) {
+                    conds.start_date = state.filterDate[0];
+                    conds.end_date = state.filterDate[1];
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
+                }
+
+                if (!state.textSearch && state.search && !state.enterSearch) {
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                    return;
+                }
+
+                const res = await apiGetPros(conds);
+
+                if (state.search && !state.enterSearch) {
+                    setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.name })))
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                } else {
+                    setState(prev => ({ ...prev, data: res.data, loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
+                }
             } catch (error) {
                 console.log(error);
-                setState(prev => ({ ...prev, loading: false }))
+                setState(prev => ({ ...prev, loading: false, search: false, total: 0 }))
                 showToast('error', 'Có lỗi xảy ra!');
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, debouncedSearch]);
 
     //Handle chuyển trang add sản phẩm
     const handleToAdd = useCallback(() => {
@@ -65,7 +118,7 @@ export default function useProduct() {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
     // handle thay đổi trạng thái 
@@ -93,6 +146,81 @@ export default function useProduct() {
         setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
     }
 
+    //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
+
+    //Handle search sort and order by
+    const handSortOrderBy = (sort?: string, orderBy?: string) => {
+        if ((!sort || state.filterSort) || (!orderBy || state.filterOrderBy)) {
+            setState(prev => ({ ...prev, filterSort: sort || prev.filterSort, filterOrderBy: orderBy || prev.filterOrderBy }));
+            return;
+        }
+
+        setState(prev => ({ ...prev, filterSort: sort, filterOrderBy: orderBy, refresh: !prev.refresh, pageIndex: 1 }));
+    }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    //Filter status
+    const handleFilterStatus = (value: boolean) => {
+        setState(prev => ({ ...prev, filtertatus: value, refresh: !prev.refresh, pageIndex: 1 }));
+    }
+
+    //Filter date
+    const handleFilterDate = (_: any, dateStrings: [string, string]) => {
+        if (!dateStrings[0] || !dateStrings[1]) {
+            setState(prev => ({ ...prev, filterDate: undefined, refresh: !prev.refresh, pageIndex: 1 }))
+            return;
+        }
+
+        const startDate = new Date(dateStrings[0]).toISOString();
+        const endDate = new Date(dateStrings[1]).toISOString();
+
+        setState(prev => ({ ...prev, filterDate: [startDate, endDate], refresh: !prev.refresh, pageIndex: 1 }))
+    }
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
+
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => {
+                let rePage = false;
+                if (
+                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length-3) ||
+                    prev.filterSort !== sorter.field
+                ) {
+                    rePage = true;
+                }
+                return { ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined,
+                     filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
+                }
+            })
+        }
+    }
+
     return {
         state,
         contextHolder,
@@ -100,6 +228,15 @@ export default function useProduct() {
         handleToAdd,
         handleToEdit,
         handleChangeStatus,
-        handleDelePro
+        handleDelePro,
+        options,
+        setOptions,
+        handleChangeTextSearch,
+        refreshPage,
+        handleFilterStatus,
+        handleFilterDate,
+        handleSearchBtn,
+        handSortOrderBy,
+        handleTableChange
     }
 }

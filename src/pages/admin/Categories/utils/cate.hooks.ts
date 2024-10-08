@@ -1,8 +1,9 @@
-import { InputRef } from "antd";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { AutoCompleteProps } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import useDebounce from "../../../../hooks/useDeBounce";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { ICate } from "../../../../interFaces/categories";
 import { apiChangeStatus, apiDeleteCate, apiGetCates } from "./categories.service";
 
@@ -19,6 +20,11 @@ interface ISate {
     selectedStatus?: string;
     refresh: boolean;
     search: boolean;
+    loadingSearch: boolean;
+    textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string[];
+    enterSearch: boolean;
 }
 
 const initState: ISate = {
@@ -30,27 +36,56 @@ const initState: ISate = {
     total: 0,
     showModal: false,
     refresh: false,
-    search: false
+    search: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
 }
 
 const useCate = () => {
     const [state, setState] = useState<ISate>(initState);
-    const [searchText, setSearchText] = useState<string>('');
-    const inputSearchRef = useRef<InputRef>(null);
-    const [selectedStatus, setSelectedStatus] = useState<string>('');
     const isMobile = useIsMobile();
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
+    const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
+    const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
     useEffect(() => {
         //Lấy tất cả tài khoản
         const fetchData = async () => {
-            setState({ ...state, loading: true });
             try {
-                const res = await apiGetCates({ page: state.pageIndex, per_page: state.pageSize });
-                if (res.data) {
+                if (state.search) {
+                    setState(prev => ({ ...prev, loadingSearch: true }));
+                } else {
+                    setState(prev => ({ ...prev, loading: true }));
+                }
+
+                const conds: any = { page: state.pageIndex, per_page: state.pageSize };
+
+                if (state.textSearch) {
+                    conds.name = debouncedSearch;
+                }
+
+                if (typeof state.filtertatus != 'undefined') {
+                    conds.status = state.filtertatus;
+                }
+                
+                if (!state.textSearch && state.search && !state.enterSearch) {
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                    return;
+                }
+                
+                const res = await apiGetCates(conds);
+
+
+                if (state.search && !state.enterSearch) {
+                    setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.name })))
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                } else {
                     const cates = convertCategoryToTree(res.data);
-                    
-                    setState({ ...state, data: cates || [], loading: false, total: res.meta.total });
+
+                    setState(prev => ({ ...prev, data: cates || [], loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
                 }
             } catch (error: any) {
                 console.log(error);
@@ -59,7 +94,7 @@ const useCate = () => {
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, debouncedSearch]);
 
     // Hàm đệ quy chuyển đổi dữ liệu danh mục
     const convertCategoryToTree = (categories: any[]): any[] => {
@@ -108,13 +143,6 @@ const useCate = () => {
         setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
     }
 
-    // làm mới data
-    const refreshPage = useCallback(() => {
-        setSearchText('');
-        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
-        setSelectedStatus('');
-    }, []);
-
     // Dismis Modal
     const handleDismissModal = useCallback(() => {
         setState((prev) => ({
@@ -135,21 +163,62 @@ const useCate = () => {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
+
+       //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+        
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setOptions([]);
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    //Filter status
+    const handleFilterStatus = (value: boolean) => {
+        setState(prev => ({ ...prev, filtertatus: value, refresh: !prev.refresh, pageIndex: 1 }));
+    }
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
+
 
 
     return {
         state,
         isMobile,
         contextHolder,
+        options,
         refreshPage,
         handleDismissModal,
         handleOpenModal,
         handlePageChange,
         handleDeleteCate,
         showToast,
-        handleChangeStatus
+        handleChangeStatus,
+        handleChangeTextSearch,
+        handleSearchBtn,
+        handleFilterStatus
     }
 }
 

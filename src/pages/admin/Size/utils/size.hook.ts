@@ -1,11 +1,12 @@
-import { InputRef } from "antd";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { TableProps } from "antd";
+import { AutoCompleteProps } from "antd/lib";
+import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import useDebounce from "../../../../hooks/useDeBounce";
 import { useIsMobile } from "../../../../hooks/useIsMobile";
-import useToast from "../../../../hooks/useToast";
+import useToastMessage from "../../../../hooks/useToastMessage";
 import { Isize } from "../../../../interFaces/size";
-import { apiChangeStatus, apiDeleteCate, apiGetCates } from "../../Categories/utils/categories.service";
-import { apiDeleteSize, apiGetSizes, apiUpdateSize, apiUpdateStatusSize } from "./size.service";
+import { apiDeleteSize, apiGetSizes, apiUpdateStatusSize } from "./size.service";
 
 
 interface ISate {
@@ -20,6 +21,13 @@ interface ISate {
     selectedStatus?: string;
     refresh: boolean;
     search: boolean;
+    loadingSearch: boolean;
+    textSearch?: string;
+    filtertatus?: boolean;
+    filterDate?: string[];
+    enterSearch: boolean;
+    filterSort?: string;
+    filterOrderBy?: string;
 }
 
 const initState: ISate = {
@@ -31,25 +39,54 @@ const initState: ISate = {
     total: 0,
     showModal: false,
     refresh: false,
-    search: false
+    search: false,
+    loadingSearch: false,
+    textSearch: '',
+    filtertatus: undefined,
+    filterDate: undefined,
+    enterSearch: false
 }
 
 const useSize = () => {
     const [state, setState] = useState<ISate>(initState);
-    const [searchText, setSearchText] = useState<string>('');
-    const inputSearchRef = useRef<InputRef>(null);
-    const [selectedStatus, setSelectedStatus] = useState<string>('');
     const isMobile = useIsMobile();
-    const { showToast, contextHolder } = useToast();
+    const { showToast, contextHolder } = useToastMessage();
+    const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
+    const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
     useEffect(() => {
         //Lấy tất cả tài khoản
         const fetchData = async () => {
-            setState({ ...state, loading: true });
             try {
-                const res = await apiGetSizes({ page: state.pageIndex, per_page: state.pageSize });
-                if (res.data) {
-                    setState({ ...state, data: res.data || [], loading: false, total: res.meta.total });
+                if (state.search) {
+                    setState(prev => ({ ...prev, loadingSearch: true }));
+                } else {
+                    setState(prev => ({ ...prev, loading: true }));
+                }
+                
+                const conds: any = { page: state.pageIndex, per_page: state.pageSize };
+                
+                if (state.textSearch) {
+                    conds.name = debouncedSearch;
+                }
+
+                if (!state.textSearch && state.search && !state.enterSearch) {
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                    return;
+                }
+
+                if (state.filterOrderBy && state.filterSort) {
+                    conds.sort_by = state.filterSort;
+                    conds.orderby = state.filterOrderBy;
+                }
+
+                const res = await apiGetSizes(conds);
+
+                if (state.search && !state.enterSearch) {
+                    setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.name })))
+                    setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
+                } else {
+                    setState(prev => ({ ...prev, data: res.data || [], loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
                 }
             } catch (error: any) {
                 console.log(error);
@@ -58,7 +95,7 @@ const useSize = () => {
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, debouncedSearch]);
 
     // handle xoá kích thước
     const handleDeleteCate = async (id: number) => {
@@ -86,12 +123,6 @@ const useSize = () => {
         setState((prev) => ({ ...prev, loadingSubmit: false, refresh: !prev.refresh }));
     }
 
-    // làm mới data
-    const refreshPage = useCallback(() => {
-        setSearchText('');
-        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
-        setSelectedStatus('');
-    }, []);
 
     // Dismis Modal
     const handleDismissModal = useCallback(() => {
@@ -113,21 +144,72 @@ const useSize = () => {
 
     // Chuyển trang và phân trang
     const handlePageChange = (page: any, pageSize: any) => {
-        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !state.refresh }));
+        setState(prev => ({ ...prev, pageIndex: page, pageSize, refresh: !prev.refresh }));
     };
 
+    //Search
+    /** Event KeyEnter */
+    useEffect(() => {
+
+        const keyDownListener = (event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    //Search text
+    const handleChangeTextSearch = (value: string) => {
+        setOptions([]);
+        setState(prev => ({ ...prev, textSearch: value, search: true }));
+    }
+
+    //Handle click btn search
+    const handleSearchBtn = useCallback(() => {
+        setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
+    }, []);
+
+    // làm mới data
+    const refreshPage = useCallback(() => {
+        setState((prev) => ({ ...initState, refresh: !prev.refresh }));
+    }, []);
+
+    const handleTableChange: TableProps<any>['onChange'] = (_: any, __: any, sorter: any) => {
+        if (sorter) {
+            setState(prev => {
+                let rePage = false;
+                if (
+                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length-3) ||
+                    prev.filterSort !== sorter.field
+                ) {
+                    rePage = true;
+                }
+                return { ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined,
+                     filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
+                }
+            })
+        }
+    }
 
     return {
         state,
         isMobile,
         contextHolder,
+        options,
         refreshPage,
         handleDismissModal,
         handleOpenModal,
         handlePageChange,
         handleDeleteCate,
         showToast,
-        handleChangeStatus
+        handleChangeStatus,
+        handleChangeTextSearch,
+        handleSearchBtn,
+        handleTableChange
     }
 }
 
