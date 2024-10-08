@@ -16,6 +16,7 @@ const Header = () => {
     setVisible(false);
   };
 
+
   return (
       <header className='bg-bgColor1 w-full relative'>
         <div className="container max-w-[1140px] mx-auto px-[20px] py-6 border-b-[1px] border-borderColor1 flex items-center justify-between">

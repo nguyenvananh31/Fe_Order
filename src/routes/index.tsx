@@ -20,6 +20,7 @@ import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
+import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 
 
 const Router = () => {
@@ -48,6 +49,10 @@ const Router = () => {
           <Route path={RoutePath.TABLE} element={<Table />} />
           <Route path={RoutePath.ORDER} element={<Order />} />
 
+        <Route path={RoutePath.PROFILE} element={<Profiles />} >
+          <Route index element={<FormInforProfile />}/>
+        </Route>
+
           
         </Route>
         <Route path="*" element={<Error/>} />
@@ -58,7 +63,6 @@ const Router = () => {
             ))
           }
         </Route>
-          <Route path={RoutePath.PROFILE} element={<Profiles />} />
       </Routes>
     </>
   );
