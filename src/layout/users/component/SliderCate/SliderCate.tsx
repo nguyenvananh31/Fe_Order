@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -17,22 +18,23 @@ interface Subcategory {
     subcategory: Subcategory[]; // Đệ quy cho danh sách subcategories con
     created_at: string;
     updated_at: string;
-  }
-  
-  interface Category {
+}
+
+interface Category {
     id: number;
     name: string;
-    image: string;
+    image?: string;
+    thumbnail?: string;
     status: number;
     parent_id: number | null;
     name_parent: string | null;
     subcategory: Subcategory[];
     created_at: string;
     updated_at: string;
-  }
-  
+}
+
 const SliderCate: React.FC = () => {
-    const [cates, setCates] = useState([])
+    const [cates, setCates] = useState<Category[]>([])
     const [countCates, setCountCates] = useState<Category[]>([])
     const urlBase = import.meta.env.VITE_BASE_URL;
     useEffect(() => {
@@ -41,12 +43,12 @@ const SliderCate: React.FC = () => {
             const url2 = 'http://127.0.0.1:8000/api/client/product_cate';
 
             try {
-                const res = await axios.get(url, {
+                const { data } = await axios.get(url, {
                     headers: {
                         'Api_key': import.meta.env.VITE_API_KEY,
                     },
                 });
-                res.data.data.map(async item => {
+                data.data.map(async (item: Category) => {
                     if (item.id > 0) {
                         const count = await axios.get(`${url2}/${item.id}`, {
                             headers: {
@@ -54,11 +56,11 @@ const SliderCate: React.FC = () => {
                             },
                         });
                         setCountCates(count.data.data);
+                        // console.log('count',count);
+                        
                     }
                 })
-                // console.log(res.data.data);
-                setCates(res.data.data)
-                // return data.data;
+                setCates(data.data)
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
@@ -66,7 +68,7 @@ const SliderCate: React.FC = () => {
     }, [setCates]);
     // console.log(countCates.length);
     // console.log(cates[0].subcategory);
-console.log(cates);
+    console.log(cates);
 
     return (
         <div className="sliderCate bg-bgColor1 relative w-full p-12">
@@ -77,14 +79,14 @@ console.log(cates);
                 autoplay={{ delay: 3000, disableOnInteraction: false }} // Autoplay with 3 seconds delay
                 className="h-full max-w-[1140px] mx-auto px-[16px] lg:px-[20px] grid md:grid-cols-4 grid-cols-2"
                 spaceBetween={20} // Space between slides
-            // slidesPerView={4}
+                slidesPerView={4}
             >
                 {/* Slide 1 */}
                 {cates.map((cate, index) => (
-                    <SwiperSlide key={cate.id || index} className="flex justify-center items-center">
+                    <SwiperSlide key={index} className="flex justify-center items-center">
                         <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group">
                             <div className="cate-item-img">
-                                <img src={`${urlBase}/${cate?.thumbnail}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
+                                <img src={`${urlBase}/${cate.thumbnail}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
                             </div>
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
