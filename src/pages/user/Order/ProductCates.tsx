@@ -29,7 +29,7 @@ const ProductCates = () => {
     const [productDetails, setProductDetails] = useState<[]>([]); // Giữ product_details
     const param = useParams();
     const [selectedItems, setSelectedItems] = useState<[]>([]);
-
+    const basUrl = import.meta.env.VITE_API_KEY;
     // Load data from localStorage when the component mounts
     useEffect(() => {
         const savedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
@@ -37,8 +37,8 @@ const ProductCates = () => {
     }, []);
 
     // Function to handle adding item or updating quantity
-    
-    const handleAddItem = (id,name) => {
+
+    const handleAddItem = (id, name) => {
         const existingItem = selectedItems.find((product) => product.id === id);
 
         let updatedItems;
@@ -49,12 +49,12 @@ const ProductCates = () => {
             );
         } else {
             // If item does not exist, add it with quantity 1
-            updatedItems = [...selectedItems, { id,name, quantity: 1 }];
+            updatedItems = [...selectedItems, { id, name, quantity: 1 }];
         }
 
         setSelectedItems(updatedItems); // Update state
         localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); // Save to localStorage
-        
+
     };
     useEffect(() => {
         (async () => {
@@ -98,38 +98,18 @@ const ProductCates = () => {
     // console.log(productDetails);
 
     return (
-        <div className='w-full p-2 grid grid-cols-2 gap-3'>
+        <div className='w-full p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-3'>
             {products?.map((item) => (
-                //    productDetails?.map((product) => (
-                //         <div key={item.id} className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-                //             <div className="box-image">
-                //                 <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-                //             </div>
-                //             <div className="box-content pt-2">
-                //                 <h3 className='text-textColor1 text-xl font-font1'>{item?.name}</h3>
-                //                 <span className='flex gap-2 items-center'>
-                //                     <span className='text-mainColor1 text-lg font-font1'>${product?.price}</span>
-                //                     <del className='text-textColor2 text-md font-font1'>${Number(product?.price) + Number(product?.sale)}</del>
-                //                 </span>
-                //                 <p className='font-font1 text-gray-600 text-[14px] mt-1'> Loại : {product?.size.name}</p>
-                //             </div>
-                //             <div className="box-action">
-                //                 <button>
-                //                     <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                //                 </button>
-                //             </div>
-                //         </div>
-                //     ))
                 <div key={item.id} className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm">
                     <div className="box-image">
-                        <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
+                        <img className='w-[100px] h-[100px] object-contain' src={`${basUrl}${item.thumbnail}`} alt="" />
                     </div>
                     <div className="box-content pt-2">
                         <h3 className='text-textColor1 text-xl font-font1'>{item?.name}</h3>
                         <p className='font-font1 text-gray-600 text-[14px] mt-1'>Danh Mục: {item?.category}</p>
                     </div>
                     <div className="box-action">
-                        <button onClick={() => handleAddItem(item.id,item.name)}>
+                        <button onClick={() => handleAddItem(item.id, item.name)}>
                             <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2' />
                         </button>
                     </div>

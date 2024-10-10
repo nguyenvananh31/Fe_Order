@@ -32,7 +32,7 @@ const SideBarsOrder: React.FC = () => {
         });
         // console.log(data.data);
         // setSubCates(data.data.subcategory)
-        setCates(data.data)        
+        setCates(data.data)
       } catch (error) {
         console.log(error);
       }
@@ -61,6 +61,9 @@ const SideBarsOrder: React.FC = () => {
         {/* Danh mục */}
         {cates.map((cate) => (
           <SubMenu key={cate.id} icon={<AppstoreOutlined />} className='capitalize' title={cate.name}>
+            <Menu.Item>
+              <Link className='capitalize text-[13px] ml-3' to={`cate/${cate.id}`}>{cate.name}</Link>
+            </Menu.Item>
             {cate.subcategory.map((subCate) => (
               <Menu.Item key={subCate.id}>
                 <Link className='capitalize text-[13px] ml-3' to={`cate/${subCate.id}`}>{subCate.name}</Link>
