@@ -12,7 +12,7 @@ import { ToastProvider } from "./hooks/useToast/handling";
 function App() {
     return (
         <>
-            {/* Bao bọc ứng dụng với ProductProvider */}
+
             <ProductProvider>
                 <Provider store={reduxStoreUtils}>
                     <ToastProvider>

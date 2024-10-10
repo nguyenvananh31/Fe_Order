@@ -4,13 +4,13 @@ import axios from 'axios';
 
 interface ProductContextType {
   products: any[];
-  cart: any[];  // Quản lý giỏ hàng
+  cart: any[]; 
   setProducts: (products: any[]) => void;
   addToCart: (product: any) => void;
   removeFromCart: (id: number | string) => void;
   updateQuantity: (id: number | string, action: 'increase' | 'decrease') => void;
-  getTotalPrice: () => number;  // Hàm tính tổng giá trị giỏ hàng
-  fetchCart: () => void; // Hàm lấy giỏ hàng từ API
+  getTotalPrice: () => number;  
+  fetchCart: () => void; 
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
