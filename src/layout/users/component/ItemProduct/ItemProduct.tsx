@@ -48,17 +48,17 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
 
   // Xử lý sự kiện khi nhấn nút Add to Cart
   const handleAddToCart = () => {
-  if (firstDetail) {
-    // Kiểm tra và gửi các thông tin cần thiết để thêm vào giỏ hàng
-    addToCart({
-      product_detail_id: firstDetail.id,  // ID của chi tiết sản phẩm
-      product_id: product.id,             // ID của sản phẩm chính
-      quantity: 1,                        // Số lượng thêm vào giỏ hàng
-      price: firstDetail.price,           // Giá của sản phẩm
-      size_id: firstDetail.size.id,       // ID của kích thước nếu có
-    });
-  }
-};
+    if (firstDetail) {
+      // Kiểm tra và gửi các thông tin cần thiết để thêm vào giỏ hàng
+      addToCart({
+        product_detail_id: firstDetail.id,  // ID của chi tiết sản phẩm
+        product_id: product.id,             // ID của sản phẩm chính
+        quantity: 1,                        // Số lượng thêm vào giỏ hàng
+        price: firstDetail.price,           // Giá của sản phẩm
+        size_id: firstDetail.size.id,       // ID của kích thước nếu có
+      });
+    }
+  };
 
   return (
     <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>
@@ -93,10 +93,12 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
       </div>
 
       {firstDetail && (
-        <div className="sale-preview flex text-white items-center justify-center gap-[10px] py-[16px]">
+        <div className="sale-preview sm:flex block text-center text-white items-center justify-center gap-[10px] py-[16px]">
           <span className="discount bg-mainColor3 text-[16px] text-textColor1 font-light py-[4px] px-[6px] group-hover:bg-bodyColor rounded-[3px] ">-5%</span>
-          <span className="default text-mainColor1 text-[16px] font-light">${firstDetail.price}</span>
-          <span className="price text-textColor2 text-[16px]">${(firstDetail.price - (firstDetail.sale || 0)).toFixed(2)}</span>
+          <span className='block sm:flex gap-2 sm:mt-0 mt-3 '>
+            <span className="font-bold default text-mainColor1 text-[16px]">${firstDetail.price}</span>
+            <del className="font-thin sm:ml-0 ml-2 price text-textColor2 text-[16px]">${(firstDetail.price - (firstDetail.sale || 0)).toFixed(2)}</del>
+          </span>
         </div>
       )}
 

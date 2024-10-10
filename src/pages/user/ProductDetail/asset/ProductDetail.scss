@@ -15,15 +15,15 @@
 //   }
 // }
 // .tabs-variants {
-    
+
 //   .ant-tabs-nav-wrap {
-    
+
 //     .ant-tabs-nav-list {
-        
+
 //       .ant-tabs-tab {
-        
+
 //         .ant-tabs-tab-btn {
-         
+
 //           font-size: 12px;
 //           color: var(--textColor2);
 //           margin: 0px 4px;
@@ -39,3 +39,25 @@
 // textarea,input{
 //     border-color: var(--mainColor2) !important;
 // }
+del {
+  text-decoration: line-through;
+}
+.ant-image {
+  img {
+    object-fit: contain !important;
+  }
+}
+.box-image-list{
+  .ant-image {
+    padding: 6px;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  .ant-image-img {
+    height: 100% !important;
+    object-fit: cover !important;
+
+  }
+}  
+}
+

@@ -2,140 +2,108 @@
 import { CalendarFilled, SearchOutlined } from '@ant-design/icons';
 import { Input, Select, Pagination, Modal, DatePicker, message, Radio } from 'antd';
 import axios from 'axios';
-import { log } from 'console';
 import { useEffect, useState } from 'react';
-
 
 const { Option } = Select;
 
 const Table = () => {
-  const [visible, setVisible] = useState(false);
   const [tables, setTables] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
 
-  const [bookingModalVisible, setBookingModalVisible] = useState(false);
-  const [orderModalVisible, setOrderModalVisible] = useState(false);
+  // Consolidated modal state
+  const [modalState, setModalState] = useState({
+    visible: false,
+    type: '', // 'booking', 'order', or 'payment'
+    table: null,
+    phoneNumber: '',
+    bookingDate: null,
+    bookingTime: null,
+    payment: '',
+    tableDetail: [],
+  });
 
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [bookingDate, setBookingDate] = useState(null);
-  const [bookingTime, setBookingTime] = useState(null);
-  const [tableDetail, setTableDetail] = useState<[]>([]);
-  const [payment, setPayment] = useState('');
   const [payments, setPayments] = useState([]);
 
-
-  // State for new "hello" modal
-  const [helloModalVisible, setHelloModalVisible] = useState(false);
-
   useEffect(() => {
-    (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/order_table/';
+    const fetchData = async () => {
       try {
-        const res = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
+        const tableRes = await axios.get('http://127.0.0.1:8000/api/client/order_table/', {
+          headers: { 'Api_key': import.meta.env.VITE_API_KEY },
         });
-        setTables(res.data.data.data || []);
-      } catch (error) {
-        console.error('Error fetching tables:', error);
-        setTables([]);
-      }
-    })();
-    (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/list_payments';
-      try {
-        const { data } = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
-        });
-        // console.log(data.data);
-        setPayments(data.data);
-
+        setTables(tableRes.data.data.data || []);
       } catch (error) {
         console.error('Error fetching tables:', error);
       }
-    })();
 
+      try {
+        const paymentRes = await axios.get('http://127.0.0.1:8000/api/client/list_payments', {
+          headers: { 'Api_key': import.meta.env.VITE_API_KEY },
+        });
+        setPayments(paymentRes.data.data);
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const getDetailOrder = async (tableId: any) => {
-    const url = `http://127.0.0.1:8000/api/client/order_table/${tableId}`;
     try {
-      const res = await axios.get(url, {
-        headers: {
-          'Api_key': import.meta.env.VITE_API_KEY,
-        },
-
+      const res = await axios.get(`http://127.0.0.1:8000/api/client/order_table/${tableId}`, {
+        headers: { 'Api_key': import.meta.env.VITE_API_KEY },
       });
-      console.log(res.data.data.data);
-      setTableDetail(res.data.data.data)
-      setHelloModalVisible(true); // Show the hello modal when calendar button is clicked
+      setModalState(prev => ({
+        ...prev,
+        tableDetail: res.data.data.data,
+        type: 'payment',
+        visible: true,
+      }));
     } catch (error) {
-      console.error('Error fetching tables:', error);
-      //  notification.warning()
-      alert(error.response.data.message)
+      console.error('Error fetching table details:', error);
+      alert(error.response.data.message);
     }
   };
 
-  const showDrawer = () => {
-    setVisible(true);
-  };
-
-  const onClose = () => {
-    setVisible(false);
-  };
-
-  // Handle booking button click
-  const handleBookingClick = (table) => {
-    setSelectedTable(table);
-    setBookingModalVisible(true);
-  };
-  const handleOrderClick = (table) => {
-    setSelectedTable(table);
-    setOrderModalVisible(true);
-  };
-  const handleOrderConfirm = async () => {
-    alert(payment)
-    console.log('Selected Gender:', payment);
-  }
-  // Handle booking confirmation
   const handleBookingConfirm = async () => {
+    const { phoneNumber, bookingDate, bookingTime, table } = modalState;
     if (!phoneNumber || !bookingDate || !bookingTime) {
       message.error('Please fill in all the booking details.');
       return;
     }
 
     const bookingData = {
-      table_id: selectedTable.id,
+      table_id: table.id,
       phone_number: phoneNumber,
       date_order: bookingDate.format('DD-MM-YYYY'),
       time_order: bookingTime.format('HH:mm'),
       table_status: 1,
     };
 
-    console.log('Booking Data:', bookingData);
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/client/order_table/',
-      bookingData,
-      {
-        headers: {
-          'Api_key': 'X5eAbbdgwaEWF2fC2u6ZYSN8rLUCbtBzROW92ngJauftSO5gJ27HGsCzL9sw',
-        }
-      }
-    );
-    console.log(res);
-    setBookingModalVisible(false);
-    setPhoneNumber('');
-    setBookingDate(null);
-    setBookingTime(null);
-    message.success('Booking confirmed!');
+    try {
+      await axios.post('http://127.0.0.1:8000/api/client/order_table/', bookingData, {
+        headers: { 'Api_key': import.meta.env.VITE_API_KEY },
+      });
+      message.success('Booking confirmed!');
+    } catch (error) {
+      console.error('Error confirming booking:', error);
+    } finally {
+      setModalState(prev => ({
+        ...prev,
+        visible: false,
+        phoneNumber: '',
+        bookingDate: null,
+        bookingTime: null,
+      }));
+    }
+  };
+
+  const handleOrderConfirm = async () => {
+    console.log('Selected Payment:', modalState.payment);
+    setModalState(prev => ({ ...prev, visible: false }));
   };
 
   const filteredTables = tables
@@ -146,7 +114,7 @@ const Table = () => {
   return (
     <>
       <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto mt-12 gap-[24px]">
-        <section className=" bg-transparent mb-6">
+        <section className="bg-transparent mb-6">
           <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="mt-10 text-3xl font-bold uppercase leading-tight text-black sm:text-4xl lg:text-5xl">
@@ -160,7 +128,7 @@ const Table = () => {
           </div>
         </section>
 
-        <div className="box-filter flex justify-start sm:grid grid-cols-3 lg:grid-cols-4 gap-4 items-center mb-4">
+        <div className="box-filter flex justify-start sm:grid grid-cols-3 lg:grid-cols-4 gap-4 items-center pb-4 border-b-[1px] mb-4">
           <Input
             placeholder="Search table..."
             prefix={<SearchOutlined />}
@@ -200,158 +168,107 @@ const Table = () => {
                 </div>
                 <p className="text-sm text-center mt-2 group-hover:opacity-0">{table.description}</p>
               </div>
-              {table.status !== 1 ? (
-                <p className="absolute bottom-5 left-[50%] translate-x-[-50%] hidden group-hover:block text-[15px] text-center text-white">
-                  Choose Other
-                </p>
-              ) : (
-                <p className="absolute bottom-3 left-[50%] translate-x-[-50%] hidden group-hover:block text-[15px] text-center text-white"></p>
-              )}
               <div
                 className={`table-acion flex items-center justify-center text-center opacity-0 translate-y-10 pt-6 duration-300 ${table.status == 1 ? `group-hover:block` : `group-hover:hidden`} group-hover:opacity-[1] group-hover:translate-y-0`}
               >
-                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1" onClick={() => handleBookingClick(table)}>
+                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1" onClick={() => setModalState({ ...modalState, table, type: 'booking', visible: true })}>
                   Đặt Trước
                 </button>
-                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 mt-1" onClick={() => handleOrderClick(table)}>
-                  Đặt Ngay
+                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 mt-1" onClick={() => setModalState({ ...modalState, table, type: 'order', visible: true })}>
+                  Order
                 </button>
               </div>
             </div>
           ))}
         </div>
-        <div className="flex justify-center mt-8">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredTables.length}
-            onChange={(page) => setCurrentPage(page)}
-          />
-        </div>
+
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredTables.length}
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }}
+          className='py-6 justify-center'
+        />
       </div>
 
       {/* Booking Modal */}
       <Modal
-        title="Book a Table"
-        visible={bookingModalVisible}
-        onCancel={() => setBookingModalVisible(false)}
-        onOk={handleBookingConfirm}
-        okText="Confirm"
-        cancelText="Cancel"
-        className=''
+        title="Booking a Table"
+        visible={modalState.visible && modalState.type === 'booking'}
+        onCancel={() => setModalState({ ...modalState, visible: false })}
+        footer={null}
       >
         <Input
           placeholder="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          style={{ marginBottom: '10px ' }}
-          className='p-2 border-mainColor2'
+          value={modalState.phoneNumber}
+          onChange={(e) => setModalState({ ...modalState, phoneNumber: e.target.value })}
         />
         <DatePicker
-          value={bookingDate}
-          onChange={(date) => setBookingDate(date)}
-          style={{ marginBottom: '10px', width: '100%' }}
-          className='p-2 border-mainColor2'
+          className="w-full mt-4"
+          value={modalState.bookingDate}
+          onChange={(date) => setModalState({ ...modalState, bookingDate: date })}
         />
-        <Select
-          placeholder="Filter by status"
-          value={statusFilter}
-          onChange={(value) => setStatusFilter(value)}
-          className="w-[50%] lg:w-full md:w-full active:border-mainColor2"
-        >
-          <Option value="7">Sáng</Option>
-          <Option value="12">Trưa</Option>
-          <Option value="19">Tối</Option>
-          <Option value="">Khác</Option>
-        </Select>
+        <DatePicker
+          className="w-full mt-4"
+          picker="time"
+          value={modalState.bookingTime}
+          onChange={(time) => setModalState({ ...modalState, bookingTime: time })}
+        />
+        <button onClick={handleBookingConfirm} className="mt-4 bg-green-500 text-white px-4 py-2 rounded">
+          Confirm Booking
+        </button>
       </Modal>
-      {/* Booking Modal */}
-      <Modal
-        title="Book a Table"
-        visible={orderModalVisible}
-        onCancel={() => setOrderModalVisible(false)}
-        onOk={handleOrderConfirm}
-        okText="Confirm"
-        cancelText="Cancel"
-      >
-        <div className="w-full ">
-          <Radio.Group
-            onChange={(e) => setPayment(e.target.value)} // Set gender when user selects a radio
-            value={payment} // Bind the selected value to state
-            className="w-full grid grid-cols-3 gap-2 p-2 mx-auto "
-          >
-            {payments.map((item) => (
-              <Radio.Button value={item.id} className="flex flex-col items-center justify-center h-16 border-2  border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-mainColor2 active:scale-95">
-                {item.name}
-              </Radio.Button>
-            ))}
 
+      {/* Order Modal */}
+      <Modal
+        title="Order"
+        visible={modalState.visible && modalState.type === 'order'}
+        onCancel={() => setModalState({ ...modalState, visible: false })}
+        footer={null}
+      >
+        <div className="w-full">
+          <Radio.Group
+            onChange={(e) => setModalState({ ...modalState, payment: e.target.value })}
+            value={modalState.payment}
+            className="w-full"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {payments.map((payment, idx) => (
+                <Radio.Button
+                  key={idx}
+                  value={payment.id}
+                  className="flex flex-col items-center justify-center h-16 border-2 border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-mainColor2 active:scale-95"
+                >
+                  <span className="text-center">{payment.name}</span>
+                </Radio.Button>
+              ))}
+            </div>
           </Radio.Group>
         </div>
-      </Modal>
-      {/* "Hello" Modal */}
-      <Modal
-        title="Danh sách đặt lịch"
-        visible={helloModalVisible}
-        onCancel={() => setHelloModalVisible(false)}
-        onOk={() => setHelloModalVisible(false)}
-        okText="OK"
-        cancelText="Cancel"
-      >
-        <table className="w-full mt-4 border-collapse">
-          <thead>
-            <tr>
-              <th className='px-2 border'>STT</th>
-              <th className='px-2 border'>Người Đặt</th>
-              <th className='px-2 border'>STĐ</th>
-              <th className='px-2 border'>Ngày Đặt</th>
-              <th className='px-2 border'>Giờ Đặt</th>
-              <th className='px-2 border'>Mô Tả</th>
-              <th className='px-2 border'>Trạng Thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableDetail.map((item, index) => (
-              <tr key={index}>
-                <td className='px-2 border'>{index + 1}</td>
-                <td className='px-2 border'>{item.user_name}</td>
-                <td className='px-2 border'>0{item.phone_number}</td>
-                <td className='px-2 border'>{item.date_oder}</td>
-                <td className='px-2 border'>{item.time_oder}</td>
-                <td className='px-2 border'>{item.description}</td>
-                <td className='px-2 border'>{item.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Modal>
-      <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">
-        <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl">
-              Connect with all apps
-            </h2>
-            <p className="max-w-xl mx-auto mt-4 text-base leading-relaxed text-gray-600">
-              Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet
-              sint. Velit officia consequat duis.
-            </p>
-            <a
-              href="#"
-              title=""
-              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-gray-900 transition-all duration-200 border-2 border-gray-200 rounded-md mt-9 hover:bg-gray-900 hover:text-white hover:border-gray-900 focus:bg-gray-900 focus:text-white focus:border-gray-900"
-              role="button"
-            >
-              Check all apps
-            </a>
-          </div>
-        </div>
-        <img
-          className="w-full min-w-full mx-auto mt-12 scale-150 max-w-7xl lg:min-w-0 lg:mt-0 lg:scale-100"
-          src="https://cdn.rareblocks.xyz/collection/celebration/images/integration/1/services-icons.png"
-          alt=""
-        />
-      </section>
 
+        <div className="mt-4 text-center">
+          <button
+            onClick={handleOrderConfirm}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Confirm Order
+          </button>
+        </div>
+      </Modal>
+
+
+      {/* payment Modal */}
+      <Modal
+        title="Table Details"
+        visible={modalState.visible && modalState.type === 'payment'}
+        onCancel={() => setModalState({ ...modalState, visible: false })}
+        footer={null}
+      >
+        {/* Render table details here */}
+      </Modal>
     </>
   );
 };

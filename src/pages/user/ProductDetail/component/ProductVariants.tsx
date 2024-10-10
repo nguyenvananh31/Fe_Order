@@ -14,7 +14,7 @@ interface ProductVariantsProps {
 
 const ProductVariants: React.FC<ProductVariantsProps> = ({ productDetails, activeVariant, handleVariantChange }) => {
   return (
-    <div className="product-variant md:mt-[40px] text-textColor1">
+    <div className="product-variant text-textColor1">
       <div className="text-lg flex items-center">
         <span className='text-type-2'>Size:</span>
         <Tabs
@@ -25,7 +25,7 @@ const ProductVariants: React.FC<ProductVariantsProps> = ({ productDetails, activ
           className="ml-1 tabs-variants font-font1 font-bold tracking-wider"
         >
           {productDetails.map((detail, idx) => (
-            <TabPane tab={<span>{detail.size.name}</span>} key={String(idx)} />
+            <TabPane tab={<span className='text-mainColor2'>{detail.size.name}</span>} key={String(idx)} />
           ))}
         </Tabs>
       </div>

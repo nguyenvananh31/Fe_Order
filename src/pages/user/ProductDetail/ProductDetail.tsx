@@ -179,6 +179,10 @@ import ProductImageGallery from './component/ProductImageGallery';
 import ProductInfo from './component/ProductInfo';
 import ProductVariants from './component/ProductVariants';
 import { useState } from 'react';
+import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
+import { Input } from 'antd/lib';
+import TabPane from 'antd/es/tabs/TabPane';
+import { Tabs } from 'antd';
 
 
 const ProductDetail = () => {
@@ -186,53 +190,189 @@ const ProductDetail = () => {
     const { product, relatedProducts, loading } = useProductDetail(id!);  // Custom hook for fetching product details
     const [quantity, setQuantity] = useState(1);
     const [activeVariant, setActiveVariant] = useState<number>(0);
-  
+    const [activeTab, setActiveTab] = useState('1');
+
+    const handleTabChange = (key: string) => {
+        setActiveTab(key);
+    };
     const increment = () => setQuantity((prev) => prev + 1);
     const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  
+
     const handleVariantChange = (key: string) => setActiveVariant(Number(key));
-  
+
     const handleAddToCart = (selectedProductDetail: unknown) => {
-      // Logic to handle add to cart
-      console.log('Added to cart:', selectedProductDetail);
+        // Logic to handle add to cart
+        console.log('Added to cart:', selectedProductDetail);
     };
-  
+
     if (loading) return <div>Loading...</div>;
     if (!product) return <div>Product not found</div>;
-  
+
     const activeProductDetail = product.product_details[activeVariant];
-  
+
     return (
-      <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">
-        <div className="container md:grid grid-cols-gridProductDetail block max-w-[1140px] mx-auto md:mt-12 mt-0 gap-[24px]">
-          <div className="container-left md:px-8 px-0">
-            <ProductImageGallery
-              thumbnail={product.thumbnail}
-              images={activeProductDetail.images}
-              productName={product.name}
-            />
-          </div>
-          <div className="container-right">
-            <ProductInfo
-              productName={product.name}
-              description={product.description}
-              price={activeProductDetail.price}
-              sale={activeProductDetail.sale || 0}
-              quantity={activeProductDetail.quantity}
-              currentQuantity={quantity}
-              increment={increment}
-              decrement={decrement}
-              handleAddToCart={() => handleAddToCart(activeProductDetail)}
-            />
-            <ProductVariants
-              productDetails={product.product_details}
-              activeVariant={activeVariant}
-              handleVariantChange={handleVariantChange}
-            />
-          </div>
+        <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-6 my-4 md:gap-[24px]">
+            <div className="container md:grid grid-cols-gridProductDetail block max-w-[1140px] mx-auto md:mt-6 mt-0 gap-[24px]">
+                <div className="container-left md:px-8 px-0">
+                    <ProductImageGallery
+                        thumbnail={product.thumbnail}
+                        images={activeProductDetail.images}
+                        productName={product.name}
+                    />
+                </div>
+                <div className="container-right">
+                    <ProductInfo
+                        productName={product.name}
+                        description={product.description}
+                        price={activeProductDetail.price}
+                        sale={activeProductDetail.sale || 0}
+                        quantity={activeProductDetail.quantity}
+                        currentQuantity={quantity}
+                        increment={increment}
+                        decrement={decrement}
+                        handleAddToCart={() => handleAddToCart(activeProductDetail)}
+                    />
+                    <ProductVariants
+                        productDetails={product.product_details}
+                        activeVariant={activeVariant}
+                        handleVariantChange={handleVariantChange}
+                    />
+                </div>
+            </div>
+            <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto gap-[24px]">
+                {/* Tabs Navigation */}
+                <Tabs
+                    activeKey={activeTab}
+                    onChange={handleTabChange}
+                    centered
+                    tabBarGutter={40}
+                    tabBarStyle={{ fontWeight: 'bold', fontSize: '16px' }}
+                    className='tabs-detail text-type-3 md:mt-12 mt-6 pb-3'
+                >
+                    <TabPane tab={<span className='capitalize mx-2 text-lg'>Chi tiết</span>} key="1" />
+                    <TabPane tab={<span className='capitalize mx-2 text-lg'>Biến thể</span>} key="2" />
+                    <TabPane tab={<span className='capitalize mx-2 text-lg'>Phản Hồi</span>} key="3" />
+                </Tabs>
+                {/* Content Based on Selected Tab */}
+                <div className="my-6 md:px-12 w-full">
+                    {activeTab === '1' && (
+                        <div className='w-full'>
+                            <h2 className="text-2xl font-bold">EXPERIENCE IS OVER THE WORLD VISIT</h2>
+                            <p className="mt-4 text-gray-600">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vulputate vestibulum Phasellus rhoncus, dolor eget viverra pretium...
+                            </p>
+                            <h3 className="mt-8 text-2xl w-full font-bold">MORE DETAILS</h3>
+                            <ul className="list-none w-full mt-4 space-y-2 grid grid-cols-2 gap-[16px]">
+                                {/* Details List */}
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-500 font-bold mr-2">✔</span> Lorem Ipsum is simply dummy text of the printing industry.
+                                </li>
+                                {/* Add more list items */}
+                            </ul>
+                        </div>
+                    )}
+                    {activeTab === '2' && (
+                        <div className='text-type-4'>
+                            <h2 className="text-type-3">INFORMATION</h2>
+                            <table className="w-full mt-4 border-collapse">
+                                <tbody>
+                                    <tr>
+                                        <td className="border py-2 px-4">Weight</td>
+                                        <td className="border py-2 px-4">240 Ton</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border py-2 px-4">Dimensions</td>
+                                        <td className="border py-2 px-4">20 × 30 × 40 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border py-2 px-4">Colors</td>
+                                        <td className="border py-2 px-4">Black, Blue, Green</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border py-2 px-4">Size</td>
+                                        <td className="border py-2 px-4">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    {activeTab === '3' && (
+                        <div>
+                            <h2 className="text-2xl font-bold mb-6">REVIEWS (4)</h2>
+                            <div className="space-y-4">
+                                {/* Review Item */}
+                                <div className="p-4 border rounded-lg">
+                                    <div className="w-full flex items-center">
+                                        <img src="https://modinatheme.com/html/foodking-html/assets/img/shop-food/details-1.png" alt="Reviewer" className="w-24 h-24 rounded-sm mr-4" />
+                                        <div className='w-full md:flex items-center justify-between'>
+                                            <div className='w-full md:flex items-center gap-[24px]'>
+                                                <div >
+                                                    <h3 className="font-bold text-type-3">MIKLOS SALSA</h3>
+                                                    <p className="text-sm text-gray-500">27 JUNE 2024 AT 5:44 PM</p>
+                                                </div>
+                                                <p className="text-type-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                                            </div>
+                                            <div className="ml-auto text-yellow-500 text-2xl">
+                                                ★★★★★
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Add more review items */}
+                                {/* Add Review Form */}
+                                <div className="mt-8">
+                                    <h3 className="text-xl font-bold mb-4">ADD A REVIEW</h3>
+                                    <div className="flex items-center mb-4">
+                                        <span className="mr-2">Rate this product:</span>
+                                        <div className="text-yellow-500 text-2xl">
+                                            ★★★★★
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <input type="text" placeholder="Full Name" className="border p-2 rounded-md outline-none text-type-3" />
+                                        <input type="email" placeholder="Email Address" className="border p-2 rounded-md outline-none text-type-3" />
+                                    </div>
+                                    <Input.TextArea rows={8} className="border mt-4 p-2 rounded-md outline-none w-full text-type-3" placeholder="Message" ></Input.TextArea>
+                                    <button className='btn-type-2 mt-4'><span>Send Message</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="container bg-bgColor1 px-[16px] lg:px-[20px] mx-auto my-12 gap-[24px] pt-8">
+                <div className="reated-product-heading text-center">
+                    <span className='text-sm text-mainColor1'>crispy, every bite taste</span>
+                    <h2 className='text-5xl text-mainColor2 mt-3 font-bold'>RELATED PRODUCTS</h2>
+                </div>
+                <div className="related-product grid lg:grid-cols-4 grid-cols-2 md:px-20 py-12 gap-3 max-w-[1140px] mx-auto">
+                    {relatedProducts
+                        .filter((pro) => pro.id !== product.id)
+                        .slice(0, 10) // Only take the first 10 products after filtering
+                        .map((product, index) => (
+                            <ItemProduct product={product} key={index} />
+                        ))}
+                </div>
+
+            </div>
         </div>
-      </div>
     );
-  };
-  
-  export default ProductDetail;
+};
+
+export default ProductDetail;
