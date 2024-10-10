@@ -5,10 +5,12 @@ import { RootState } from "../../../utils/redux-store.utils";
 
 interface IState {
     proCarts: ICart[];
+    optionSelect: number[];
 }
 
 const initialState: IState = {
-    proCarts: []
+    proCarts: [],
+    optionSelect: []
 }
 
 const cartStore = createSlice({
@@ -21,6 +23,12 @@ const cartStore = createSlice({
                 proCarts: actions.payload
             }
         },
+        addSelect: (state: IState, actions: PayloadAction<number[]>) => {
+            return {
+                ...state,
+                optionSelect: actions.payload
+            }
+        },
         clearCart: () => {
             return initialState;
         }
@@ -29,5 +37,5 @@ const cartStore = createSlice({
 
 const { reducer, actions } = cartStore;
 export const getCartStore = (state: RootState) => state?.cartStore;
-export const { addPro, clearCart } = actions;
+export const { addPro, clearCart, addSelect } = actions;
 export default reducer;
