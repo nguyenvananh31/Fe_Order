@@ -31,8 +31,8 @@ const Home = () => {
   return (
     <div>
       <SliderTop />
-      <div className="container max-w-[1140px] px-20 gap-3 mx-auto mt-16">
-        <h2 className='text-4xl text-textColor1 block pb-5'>Top Category</h2>
+      <div className="container max-w-[1140px] md:px-20 px-6 text-center  gap-3 mx-auto mt-16">
+        <h2 className='text-4xl text-mainColor2 block pb-5 font-bold'>Top Category</h2>
       </div>
       <SliderCate />
       <div className="container max-w-[1140px] grid grid-cols-4 gap-10 mx-auto mt-16">

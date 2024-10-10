@@ -1,16 +1,72 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CloseCircleFilled, CreditCardOutlined, CustomerServiceOutlined, DownCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Drawer, Form, Image, Input, Tabs } from 'antd'
 import TabPane from 'antd/es/tabs/TabPane'
 import { useCallback, useRef, useState } from 'react';
 import './asset/Order.scss'
+import ProductCates from './ProductCates';
+import { useEffect } from 'react';
 const Order = () => {
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [activeVariant, setActiveVariant] = useState<any>('1');
   const [quantity, setQuantity] = useState<number>(1);
+  const [products, setProducts] = useState<[]>([]);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
-  const [visibleDetails, setVisibleDetails] = useState<{ [key: number]: boolean }>({});
+  // const [visibleDetails, setVisibleDetails] = useState<{ [key: number]: boolean }>({});
 
+  const listPro = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
+  const [selectedItems, setSelectedItems] = useState([]);
+  useEffect(() => {
+    setProducts(listPro)
+  }, [listPro]);
+
+  const savedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
+  useEffect(() => {
+    setSelectedItems(savedItems);
+  }, [savedItems]);
+
+  // Monitor changes in localStorage and update the state
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const updatedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
+      setSelectedItems(updatedItems);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Function to handle removing item or updating quantity
+  const [updatedItem, setUpdatedItem] = useState<[]>([]);
+
+  const handleRemoveItem = (id:number) => {
+    const existingItem = selectedItems.find((product) => product.id === id);
+
+    if (existingItem) {
+      let updatedItems;
+      if (Number(existingItem.quantity) > 1) {
+        // If item has quantity > 1, decrement quantity
+        updatedItems = selectedItems.map((product) =>
+          product.id === id ? { ...product, quantity: product.quantity - 1 } : product
+        );
+        setUpdatedItem(updatedItems)
+      } else {
+        // If quantity is 1, remove the item entirely
+        updatedItems = selectedItems.filter((product) => product.id !== id);
+        setUpdatedItem(updatedItems)
+      }
+
+      // Update localStorage and trigger UI re-render
+      localStorage.setItem('selectedItems', JSON.stringify(updatedItem));
+      setSelectedItems(updatedItem);  // Ensure state is updated immediately
+    }
+  };
 
   // const toggleDetailVisibility = (productId: number) => {
   //   setVisibleDetails(prev => ({
@@ -62,44 +118,7 @@ const Order = () => {
   return (
     <>
       <div className='container max-w-[1140px] h-screen overflow-y-auto px-[16px] lg:px-[20px] mx-auto gap-[24px] py-6'>
-        <div className="box-content md:grid block grid-cols-gridOrder gap-4 ">
-          <div className="box-table-info">
-            <h2 className='text-xl py-2 px-4 bg-blue-700 text-white'>Table Information</h2>
-            <table className="w-full mt-2 border-collapse">
-              <tbody>
-                <tr>
-                  <td className="border py-2 px-4">Table</td>
-                  <td className="border py-2 px-4">11</td>
-                </tr>
-                <tr>
-                  <td className="border py-2 px-4">Name</td>
-                  <td className="border py-2 px-4">mr. anv</td>
-                </tr>
-                <tr>
-                  <td className="border py-2 px-4">COST</td>
-                  <td className="border py-2 px-4">
-                    $999
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border py-2 px-4">Check in</td>
-                  <td className="border py-2 px-4">16:20:15 PM</td>
-                </tr>
-                <tr>
-                  <td className="border py-2 px-4">Check OUT</td>
-                  <td className="border py-2 px-4">-- : -- : -- PM</td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="box-table-info-action flex gap-4 justify-between mt-2">
-              <button className='px-6 py-3 bg-mainColor3 text-black hover:bg-mainColor1 duration-200 hover:text-white'><CustomerServiceOutlined className='mr-1' />SUPPORT</button>
-              <button className='px-6 py-3 bg-mainColor2 text-white hover:bg-mainColor1 duration-200'><CreditCardOutlined className='mr-1' />PAY FULL</button>
-            </div>
-          </div>
-          <div className="banner-ads-order w-full h-full md:mt-0 mt-4">
-
-          </div>
-        </div>
+        <ProductCates />
         <div className="list-product">
           <h2 className='text-white w-full text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
           <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
@@ -332,8 +351,8 @@ const Order = () => {
               tabBarStyle={{ fontWeight: '', fontSize: '20px' }}
               className=' text-4xl font-font3'
             >
-              <TabPane tab={"menu"} key="1" />
-              <TabPane tab="ordered" key="2" />
+              <TabPane className='uppercase' tab={<span>Menu</span>} key="1" />
+              <TabPane className='uppercase' tab={<span>Ordered</span>} key="2" />
 
             </Tabs>
           </div>
@@ -349,39 +368,42 @@ const Order = () => {
                   <h2 className='text-white text-3xl font-font1 mt-6 p-2 bg-mainColor2 text-center font-bold tracking-wider'>List Order</h2>
                   <table className="w-full mt-4 border-collapse bg-bgColor1">
                     <tbody>
-                      <tr className='text-center'>
-                        <td className="border">
-                          <div className="box w-14 h-14 mx-auto my-3">
-                            <Image
-                              className='rounded-lg cursor-pointer object-cover'
-                              src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                              preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg", width: "200px" }} // Tính năng preview ảnh chi tiết
-                            />
-                          </div>
-                        </td>
-                        <td className="border">
-                          <span className='block font-font1 text-textColor1 text-lg'>Pizza adas ádas</span>
+                      {products?.map((product) => (
+                        <tr className='text-center'>
+                          <td className="border">
+                            <div className="box w-14 h-14 mx-auto my-3">
+                              <Image
+                                className='rounded-lg cursor-pointer object-cover'
+                                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
+                                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg", width: "200px" }} // Tính năng preview ảnh chi tiết
+                              />
+                            </div>
+                          </td>
+                          <td className="border">
+                            <span className='block font-font1 text-textColor1 text-lg'>{product.name}</span>
 
-                        </td>
-                        <td className="border">
-                          <Form
-                            layout="vertical"
-                            onFinish={onFinish}
-                            initialValues={{ quantity: quantity }}
-                            className='mx-auto'
-                          >
-                            {/* Input Number Field */}
-                            <input
-                              className="w-10 text-center text-type-3 border outline-none"
-                              // value={0}
-                              type='number'
-                            />
-                          </Form>
-                        </td>
-                        <td className="border font-font3 p-2 text-mainColor1 text-lg ">
-                          <button><MinusCircleOutlined /></button>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="border">
+                            <Form
+                              layout="vertical"
+                              onFinish={onFinish}
+                              initialValues={{ quantity: quantity }}
+                              className='mx-auto'
+                            >
+                              {/* Input Number Field */}
+                              <input
+                                className="w-10 text-center text-type-3 border outline-none"
+                                value={product.quantity}
+                                type='number'
+                              />
+                            </Form>
+                          </td>
+                          <td className="border font-font3 p-2 text-mainColor1 text-lg ">
+                            <button onClick={() => handleRemoveItem(product.id)}><MinusCircleOutlined /></button>
+                          </td>
+                        </tr>
+                      ))}
+
                     </tbody>
                   </table>
                   <div className="container flex justify-center mt-2">
@@ -437,6 +459,44 @@ const Order = () => {
         >
           Order
         </button>
+        <div className="box-content md:grid block grid-cols-gridOrder mt-6 gap-4 ">
+          <div className="box-table-info">
+            <h2 className='text-xl py-2 px-4 bg-blue-700 text-white'>Table Information</h2>
+            <table className="w-full mt-2 border-collapse">
+              <tbody>
+                <tr>
+                  <td className="border py-2 px-4">Table</td>
+                  <td className="border py-2 px-4">11</td>
+                </tr>
+                <tr>
+                  <td className="border py-2 px-4">Name</td>
+                  <td className="border py-2 px-4">mr. anv</td>
+                </tr>
+                <tr>
+                  <td className="border py-2 px-4">COST</td>
+                  <td className="border py-2 px-4">
+                    $999
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border py-2 px-4">Check in</td>
+                  <td className="border py-2 px-4">16:20:15 PM</td>
+                </tr>
+                <tr>
+                  <td className="border py-2 px-4">Check OUT</td>
+                  <td className="border py-2 px-4">-- : -- : -- PM</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="box-table-info-action flex gap-4 justify-between mt-2">
+              <button className='px-6 py-3 bg-mainColor3 text-black hover:bg-mainColor1 duration-200 hover:text-white'><CustomerServiceOutlined className='mr-1' />SUPPORT</button>
+              <button className='px-6 py-3 bg-mainColor2 text-white hover:bg-mainColor1 duration-200'><CreditCardOutlined className='mr-1' />PAY FULL</button>
+            </div>
+          </div>
+          <div className="banner-ads-order w-full h-full md:mt-0 mt-4">
+
+          </div>
+        </div>
       </div>
       {/* Drawer */}
 
