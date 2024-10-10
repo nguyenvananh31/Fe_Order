@@ -1,4 +1,4 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, PhoneOutlined, PinterestOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons'
 import { Badge, Drawer, Image } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -17,7 +17,6 @@ const Header = () => {
     setVisible(false);
   };
 
-  // Gộp các sản phẩm trùng `product_detail_id` và tính tổng số lượng
   const mergedCart = cart.reduce((acc, item) => {
     const existingProduct = acc.find((p) => p.product_detail_id === item.product_detail_id);
     if (existingProduct) {
@@ -27,6 +26,7 @@ const Header = () => {
     }
     return acc;
   }, []);
+
 
   return (
     <header className='bg-bgColor1 w-full relative'>
