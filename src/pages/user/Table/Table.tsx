@@ -1,9 +1,10 @@
-import { CalendarFilled, CloseCircleFilled, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { Drawer, Input, Select, Pagination, Modal, DatePicker, TimePicker, message, notification } from 'antd';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CalendarFilled, SearchOutlined } from '@ant-design/icons';
+import { Input, Select, Pagination, Modal, DatePicker, message, Radio } from 'antd';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
+import { log } from 'console';
+import { useEffect, useState } from 'react';
+
 
 const { Option } = Select;
 
@@ -12,17 +13,20 @@ const Table = () => {
   const [tables, setTables] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [eatTime, setEatTime] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
 
   const [bookingModalVisible, setBookingModalVisible] = useState(false);
+  const [orderModalVisible, setOrderModalVisible] = useState(false);
+
   const [selectedTable, setSelectedTable] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [bookingDate, setBookingDate] = useState(null);
   const [bookingTime, setBookingTime] = useState(null);
-  const [tableDetail, setTableDetail] = useState<any[]>([]);
+  const [tableDetail, setTableDetail] = useState<[]>([]);
+  const [payment, setPayment] = useState('');
+  const [payments, setPayments] = useState([]);
 
 
   // State for new "hello" modal
@@ -43,6 +47,21 @@ const Table = () => {
         setTables([]);
       }
     })();
+    (async () => {
+      const url = 'http://127.0.0.1:8000/api/client/list_payments';
+      try {
+        const { data } = await axios.get(url, {
+          headers: {
+            'Api_key': import.meta.env.VITE_API_KEY,
+          },
+        });
+        // console.log(data.data);
+        setPayments(data.data);
+
+      } catch (error) {
+        console.error('Error fetching tables:', error);
+      }
+    })();
 
   }, []);
 
@@ -53,6 +72,7 @@ const Table = () => {
         headers: {
           'Api_key': import.meta.env.VITE_API_KEY,
         },
+
       });
       console.log(res.data.data.data);
       setTableDetail(res.data.data.data)
@@ -77,7 +97,14 @@ const Table = () => {
     setSelectedTable(table);
     setBookingModalVisible(true);
   };
-
+  const handleOrderClick = (table) => {
+    setSelectedTable(table);
+    setOrderModalVisible(true);
+  };
+  const handleOrderConfirm = async () => {
+    alert(payment)
+    console.log('Selected Gender:', payment);
+  }
   // Handle booking confirmation
   const handleBookingConfirm = async () => {
     if (!phoneNumber || !bookingDate || !bookingTime) {
@@ -162,7 +189,7 @@ const Table = () => {
               <span className={`text-sm text-white px-[8px] py-[2px] w-full text-center ${table.status == 1 ? `bg-mainColor2 border-mainColor2` : `bg-mainColor1`} group-hover:bg-transparent duration-400 absolute top-0 right-0`}>
                 #{index + 1} - {table.status == 1 ? `Available` : `Unavailable`}
               </span>
-              <button className="btn-calender absolute bottom-3 right-2 z-50 bg-blue-400 text-black text-sm p-3 rounded-full w-12 h-12 mr-1 hover:bg-blue-600"
+              <button className="btn-calender absolute bottom-3 right-2 z-50 bg-blue-400 text-black text-sm rounded-full w-8 h-8 mr-1 hover:bg-blue-600"
                 onClick={() => getDetailOrder(table.id)}
               >
                 <CalendarFilled className='text-white' />
@@ -183,14 +210,16 @@ const Table = () => {
               <div
                 className={`table-acion flex items-center justify-center text-center opacity-0 translate-y-10 pt-6 duration-300 ${table.status == 1 ? `group-hover:block` : `group-hover:hidden`} group-hover:opacity-[1] group-hover:translate-y-0`}
               >
-                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1" onClick={() => handleBookingClick(table)}>
-                  Booking
+                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1" onClick={() => handleBookingClick(table)}>
+                  Đặt Trước
+                </button>
+                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 mt-1" onClick={() => handleOrderClick(table)}>
+                  Đặt Ngay
                 </button>
               </div>
             </div>
           ))}
         </div>
-
         <div className="flex justify-center mt-8">
           <Pagination
             current={currentPage}
@@ -236,7 +265,30 @@ const Table = () => {
           <Option value="">Khác</Option>
         </Select>
       </Modal>
+      {/* Booking Modal */}
+      <Modal
+        title="Book a Table"
+        visible={orderModalVisible}
+        onCancel={() => setOrderModalVisible(false)}
+        onOk={handleOrderConfirm}
+        okText="Confirm"
+        cancelText="Cancel"
+      >
+        <div className="w-full ">
+          <Radio.Group
+            onChange={(e) => setPayment(e.target.value)} // Set gender when user selects a radio
+            value={payment} // Bind the selected value to state
+            className="w-full grid grid-cols-3 gap-2 p-2 mx-auto "
+          >
+            {payments.map((item) => (
+              <Radio.Button value={item.id} className="flex flex-col items-center justify-center h-16 border-2  border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-mainColor2 active:scale-95">
+                {item.name}
+              </Radio.Button>
+            ))}
 
+          </Radio.Group>
+        </div>
+      </Modal>
       {/* "Hello" Modal */}
       <Modal
         title="Danh sách đặt lịch"

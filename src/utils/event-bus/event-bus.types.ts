@@ -8,5 +8,6 @@ export interface BaseEventPayload<Payload> {
 }
 
 export enum EventBusName {
-  ON_SHOW_SiDE_ORDER
+  ON_SHOW_SiDE_ORDER,
+  SET_LOADING_APP,
 }
