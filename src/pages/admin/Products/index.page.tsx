@@ -212,6 +212,7 @@ export default function ProductPage() {
                     },
                 }}
                 onChange={hooks.handleTableChange}
+                scroll={{x: 'max-content'}}
             />
         </div>
     </>

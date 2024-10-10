@@ -1,44 +1,83 @@
-import React, { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ICart } from '../../../interFaces/cart';
+import { apiGetCart } from './utils/cart.service';
+import useToastMessage from '../../../hooks/useToastMessage';
 import { Link } from 'react-router-dom';
-import { useProductContext } from '../../../context/ProductContext';
-import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import axios from 'axios';
+import { convertPriceVND } from '../../../utils/common';
+
+interface IState {
+  loading: boolean;
+  loadingBtn: boolean;
+  data: ICart[];
+  refresh: boolean;
+}
+
+const initState: IState = {
+  loading: false,
+  loadingBtn: false,
+  data: [],
+  refresh: false
+}
 
 const Cart = () => {
-  const { cart, setCart, removeFromCart, updateQuantity } = useProductContext();
+  const [state, setState] = useState<IState>(initState);
+  const {contextHolder, showToast} = useToastMessage();
 
   // Gọi API để lấy dữ liệu giỏ hàng
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const token = localStorage.getItem('access_token'); // Lấy token từ localStorage nếu cần
-        const response = await axios.get('http://127.0.0.1:8000/api/client/online_cart', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Api_key': process.env.REACT_APP_API_KEY,
-          },
-        });
-        setCart(response.data.data); // Cập nhật giỏ hàng với dữ liệu từ API
+        setState(prev => ({...prev, loading: true}));
+        const res = await apiGetCart();
+        setState(prev => ({...prev, loading: false, data: res.data}));
       } catch (error) {
+        showToast('error', 'Có lỗi xảy ra!');
+        setState(prev => ({...prev, loading: false}));
         console.error('Error fetching cart:', error);
       }
     };
-
     fetchCart();
-  }, [setCart]);
+  }, [state.refresh]);
 
   // Tính tổng giá trị giỏ hàng
-  const cartTotal = cart.reduce((total, item) => {
-    const itemPrice = parseFloat(item.price) || 0;  // Chuyển đổi giá thành số và kiểm tra hợp lệ
+  const cartTotal = state.data.reduce((total, item) => {
+    const itemPrice = item.price || 0;  // Chuyển đổi giá thành số và kiểm tra hợp lệ
     return total + (itemPrice * item.quantity);  // Tính tổng tiền của từng sản phẩm
   }, 0);
 
-  return (
+  //Xử lý sự kiện thêm sửa 
+  const handleIncrease = useCallback((id: number) => {
+    setState(prev => {
+      const newPros = prev.data.map(i => i.id == id ? {...i, quantity: ++i.quantity} : i); 
+      return {
+        ...prev,
+        data: newPros
+      }
+    })
+  }, []);
+
+  const handleDecrease = useCallback((id: number, quantity: number) => {
+    setState(prev => {
+      let newPros = [];
+      if (quantity - 1 == 0) {
+        newPros = prev.data.filter(i => i.id !== id);
+      }else {
+        newPros = prev.data.map(i => i.id == id ? {...i, quantity: --i.quantity} : i); 
+      }
+      return {
+        ...prev,
+        data: newPros
+      }
+    })
+  }, []);
+
+  return  <>
+    {contextHolder}
     <div className="container mx-auto py-8 xl:px-56 lg:px-36 md:px-16 px-8">
       <h2 className="text-3xl font-bold mb-6">Shopping Cart</h2>
 
       <div className="overflow-x-auto">
-        {cart.length > 0 ? (
+        {state.data.length > 0 ? (
           <table className="min-w-full text-left border-collapse mb-8 hidden sm:table">
             <thead>
               <tr className="border-b">
@@ -50,7 +89,7 @@ const Cart = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item) => (
+              {state.data.map((item) => (
                 <tr key={item.id} className="border-b">
                   <td className="py-4 flex items-center">
                     <img
@@ -63,14 +102,14 @@ const Cart = () => {
 
                   {/* Hiển thị giá sản phẩm từ API */}
                   <td className="py-4 whitespace-nowrap">
-                    ${parseFloat(item.price).toFixed(2)}  {/* Hiển thị giá sản phẩm */}
+                    {convertPriceVND(item.price || 0)}  {/* Hiển thị giá sản phẩm */}
                   </td>
 
                   <td className="py-4">
                     <div className="flex items-center">
                       <button
                         className="text-red-500"
-                        onClick={() => updateQuantity(item.id, 'decrease')}
+                        onClick={() => handleDecrease(item.id, item.quantity)}
                       >
                         -
                       </button>
@@ -82,7 +121,7 @@ const Cart = () => {
                       />
                       <button
                         className="text-green-500"
-                        onClick={() => updateQuantity(item.id, 'increase')}
+                        onClick={() => handleIncrease(item.id)}
                       >
                         +
                       </button>
@@ -91,10 +130,10 @@ const Cart = () => {
 
                   {/* Tính toán Subtotal (Tổng tiền cho mỗi sản phẩm) */}
                   <td className="py-4 whitespace-nowrap">
-                    ${(parseFloat(item.price) * item.quantity).toFixed(2)} {/* Tính tổng tiền */}
+                    {(item.price * item.quantity).toFixed(2)} {/* Tính tổng tiền */}
                   </td>
                   <td className="py-4 text-center">
-                    <button className="text-red-600" onClick={() => removeFromCart(item.id)}>
+                    <button className="text-red-600" >
                       <i className="fas fa-times"></i>
                     </button>
                   </td>
@@ -113,15 +152,15 @@ const Cart = () => {
           <h3 className="text-xl font-semibold mb-6">Cart Total</h3>
           <div className="flex justify-between mb-4">
             <span>SUBTOTAL:</span>
-            <span>${cartTotal.toFixed(2)}</span>  {/* Hiển thị tổng giỏ hàng */}
+            <span>{convertPriceVND(cartTotal)}</span>  {/* Hiển thị tổng giỏ hàng */}
           </div>
           <div className="flex justify-between mb-4">
             <span>SHIPPING:</span>
-            <span>$10</span>
+            <span>10</span>
           </div>
           <div className="flex justify-between font-bold mb-6">
             <span>TOTAL:</span>
-            <span>${(cartTotal + 10).toFixed(2)}</span>  {/* Hiển thị tổng bao gồm phí ship */}
+            <span>{convertPriceVND(cartTotal + 10)}</span>  {/* Hiển thị tổng bao gồm phí ship */}
           </div>
           <Link
             to="/checkout"
@@ -132,7 +171,7 @@ const Cart = () => {
         </div>
       </div>
     </div>
-  );
+  </>
 };
 
 export default Cart;
