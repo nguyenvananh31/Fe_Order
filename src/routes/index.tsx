@@ -18,10 +18,12 @@ import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./a
 import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
+import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import ProtectedRoute from "./PrivateRoute";
+import Bill from "../pages/user/profiles/bill/bill";
 
 
 const Router = () => {
@@ -47,6 +49,19 @@ const Router = () => {
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
           
           <Route path={RoutePath.TABLE} element={<Table />} />
+
+          <Route path={RoutePath.ORDER} element={<Order />} />
+          
+          
+
+        <Route path={RoutePath.PROFILE} element={<Profiles />} >
+          <Route index element={<FormInforProfile />} />
+          <Route  path={RoutePath.Bill} element={<Bill />} />
+          
+        </Route>
+
+          
+
           {/* <Route path={RoutePath.ORDER} element={<Order />} /> */}
           <Route path={RoutePath.PRODUCT_CATE} element={<ProductByCate />} />
         </Route>
@@ -62,7 +77,6 @@ const Router = () => {
             ))
           }
         </Route>
-          <Route path={RoutePath.PROFILE} element={<Profiles />} />
       </Routes>
     </>
   );

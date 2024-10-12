@@ -6,7 +6,10 @@ export const RoutePath = {
     PROFILE:'profile',
     CLINET_PRODUCTS: 'product',
     PRODUCT_DETAIL: 'product/:id',
+    INFO_PROFILES:"infoProfiles",
     PRODUCT_CATE: 'product/category/:id',
+    Bill:'bill',
+
 
 
 

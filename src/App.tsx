@@ -13,7 +13,7 @@ function App() {
     return (
         <>
             {/* Bao bọc ứng dụng với ProductProvider */}
-            <ProductProvider>
+             <ProductProvider> 
                 <Provider store={reduxStoreUtils}>
                     <ToastProvider>
                         <ConfigProvider locale={locale} theme={{ token: themeToken }}>
@@ -23,7 +23,7 @@ function App() {
                         </ConfigProvider>
                     </ToastProvider>
                 </Provider>
-            </ProductProvider>
+             </ProductProvider> 
         </>
     );
 }

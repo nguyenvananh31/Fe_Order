@@ -1,4 +1,4 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, PhoneOutlined, PinterestOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons'
 import { Badge, Drawer, Image } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -70,7 +70,7 @@ const Header = () => {
                                 onClick={() => updateQuantity(item.id, 'decrease')}
                               />
                               <span className="mx-2">{item.quantity}</span>
-                              <PlusCircleOutlined
+                              <PlusCircleOutlined 
                                 className="text-green-500 cursor-pointer"
                                 onClick={() => updateQuantity(item.id, 'increase')}
                               />
@@ -110,13 +110,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <Drawer
-        placement="right"
-        onClose={onClose}
-        closable={false}
-        open={visible}
-        className="w-full relative"
-      >
+      
        <Drawer
             placement="right"
             onClose={onClose}
@@ -212,7 +206,7 @@ const Header = () => {
 
           </div>
 
-        </Drawer>
+       
       </Drawer>
     </header>
   );

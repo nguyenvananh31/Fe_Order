@@ -38,7 +38,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     const token = getToken(); // Lấy token mỗi lần gọi hàm
   
     if (!token) {
-      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
       return;
     }
   
@@ -52,7 +52,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       setCart(response.data.data || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
-      notification.error({ message: 'Failed to fetch cart', placement: 'bottomRight' });
+      notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
     }
   };
 
@@ -65,7 +65,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     const token = getToken();
     
     if (!token) {
-      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
       return;
     }
   
@@ -82,13 +82,13 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       );
       fetchCart();  // Cập nhật giỏ hàng sau khi thêm sản phẩm
       notification.success({
-        message: 'Added to Cart',
-        description: `The product has been added to your cart.`,
+        message: 'Thêm sản phẩm thành công',
+        description: `Sản phẩm đã được thêm vào giỏ hàng của bạn.`,
         placement: 'bottomRight',
       });
     } catch (error) {
       console.error('Error adding to cart:', error);
-      notification.error({ message: 'Failed to add to cart', placement: 'bottomRight' });
+      notification.error({ message: 'Thêm sản phẩm thất bại', placement: 'bottomRight' });
     }
   };  
 
@@ -97,9 +97,9 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     const token = getToken();
 
     if (!token) {
-      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
       return;
-    }
+    } 
 
     try {
       await axios.delete(`http://127.0.0.1:8000/api/client/online_cart/${id}`, {
@@ -110,13 +110,13 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       });
       fetchCart();  // Cập nhật giỏ hàng sau khi xóa sản phẩm
       notification.warning({
-        message: 'Removed from Cart',
-        description: 'Item has been removed from your cart.',
+        message: 'Xóa sản phẩm thành công',
+        description: 'Sản phẩm đã bị xóa khỏi giỏ hàng của bạn.',
         placement: 'bottomRight',
       });
     } catch (error) {
       console.error('Error removing from cart:', error);
-      notification.error({ message: 'Failed to remove from cart', placement: 'bottomRight' });
+      notification.error({ message: 'Xóa sản phẩm thất bại', placement: 'bottomRight' });
     }
   };
 
@@ -125,7 +125,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     const token = getToken();
     
     if (!token) {
-      notification.error({ message: 'No token found', placement: 'bottomRight' });
+      notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
       return;
     }
 
@@ -160,7 +160,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       });
     } catch (error) {
       console.error('Error updating quantity:', error);
-      notification.error({ message: 'Failed to update quantity', placement: 'bottomRight' });
+      notification.error({ message: 'Không thể cập nhật số lượng', placement: 'bottomRight' });
     }
   };
 
