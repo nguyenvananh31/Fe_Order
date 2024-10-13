@@ -1,0 +1,44 @@
+.custom-table {
+    .ant-table {
+        border: none;
+        background-color: transparent; // Xóa màu nền của bảng
+    }
+
+    /* Xóa viền giữa các hàng và cột */
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+        border: unset;
+    }
+
+    /* Chỉ hiển thị viền dưới giữa các hàng */
+    .ant-table-tbody > tr:not(:last-child) > td {
+      border-bottom: 1px solid #ddd; // Mày có thể thay màu viền tùy ý
+    }
+  
+    /* Xóa viền dưới của hàng cuối cùng */
+    .ant-table-tbody > tr:last-child > td {
+      border-bottom: none;
+    }
+
+    .ant-table-cell {
+        background: none!important;
+        &::before {
+            display: none;
+        }
+    }
+
+    /* Xóa màu nền của header */
+    .ant-table-thead {
+        background-color: transparent;
+    }
+
+    /* Xóa màu nền của body */
+    .ant-table-tbody {
+        background-color: transparent;
+    }
+
+    /* Xóa viền hover của hàng nếu cần */
+    .ant-table-tbody > tr:hover > td {
+        background-color: transparent;
+    }
+}
