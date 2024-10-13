@@ -6,3 +6,11 @@ export interface Icustomer{
     user_id:string
     email: string;
 }
+
+export interface IAddress {
+    id: number;
+    address: string;
+    city: string;
+    country: string;
+    is_default: number;
+}
