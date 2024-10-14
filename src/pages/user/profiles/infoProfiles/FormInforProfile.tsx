@@ -90,9 +90,9 @@ const FormInforProfile: React.FC = () => {
       .validateFields()
       .then((values) => {
         if (isEditMode) {
-          updateAddress({ ...values, is_default: values.is_default ? 1 : 0 }); // Gọi API cập nhật
+          updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
         } else {
-          createAddress({ ...values, is_default: values.is_default ? 1 : 0 }); // Gọi API tạo mới
+          createAddress({ ...values, is_default: values.is_default ? 1 : 0 }); 
         }
       })
       .catch((info) => {

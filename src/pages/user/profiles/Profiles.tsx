@@ -1,7 +1,6 @@
 import React from "react";
 import HeaderProfile from "./navProfile/headerProfile";
 import AsideMain from "./navProfile/AsideMain";
-import FormInforProfile from "./infoProfiles/FormInforProfile";
 import { Outlet } from "react-router-dom";
 
 const Profiles: React.FC = () => {

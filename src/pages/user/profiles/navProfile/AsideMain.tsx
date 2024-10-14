@@ -8,6 +8,7 @@ const AsideMain = () => {
   type MenuItem = Required<MenuProps>['items'][number];
   const { Sider } = Layout;
 
+
   function getItem(
     label: React.ReactNode,
     key: React.Key,
@@ -27,6 +28,17 @@ const AsideMain = () => {
     {
       key: '2',
       label: <Link to ="/admin">Bill</Link>,
+      icon: <BellOutlined />,
+    },
+
+    {
+      key: '3',
+      label: <Link to ="/profile/editProfile">Đổi mật khẩu</Link>,
+      icon: <BellOutlined />,
+    },
+    {
+      key: '4',
+      label: <div className='cursor-pointer'>Đăng xuất</div>,
       icon: <BellOutlined />,
     },
   ];

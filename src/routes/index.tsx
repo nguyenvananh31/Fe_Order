@@ -27,6 +27,7 @@ import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import ProtectedRoute from "./PrivateRoute";
 import ProductCates from "../pages/user/Order/ProductCates";
+import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 
 const Router = () => {
   return (
@@ -56,6 +57,7 @@ const Router = () => {
           {/* Profile */}
           <Route path={RoutePath.PROFILE} element={<Profiles />}>
             <Route index element={<FormInforProfile />} />
+            <Route path={RoutePath.EDIT_PROFILE}element={<EditProfile />} />
           </Route>
 
           {/* <Route path={RoutePath.ORDER} element={<Order />} /> */}
