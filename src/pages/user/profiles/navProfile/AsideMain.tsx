@@ -23,10 +23,12 @@ const AsideMain = () => {
   }
 
   const items: MenuItem[] = [
+
     getItem(<Link to="/profile">profile</Link> ,'1', <UserOutlined />), 
     {
       key: '2',
       label: <Link to ="/profile/bill">Bill</Link>,
+
       icon: <BellOutlined />,
     },
   ];

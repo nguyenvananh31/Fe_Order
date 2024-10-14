@@ -17,7 +17,6 @@ const Header = () => {
     setVisible(false);
   };
 
-  // Gộp các sản phẩm trùng `product_detail_id` và tính tổng số lượng
   const mergedCart = cart.reduce((acc, item) => {
     const existingProduct = acc.find((p) => p.product_detail_id === item.product_detail_id);
     if (existingProduct) {
@@ -27,6 +26,7 @@ const Header = () => {
     }
     return acc;
   }, []);
+
 
   return (
     <header className='bg-bgColor1 w-full relative'>

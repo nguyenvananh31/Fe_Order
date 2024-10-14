@@ -8,6 +8,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
+
     // Fetching token safely from localStorageUtils
     const token = localStorageUtils?.getObject(KeyStorage.AUTH)?.access_token;
 
@@ -17,6 +18,7 @@ instance.interceptors.request.use(
         ...config.headers,
         Authorization: `Bearer ${token}`, // Inject the token
         'Api_key': import.meta.env.VITE_API_KEY, // Inject API key from environment
+
       };
     }
 

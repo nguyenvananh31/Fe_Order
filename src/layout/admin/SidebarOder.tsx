@@ -1,15 +1,13 @@
-import { CloseOutlined, InboxOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Row, Tabs } from "antd";
+import { CloseOutlined, InboxOutlined, } from "@ant-design/icons";
+import { Tabs } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { TabsProps } from "antd/lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import useToastMessage from "../../hooks/useToastMessage";
-import { apiGetTableDetail } from "../../pages/admin/Tables/utils/rable.service";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
-import ProCartComponent from "./components/ProCartComponent";
 import OrderCartComponent from "./components/OrderCartComponent";
 
 interface ISate {

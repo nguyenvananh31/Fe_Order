@@ -23,7 +23,8 @@ import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import ProtectedRoute from "./PrivateRoute";
-import Bill from "../pages/user/profiles/bill/bill";
+import ProductCates from "../pages/user/Order/ProductCates";
+import Bill from "../pages/user/profiles/bill/Bill";
 
 
 const Router = () => {
@@ -51,13 +52,11 @@ const Router = () => {
           <Route path={RoutePath.TABLE} element={<Table />} />
 
           <Route path={RoutePath.ORDER} element={<Order />} />
-          
-          
 
         <Route path={RoutePath.PROFILE} element={<Profiles />} >
-          <Route index element={<FormInforProfile />} />
-          <Route  path={RoutePath.Bill} element={<Bill />} />
-          
+          <Route index element={<FormInforProfile />}/>
+          <Route  path={RoutePath.Bill} element={<Bill/>}/>
+
         </Route>
 
           
@@ -68,6 +67,7 @@ const Router = () => {
         {/* order page */}
         <Route path={RoutePath.ORDER} element={<BaseLayoutOrder />}>
           <Route index element={<Order />} />
+          <Route path="/order/cate/:id" element={<ProductCates />} />
         </Route>
         <Route path="*" element={<Error/>} />
         <Route path={RoutePath.ADMIN} element={ <ProtectedRoute><BaseLayoutAdmin /></ProtectedRoute>} >
