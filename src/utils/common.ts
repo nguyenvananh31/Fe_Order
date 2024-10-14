@@ -1,5 +1,6 @@
 export const convertPriceVND = (price: number) => {
   // Chuyển đổi số thành chuỗi với dấu chấm ngăn cách hàng nghìn
+  price = price * 1;
   return price.toLocaleString('vi-VN') + 'đ';
 }
 

@@ -1,9 +1,13 @@
-import { Checkbox, Spin } from 'antd';
+import { Checkbox, Image, Spin } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { fallBackImg, getImageUrl } from '../../../constants/common';
+import { RoutePath } from '../../../constants/path';
 import useCartStore from '../../../hooks/redux/cart/useCartStore';
+import useToast from '../../../hooks/useToast';
 import useToastMessage from '../../../hooks/useToastMessage';
 import { convertPriceVND } from '../../../utils/common';
+import { apiDeleteCart, apiUpdateCart } from './utils/cart.service';
 
 interface IState {
   loading: boolean;
@@ -11,6 +15,11 @@ interface IState {
   refresh: boolean;
   itemId?: number;
   quantity?: number;
+}
+
+interface IUpdateCart {
+  id: number;
+  quantity: number;
 }
 
 const initState: IState = {
@@ -21,8 +30,11 @@ const initState: IState = {
 
 const Cart = () => {
   const [state, setState] = useState<IState>(initState);
-  const { contextHolder, showToast } = useToastMessage();
+  const [updateCart, setUpdateCart] = useState<IUpdateCart>();
   const { cartStore, setProtoCart, refreshCartStore, setCartSelect } = useCartStore();
+  const { contextHolder, showToast } = useToastMessage();
+  const toast = useToast();
+  const navigate = useNavigate();
   const indeterminate = useMemo(() => cartStore.optionSelect.length > 0 && cartStore.optionSelect.length < cartStore.proCarts.length, [cartStore]);
 
   useEffect(() => {
@@ -36,6 +48,41 @@ const Cart = () => {
     })();
   }, [state.refresh]);
 
+  //Handle update cart
+  useEffect(() => {
+    if (!updateCart) {
+      return;
+    }
+    const timeout = setTimeout(async () => {
+      if (updateCart?.quantity! < 1) {
+        try {
+          setState(prev => ({ ...prev, loadingBtn: true }));
+          await apiDeleteCart(updateCart?.id!);
+        } catch (error) {
+          console.log(error);
+          showToast('error', 'Xoá sản phẩm thất bại!');
+        }
+        setState(prev => ({ ...prev, loadingBtn: false }));
+        return;
+      }
+
+      try {
+        await apiUpdateCart(updateCart?.id!, { quantity: updateCart?.quantity! });
+      } catch (error: any) {
+        console.log(error);
+        if (error?.data?.soluong) {
+          const newPros = cartStore.proCarts.map((i: any) => i.id == updateCart.id ? { ...i, quantity: error.data.soluong } : i);
+          setProtoCart(newPros);
+          toast.showError(error.error);
+          return;
+        }
+        toast.showError('Đã có lỗi xảy ra!');
+      }
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [updateCart]);
+
   // Tính tổng giá trị giỏ hàng
   const cartTotal = useMemo(() => {
     return cartStore.proCarts.reduce((total, item) => {
@@ -45,13 +92,15 @@ const Cart = () => {
   }, [cartStore]);
 
   //Xử lý sự kiện thêm sửa 
-  const handleIncrease = useCallback((id: number) => {
+  const handleIncrease = useCallback((id: number, quantity: number) => {
+    setUpdateCart({ id, quantity: quantity + 1 });
     const newPros = cartStore.proCarts.map((i: any) => i.id == id ? { ...i, quantity: i.quantity + 1 } : i);
     setProtoCart(newPros);
   }, [cartStore]);
 
   const handleDecrease = useCallback((id: number, quantity: number) => {
     let newPros = [];
+    setUpdateCart({ id, quantity: quantity - 1 });
     if (quantity - 1 == 0) {
       newPros = cartStore.proCarts.filter(i => i.id !== id);
     } else {
@@ -61,6 +110,7 @@ const Cart = () => {
   }, [cartStore]);
 
   const handleDeleteCart = useCallback((id: number) => {
+    setUpdateCart({ id, quantity: 0 });
     let newPros = cartStore.proCarts.filter(i => i.id !== id);
     setProtoCart(newPros);
   }, [cartStore]);
@@ -72,12 +122,20 @@ const Cart = () => {
 
   const onChange = useCallback((checkedValues: any) => {
     setCartSelect(checkedValues);
-  }, [cartStore])
+  }, [cartStore]);
+
+  const handleCheckout = useCallback(() => {
+    if (cartStore.optionSelect.length < 1) {
+      toast.showError('Vui lòng chọn sản phẩm!');
+      return;
+    }
+    navigate('/' + RoutePath.CHECKOUT);
+  }, [cartStore.optionSelect])
 
   return <>
     {contextHolder}
     <div className="container mx-auto py-8 xl:px-56 lg:px-36 md:px-16 px-8">
-      <h2 className="text-3xl font-bold mb-6">Shopping Cart</h2>
+      <h2 className="text-3xl font-bold mb-6">Giỏ hàng</h2>
 
       <div className="overflow-x-auto">
         <Checkbox indeterminate={indeterminate} checked={cartStore.optionSelect.length == cartStore.proCarts.length} onChange={onCheckAllChange} className="m-2">
@@ -92,11 +150,11 @@ const Cart = () => {
                 <thead>
                   <tr className="border-b">
                     <th className="py-3"></th>
-                    <th className="py-3">Product</th>
-                    <th className="py-3">Price</th>
-                    <th className="py-3">Quantity</th>
-                    <th className="py-3">Subtotal</th>
-                    <th className="py-3">Remove</th>
+                    <th className="py-3">Sản phẩm</th>
+                    <th className="py-3">Giá</th>
+                    <th className="py-3">Số lượng</th>
+                    <th colSpan={5} className="py-3">Tổng</th>
+                    <th className="py-3">Xoá</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -106,12 +164,11 @@ const Cart = () => {
                         <Checkbox checked={true} value={item.id} className="mx-2" />
                       </td>
                       <td className="py-4 flex items-center">
-                        <img
-                          src="https://modinatheme.com/html/foodking-html/assets/img/food/burger.png"
-                          alt={item.product_name}
-                          className="w-16 h-16 object-cover rounded-full mr-4"
+                        <Image
+                          src={item?.product_thumbnail ? getImageUrl(item.product_thumbnail) : fallBackImg}
+                          className="max-w-[120px] max-h-[120px] min-h-[119px] min-w-[119px] object-cover rounded"
                         />
-                        <span className="whitespace-nowrap">{item.product_name}</span>
+                        <span className="whitespace-nowrap pl-2">{item.product_name}</span>
                       </td>
 
                       {/* Hiển thị giá sản phẩm từ API */}
@@ -122,7 +179,7 @@ const Cart = () => {
                       <td className="py-4">
                         <div className="flex items-center">
                           <button
-                            className="text-red-500"
+                            className="text-red-500 text-[25px]"
                             onClick={() => handleDecrease(item.id, item.quantity)}
                           >
                             -
@@ -134,8 +191,8 @@ const Cart = () => {
                             className="w-12 text-center mx-2 border border-gray-300 rounded-md"
                           />
                           <button
-                            className="text-green-500"
-                            onClick={() => handleIncrease(item.id)}
+                            className="text-green-500 text-[20px]"
+                            onClick={() => handleIncrease(item.id, item.quantity)}
                           >
                             +
                           </button>
@@ -143,8 +200,8 @@ const Cart = () => {
                       </td>
 
                       {/* Tính toán Subtotal (Tổng tiền cho mỗi sản phẩm) */}
-                      <td className="py-4 whitespace-nowrap">
-                        {(item.price * item.quantity).toFixed(2)} {/* Tính tổng tiền */}
+                      <td className="py-4 whitespace-nowrap min-w-[100px]">
+                        {convertPriceVND(item.price * item.quantity)} {/* Tính tổng tiền */}
                       </td>
                       <td className="py-4 text-center">
                         <button className="text-red-600" onClick={() => handleDeleteCart(item.id)} >
@@ -156,7 +213,7 @@ const Cart = () => {
                 </tbody>
               </table>
             ) : (
-              <p>Your cart is empty.</p>
+              <p>Giỏ hàng của bạn đang trống.</p>
             )}
         </Checkbox.Group>
       </div>
@@ -164,25 +221,25 @@ const Cart = () => {
       {/* Tổng giỏ hàng */}
       <div className="flex justify-end">
         <div className="w-full max-w-sm bg-white p-6 shadow-md rounded-md">
-          <h3 className="text-xl font-semibold mb-6">Cart Total</h3>
+          <h3 className="text-xl font-semibold mb-6">Tổng giỏ hàng</h3>
           <div className="flex justify-between mb-4">
-            <span>SUBTOTAL:</span>
+            <span>Tổng tiền sản phẩm:</span>
             <span>{convertPriceVND(cartTotal)}</span>  {/* Hiển thị tổng giỏ hàng */}
           </div>
           <div className="flex justify-between mb-4">
-            <span>SHIPPING:</span>
-            <span>10</span>
+            <span>Phí:</span>
+            <span>{convertPriceVND(10)}</span>
           </div>
           <div className="flex justify-between font-bold mb-6">
-            <span>TOTAL:</span>
+            <span>Thành tiền:</span>
             <span>{convertPriceVND(cartTotal + 10)}</span>  {/* Hiển thị tổng bao gồm phí ship */}
           </div>
-          <Link
-            to="/checkout"
-            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-800 transition-all text-center block"
+          <div
+            onClick={handleCheckout}
+            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-800 transition-all text-center block cursor-pointer"
           >
-            CHECKOUT
-          </Link>
+            Mua hàng
+          </div>
         </div>
       </div>
     </div >

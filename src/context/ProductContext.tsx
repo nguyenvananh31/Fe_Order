@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { notification } from 'antd';
 import axios from 'axios';
+import { getAccessToken } from '../utils/api/api.utils';
 
 interface ProductContextType {
   products: any[];
@@ -27,15 +28,9 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
 
-  // Hàm lấy token từ localStorage
-  const getToken = () => {
-    const token = localStorage.getItem('access_token');
-    return token ? token : null;
-  };
-
   // Hàm lấy giỏ hàng từ API
   const fetchCart = async () => {
-    const token = getToken(); // Lấy token mỗi lần gọi hàm
+    const token = getAccessToken(); // Lấy token mỗi lần gọi hàm
   
     if (!token) {
       notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
@@ -62,7 +57,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Hàm thêm sản phẩm vào giỏ hàng
   const addToCart = async (productDetails: { product_detail_id: number, product_id: number, quantity: number, price: number, size_id: number }) => {
-    const token = getToken();
+    const token = getAccessToken();
     
     if (!token) {
       notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
@@ -94,7 +89,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Hàm xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = async (id: number | string) => {
-    const token = getToken();
+    const token = getAccessToken();
 
     if (!token) {
       notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
@@ -122,7 +117,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Hàm cập nhật số lượng sản phẩm
   const updateQuantity = async (id: number | string, action: 'increase' | 'decrease') => {
-    const token = getToken();
+    const token = getAccessToken();
     
     if (!token) {
       notification.error({ message: 'Bạn cần đăng nhập', placement: 'bottomRight' });
