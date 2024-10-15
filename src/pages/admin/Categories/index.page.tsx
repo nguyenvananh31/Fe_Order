@@ -199,6 +199,7 @@ export default function CatePage() {
                             hooks.handlePageChange(page, pageSize);
                         },
                     }}
+                    scroll={{x: 'max-content'}}
                 />
             </div>
             {
