@@ -1,12 +1,14 @@
+import { Form } from "antd";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, notification } from "antd";
 import useAuth from "../../../../hooks/redux/auth/useAuth";
+import useToast from "../../../../hooks/useToast";
 import { loginService } from "./LoginForm.services";
 export const LoginForm = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+  const { showError , showSuccess} = useToast();
 
   // Lấy dữ liệu từ local nếu người dùng đã từng lưu thông tin đăng nhập
   useEffect(() => {
@@ -23,26 +25,24 @@ export const LoginForm = () => {
     password: string;
     remember: boolean;
   }) => {
-    const dataLogin: any = await loginService(formData);
-    if (dataLogin && dataLogin !== undefined) {
-      if (dataLogin.remember == true) {
-        localStorage.setItem("rememberedEmail", dataLogin.email);
+
+    try {
+      const dataLogin: any = await loginService(formData);
+      if (dataLogin && dataLogin !== undefined) {
+        // if (dataLogin.remember == true) {
+        //   localStorage.setItem("rememberedEmail", dataLogin.email);
+        // }
+        setAuth({ ...dataLogin.user, access_token: dataLogin.access_token, refresh_token: dataLogin.refresh_token });
+        showSuccess('Đăng nhập thành công!');
+        await navigate("/admin");
       }
-      setAuth({ ...dataLogin.user, access_token: dataLogin.access_token, refresh_token: dataLogin.refresh_token });
-      notification.success({
-        message: "Đăng nhập thành công!",
-        description: "Xin chào Admin!",
-      });
-      await navigate("/admin");
+    } catch (error) {
+      showError('Tài khoản hoặc mật khẩu chưa chính xác!');
     }
   };
-  // Trường hợp mặc định là sai
+
   const onFinishFailed = () => {
-    notification.error({
-      message: "Đăng nhập thất bại",
-      description: "Vui lòng kiểm tra lại thông tin của bạn.",
-      showProgress: true,
-    });
+    showError('Vui lòng nhập đủ thông tin!')
   };
   return { onFinish, form, onFinishFailed };
 };
