@@ -4,6 +4,7 @@ export const RoutePath = {
     ABOUT : 'about',
     PRODUCTS : 'products',
     PROFILE:'profile',
+    EDIT_PROFILE:'editProfile',
     CLINET_PRODUCTS: 'product',
     PRODUCT_DETAIL: 'product/:id',
     INFO_PROFILES:"infoProfiles",

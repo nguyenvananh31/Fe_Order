@@ -209,9 +209,7 @@ const Header = () => {
                 <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               </ul>
             </div>
-
           </div>
-
         </Drawer>
       </Drawer>
     </header>

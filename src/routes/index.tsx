@@ -13,7 +13,10 @@ import BaseLayoutUser from "../pages/user/BaseLayoutUser";
 import Home from "../pages/user/Home/Home";
 import ListProducts from "../pages/user/Product/Products";
 import Profiles from "../pages/user/profiles/Profiles";
-import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./app";
+import {
+  privateProtectedFlattenRoutes,
+  publicProtectedFlattenRoutes,
+} from "./app";
 
 import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 import Error from "../pages/user/Error/Error";
@@ -24,10 +27,9 @@ import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import Table from "../pages/user/Table/Table";
 import ProtectedRoute from "./PrivateRoute";
 import ProductCates from "../pages/user/Order/ProductCates";
-
+import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 
 const Router = () => {
-
   return (
     <>
       <Routes>
@@ -47,16 +49,16 @@ const Router = () => {
 
           <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
           <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
-          
+
           <Route path={RoutePath.TABLE} element={<Table />} />
 
           <Route path={RoutePath.ORDER} element={<Order />} />
-
-        <Route path={RoutePath.PROFILE} element={<Profiles />} >
-          <Route index element={<FormInforProfile />}/>
-        </Route>
-
           
+          {/* Profile */}
+          <Route path={RoutePath.PROFILE} element={<Profiles />}>
+            <Route index element={<FormInforProfile />} />
+            <Route path={RoutePath.EDIT_PROFILE}element={<EditProfile />} />
+          </Route>
 
           {/* <Route path={RoutePath.ORDER} element={<Order />} /> */}
           <Route path={RoutePath.PRODUCT_CATE} element={<ProductByCate />} />
@@ -66,13 +68,18 @@ const Router = () => {
           <Route index element={<Order />} />
           <Route path="/order/cate/:id" element={<ProductCates />} />
         </Route>
-        <Route path="*" element={<Error/>} />
-        <Route path={RoutePath.ADMIN} element={ <ProtectedRoute><BaseLayoutAdmin /></ProtectedRoute>} >
-          {
-            privateProtectedFlattenRoutes.map((route, index) => (
-              <Route path={route.path} element={route.element} key={index} />
-            ))
+        <Route path="*" element={<Error />} />
+        <Route
+          path={RoutePath.ADMIN}
+          element={
+            <ProtectedRoute>
+              <BaseLayoutAdmin />
+            </ProtectedRoute>
           }
+        >
+          {privateProtectedFlattenRoutes.map((route, index) => (
+            <Route path={route.path} element={route.element} key={index} />
+          ))}
         </Route>
       </Routes>
     </>
