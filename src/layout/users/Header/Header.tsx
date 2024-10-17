@@ -1,12 +1,13 @@
 import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons';
 import { Badge, Drawer, Image } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useCartStore from '../../../hooks/redux/cart/useCartStore';
 import Navigation from '../component/Navigation/Navigation';
 import { apiDeleteCart, apiUpdateCart } from '../../../pages/user/Cart/utils/cart.service';
 import useToast from '../../../hooks/useToast';
 import useToastMessage from '../../../hooks/useToastMessage';
+import { RoutePath } from '../../../constants/path';
 
 interface IState {
   loading: boolean;
@@ -30,6 +31,7 @@ const initState: IState = {
 const Header = () => {
   const [state, setState] = useState<IState>(initState);
   const [visible, setVisible] = useState(false);
+  const navigation = useNavigate();
   const toast = useToast();
   const [updateCart, setUpdateCart] = useState<IUpdateCart>();
   const { cartStore, setProtoCart, refreshCartStore } = useCartStore();
@@ -122,6 +124,9 @@ const Header = () => {
     setProtoCart(newPros);
   }, [cartStore]);
 
+  const gotoLogin = useCallback(() => {
+    navigation('/' + RoutePath.LOGIN);
+  }, []);
 
   return (
     <>
@@ -202,7 +207,7 @@ const Header = () => {
                   </div>
                 </div>
               </div>
-              <button className="btn uppercase text-[16px] tracking-wider text-textColor3 bg-mainColor1 rounded-md px-6 py-4 hidden md:block">ORDER NOW</button>
+              <button className="btn uppercase text-[16px] tracking-wider text-textColor3 bg-mainColor1 rounded-md px-6 py-4 hidden md:block" onClick={gotoLogin}>Đăng nhập</button>
               <button className='text-3xl text-textColor1 group' onClick={showDrawer}><AlignLeftOutlined className='group-active:text-mainColor1' /></button>
             </div>
           </div>
