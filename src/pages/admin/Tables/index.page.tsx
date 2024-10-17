@@ -52,7 +52,6 @@ export default function TablePage() {
                 <Col>
                     <Card
                         className="border group/item border-dashed border-ghost cursor-pointer hover:border-purple"
-                        // onClick={() => hooks.openModalTable(12)}
                         styles={{
                             body: {
                                 padding: 0

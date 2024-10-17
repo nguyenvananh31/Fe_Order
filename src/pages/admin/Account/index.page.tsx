@@ -32,7 +32,7 @@ export default function AccountPage() {
                 title: 'Name/Email',
                 dataIndex: 'email',
                 sorter: true,
-                showSorterTooltip: {title: 'Sắp xếp theo tên và email'},
+                showSorterTooltip: { title: 'Sắp xếp theo tên và email' },
                 render: (_: any, user: IUser) => {
                     return (
                         <div className='flex items-center gap-3'>
@@ -108,7 +108,7 @@ export default function AccountPage() {
         ];
 
         return tblColumns;
-    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal, ])
+    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal,])
 
     return (
         <>
@@ -180,6 +180,7 @@ export default function AccountPage() {
                         },
                     }}
                     onChange={hooks.handleTableChange}
+                    scroll={{ x: 'max-content' }}
                 />
             </div>
 

@@ -18,13 +18,18 @@ import { privateProtectedFlattenRoutes, publicProtectedFlattenRoutes } from "./a
 import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
-import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
+import ProductCates from "../pages/user/Order/ProductCates";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
+<<<<<<< HEAD
 import ProtectedRoute from "./PrivateRoute";
 import ProductCates from "../pages/user/Order/ProductCates";
 import Bill from "../pages/user/profiles/bill/Bill";
+=======
+import PrivateRoute from "./PrivateRoute";
+>>>>>>> 9adfc7549f43349539ee9a8bd246285b8b151aa8
 
 
 const Router = () => {
@@ -70,7 +75,7 @@ const Router = () => {
           <Route path="/order/cate/:id" element={<ProductCates />} />
         </Route>
         <Route path="*" element={<Error/>} />
-        <Route path={RoutePath.ADMIN} element={ <ProtectedRoute><BaseLayoutAdmin /></ProtectedRoute>} >
+        <Route path={RoutePath.ADMIN} element={ <PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />

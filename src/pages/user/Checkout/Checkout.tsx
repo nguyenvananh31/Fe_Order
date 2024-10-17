@@ -146,9 +146,9 @@ const Checkout = () => {
       proIDs?.forEach((i) => {
         formData.append(`cart_items[]`, `${i.id}`);
       });
-      formData.append('use_points', `${state.tranferPoint}`);
+      formData.append('use_points', `${state.tranferPoint ? 1 : 0}`);
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
-      formData.append('payment_id', `${state.paymentValue}`);
+      formData.append('payment_id', `${1}`);
       await apiAddBill(formData);
       toast.showSuccess('Đặt hàng thành công!');
     } catch (error: any) {

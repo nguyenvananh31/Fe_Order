@@ -35,6 +35,7 @@ const Cart = () => {
   const { contextHolder, showToast } = useToastMessage();
   const toast = useToast();
   const navigate = useNavigate();
+  const listProsChecked = useMemo(() => cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id)), [cartStore]);
   const indeterminate = useMemo(() => cartStore.optionSelect.length > 0 && cartStore.optionSelect.length < cartStore.proCarts.length, [cartStore]);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ const Cart = () => {
 
   // Tính tổng giá trị giỏ hàng
   const cartTotal = useMemo(() => {
-    return cartStore.proCarts.reduce((total, item) => {
+    return listProsChecked.reduce((total, item) => {
       const itemPrice = item.price || 0;
       return total + (itemPrice * item.quantity);
     }, 0)
@@ -226,13 +227,13 @@ const Cart = () => {
             <span>Tổng tiền sản phẩm:</span>
             <span>{convertPriceVND(cartTotal)}</span>  {/* Hiển thị tổng giỏ hàng */}
           </div>
-          <div className="flex justify-between mb-4">
+          {/* <div className="flex justify-between mb-4">
             <span>Phí:</span>
             <span>{convertPriceVND(10)}</span>
-          </div>
+          </div> */}
           <div className="flex justify-between font-bold mb-6">
             <span>Thành tiền:</span>
-            <span>{convertPriceVND(cartTotal + 10)}</span>  {/* Hiển thị tổng bao gồm phí ship */}
+            <span>{convertPriceVND(cartTotal)}</span>  {/* Hiển thị tổng bao gồm phí ship */}
           </div>
           <div
             onClick={handleCheckout}

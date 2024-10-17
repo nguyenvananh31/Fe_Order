@@ -204,6 +204,7 @@ export default function CatePage() {
                         },
                     }}
                     onChange={hooks.handleTableChange}
+                    scroll={{x: 'max-content'}}
                 />
             </div>
             {
