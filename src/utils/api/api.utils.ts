@@ -2,7 +2,7 @@ import axios, {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
-  ResponseType,
+  ResponseType
 } from "axios";
 import { useNavigate } from "react-router-dom";
 import localStorageUtils, { KeyStorage } from "../local-storage.utils";
@@ -11,6 +11,7 @@ import { ResponseCode } from "./api.types";
 interface CustomHeaders {
   isAuth: boolean;
   access_token?: string | undefined | null;
+  isRefresh?: boolean;
 }
 
 const REQ_TIMEOUT = 25 * 1000;
@@ -67,7 +68,7 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
   return { ...header };
 };
 
-const requestHandler = (request: AxiosRequestConfig) => {
+const requestHandler: any = (request: AxiosRequestConfig) => {
   if (__DEV__) {
     console.log(`Req API: ${request.url}`);
     console.log(`  + Params:     `, request.params);
@@ -95,10 +96,12 @@ const errorHandler = async (error: AxiosError) => {
   const resError: AxiosResponse<any> | undefined = error.response;
 
   const config: any = error.config;
-
-  if (resError?.status === 401 && !config._isRefreshToken) {
-    config._isRefreshToken = true;
+  
+  if (resError?.status === 402) {
     try {
+      if (resError?.data?.error) {
+        throw new Error("Lỗi xảy ra!");
+      }
       const res = await refreshToken();
       if (res.access_token) {
         const auth = localStorageUtils.getObject(KeyStorage.AUTH);
