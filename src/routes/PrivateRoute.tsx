@@ -10,7 +10,7 @@ interface IProps {
     children: ReactNode;
 }
 
-export default function ProtectedRoute({ children }: IProps) {
+export default function PrivateRoute({ children }: IProps) {
 
     const { user } = useAuth();
     const navigate = useNavigate();

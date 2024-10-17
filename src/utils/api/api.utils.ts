@@ -2,7 +2,7 @@ import axios, {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
-  ResponseType,
+  ResponseType
 } from "axios";
 import { useNavigate } from "react-router-dom";
 import localStorageUtils, { KeyStorage } from "../local-storage.utils";
@@ -68,7 +68,7 @@ export const getHeader = async (customHeaders?: CustomHeaders) => {
   return { ...header };
 };
 
-const requestHandler = (request: AxiosRequestConfig) => {
+const requestHandler: any = (request: AxiosRequestConfig) => {
   if (__DEV__) {
     console.log(`Req API: ${request.url}`);
     console.log(`  + Params:     `, request.params);
