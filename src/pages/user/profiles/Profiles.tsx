@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../../configs/Axios/AxiosConfig";
 import { Button, Form } from "antd";
-import HeaderProfile from "./navProfile/headerProfile";
+
 import AsideMain from "./navProfile/AsideMain";
 import { Outlet } from "react-router-dom";
 
 const Profiles: React.FC = () => {
   const [form] = Form.useForm();
-  const [profile, setProfile] = useState<any>(null);
+  const [ setProfile] = useState<any>(null);
   const [isEditingAddresses, setIsEditingAddresses] = useState(false);
-  const url = "client/profile";
+  const url = "/api/client/profile";
 
   useEffect(() => {
     (async () => {
@@ -36,7 +36,7 @@ const Profiles: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-6 mx-3 h-3/4">
         <div className="col-span-1 md:col-span-3 bg-white">
-          <HeaderProfile profile={profile} />
+          
           <AsideMain />
         </div>
         <Outlet />

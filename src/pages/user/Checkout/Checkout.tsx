@@ -144,7 +144,7 @@ const Checkout = () => {
       const proIDs = cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id));
       
       proIDs?.forEach((i) => {
-        formData.append(`cart_items[]`, `${i.product_detail_id}`);
+        formData.append(`cart_items[]`, `${i.id}`);
       });
       formData.append('use_points', `${state.tranferPoint}`);
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
