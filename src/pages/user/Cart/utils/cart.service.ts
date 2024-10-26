@@ -8,3 +8,11 @@ const apiName = {
 export const apiGetCart = async (params?: any) => {
     return await ApiUtils.fetch<any, ResponeBase<any>>(apiName.cart, params);
 }
+
+export const apiUpdateCart = async (id: number, body: any) => {
+    return await ApiUtils.put<any, any>(`${apiName.cart}/${id}`, body);
+}
+
+export const apiDeleteCart = async (id: number) => {
+    return await ApiUtils.remove<number, any>(`${apiName.cart}/${id}`);
+}

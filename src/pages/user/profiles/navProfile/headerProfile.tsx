@@ -20,7 +20,9 @@ const HeaderProfile = () => {
   })
 
 
-  console.log(data?.data.data);
+  
+
+
   
 
   return (
@@ -30,7 +32,6 @@ const HeaderProfile = () => {
         <Avatar size={64} src="../../public/images/team/01.jpg"/>
       </Space>
       <div className="font-medium text-base px-3 capitalize">
-      {data?.data.data.name}
         <div className="text-gray-600">
         {data?.data.data.email}
         </div>
