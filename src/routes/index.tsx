@@ -21,13 +21,15 @@ import {
 import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
-import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
+import ProductCates from "../pages/user/Order/ProductCates";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
 import ProtectedRoute from "./PrivateRoute";
 import ProductCates from "../pages/user/Order/ProductCates";
 import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
+import PrivateRoute from "./PrivateRoute";
 
 const Router = () => {
   return (
@@ -68,13 +70,12 @@ const Router = () => {
           <Route index element={<Order />} />
           <Route path="/order/cate/:id" element={<ProductCates />} />
         </Route>
-        <Route path="*" element={<Error />} />
-        <Route
-          path={RoutePath.ADMIN}
-          element={
-            <ProtectedRoute>
-              <BaseLayoutAdmin />
-            </ProtectedRoute>
+        <Route path="*" element={<Error/>} />
+        <Route path={RoutePath.ADMIN} element={ <PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
+          {
+            privateProtectedFlattenRoutes.map((route, index) => (
+              <Route path={route.path} element={route.element} key={index} />
+            ))
           }
         >
           {privateProtectedFlattenRoutes.map((route, index) => (

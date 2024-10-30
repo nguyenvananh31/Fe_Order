@@ -350,6 +350,7 @@ const ListPayment: React.FC = () => {
                             },
                         }}
                         onChange={handleTableChange}
+                        scroll={{x: 'max-content'}}
                     />
 
                     <Modal

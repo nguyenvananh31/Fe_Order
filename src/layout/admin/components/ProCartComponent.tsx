@@ -1,6 +1,6 @@
 import { Affix, Button, Card, Checkbox, CheckboxProps, Empty, Image, Spin } from "antd";
 import { GetProp } from "antd/lib";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fallBackImg } from "../../../constants/common";
 import { convertPriceVND } from "../../../utils/common";
 
@@ -22,15 +22,15 @@ const initState: IState = {
 export default function ProCartComponent({ id, showToastMes }: Props) {
   const [state, setState] = useState<IState>(initState);
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const indeterminate = checkedList.length > 0 && checkedList.length < 2;
+  const indeterminate = useMemo(() => checkedList.length > 0 && checkedList.length < checkedList.length, [checkedList]);
   useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
       try {
-        // setState(prev => ({...prev, loading: true}));
+        setState(prev => ({...prev, loading: true}));
 
       } catch (error) {
-        // setState(prev => ({...prev, loading: false}));
+        setState(prev => ({...prev, loading: false}));
         console.log(error);
         showToastMes('error', 'Có lỗi xảy ra!')
       }

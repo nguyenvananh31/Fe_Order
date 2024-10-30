@@ -1,4 +1,4 @@
-import { CloseOutlined, InboxOutlined, } from "@ant-design/icons";
+import { CloseOutlined, InboxOutlined, ShoppingCartOutlined, } from "@ant-design/icons";
 import { Tabs } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { TabsProps } from "antd/lib";
@@ -9,6 +9,7 @@ import useToastMessage from "../../hooks/useToastMessage";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
 import OrderCartComponent from "./components/OrderCartComponent";
+import ProCartComponent from "./components/ProCartComponent";
 
 interface ISate {
     loading: boolean;
@@ -79,12 +80,12 @@ export default function SidebarOder() {
     }, []);
 
     const items: TabsProps['items'] = [
-        // {
-        //     key: '1',
-        //     label: <span className="pr-2">Giỏ hàng</span>,
-        //     icon: <ShoppingCartOutlined />,
-        //     children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
-        // },
+        {
+            key: '1',
+            label: <span className="pr-2">Giỏ hàng</span>,
+            icon: <ShoppingCartOutlined />,
+            children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
+        },
         {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,

@@ -24,7 +24,6 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
     const checkSession = async () => {
         try {
             setLoading(true);
-            // const res = await apiGetOneUser(user?.id || 0);
             if (user.roles?.length > 0) {
                 setRoles(user.roles.map(i => i.name));
             }

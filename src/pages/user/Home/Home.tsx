@@ -8,7 +8,6 @@ import axios from 'axios';
 const Home = () => {
   const [products, setProducts] = useState([])
 
-  // const  products, setProducts ]= useProductContext();
   useEffect(() => {
     (async () => {
       const url = 'http://127.0.0.1:8000/api/client/products_details/';
@@ -18,7 +17,7 @@ const Home = () => {
             'Api_key': import.meta.env.VITE_API_KEY,
           },
         });
-        console.log(res.data.data);
+        // console.log(res.data.data);
         setProducts(res.data.data); // Sử dụng dấu || [] để đảm bảo products luôn là mảng
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -26,7 +25,6 @@ const Home = () => {
       }
     })()
   }, [setProducts]);
-  console.log(products);
 
   return (
     <div>
