@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import './ItemProducts.scss';
 import { HeartFilled, HeartOutlined, ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import { Button } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useProductContext } from '../../../../context/ProductContext';  // Import context
+import useCartStore from '../../../../hooks/redux/cart/useCartStore';
+import useToast from '../../../../hooks/useToast';
+import ApiUtils from '../../../../utils/api/api.utils';
+import './ItemProducts.scss';
 
 interface Size {
   id: number;
@@ -16,6 +18,7 @@ interface ProductDetail {
   quantity: number;
   size: Size;
   images: string[];
+  sale: number;
 }
 
 interface Product {
@@ -31,34 +34,47 @@ interface ItemProductProps {
 
 const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
   const [liked, setLiked] = useState(false);
-  const { addToCart } = useProductContext();  // Lấy hàm addToCart từ context
+  const { cartStore,setProtoCart } = useCartStore();
+  const {showError, showSuccess} = useToast();
 
   const handleClick = () => {
     setLiked(!liked);
   };
 
   // Kiểm tra và lấy chi tiết sản phẩm
-  const firstDetail = product.product_details && product.product_details.length > 0
+  const firstDetail = useMemo(() => product.product_details && product.product_details.length > 0
     ? product.product_details[0]
-    : null;
+    : null, []);
 
   if (!firstDetail) {
     return <p>No product details available</p>;
   }
 
   // Xử lý sự kiện khi nhấn nút Add to Cart
-  const handleAddToCart = () => {
-  if (firstDetail) {
-    // Kiểm tra và gửi các thông tin cần thiết để thêm vào giỏ hàng
-    addToCart({
-      product_detail_id: firstDetail.id,  // ID của chi tiết sản phẩm
-      product_id: product.id,             // ID của sản phẩm chính
-      quantity: 1,                        // Số lượng thêm vào giỏ hàng
-      price: firstDetail.price,           // Giá của sản phẩm
-      size_id: firstDetail.size.id,       // ID của kích thước nếu có
-    });
-  }
-};
+  const handleAddToCart = useCallback(async() => {
+    try {
+      const data = {
+        product_detail_id: firstDetail.id,
+        product_id: product.id,
+        quantity: 1,
+        price: firstDetail.price,
+        size_id: firstDetail.size.id,
+      }
+      const res = await apiAddtoCart(data);      
+      const newCart = [res, ...cartStore.proCarts];
+      setProtoCart(newCart); 
+      showSuccess('Thêm vào giỏ hàng thành công!');
+    } catch (error) {
+      console.log(error);
+      showError('Thêm vào giỏ hàng thất bại!');
+    }
+  }, []);
+
+
+  //Api add to cart
+  const apiAddtoCart = useCallback(async (body: any) => {
+      return await ApiUtils.post<any, any>('/api/client/online_cart', body);
+  }, []);
 
   return (
     <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>

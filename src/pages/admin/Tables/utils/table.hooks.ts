@@ -13,6 +13,7 @@ interface IState {
     total: number;
     selectedItemId?: number;
     refresh: boolean;
+    showModalAdd: boolean;
 }
 
 const initState: IState = {
@@ -22,7 +23,8 @@ const initState: IState = {
     pageSize: PAGINATE_DEFAULT.LIMIT,
     pageIndex: 1,
     total: 0,
-    refresh: false
+    refresh: false,
+    showModalAdd: false
 }
 
 export default function useTable() {
@@ -34,7 +36,7 @@ export default function useTable() {
         const fetchData = async () => {
             try {
                 const res = await apiGetTables();
-                setState(prev => ({...prev, data: res.data}))
+                setState(prev => ({ ...prev, data: res.data }))
             } catch (error) {
                 console.log(error);
                 setState(prev => ({ ...prev, loading: false, total: 0 }))
@@ -44,13 +46,28 @@ export default function useTable() {
         fetchData();
     }, [state.refresh]);
 
+    const handleRefreshPage = useCallback(() => {
+        setState(prev => ({ ...initState, refresh: !prev.refresh }))
+    }, []);
+
     const openModalTable = useCallback(async (id: number) => {
         showSideOder(true, id);
     }, []);
 
+    const handleCloseModal = useCallback(() => {
+        setState(prev => ({ ...prev, showModalAdd: false }));
+    }, [])
+
+    const handleShowModal = useCallback(() => {
+        setState(prev => ({ ...prev, showModalAdd: true }));
+    }, [])
+
     return {
         state,
         contextHolder,
-        openModalTable
+        openModalTable,
+        handleCloseModal,
+        handleShowModal,
+        handleRefreshPage
     }
 }

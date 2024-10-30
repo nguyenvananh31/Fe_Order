@@ -94,14 +94,12 @@ const refreshToken = async () => {
 
 const errorHandler = async (error: AxiosError) => {
   const resError: AxiosResponse<any> | undefined = error.response;
+  console.log('resError: ', resError);
 
   const config: any = error.config;
   
   if (resError?.status === 402) {
     try {
-      if (resError?.data?.error) {
-        throw new Error("Lỗi xảy ra!");
-      }
       const res = await refreshToken();
       if (res.access_token) {
         const auth = localStorageUtils.getObject(KeyStorage.AUTH);

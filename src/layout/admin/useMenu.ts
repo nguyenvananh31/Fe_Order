@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { menuActive, menuPath } from "../../constants/path";
-import { showSideOder } from "../../utils/event-bus/event-bus.events";
 
 
 export default function useMenu() {
@@ -17,10 +16,10 @@ export default function useMenu() {
       menu = pathParts[pathParts.length - 2] || '';
     }
 
-    if (menu != activeMenu[0] && menu && activeMenu[0]) {
-      showSideOder(false, 0);
-    }
-
+    // if (menu != activeMenu[0] && menu && activeMenu[0]) {
+    //   showSideOder(false, 0);
+    // }
+    
     if (menuPath[menu]) {
       setActiveMenu([menuActive[menu] || menu, [menuPath[menu]]]);
     } else {

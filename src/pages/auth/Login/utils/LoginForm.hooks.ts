@@ -1,5 +1,4 @@
 import { Form } from "antd";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../../hooks/redux/auth/useAuth";
 import useToast from "../../../../hooks/useToast";
@@ -11,13 +10,13 @@ export const LoginForm = () => {
   const { showError , showSuccess} = useToast();
 
   // Lấy dữ liệu từ local nếu người dùng đã từng lưu thông tin đăng nhập
-  useEffect(() => {
-    const storedEmail = localStorage.getItem("rememberedEmail");
-    // Nếu tồn tại thì set lại dữ liệu cho form
-    if (storedEmail) {
-      form.setFieldsValue({ email: storedEmail, remember: true });
-    }
-  }, [form]);
+  // useEffect(() => {
+  //   const storedEmail = localStorage.getItem("rememberedEmail");
+  //   // Nếu tồn tại thì set lại dữ liệu cho form
+  //   if (storedEmail) {
+  //     form.setFieldsValue({ email: storedEmail, remember: true });
+  //   }
+  // }, [form]);
 
   // Xử lý dữ liệu khi ấn đăng nhập
   const onFinish = async (formData: {
@@ -29,12 +28,9 @@ export const LoginForm = () => {
     try {
       const dataLogin: any = await loginService(formData);
       if (dataLogin && dataLogin !== undefined) {
-        // if (dataLogin.remember == true) {
-        //   localStorage.setItem("rememberedEmail", dataLogin.email);
-        // }
         setAuth({ ...dataLogin.user, access_token: dataLogin.access_token, refresh_token: dataLogin.refresh_token });
         showSuccess('Đăng nhập thành công!');
-        await navigate("/admin");
+        navigate("/admin");
       }
     } catch (error) {
       showError('Tài khoản hoặc mật khẩu chưa chính xác!');
