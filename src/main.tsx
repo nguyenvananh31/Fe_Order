@@ -4,8 +4,10 @@ import App from './App.tsx';
 import './configs/css/config.css';
 import './index.scss';
 
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
         <App />
     </BrowserRouter>
+
 );

@@ -1,237 +1,268 @@
-import { CloseOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
 import {
   Button,
   Card,
-  Checkbox,
-  Collapse,
-  Descriptions,
+  Modal,
   Form,
   Input,
-  message,
+  List,
+  Descriptions,
+  Checkbox,
   Popconfirm,
+  Spin,
+  Skeleton,
+  message,
 } from "antd";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import instance from "../../../../configs/Axios/AxiosConfig";
 
-const { Panel } = Collapse;
-
-const FormInforProfile = ({ profile, isEditingAddresses }: any) => {
+const FormInforProfile: React.FC = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
 
-  const onFinish = async (values: any) => {
-    try {
-      const updatedProfile = { ...profile, addresses: values.addresses };
-      console.log(updatedProfile);
+  // Lấy thông tin profile (bao gồm địa chỉ)
+  const { data, isLoading } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      return await instance.get("client/profile");
+    },
+  });
 
-      message.success("Profile and addresses updated successfully");
-    } catch (error) {
-      console.error("Error submitting addresses:", error);
-      message.error("Error submitting addresses");
-    }
-  };
+  const { mutate: createAddress, isPending: createPending } = useMutation({
+    mutationFn: async (newAddress) => {
+      return await instance.post(`client/profile/store_address`, newAddress); // Gọi API tạo mới
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      setIsModalVisible(false);
+      form.resetFields();
+      message.success("Thêm địa chỉ thành công!");
+    },
+    onError: () => {
+      message.error("Thêm địa chỉ thất bại, vui lòng thử lại.");
+    },
+  });
 
-  const handleRemoveAddress = (index: number) => {
-    const currentAddresses = form.getFieldValue("addresses");
-    currentAddresses.splice(index, 1);
-    form.setFieldsValue({ addresses: currentAddresses }); 
-  };
-  
-  const handleDefaultChange = (name: number, checked: boolean) => {
-    const currentAddresses = form.getFieldValue("addresses");
-    if (checked) {
-      currentAddresses.forEach((address: any, index: number) => {
-        address.is_default = index === name ? 1 : 0;
-      });
+  const { mutate: updateAddress, isPending: updatePending } = useMutation({
+    mutationFn: async (updatedAddress) => {
+      return await instance.put(
+        `client/profile/update_address/${editingAddress.id}`,
+        updatedAddress
+      ); // Gọi API cập nhật
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      setIsModalVisible(false);
+      form.resetFields();
+      message.success("Cập nhật địa chỉ thành công!");
+    },
+    onError: () => {
+      message.error("Cập nhật địa chỉ thất bại, vui lòng thử lại.");
+    },
+  });
+
+  const { mutate: deleteAddress, isPending } = useMutation({
+    mutationFn: async (id) => {
+      try {
+        return await instance.delete(`client/profile/destroy_address/${id}`);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      message.success("Xóa địa chỉ thành công!");
+    },
+    onError: () => {
+      message.error("Xoá địa chỉ thất bại, vui lòng thử lại.");
+    },
+  });
+
+  if (isPending || createPending || updatePending)
+    return (
+      <Spin tip="Đang tải dữ liệu...">
+        <div className="content">
+          <Skeleton active />
+        </div>
+      </Spin>
+    );
+
+  // Hiển thị modal thêm hoặc chỉnh sửa địa chỉ
+  const showModal = (address = null) => {
+    if (address) {
+      setIsEditMode(true);
+      setEditingAddress(address); // Gán địa chỉ đang chỉnh sửa
+      form.setFieldsValue(address); // Đặt giá trị form thành địa chỉ cần chỉnh sửa
     } else {
-      currentAddresses[name].is_default = 0;
+      setIsEditMode(false);
+      form.resetFields(); // Reset form khi thêm mới
     }
-    form.setFieldsValue({ addresses: currentAddresses });
+    setIsModalVisible(true);
+  };
+
+  // Đóng modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
+
+  // Xử lý submit form
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (isEditMode) {
+          console.log(values);
+          
+          // updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+        } else {
+          console.log(values);
+          
+          // createAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+        }
+      })
+      .catch((info) => {
+        console.error("Validate Failed:", info);
+      });
   };
 
   return (
-    <div className="col-span-12 lg:col-span-8 2xl:col-span-9">
+    <Spin spinning={isLoading}>
       <div>
         <Card size="small" title="Thông Tin Khách Hàng" className="mb-4">
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Tên">
-              {profile?.customer?.name || "Chưa có tên"}
+              {data?.data.data.customer?.name || "Chưa có tên"}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
-              {profile?.customer?.email || "Chưa có email"}
+              {data?.data.data.customer?.email || "Chưa có email"}
             </Descriptions.Item>
             <Descriptions.Item label="Số Điện Thoại">
-              {profile?.customer?.phone_number || "Chưa có số điện thoại"}
+              {data?.data.data?.customer?.phone_number || "Chưa có số điện thoại"}
             </Descriptions.Item>
             <Descriptions.Item label="Điểm Thưởng">
-              {profile?.customer?.diemthuong || 0}
+              {data?.data.data?.customer?.diemthuong || 0}
             </Descriptions.Item>
           </Descriptions>
         </Card>
-      </div>
 
-      <div className="border-t rounded-[6px] text-gray-800 text-sm leading-[21px] p-5 bg-white">
-        {!isEditingAddresses ? (
-          <Collapse accordion>
-            {profile?.addresses?.map((address: any, index: number) => (
-              <Panel
-                header={`Địa chỉ ${index + 1}`}
-                key={address.id}
-                extra={
-                  <Popconfirm
-                    title="Bạn có chắc muốn xóa địa chỉ này không?"
-                    onConfirm={() => handleRemoveAddress(index)}
-                  >
-                    <CloseOutlined onClick={(e) => e.stopPropagation()} />
-                  </Popconfirm>
-                }
+        <Card
+          title="Địa chỉ của tôi"
+          extra={<Button onClick={() => showModal()}>Thêm địa chỉ</Button>}
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={data?.data.data?.addresses || []}
+            renderItem={(address) => (
+              <List.Item
+                actions={[
+                  <a key="edit" onClick={() => showModal(address)}>
+                    Chỉnh sửa
+                  </a>,
+                  address.is_default ? (
+                    <a
+                      key="delete"
+                      className="text-red-500"
+                      onClick={() => message.warning("Không thể xóa địa chỉ mặc định.")}
+                    >
+                      Xóa Địa Chỉ
+                    </a>
+                  ) : (
+                    <Popconfirm
+                      title="Bạn có chắc chắn muốn xóa địa chỉ này?"
+                      okText="Yes"
+                      cancelText="No"
+                      onConfirm={() => {
+                        deleteAddress(address.id); // Gọi mutation để xoá địa chỉ
+                      }}
+                    >
+                      <a key="delete" className="text-red-500">
+                        Xóa Địa Chỉ
+                      </a>
+                    </Popconfirm>
+                  ),
+                ]}
               >
-                <p>
-                  <strong>Địa Chỉ:</strong> {address.address}
-                </p>
-                <p>
-                  <strong>Thành Phố:</strong> {address.city}
-                </p>
-                <p>
-                  <strong>Khu Vực:</strong> {address.state}
-                </p>
-                <p>
-                  <strong>Mã Bưu Chính:</strong> {address.postal_code}
-                </p>
-                <p>
-                  <strong>Quốc Gia:</strong> {address.country}
-                </p>
-                <p>
-                  <strong>Mặc Định:</strong>{" "}
-                  {address.is_default ? "Có" : "Không"}
-                </p>
-              </Panel>
-            ))}
-          </Collapse>
-        ) : (
-          <Form form={form} onFinish={onFinish}>
-            <Form.List name="addresses">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, fieldKey, ...restField }) => (
-                    <Collapse key={key} accordion>
-                      <Panel header={`Địa chỉ ${name + 1}`} key={key}>
-                        {/* Trường địa chỉ */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "address"]}
-                          fieldKey={[fieldKey, "address"]}
-                          label="Địa Chỉ"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập địa chỉ",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Nhập địa chỉ" />
-                        </Form.Item>
+                <List.Item.Meta
+                  title={`${address.city}, ${address.state}, ${address.commune}`}
+                  description={`${address.address}, ${address.postal_code}, ${address.country}`}
+                />
+              </List.Item>
+            )}
+          />
+        </Card>
 
-                        {/* Trường thành phố */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "city"]}
-                          fieldKey={[fieldKey, "city"]}
-                          label="Thành Phố"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập thành phố",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Nhập thành phố" />
-                        </Form.Item>
+        <Modal
+          title={isEditMode ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới"}
+          visible={isModalVisible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="fullname"
+              label="Họ và Tên"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập họ và tên" />
+            </Form.Item>
+            <Form.Item
+              name="phone"
+              label="Số điện thoại"
+              rules={[{ required: true, message: "Số điện thoại không được để trống" }]}
+            >
+              <Input placeholder="Nhập số điện thoại" />
+            </Form.Item>
+            <Form.Item
+              name="address"
+              label="Địa chỉ"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập địa chỉ" />
+            </Form.Item>
+            <Form.Item name="city" label="Thành phố" rules={[{ required: true }]}>
+              <Input placeholder="Nhập thành phố" />
+            </Form.Item>
 
-                        {/* Trường khu vực */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "state"]}
-                          fieldKey={[fieldKey, "state"]}
-                          label="Khu Vực"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập khu vực",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Nhập khu vực" />
-                        </Form.Item>
+            <Form.Item
+              name="state"
+              label="Tỉnh/Thành phố"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập tỉnh/thành phố" />
+            </Form.Item>
 
-                        {/* Trường mã bưu chính */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "postal_code"]}
-                          fieldKey={[fieldKey, "postal_code"]}
-                          label="Mã Bưu Chính"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập mã bưu chính",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Nhập mã bưu chính" />
-                        </Form.Item>
-
-                        {/* Trường quốc gia */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "country"]}
-                          fieldKey={[fieldKey, "country"]}
-                          label="Quốc Gia"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập quốc gia",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Nhập quốc gia" />
-                        </Form.Item>
-
-                        {/* Trường địa chỉ mặc định */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, "is_default"]}
-                          fieldKey={[fieldKey, "is_default"]}
-                          valuePropName="checked"
-                          label="Địa Chỉ Mặc Định"
-                        >
-                          <Checkbox
-                            onChange={(e) =>
-                              handleDefaultChange(name, e.target.checked)
-                            }
-                          ></Checkbox>
-                        </Form.Item>
-
-                        {/* Nút xóa địa chỉ */}
-                        <Button type="dashed" onClick={() => remove(name)} danger>
-                          Xóa Địa Chỉ
-                        </Button>
-                      </Panel>
-                    </Collapse>
-                  ))}
-
-                  {/* Nút thêm địa chỉ mới */}
-                  <Button type="dashed" onClick={() => add()} block>
-                    + Thêm Địa Chỉ
-                  </Button>
-                </>
-              )}
-            </Form.List>
-            <Form.Item className="mt-3">
-              <Button type="primary" htmlType="submit">
-                Lưu Địa Chỉ
-              </Button>
+            <Form.Item
+              name="commune"
+              label="Phường/Xã"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập phường/xã" />
+            </Form.Item>
+            <Form.Item
+              name="postal_code"
+              label="Mã bưu điện"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập mã bưu điện" />
+            </Form.Item>
+            <Form.Item
+              name="country"
+              label="Quốc gia"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Nhập quốc gia" />
+            </Form.Item>
+            <Form.Item name="is_default" valuePropName="checked">
+              <Checkbox>Đặt làm mặc định</Checkbox>
             </Form.Item>
           </Form>
-        )}
+        </Modal>
       </div>
-    </div>
+    </Spin>
   );
 };
 
