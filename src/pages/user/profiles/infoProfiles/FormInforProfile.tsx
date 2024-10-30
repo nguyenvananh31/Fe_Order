@@ -115,13 +115,9 @@ const FormInforProfile: React.FC = () => {
       .validateFields()
       .then((values) => {
         if (isEditMode) {
-          console.log(values);
-          
-          // updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+          updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
         } else {
-          console.log(values);
-          
-          // createAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+          createAddress({ ...values, is_default: values.is_default ? 1 : 0 });
         }
       })
       .catch((info) => {
@@ -200,12 +196,14 @@ const FormInforProfile: React.FC = () => {
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
+          width="90%" // Điều chỉnh kích thước modal
+          bodyStyle={{ padding: '16px' }} // Thêm padding cho modal
         >
           <Form form={form} layout="vertical">
             <Form.Item
               name="fullname"
               label="Họ và Tên"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Họ và tên không được để trống" }]}
             >
               <Input placeholder="Nhập họ và tên" />
             </Form.Item>
@@ -219,7 +217,7 @@ const FormInforProfile: React.FC = () => {
             <Form.Item
               name="address"
               label="Địa chỉ"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Địa chỉ không được để trống" }]}
             >
               <Input placeholder="Nhập địa chỉ" />
             </Form.Item>
@@ -230,7 +228,7 @@ const FormInforProfile: React.FC = () => {
             <Form.Item
               name="state"
               label="Tỉnh/Thành phố"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Tỉnh/Thành phố không được để trống" }]}
             >
               <Input placeholder="Nhập tỉnh/thành phố" />
             </Form.Item>
@@ -238,26 +236,23 @@ const FormInforProfile: React.FC = () => {
             <Form.Item
               name="commune"
               label="Phường/Xã"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Phường/Xã không được để trống" }]}
             >
               <Input placeholder="Nhập phường/xã" />
             </Form.Item>
             <Form.Item
               name="postal_code"
-              label="Mã bưu điện"
-              rules={[{ required: true }]}
+              label="Mã bưu chính"
+              rules={[{ required: true, message: "Mã bưu chính không được để trống" }]}
             >
-              <Input placeholder="Nhập mã bưu điện" />
+              <Input placeholder="Nhập mã bưu chính" />
             </Form.Item>
-            <Form.Item
-              name="country"
-              label="Quốc gia"
-              rules={[{ required: true }]}
-            >
+            <Form.Item name="country" label="Quốc gia" rules={[{ required: true }]}>
               <Input placeholder="Nhập quốc gia" />
             </Form.Item>
+
             <Form.Item name="is_default" valuePropName="checked">
-              <Checkbox>Đặt làm mặc định</Checkbox>
+              <Checkbox>Đặt là địa chỉ mặc định</Checkbox>
             </Form.Item>
           </Form>
         </Modal>
