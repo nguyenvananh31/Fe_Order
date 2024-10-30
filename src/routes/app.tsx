@@ -10,8 +10,8 @@ import DetailOrderTable from "../pages/admin/Tables/DetailOrderTable";
 import ListVoucher from "../pages/admin/Vouchers";
 
 //Auth
-const LoginScreen = lazy(() => import('../pages/admin/Login/Login'));
-const RegisterScreen = lazy(() => import('../pages/admin/Register/Register'));
+const LoginScreen = lazy(() => import('../pages/auth/Login/Login'));
+const RegisterScreen = lazy(() => import('../pages/auth/Register/Register'));
 
 //Quản lý tài khoản
 const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));

@@ -1,6 +1,7 @@
 import { Breadcrumb, Card, Col, Row } from "antd";
 import useTable from "./utils/table.hooks";
 import { PlusOutlined } from "@ant-design/icons";
+import TableAddModal from "./components/ModalAddTable";
 
 export default function TablePage() {
 
@@ -51,17 +52,16 @@ export default function TablePage() {
                 }
                 <Col>
                     <Card
+                    
                         className="border group/item border-dashed border-ghost cursor-pointer hover:border-purple"
-                        // onClick={() => hooks.openModalTable(12)}
                         styles={{
                             body: {
                                 padding: 0
                             }
                         }}
                     >
-                        <div className="px-2 py-2 w-[148px] h-[120px] flex flex-col items-center justify-center transition">
+                        <div onClick={hooks.handleShowModal} className="px-2 py-2 w-[148px] h-[120px] flex flex-col items-center justify-center transition">
                             <button style={{ border: 0, background: 'none' }} type="button">
-                                {/* {loading ? <LoadingOutlined /> : <PlusOutlined />} */}
                                 <PlusOutlined className="group-hover/item:text-purple" />
                                 <div className="mt-2 group-hover/item:text-purple">Thêm bàn</div>
                             </button>
@@ -70,5 +70,8 @@ export default function TablePage() {
                 </Col>
             </Row>
         </div>
+        {
+            state.showModalAdd && <TableAddModal onRefresh={hooks.handleRefreshPage} onClose={hooks.handleCloseModal} />
+        }
     </>
 }

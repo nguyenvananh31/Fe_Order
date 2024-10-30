@@ -19,6 +19,13 @@ const Order = () => {
 
   const listPro = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
   const [selectedItems, setSelectedItems] = useState([]);
+
+  useEffect(() => {
+  
+  }, []);
+
+  const apiGetPro
+
   useEffect(() => {
     setProducts(listPro)
   }, [listPro]);
@@ -403,7 +410,6 @@ const Order = () => {
                           </td>
                         </tr>
                       ))}
-
                     </tbody>
                   </table>
                   <div className="container flex justify-center mt-2">

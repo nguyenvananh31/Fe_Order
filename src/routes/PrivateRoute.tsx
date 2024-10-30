@@ -10,7 +10,7 @@ interface IProps {
     children: ReactNode;
 }
 
-export default function ProtectedRoute({ children }: IProps) {
+export default function PrivateRoute({ children }: IProps) {
 
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function ProtectedRoute({ children }: IProps) {
         } catch {
             console.log('không có quyền');
             setLoading(false);
-            navigate(RoutePath.HOME);
+            navigate('/' + RoutePath.HOME);
         }
     }
 

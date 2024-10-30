@@ -14,3 +14,7 @@ export const apiGetTableDetail = async (id: number) => {
     const res = await ApiUtils.fetch<number, any>(`${apiName.tableOder}/${id}`);
     return res;
 }
+
+export const apiAddTable = async (body: any) => {
+    return await ApiUtils.post<any, any>(apiName.table, body);
+}

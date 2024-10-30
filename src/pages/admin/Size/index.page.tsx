@@ -166,6 +166,7 @@ export default function SizePage() {
                         },
                     }}
                     onChange={hooks.handleTableChange}
+                    scroll={{x: 'max-content'}}
                 />
             </div>
 

@@ -392,6 +392,7 @@ const ListVoucher: React.FC = () => {
                             },
                         }}
                         onChange={handleTableChange}
+                        scroll={{x: 'max-content'}}
                     />
                 </div>
 
