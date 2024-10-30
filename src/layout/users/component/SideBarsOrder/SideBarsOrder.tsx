@@ -1,9 +1,10 @@
 import { Menu } from 'antd';
 import { AppstoreOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './SideBarsOrder.scss'
 import axios from 'axios';
+import ApiUtils from '../../../../utils/api/api.utils';
 const { SubMenu } = Menu;
 interface ISubcategory {
   id: number;
@@ -21,23 +22,20 @@ const SideBarsOrder: React.FC = () => {
   const [cates, setCates] = useState<ICategory[]>([]);
   // const [subCates, setSubCates] = useState([]);
 
-  const url = 'http://127.0.0.1:8000/api/client/category/';
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
-        });
-        // console.log(data.data);
-        // setSubCates(data.data.subcategory)
+        const data = await apiGetCategory();
         setCates(data.data)
       } catch (error) {
         console.log(error);
       }
     })()
 
+  }, []);
+
+  const apiGetCategory = useCallback(async () => {
+    return await ApiUtils.fetch<any, any>('/api/client/category');
   }, []);
 
   return (
