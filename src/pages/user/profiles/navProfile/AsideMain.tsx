@@ -8,9 +8,6 @@ const AsideMain = () => {
   type MenuItem = Required<MenuProps>['items'][number];
   const { Sider } = Layout;
 
-
-
-
   const items: MenuItem[] = [
     {
       key: '1',
