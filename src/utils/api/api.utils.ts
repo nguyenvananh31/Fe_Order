@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
   ResponseType
 } from "axios";
-import { useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/redux/auth/useAuth";
 import localStorageUtils, { KeyStorage } from "../local-storage.utils";
 import { ResponseCode } from "./api.types";
 
@@ -87,19 +87,21 @@ const refreshToken = async () => {
   const res = ApiUtils.post<any, any>(
     "/api/refresh",
     { refresh_token },
-    { isAuth: false }
+    { isAuth: false, isRefresh: true }
   );
   return res;
 };
 
 const errorHandler = async (error: AxiosError) => {
   const resError: AxiosResponse<any> | undefined = error.response;
-  console.log('resError: ', resError);
 
   const config: any = error.config;
-  
+  console.log('resError: ', config.headers?.isRefresh);
   if (resError?.status === 402) {
     try {
+      if (config.headers?.isRefresh == 'true') {
+        throw new Error('');
+      }
       const res = await refreshToken();
       if (res.access_token) {
         const auth = localStorageUtils.getObject(KeyStorage.AUTH);
@@ -112,8 +114,8 @@ const errorHandler = async (error: AxiosError) => {
       }
     } catch (error) {
       console.log(error);
-      const navigate = useNavigate();
-      navigate("/login");
+      const { clearStore } = useAuth();
+      clearStore();
     }
   }
 
@@ -130,8 +132,7 @@ const errorHandler = async (error: AxiosError) => {
 const successHandler = (response: AxiosResponse) => {
   if (__DEV__) {
     console.log(
-      `SUCESS ${response.config.method?.toUpperCase()} - ${
-        response.config.url
+      `SUCESS ${response.config.method?.toUpperCase()} - ${response.config.url
       }`,
       response.data
     );

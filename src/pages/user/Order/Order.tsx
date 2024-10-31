@@ -1,71 +1,113 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { CloseCircleFilled, CreditCardOutlined, CustomerServiceOutlined, DownCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Drawer, Form, Image, Input, Tabs } from 'antd'
-import TabPane from 'antd/es/tabs/TabPane'
-import { useCallback, useRef, useState } from 'react';
-import './asset/Order.scss'
+import { CloseCircleFilled, CreditCardOutlined, CustomerServiceOutlined, DownCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Drawer, Form, Image, Tabs } from 'antd';
+import TabPane from 'antd/es/tabs/TabPane';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { fallBackImg, getImageUrl } from '../../../constants/common';
+import './asset/Order.scss';
 import ProductCates from './ProductCates';
-import { useEffect } from 'react';
+import { apiGetProForOrder } from './utils/order.service';
+import { convertPriceVND } from '../../../utils/common';
+import { useNavigate, useParams } from 'react-router-dom';
+import useToast from '../../../hooks/useToast';
+import { RoutePath } from '../../../constants/path';
+
+interface IState {
+  loading: boolean;
+  loadingBtn: boolean;
+  refresh: boolean;
+  products: any[];
+}
+
+const initState: IState = {
+  loading: false,
+  loadingBtn: false,
+  refresh: false,
+  products: [],
+}
+
 const Order = () => {
+  const [state, setState] = useState<IState>(initState);
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
-  const [activeVariant, setActiveVariant] = useState<any>('1');
-  const [quantity, setQuantity] = useState<number>(1);
-  const [products, setProducts] = useState<[]>([]);
-  const [isDetailVisible, setIsDetailVisible] = useState(false);
-  // const [visibleDetails, setVisibleDetails] = useState<{ [key: number]: boolean }>({});
-
-  const listPro = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
   const [selectedItems, setSelectedItems] = useState([]);
+  const { id: billId } = useParams();
+  const toast = useToast();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-  
+  const getInnitOrder = useCallback(() => {
+    if (!billId) {
+      toast.showError('Vui lòng quét mã bàn!');
+      navigate(RoutePath.HOME);
+      return;
+    }
   }, []);
 
-  const apiGetPro
+  useEffect(() => {
+    getInnitOrder();
+  }, []);
 
   useEffect(() => {
-    setProducts(listPro)
-  }, [listPro]);
+    const fetchData = async () => {
+      try {
+        setState(prev => ({ ...prev, loading: true }));
+        const res = await apiGetProForOrder();
+        let items = [];
+        items = res.data.map((i: any) => {
+          if (i.product_details.length == 0) {
+            return [];
+          }
+          return i.product_details.map((x: any) => ({ ...x, image: x.images.length > 0 ? x.images[0].name : '', name: i.name }));
+        })
 
-  const savedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
-  useEffect(() => {
-    setSelectedItems(savedItems);
-  }, [savedItems]);
+        setState(prev => ({ ...prev, loading: false, products: items[0] }));
+      } catch (error) {
+        console.log(error);
+        setState(prev => ({ ...prev, loading: false }));
+      }
+    }
+    fetchData();
+  }, [state.refresh]);
+
+  // useEffect(() => {
+  //   setProducts(listPro)
+  // }, [listPro]);
+
+  // const savedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
+  // useEffect(() => {
+  //   setSelectedItems(savedItems);
+  // }, [savedItems]);
 
   // Monitor changes in localStorage and update the state
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const updatedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
-      setSelectedItems(updatedItems);
-    };
+  // useEffect(() => {
+  //   const handleStorageChange = () => {
+  //     const updatedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
+  //     setSelectedItems(updatedItems);
+  //   };
 
-    window.addEventListener('storage', handleStorageChange);
+  //   window.addEventListener('storage', handleStorageChange);
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('storage', handleStorageChange);
+  //   };
+  // }, []);
 
   // Function to handle removing item or updating quantity
   const [updatedItem, setUpdatedItem] = useState<[]>([]);
 
-  const handleRemoveItem = (id:number) => {
-    const existingItem = selectedItems.find((product) => product.id === id);
+  const handleRemoveItem = (id: number) => {
+    const existingItem: any = selectedItems.find((product: any) => product.id === id);
 
     if (existingItem) {
-      let updatedItems;
+      let updatedItems: any;
       if (Number(existingItem.quantity) > 1) {
         // If item has quantity > 1, decrement quantity
-        updatedItems = selectedItems.map((product) =>
+        updatedItems = selectedItems.map((product: any) =>
           product.id === id ? { ...product, quantity: product.quantity - 1 } : product
         );
-        setUpdatedItem(updatedItems)
+        setUpdatedItem(updatedItems);
       } else {
         // If quantity is 1, remove the item entirely
-        updatedItems = selectedItems.filter((product) => product.id !== id);
+        updatedItems = selectedItems.filter((product: any) => product.id !== id);
         setUpdatedItem(updatedItems)
       }
 
@@ -81,9 +123,7 @@ const Order = () => {
   //     [productId]: !prev[productId], // Toggle trạng thái ẩn/hiện cho sản phẩm có ID là productId
   //   }));
   // };
-  const toggleDetailVisibility = () => {
-    setIsDetailVisible(prev => !prev);
-  };
+
   const showDrawer = () => {
     setVisible(true);
   };
@@ -93,19 +133,6 @@ const Order = () => {
   };
   const handleTabChange = (key: string) => {
     setActiveTab(key);
-  };
-  const handleVariantChange = (key: any) => {
-    setActiveVariant(key);
-  };
-
-  const onIncrease = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
-  };
-
-  const onDecrease = () => {
-    if (quantity > 1) {
-      setQuantity(prevQuantity => prevQuantity - 1);
-    }
   };
 
   const onFinish = (values: any) => {
@@ -122,6 +149,14 @@ const Order = () => {
       });
     }
   }, []);
+
+  const productsSale: any[] = useMemo(() => {
+    if (state.products.length == 0) {
+      return [];
+    }
+    return state.products.filter(i => i.sale != 0);
+  }, [state.products])
+
   return (
     <>
       <div className='container max-w-[1140px] h-screen overflow-y-auto px-[16px] lg:px-[20px] mx-auto gap-[24px] py-6'>
@@ -129,209 +164,48 @@ const Order = () => {
         <div className="list-product">
           <h2 className='text-white w-full text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
           <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
+            {
+              state.products.map(i => (
+                <div key={i.id} className="h-[181px] box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
+                  <div className='w-[114px] h-[114px]'>
+                    <Image
+                      className='rounded-lg cursor-pointer h-full w-full object-cover object-center'
+                      src={i.image ? getImageUrl(i.image) : fallBackImg}
+                    />
+                  </div>
+                  <h3 className=' text-lg  text-mainColor2 text-center font-font1 line-clamp-1'>{i?.name || ''} - {i?.size?.name || ''} </h3>
+                  <button className='w-full  '>
+                    <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
+                  </button>
+                </div>
+              ))
+            }
           </div>
           <h2 className='text-white text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>SUPPER SLAE</h2>
           <div className=" w-full box-list-item group overflow-y-auto h-[50vh] p-2">
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                <span className='flex gap-2 items-center'>
-                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                  <del className='text-textColor2 text-md font-font1'>$2000</del>
-                </span>
-                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
-                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                </button>
-              </div>
-            </div>
-            {isDetailVisible && (
-              <div className=" w-full box-order-detail p-3 border rounded-md mt-1">
-                <Form
-                  layout="vertical"
-                  onFinish={onFinish}
-                  initialValues={{ quantity: quantity }}
-                >
-                  {/* Input Text Field */}
-                  <Form.Item
-                    name="description"
-                    className=''
-                  >
-                    <Input className="text-type-2 border border-borderColor1 rounded-md flex items-center justify-between px-4 py-3 hover:border-mainColor2" placeholder="Enter description for staff" />
-                  </Form.Item>
-
-                  {/* Input Number Field */}
-                  <Form.Item
-                    name="quantity"
-                    className='w-full flex '
-                    rules={[{ required: true, message: 'Please input quantity!' }]}
-                  >
-                    <div className="w-full flex items-center justify-between gap-2 mt-[12px]">
-                      <div className="flex items-center space-x-2">
-                        <Button onClick={onDecrease} type="default" className=" px-4">
-                          -
-                        </Button>
-                        <Input
-                          className="w-12 text-center mx-2 text-type-3 border"
-                          value={quantity}
-                          readOnly
-                          onChange={(value) => setQuantity(value || 1)}
-                        />
-                        <Button onClick={onIncrease} type="default" className="px-4">
-                          +
-                        </Button>
-                      </div>
-                      <Button type="primary" htmlType="submit" className="w-full btn-type-2">
-                        <span>Add</span>
-                      </Button>
-                    </div>
-                  </Form.Item>
-
-                </Form>
-              </div>
-            )}
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                <span className='flex gap-2 items-center'>
-                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                  <del className='text-textColor2 text-md font-font1'>$2000</del>
-                </span>
-                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
-                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                </button>
-              </div>
-            </div>
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                <span className='flex gap-2 items-center'>
-                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                  <del className='text-textColor2 text-md font-font1'>$2000</del>
-                </span>
-                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
-                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                </button>
-              </div>
-            </div>
+            {
+              productsSale?.map((i: any) => (
+                <div key={i.id} className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
+                  <div className="box-image">
+                    <img className='w-[100px] h-[100px] object-contain' src={i.image ? getImageUrl(i.image) : fallBackImg} alt="" />
+                  </div>
+                  <div className="box-content pt-2">
+                    <h3 className='text-textColor1 text-xl font-font1'>{i?.name || ''} - {i?.size?.name || ''}</h3>
+                    <span className='flex gap-2 items-center'>
+                      <span className='text-mainColor1 text-lg font-font1'>{convertPriceVND(+i.sale)}</span>
+                      <del className='text-textColor2 text-md font-font1'>{convertPriceVND(+i.price)}</del>
+                    </span>
+                    {/* <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p> */}
+                  </div>
+                  <div className="box-action">
+                    <button>
+                      <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
+                    </button>
+                  </div>
+                </div>
+              ))
+            }
           </div>
-
         </div>
         <Drawer
           placement="right"
@@ -375,7 +249,7 @@ const Order = () => {
                   <h2 className='text-white text-3xl font-font1 mt-6 p-2 bg-mainColor2 text-center font-bold tracking-wider'>List Order</h2>
                   <table className="w-full mt-4 border-collapse bg-bgColor1">
                     <tbody>
-                      {products?.map((product) => (
+                      {state.products?.map((product) => (
                         <tr className='text-center'>
                           <td className="border">
                             <div className="box w-14 h-14 mx-auto my-3">
@@ -394,7 +268,6 @@ const Order = () => {
                             <Form
                               layout="vertical"
                               onFinish={onFinish}
-                              initialValues={{ quantity: quantity }}
                               className='mx-auto'
                             >
                               {/* Input Number Field */}

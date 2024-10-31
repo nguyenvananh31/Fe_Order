@@ -24,11 +24,9 @@ import Order from "../pages/user/Order/Order";
 import ProductCates from "../pages/user/Order/ProductCates";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
-import ProtectedRoute from "./PrivateRoute";
-import ProductCates from "../pages/user/Order/ProductCates";
-import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 import PrivateRoute from "./PrivateRoute";
 
 const Router = () => {
@@ -77,10 +75,6 @@ const Router = () => {
               <Route path={route.path} element={route.element} key={index} />
             ))
           }
-        >
-          {privateProtectedFlattenRoutes.map((route, index) => (
-            <Route path={route.path} element={route.element} key={index} />
-          ))}
         </Route>
       </Routes>
     </>

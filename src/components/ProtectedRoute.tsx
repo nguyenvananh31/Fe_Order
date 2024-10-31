@@ -31,7 +31,6 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
         } catch {
             console.log('không có quyền');
             setLoading(false);
-            // clearStore();
             navigate(RoutePath.HOME);
         }
     };
@@ -39,8 +38,8 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
     if (loading) {
         return <SpinnerLoader />
     }
-
-    if (user == null || allowedRoles?.filter(i => roles.includes(i)).length == 0) {
+    
+    if (user == null || allowedRoles.filter(i => roles.some(x => x == i)).length == 0) {
         return (
             <div className="bg-primary drop-shadow-primary rounded-primary h-full flex items-center justify-center flex-col gap-3">
                 <StopOutlined className="text-5xl" />
