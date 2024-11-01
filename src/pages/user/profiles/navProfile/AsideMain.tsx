@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
@@ -8,26 +8,29 @@ const AsideMain = () => {
   type MenuItem = Required<MenuProps>['items'][number];
   const { Sider } = Layout;
 
-  function getItem(
-    label: React.ReactNode,
-    key: React.Key,
-    icon?: React.ReactNode,
-    children?: MenuItem[],
-  ): MenuItem {
-    return {
-      key,
-      icon,
-      children,
-      label,
-    } as MenuItem;
-  }
+
+
 
   const items: MenuItem[] = [
-
-    getItem(<Link to="/profile">profile</Link> ,'1', <UserOutlined />), 
+    {
+      key: '1',
+      label: <Link to ="/profile">Thông tin tài khoản</Link>,
+      icon: <UserOutlined />,
+    },
     {
       key: '2',
       label: <Link to ="/profile/bill">Bill</Link>,
+      icon: <BellOutlined />,
+    },
+
+    {
+      key: '3',
+      label: <Link to ="/profile/editProfile">Đổi mật khẩu</Link>,
+      icon: <BellOutlined />,
+    },
+    {
+      key: '4',
+      label: <div className='cursor-pointer'>Đăng xuất</div>,
 
       icon: <BellOutlined />,
     },

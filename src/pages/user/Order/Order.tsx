@@ -19,9 +19,12 @@ const Order = () => {
 
   const listPro = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
   const [selectedItems, setSelectedItems] = useState([]);
+
   useEffect(() => {
-    setProducts(listPro)
-  }, [listPro]);
+
+  }, []);
+
+
 
   const savedItems = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
   useEffect(() => {
@@ -45,7 +48,7 @@ const Order = () => {
   // Function to handle removing item or updating quantity
   const [updatedItem, setUpdatedItem] = useState<[]>([]);
 
-  const handleRemoveItem = (id:number) => {
+  const handleRemoveItem = (id: number) => {
     const existingItem = selectedItems.find((product) => product.id === id);
 
     if (existingItem) {
@@ -121,209 +124,94 @@ const Order = () => {
         <ProductCates />
         <div className="list-product">
           <h2 className='text-white w-full text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
-          <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-            <div className="box-related-item border p-2 w-full rounded-md shadow-lg flex flex-wrap justify-center">
-              <Image
-                className='rounded-lg cursor-pointer w-full h-full object-cover'
-                src={"https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"}
-                preview={{ src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg" }} // Tính năng preview ảnh chi tiết
-              />
-              <h3 className=' text-lg  text-mainColor2 text-center font-font1'>Pizza ádasdsa</h3>
-              <button className='w-full  '>
-                <PlusCircleOutlined className='text-lg text-mainColor1 font-bold hover:text-mainColor3 ' />
-              </button>
-            </div>
-          </div>
-          <h2 className='text-white text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>SUPPER SLAE</h2>
-          <div className=" w-full box-list-item group overflow-y-auto h-[50vh] p-2">
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
+          <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2 overflow-y-auto h-[50vh] p-2">
+            {[...Array(9)].map((_, index) => (
+              <div
+                key={index}
+                className="box-related-item border p-3 w-full rounded-md shadow-lg flex flex-wrap justify-center hover:shadow-xl transition-all duration-300 transform hover:translate-y-[-5px] hover:opacity-100 opacity-90"
+              >
+                <Image
+                  className="rounded-lg cursor-pointer w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  src="https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg"
+                  preview={{
+                    src: "https://modinatheme.com/html/foodking-html/assets/img/header/01.jpg",
+                  }}
+                />
+                <h3 className="text-lg text-mainColor2 text-center font-font1 mt-2">
+                  Pizza ádasdsa
+                </h3>
                 <span className='flex gap-2 items-center'>
                   <span className='text-mainColor1 text-lg font-font1'>$999</span>
                   <del className='text-textColor2 text-md font-font1'>$2000</del>
                 </span>
                 <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
+                <button className="w-full mt-1 flex justify-center">
                   <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
                 </button>
               </div>
-            </div>
-            {isDetailVisible && (
-              <div className=" w-full box-order-detail p-3 border rounded-md mt-1">
-                <Form
-                  layout="vertical"
-                  onFinish={onFinish}
-                  initialValues={{ quantity: quantity }}
-                >
-                  {/* Input Text Field */}
-                  <Form.Item
-                    name="description"
-                    className=''
-                  >
-                    <Input className="text-type-2 border border-borderColor1 rounded-md flex items-center justify-between px-4 py-3 hover:border-mainColor2" placeholder="Enter description for staff" />
-                  </Form.Item>
+            ))}
+          </div>
 
-                  {/* Input Number Field */}
-                  <Form.Item
-                    name="quantity"
-                    className='w-full flex '
-                    rules={[{ required: true, message: 'Please input quantity!' }]}
-                  >
-                    <div className="w-full flex items-center justify-between gap-2 mt-[12px]">
-                      <div className="flex items-center space-x-2">
-                        <Button onClick={onDecrease} type="default" className=" px-4">
-                          -
-                        </Button>
-                        <Input
-                          className="w-12 text-center mx-2 text-type-3 border"
-                          value={quantity}
-                          readOnly
-                          onChange={(value) => setQuantity(value || 1)}
-                        />
-                        <Button onClick={onIncrease} type="default" className="px-4">
-                          +
-                        </Button>
-                      </div>
-                      <Button type="primary" htmlType="submit" className="w-full btn-type-2">
-                        <span>Add</span>
-                      </Button>
+          <h2 className='text-white text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>SUPPER SLAE</h2>
+          <div className="w-full box-list-item group grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 overflow-y-auto h-[50vh]">
+            {[...Array(9)].map((_, index) => (
+              <div
+                key={index}
+                className="box-order-item flex flex-col items-center p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-white transform hover:scale-105"
+                style={{ width: '100%', height: 'auto', aspectRatio: '1' }}
+              >
+                <div className="box-image flex justify-center mb-3">
+                  <img
+                    className="w-[120px] h-[120px] object-contain rounded-md" // Increased size
+                    src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png"
+                    alt="Pizza Ronaldo"
+                  />
+                </div>
+                <div className="box-content text-center">
+                  <h3 className="text-gray-800 text-lg font-semibold mb-1">Pizza Ronaldo</h3>
+                  <div className="flex justify-center items-center gap-2">
+                    <span className="text-mainColor1 text-lg font-bold">$999</span>
+                    <del className="text-gray-400 text-md">$2000</del>
+                  </div>
+                  <p className="text-gray-500 text-sm mt-1">Special ingredients</p>
+                </div>
+                <div className="box-action mt-3">
+                  <button onClick={toggleDetailVisibility}>
+                    <PlusCircleOutlined className="text-2xl text-mainColor1 font-bold hover:text-mainColor2" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {isDetailVisible && (
+              <div className="w-full box-order-detail p-4 border border-gray-300 rounded-lg mt-3 col-span-full bg-white shadow-md">
+                <Form layout="vertical" onFinish={onFinish} initialValues={{ quantity }}>
+                  <Form.Item name="description">
+                    <Input
+                      className="text-type-2 border border-gray-300 rounded-md px-4 py-3 focus:border-mainColor2"
+                      placeholder="Enter description for staff"
+                    />
+                  </Form.Item>
+                  <Form.Item name="quantity" rules={[{ required: true, message: 'Please input quantity!' }]}>
+                    <div className="flex items-center gap-3 mt-2">
+                      <Button onClick={onDecrease} type="default" className="px-3">-</Button>
+                      <Input
+                        className="w-12 text-center border border-gray-300"
+                        value={quantity}
+                        readOnly
+                        onChange={(value) => setQuantity(value || 1)}
+                      />
+                      <Button onClick={onIncrease} type="default" className="px-3">+</Button>
+                      <Button type="primary" htmlType="submit" className="w-full">Add</Button>
                     </div>
                   </Form.Item>
-
                 </Form>
               </div>
             )}
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                <span className='flex gap-2 items-center'>
-                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                  <del className='text-textColor2 text-md font-font1'>$2000</del>
-                </span>
-                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
-                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                </button>
-              </div>
-            </div>
-            <div className="box-order-item flex items-center justify-evenly gap-3 p-2 border rounded-md shadow-sm mt-[16px]">
-              <div className="box-image">
-                <img className='w-[100px] h-[100px] object-contain' src="https://www.vrihiskydeck.com/assets/img/food/pizza-3.png" alt="" />
-              </div>
-              <div className="box-content pt-2">
-                <h3 className='text-textColor1 text-xl font-font1'>Pizza Ronaldo</h3>
-                <span className='flex gap-2 items-center'>
-                  <span className='text-mainColor1 text-lg font-font1'>$999</span>
-                  <del className='text-textColor2 text-md font-font1'>$2000</del>
-                </span>
-                <p className='font-font1 text-gray-400 text-[12px] mt-1'>GOOF MESSI RONALDO</p>
-              </div>
-              <div className="box-action">
-                <button onClick={toggleDetailVisibility}>
-                  <PlusCircleOutlined className='text-xl text-mainColor1 font-bold hover:text-mainColor2 ' />
-                </button>
-              </div>
-            </div>
           </div>
+
+
+
+
 
         </div>
         <Drawer
@@ -403,7 +291,6 @@ const Order = () => {
                           </td>
                         </tr>
                       ))}
-
                     </tbody>
                   </table>
                   <div className="container flex justify-center mt-2">

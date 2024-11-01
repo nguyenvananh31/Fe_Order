@@ -8,10 +8,13 @@ const queyClinet= new QueryClient({
     
 })
 
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queyClinet}>
     <BrowserRouter>
         <App />
     </BrowserRouter>
+
     </QueryClientProvider>
+
 );

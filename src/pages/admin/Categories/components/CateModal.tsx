@@ -134,7 +134,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
             if (values.parent_id) {
                 formData.append('parent_id', values.parent_id);
             }
-            
+
             if (fileList[0]?.originFileObj) {
                 fileList.forEach((item) => formData.append('image', item.originFileObj as any));
             }
@@ -224,6 +224,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                         <Input />
                     </Form.Item>
                     <Form.Item
+                        className="mt-2"
                         name='parent_id'
                     >
                         <TreeSelect
@@ -251,7 +252,7 @@ export default function CateModel({ onClose, onRefresh, showToast, itemId = unde
                             accept={FileRule.accepts}
                             beforeUpload={handleBeforeUpload}
                         >
-                            {fileList?.length >= 1 ? null : 
+                            {fileList?.length >= 1 ? null :
                                 (
                                     <button style={{ border: 0, background: 'none' }} type="button">
                                         <PlusOutlined />

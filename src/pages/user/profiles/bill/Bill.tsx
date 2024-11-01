@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Typography, Card, Modal, message } from "antd";
+import { Table, Button, Typography, Card, Modal, message, Row, Col } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "../../../../configs/Axios/AxiosConfig";
 
@@ -18,7 +18,7 @@ const statusBill: any = {
 
 const Bill: React.FC = () => {
   const queryClient = useQueryClient();
-  const [isLoadingCancel, setIsLoadingCancel] = useState(false); // Trạng thái tải cho việc hủy đơn hàng
+  const [isLoadingCancel, setIsLoadingCancel] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["bill"],
@@ -37,74 +37,83 @@ const Bill: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [productDetails, setProductDetails] = useState<any[]>([]);
 
-  // Hàm để gọi API lấy chi tiết sản phẩm
-  const fetchProductDetails = async (orderId: number) => {
+  const fetchProductDetails = async (orderId) => {
     try {
-      const res = await instance.get(`admin/billsDetail/${orderId}`);
-      setProductDetails(res.data.data);
+      const res = await instance.get(`/client/billdetail/${orderId}`);
+      if (res.status === 200) {
+        setProductDetails(res.data.data);
+      } else {
+        throw new Error("Product details not found");
+      }
     } catch (error) {
-      console.error("Error fetching product details", error);
+      console.error("Error fetching product details:", error);
+      message.error("Có lỗi xảy ra khi lấy chi tiết đơn hàng. Vui lòng thử lại sau.");
     }
-  };
+  };  
 
-  // Hàm xử lý yêu cầu hủy đơn hàng (chuyển trạng thái sang "Chờ duyệt")
   const handleCancelOrder = async (orderId: number) => {
     try {
-      setIsLoadingCancel(true); // Bắt đầu trạng thái tải
+      setIsLoadingCancel(true);
       await instance.put(`/client/bills/${orderId}/cancel`, {
-        status: 'awaitingApproval', // Chuyển trạng thái sang "Chờ duyệt"
+        status: 'awaitingApproval',
       });
       message.success("Yêu cầu hủy đơn hàng đang chờ duyệt!");
 
-      // Làm mới lại danh sách đơn hàng sau khi yêu cầu hủy thành công
       queryClient.invalidateQueries(["bill"]);
     } catch (error) {
       console.error("Error sending cancellation request", error);
       message.error("Có lỗi xảy ra khi gửi yêu cầu hủy đơn hàng!");
     } finally {
-      setIsLoadingCancel(false); // Kết thúc trạng thái tải
+      setIsLoadingCancel(false);
     }
   };
 
-  // Khi nhấn "Xem chi tiết"
   const handleViewDetail = async (order: any) => {
     setSelectedOrder(order);
     await fetchProductDetails(order.id);
     setIsModalVisible(true);
   };
 
-  // Đóng modal
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  // Các cột trong bảng đơn hàng
   const columns = [
     {
       title: "Mã đơn hàng",
       dataIndex: "id",
       key: "id",
+      width: 100,
+      responsive: ['md'],
     },
     {
       title: "Mã bill",
       dataIndex: "ma_bill",
       key: "ma_bill",
+      width: 100,
+      responsive: ['md'],
     },
     {
       title: "Tên khách hàng",
       dataIndex: "name",
       key: "name",
+      width: 150,
+      responsive: ['sm'],
     },
     {
       title: "Ngày đặt",
       dataIndex: "date",
       key: "date",
+      width: 120,
+      responsive: ['md'],
     },
     {
       title: "Tổng tiền",
       dataIndex: "total",
       key: "total",
       render: (total: number) => `${total}₫`,
+      width: 100,
+      responsive: ['sm'],
     },
     {
       title: "Trạng thái",
@@ -115,11 +124,8 @@ const Bill: React.FC = () => {
           {statusBill[status]?.title}
         </span>
       ),
-    },
-    {
-      title: "Thanh toán",
-      dataIndex: "payment",
-      key: "payment",
+      width: 120,
+      responsive: ['sm'],
     },
     {
       title: "Thao tác",
@@ -134,19 +140,21 @@ const Bill: React.FC = () => {
             Xem chi tiết
           </Button>
           <Button
-          className="bg-red-400 text-white hover:bg-red-600"
+            className="bg-red-400 text-white hover:bg-red-600"
             onClick={() => handleCancelOrder(record.id)}
             disabled={
-              record.status === "awaitingApproval" || // Vô hiệu hóa nếu đang chờ duyệt
+              record.status === "awaitingApproval" ||
               record.status === "cancelled" ||
               record.status === "completed" ||
-              isLoadingCancel // Vô hiệu hóa nút khi đang xử lý
+              isLoadingCancel
             }
           >
             {isLoadingCancel ? "Đang xử lý..." : "Hủy"}
           </Button>
         </>
       ),
+      width: 120,
+      responsive: ['sm'],
     },
   ];
 
@@ -156,18 +164,21 @@ const Bill: React.FC = () => {
       dataIndex: "stt",
       key: "stt",
       render: (text: any, record: any, index: number) => index + 1,
+      width: 60,
     },
     {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      width: 200,
+      width: 150,
+      responsive: ['sm'],
     },
     {
       title: "Kích thước",
       dataIndex: "size",
       key: "size",
-      width: 100,
+      width: 80,
+      responsive: ['md'],
     },
     {
       title: "Hình ảnh",
@@ -180,13 +191,14 @@ const Bill: React.FC = () => {
           style={{ width: "50px", height: "50px", objectFit: "cover" }}
         />
       ),
-      width: 100,
+      width: 80,
     },
     {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
-      width: 100,
+      width: 80,
+      responsive: ['sm'],
     },
     {
       title: "Tổng",
@@ -194,6 +206,7 @@ const Bill: React.FC = () => {
       key: "total",
       render: (total: number) => `${total}₫`,
       width: 100,
+      responsive: ['md'],
     },
   ];
 
@@ -212,88 +225,104 @@ const Bill: React.FC = () => {
 
   return (
     <Card
-      title="Chi tiết đơn hàng"
-      style={{
-        width: "1200px",
-        margin: "20px auto",
-        padding: "20px",
-        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-      }}
-    >
+  title="Chi tiết đơn hàng"
+  style={{
+    maxWidth: "100%",
+    margin: "20px auto",
+    padding: "20px",
+    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+  }}
+  bodyStyle={{
+    padding: "16px",
+    overflow: "auto",
+  }}
+>
+  <Row justify="center">
+    <Col xs={24}>
       <div className="border-t rounded-[6px] text-gray-800 text-sm leading-[21px] p-5 bg-white">
         <h3 className="text-lg font-bold mb-4">Danh sách đơn hàng</h3>
-        <Table
-          columns={columns}
-          dataSource={orders}
-          rowKey="id"
-          pagination={false}
-          locale={{ emptyText: "Không có đơn hàng" }}
-        />
+        <div style={{ overflowX: "auto" }}> {/* Add this wrapper for horizontal scrolling */}
+          <Table
+            columns={columns}
+            dataSource={orders}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+            scroll={{ x: 'max-content' }} // Ensure horizontal scroll is enabled
+            locale={{ emptyText: "Không có đơn hàng" }}
+          />
+        </div>
       </div>
+    </Col>
+  </Row>
 
-      <Modal
-        title="Chi tiết đơn hàng"
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            Thoát
-          </Button>,
-        ]}
-        width={800}
-      >
-        {selectedOrder && (
-          <>
-            <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Mã đơn hàng:</Text> #{selectedOrder.ma_bill}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Cách thức:</Text> {selectedOrder.order_type}
-                </div>
-              </div>
-              <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Tên khách hàng:</Text> {selectedOrder.name}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Trạng thái:</Text>
-                  <span style={{ color: statusBill[selectedOrder.status]?.color }}>
-                    {statusBill[selectedOrder.status]?.title}
-                  </span>
-                </div>
-              </div>
-              <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Địa chỉ:</Text> {selectedOrder.address || "Chưa có"}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Thanh toán:</Text> {selectedOrder.payment}
-                </div>
-              </div>
-              <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Ngày đặt:</Text> {selectedOrder.date}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Text strong>Tổng tiền:</Text> {selectedOrder.total}₫
-                </div>
-              </div>
-            </div>
+  <Modal
+    title="Chi tiết đơn hàng"
+    visible={isModalVisible}
+    onCancel={handleCancel}
+    footer={[
+      <Button key="back" onClick={handleCancel}>
+        Thoát
+      </Button>,
+    ]}
+    width="90%"
+    bodyStyle={{ maxHeight: "70vh", overflowY: "auto", padding: "16px" }}
+    centered
+  >
+    {selectedOrder && (
+      <>
+        <div style={{ marginBottom: "20px" }}>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12}>
+              <Text strong>Mã đơn hàng:</Text> #{selectedOrder.ma_bill}
+            </Col>
+            <Col xs={24} sm={12}>
+              <Text strong>Cách thức:</Text> {selectedOrder.order_type}
+            </Col>
+          </Row>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12}>
+              <Text strong>Tên khách hàng:</Text> {selectedOrder.name}
+            </Col>
+            <Col xs={24} sm={12}>
+              <Text strong>Trạng thái:</Text>
+              <span style={{ color: statusBill[selectedOrder.status]?.color }}>
+                {statusBill[selectedOrder.status]?.title}
+              </span>
+            </Col>
+          </Row>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12}>
+              <Text strong>Địa chỉ:</Text> {selectedOrder.address || "Chưa có"}
+            </Col>
+            <Col xs={24} sm={12}>
+              <Text strong>Thanh toán:</Text> {selectedOrder.payment}
+            </Col>
+          </Row>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12}>
+              <Text strong>Ngày đặt:</Text> {selectedOrder.date}
+            </Col>
+            <Col xs={24} sm={12}>
+              <Text strong>Tổng tiền:</Text> {selectedOrder.total}₫
+            </Col>
+          </Row>
+        </div>
 
-            <Title level={5}>Danh sách sản phẩm</Title>
-            <Table
-              columns={productColumns}
-              dataSource={productDetails}
-              pagination={false}
-              rowKey="id"
-              scroll={{ x: true }}
-            />
-          </>
-        )}
-      </Modal>
-    </Card>
+        <Title level={5}>Danh sách sản phẩm</Title>
+        <div> {/* Wrapper for horizontal scroll in the product table */}
+          <Table
+            columns={productColumns} // Use productColumns for the product details table
+            dataSource={productDetails}
+            rowKey="id"
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+          />
+        </div>
+      </>
+    )}
+  </Modal>
+</Card>
+
   );
 };
 
