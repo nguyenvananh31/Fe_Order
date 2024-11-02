@@ -28,6 +28,7 @@ import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
 import PrivateRoute from "./PrivateRoute";
+import Bill from "../pages/user/profiles/billProfiles/bill";
 
 const Router = () => {
   return (
@@ -58,6 +59,7 @@ const Router = () => {
           <Route path={RoutePath.PROFILE} element={<Profiles />}>
             <Route index element={<FormInforProfile />} />
             <Route path={RoutePath.EDIT_PROFILE}element={<EditProfile />} />
+            <Route path={RoutePath.BILL}element={<Bill />} />
           </Route>
 
           {/* <Route path={RoutePath.ORDER} element={<Order />} /> */}
