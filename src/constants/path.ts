@@ -9,6 +9,7 @@ export const RoutePath = {
     PRODUCT_DETAIL: 'product/:id',
     INFO_PROFILES:"infoProfiles",
     PRODUCT_CATE: 'product/category/:id',
+    BILL:'bill',
 
 
 
