@@ -2,14 +2,13 @@ import { CloseCircleFilled, CreditCardOutlined, CustomerServiceOutlined, DownCir
 import { Drawer, Form, Image, Tabs } from 'antd';
 import TabPane from 'antd/es/tabs/TabPane';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { fallBackImg, getImageUrl } from '../../../constants/common';
-import './asset/Order.scss';
-import ProductCates from './ProductCates';
-import { apiGetProForOrder } from './utils/order.service';
-import { convertPriceVND } from '../../../utils/common';
 import { useNavigate, useParams } from 'react-router-dom';
-import useToast from '../../../hooks/useToast';
+import { fallBackImg, getImageUrl } from '../../../constants/common';
 import { RoutePath } from '../../../constants/path';
+import useToast from '../../../hooks/useToast';
+import { convertPriceVND } from '../../../utils/common';
+import './asset/Order.scss';
+import { apiGetOrderByBillId, apiGetProForOrder } from './utils/order.service';
 
 interface IState {
   loading: boolean;
@@ -34,17 +33,34 @@ const Order = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const getInnitOrder = useCallback(() => {
-    if (!billId) {
-      toast.showError('Vui lòng quét mã bàn!');
+  // const getInnitOrder = useCallback(() => {
+  //   if (typeof billId == 'undefined') {
+  //     toast.showError('Vui lòng quét mã bàn!');
+  //     navigate(RoutePath.HOME);
+  //     return;
+  //   }
+  //   if (billId) {
+  //     getOrderDetail();
+  //   }
+  // }, [billId]);
+
+  // useEffect(() => {
+  //     getInnitOrder();
+  // }, [billId]);
+
+  const getOrderDetail = useCallback(async () => {
+    try {
+      const res = await apiGetOrderByBillId(+billId!);
+
+
+      
+    } catch (error: any) {
+      console.log(error);
+      toast.showError(error.message);
       navigate(RoutePath.HOME);
       return;
     }
-  }, []);
-
-  useEffect(() => {
-    getInnitOrder();
-  }, []);
+  }, [billId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +83,7 @@ const Order = () => {
     }
     fetchData();
   }, [state.refresh]);
+
 
   // useEffect(() => {
   //   setProducts(listPro)
@@ -160,7 +177,7 @@ const Order = () => {
   return (
     <>
       <div className='container max-w-[1140px] h-screen overflow-y-auto px-[16px] lg:px-[20px] mx-auto gap-[24px] py-6'>
-        <ProductCates />
+        {/* <ProductCates /> */}
         <div className="list-product">
           <h2 className='text-white w-full text-3xl font-font1 mt-4 p-2 bg-mainColor3 text-center font-bold tracking-wider'>RELATED FOOD</h2>
           <div className="w-full box-related-list grid md:grid-cols-5 grid-cols-3 gap-2 mt-2  overflow-y-auto h-[50vh] p-2">
@@ -250,7 +267,7 @@ const Order = () => {
                   <table className="w-full mt-4 border-collapse bg-bgColor1">
                     <tbody>
                       {state.products?.map((product) => (
-                        <tr className='text-center'>
+                        <tr key={product.id} className='text-center'>
                           <td className="border">
                             <div className="box w-14 h-14 mx-auto my-3">
                               <Image
