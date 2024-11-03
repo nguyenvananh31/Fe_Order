@@ -20,9 +20,9 @@ import {
 } from "./app";
 
 import Error from "../pages/user/Error/Error";
-import OrderPage from "../pages/user/Order";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
+import Bill from "../pages/user/profiles/billProfiles/bill";
 import EditProfile from "../pages/user/profiles/editProfiles/editProfile";
 import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
@@ -54,7 +54,8 @@ const Router = () => {
           {/* Profile */}
           <Route path={RoutePath.PROFILE} element={<Profiles />}>
             <Route index element={<FormInforProfile />} />
-            <Route path={RoutePath.EDIT_PROFILE} element={<EditProfile />} />
+            <Route path={RoutePath.EDIT_PROFILE}element={<EditProfile />} />
+            <Route path={RoutePath.BILL}element={<Bill />} />
           </Route>
 
           <Route path={RoutePath.PRODUCT_CATE} element={<ProductByCate />} />

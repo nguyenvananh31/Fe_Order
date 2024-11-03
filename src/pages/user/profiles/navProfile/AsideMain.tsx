@@ -16,7 +16,7 @@ const AsideMain = () => {
     },
     {
       key: '2',
-      label: <Link to ="/asdasd">Bill</Link>,
+      label: <Link to ="/profile/bill">Bill</Link>,
       icon: <BellOutlined />,
     },
 
