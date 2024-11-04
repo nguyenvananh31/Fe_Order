@@ -1,99 +1,101 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, SmileOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Flex, Row, Space } from "antd";
 import { memo } from "react";
 import { convertPriceVNDNotSupfix } from "../../../../utils/common";
+import { fallBackImg, getImageUrl } from "../../../../constants/common";
 
 interface IProps {
-
+    data: any[];
+    loading: boolean;
+    onClickAdd: (item: any) => void;
 }
 
-const ProContent = ({ }: IProps) => {
-    return <>
-        <Space direction="vertical" size={'large'} className="my-6">
-            <span className="text-lg font-semibold">Sản phẩm Hot</span>
+const ProContent = ({ data, loading, onClickAdd }: IProps) => {
+    return <div className="w-full">
+        <Space direction="vertical" size={'large'} className="my-6 w-full" >
+            <span className="text-lg font-semibold">Sản phẩm</span>
             <Row gutter={[16, 16]} justify={'center'} align={'middle'}>
-                <Col>
-                    <Card
-                        loading={true}
-                        hoverable
-                        className="w-[330px] h-[300px] py-2"
-                        cover={
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                {!true && <img alt="Ảnh danh mục" className="w-[80px] object-cover object-center" src={'./images/pasta.png'} />}
-                            </div>
-                        }
-                    >
+                {
+                    loading && (
+                        <Col>
+                            <Card
+                                loading={loading}
+                                hoverable
+                                className="w-[330px] h-[300px] py-2"
+                                cover={
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        {!true && <img alt="Ảnh danh mục" className="w-[80px] object-cover object-center" src={'./images/pasta.png'} />}
+                                    </div>
+                                }
+                            >
+                            </Card>
+                        </Col>
 
-                    </Card>
-                </Col>
-                <Col>
-                    <Card
-                        hoverable
-                        className="w-[330px] h-[300px] pb-4"
-                        cover={
-                            <div className="relative overflow-hidden">
-                                <div className="absolute top-5 -left-2 bg-[#EB5757] py-1 px-3 rounded-lg text-white">30% sale</div>
-                                <div className="flex justify-center items-center">
-                                    <img alt="Ảnh danh mục" className="h-[180px] object-cover object-center" src={'./images/pasta.png'} />
-                                </div>
-                            </div>
-                        }
-                    >
-                        <Card.Meta
-                            title={
-                                <Flex align="center" justify="space-between" >
-                                    <Space direction="vertical" align="start">
-                                        <div>Fish Burger</div>
-                                        <div>
-                                            <span className="text-xl font-bold">{convertPriceVNDNotSupfix(100000)}</span>
-                                            <span className="text-[#00813D] font-bold">vnđ</span>
+                    )
+                }
+                {
+                    data.map(i => (
+                        <Col key={i.id}>
+                            <Card
+                                hoverable
+                                className="w-[330px] h-[300px] pb-4 cursor-default"
+                                cover={
+                                    <div className="relative overflow-hidden">
+                                        {
+                                            i.sale && (
+                                                <div className="absolute top-5 -left-2 bg-[#EB5757] py-1 px-4 rounded-lg text-white">sale</div>
+                                            )
+                                        }
+                                        <div className="flex justify-center items-center">
+                                            <img alt="Ảnh danh mục" className="h-[180px] object-cover object-center" src={i.image ? getImageUrl(i.image) : fallBackImg} />
                                         </div>
-                                    </Space>
-                                    <Button type="primary" className="bg-[#00813D]" icon={<PlusOutlined />} />
-                                </Flex>
-                            }
-                            className=""
-                        />
-                    </Card>
-                </Col>
-                <Col>
-                    <Card
-                        hoverable
-                        className="w-[330px] h-[300px] pb-4"
-                        cover={
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <img alt="Ảnh danh mục" className="h-[180px] object-cover object-center" src={'./images/pasta.png'} />
-                            </div>
-                        }
-                    >
-                        <Card.Meta
-                            title={
-                                <Flex align="center" justify="space-between" >
-                                    <Space direction="vertical" align="start">
-                                        <div>Fish Burger</div>
-                                        <div>
-                                            <span className="text-xl font-bold">{convertPriceVNDNotSupfix(100000)}</span>
-                                            <span className="text-[#00813D] font-bold">vnđ</span>
-                                        </div>
-                                    </Space>
-                                    <Button type="primary" className="bg-[#00813D]" icon={<PlusOutlined />} />
-                                </Flex>
-                            }
-                            className=""
-                        />
-                    </Card>
-                </Col>
+                                    </div>
+                                }
+                            >
+                                <Card.Meta
+                                    title={
+                                        <Flex align="center" justify="space-between" >
+                                            <Space direction="vertical" align="start">
+                                                <div className="line-clamp-1">{i.name} - {i.size.name}</div>
+                                                <Flex vertical>
+                                                    {
+                                                        i.sale && (
+                                                            <div>
+                                                                <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.price)}</span>
+                                                                <span className="text-[#00813D] font-bold">vnđ</span>
+                                                            </div>
+                                                        )
+                                                    }
+                                                    <div>
+                                                        <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale || i.price)}</span>
+                                                        <span className="text-[#00813D] font-bold">vnđ</span>
+                                                    </div>
+                                                </Flex>
+                                            </Space>
+                                            <Button onClick={() => onClickAdd(i)}  type="primary" className="bg-[#00813D]" icon={<PlusOutlined />} />
+                                        </Flex>
+                                    }
+                                    className=""
+                                />
+                            </Card>
+                        </Col>
+                    ))
+                }
+                {
+                    data.length == 0 && !loading && <Col>
+                        <div className="text-center">
+                            <SmileOutlined style={{ fontSize: 24 }} />
+                            <p>Không có sản phẩm nào</p>
+                        </div>
+                    </Col>
+                }
             </Row>
         </Space>
-    </>
+    </div>
 }
 
 export default memo(ProContent);
