@@ -20,11 +20,7 @@ const Order = () => {
   const listPro = JSON.parse(String(localStorage.getItem('selectedItems'))) || [];
   const [selectedItems, setSelectedItems] = useState([]);
 
-  useEffect(() => {
-  
-  }, []);
 
-  const apiGetPro
 
   useEffect(() => {
     setProducts(listPro)

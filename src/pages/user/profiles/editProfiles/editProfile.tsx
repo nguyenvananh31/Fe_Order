@@ -40,6 +40,7 @@ const EditProfile = () => {
             queryKey: ["profile"]
         })
         form.resetFields();
+        
     }, 
     onError: (error) => {
         toast.showError(`Error: ${error.message}`)

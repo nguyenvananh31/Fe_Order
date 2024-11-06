@@ -27,7 +27,7 @@ const AsideMain = () => {
     },
     {
       key: '4',
-      label: <div className='cursor-pointer'>Đăng xuất</div>,
+      label: <div onClick={()=>logout()} className='cursor-pointer'>Đăng xuất</div>,
       icon: <BellOutlined />,
     },
   ];
@@ -43,6 +43,11 @@ const AsideMain = () => {
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setSelectedKey(e.key);
   };
+
+  const logout  = ()=>{
+    localStorage.removeItem('AUTH');
+    window.location.href = "/login"; 
+  }
 
 
   return (

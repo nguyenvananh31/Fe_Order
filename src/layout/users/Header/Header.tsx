@@ -219,13 +219,7 @@ const Header = () => {
           open={visible}
           className="w-full relative"
         >
-          <Drawer
-            placement="right"
-            onClose={onClose}
-            closable={false}
-            open={visible}
-            className="w-full relative"
-          >
+
             <div className="sideBar-heading px-4 py-6 w-full flex items-center justify-between border-b-[1px] shadow-sm">
               <div className="logo-wrapper">
                 <img src="https://modinatheme.com/html/foodking-html/assets/img/logo/logo.svg" alt=""
@@ -320,7 +314,6 @@ const Header = () => {
                 <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               </ul>
             </div>
-          </div>
         </Drawer>
       </header>
     </>

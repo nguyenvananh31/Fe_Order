@@ -21,7 +21,7 @@ import {
 import BaseLayoutOrder from "../pages/user/BaseLayoutOrder";
 import Error from "../pages/user/Error/Error";
 import Order from "../pages/user/Order/Order";
-import ProductCates from "../pages/user/Order/ProductCates";
+// import ProductCates from "../pages/user/Order/ProductCates";
 import ProductByCate from "../pages/user/Product/ProductByCate";
 import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
@@ -77,7 +77,6 @@ const Router = () => {
               <Route path={route.path} element={route.element} key={index} />
             ))
           }
-        >
           {privateProtectedFlattenRoutes.map((route, index) => (
             <Route path={route.path} element={route.element} key={index} />
           ))}

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HeaderProfile from "./navProfile/headerProfile";
 import AsideMain from "./navProfile/AsideMain";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Drawer, Button } from "antd";
 
@@ -17,6 +17,15 @@ const queryClient = new QueryClient({
 
 const Profiles: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState(false); // State to manage drawer visibility
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkTokens = localStorage.getItem("AUTH");
+    if (!checkTokens) {
+      
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const showDrawer = () => {
     setDrawerVisible(true); // Open the drawer
@@ -43,11 +52,11 @@ const Profiles: React.FC = () => {
           title="Menu"
           placement="left"
           onClose={closeDrawer}
-          visible={drawerVisible}
+          open={drawerVisible}
           width="75%"
-          bodyStyle={{ padding: 0, overflow: 'hidden', height: '100%' }}
+          bodyStyle={{ padding: 0, overflow: "hidden", height: "100%" }}
         >
-          <div style={{ height: '100%', }}>
+          <div style={{ height: "100%" }}>
             <HeaderProfile />
             <AsideMain />
           </div>
@@ -55,12 +64,12 @@ const Profiles: React.FC = () => {
 
         <div className="flex flex-col md:flex-row gap-6 mx-3 h-3/4">
           {/* Show HeaderProfile and AsideMain only on larger screens */}
-          <div className="hidden md:flex md:flex-col md:w-1/3 bg-white h-full ">
+          <div className="hidden md:flex md:flex-col md:w-1/3 bg-white h-full">
             <HeaderProfile />
             <AsideMain />
           </div>
 
-          <div className="flex-1 md:w-full md:h-3/4 ">
+          <div className="flex-1 md:w-full md:h-3/4">
             <Outlet />
           </div>
         </div>
