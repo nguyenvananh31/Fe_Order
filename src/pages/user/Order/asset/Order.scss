@@ -38,4 +38,26 @@
 //   .custom-scrollbar::-webkit-scrollbar-track {
 //     background-color: #ff0000; /* Đặt màu cho track (background của scrollbar) */
 //   }
+
+.oredered-card {
+  position: relative;
+  & .del {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 0;
+    background-color: #ff4d4f;
+    content: "Xoá";
+    color: white;
+    text-align: center;
+    line-height: 42px;
+    cursor: pointer;
+    border-radius: 0 0 5px 5px;
+    transition: all 0.2s ease-in;
+  }
+  &:hover .del {
+    height: 42px;
+  }
+}
   

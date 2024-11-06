@@ -1,10 +1,10 @@
 import { DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, RightOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Flex, QRCode } from "antd";
+import { Button, Card, Checkbox, Divider, Flex, QRCode, Tag } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Space } from "antd/lib";
-import { memo } from "react";
-import { convertPriceVNDNotSupfix } from "../../../../utils/common";
+import { memo, useCallback, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { convertPriceVNDNotSupfix } from "../../../../utils/common";
 
 interface IProps {
     onToggle: (e: boolean) => void;
@@ -13,12 +13,19 @@ interface IProps {
     onIncreaseCart: (item: any) => void;
     onDecreaseCart: (item: any) => void;
     onCheckedPro: (ids: number[]) => void;
+    onShowPayment: () => void;
     cart: any[];
     loading: boolean;
     checked: any[]
 }
 
+
 const SiderOrder = (props: IProps) => {
+    const [tab, setTab] = useState<number>(1);
+
+    const handleChangeTab = useCallback((tab: number) => {
+        setTab(tab);
+    }, []);
 
     return <Sider
         onCollapse={props.onToggle}
@@ -68,16 +75,139 @@ const SiderOrder = (props: IProps) => {
         </Flex>
         <Divider />
         {/* Các món chưa gọi */}
-        <div className="px-4">
-            <div className="text-lg font-semibold">Danh sách Order</div>
-            <Checkbox.Group className="w-full" value={props.checked} onChange={props.onCheckedPro}>
-                <Space direction="vertical" size={'large'} className="w-full">
-                    {
-                        props.loading && (
-                            <Card loading={true} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                                <Card.Meta title={
+        {
+            tab == 1 && (
+                <div className="px-4">
+                    <div className="text-lg font-semibold">Danh sách Order</div>
+                    <Checkbox.Group className="w-full" value={props.checked} onChange={props.onCheckedPro}>
+                        <Space direction="vertical" size={'large'} className="w-full">
+                            {
+                                props.loading && (
+                                    <Card loading={true} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                        <Card.Meta title={
+                                            <Flex gap={4}>
+                                                <Checkbox value={'bb'} />
+                                                <Flex flex={1} align="end" justify="space-between">
+                                                    <Flex gap={8}>
+                                                        <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                        <div>
+                                                            <p>Fish Burger</p>
+                                                            <p className="text-ghost text-sm">x4</p>
+                                                        </div>
+                                                    </Flex>
+                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                        <DeleteOutlined className="cursor-pointer text-[#EB5757]" />
+                                                        <div>
+                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
+                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                        </div>
+                                                    </Flex>
+                                                </Flex>
+                                            </Flex>
+                                        } />
+                                    </Card>
+                                )
+                            }
+                            {
+                                props.cart.map(i => (
+                                    <Card key={i.id} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                        <Card.Meta title={
+                                            <Flex gap={4}>
+                                                <Checkbox value={i.id} />
+                                                <Flex flex={1} align="end" justify="space-between">
+                                                    <Flex gap={8}>
+                                                        <img className="rounded" width={50} src={i.image ? getImageUrl(i.image) : fallBackImg} alt="Ảnh sản phẩm" />
+                                                        <Space direction="vertical" align="start">
+                                                            <p>{i.name}</p>
+                                                            <Flex gap={8} justify="center" align="center">
+                                                                <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
+                                                                <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.amount || 0}</p>
+                                                                <PlusCircleOutlined onClick={() => props.onIncreaseCart(i)} className="cursor-pointer" />
+                                                            </Flex>
+                                                        </Space>
+                                                    </Flex>
+                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                        <DeleteOutlined onClick={() => props.onDelCartPro(i.id)} className="cursor-pointer text-[#EB5757]" />
+                                                        <div>
+                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i.price)}</span>
+                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                        </div>
+                                                    </Flex>
+                                                </Flex>
+                                            </Flex>
+                                        } />
+                                    </Card>
+                                ))
+                            }
+                            {
+                                props.cart.length == 0 && !props.loading && (
+                                    <div className="text-center">
+                                        <SmileOutlined style={{ fontSize: 24 }} />
+                                        <p>Không có sản phẩm nào</p>
+                                    </div>
+                                )
+                            }
+                        </Space>
+                    </Checkbox.Group>
+                    {/*Btn choose all */}
+                    <Space align="center" className="mt-4">
+                        <Button onClick={props.onToggleCheckBox}>{props.cart.length != 0 && props.cart.length == props.checked.length ? 'Bỏ chọn' : 'Chọn tất cả'}</Button>
+                        <span>{props.checked.length} sản phẩm đang chọn</span>
+                    </Space>
+                    <Divider />
+                    <Space direction="vertical" size={'large'} className="w-full">
+                        <Flex justify="space-between" align="center" >
+                            <span>Giảm giá</span>
+                            <div>
+                                <span className="text-sm font-bold">-{convertPriceVNDNotSupfix(100000)}</span>
+                                <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                            </div>
+                        </Flex>
+                        <Flex justify="space-between" align="center" >
+                            <span className="font-bold">Tổng tiền</span>
+                            <div>
+                                <span className="text-base font-bold">{convertPriceVNDNotSupfix(500000)}</span>
+                                <span className="text-[#00813D] text-sm font-bold">vnđ</span>
+                            </div>
+                        </Flex>
+                        <Flex align="center" justify="center" >
+                            <Button type="primary" className="w-4/5 py-4 bg-[#00813D]">Đặt ngay</Button>
+                        </Flex>
+                        <Flex align="center" justify="center" >
+                            <Button onClick={() => handleChangeTab(2)} className="w-4/5 py-4 border-[#00813D]">
+                                <Space align="center" size={'large'}>
+                                    <img width={24} src="./images/icon-order.png" alt="icon" />
+                                    Các món đã gọi
+                                    <RightOutlined />
+                                </Space>
+                            </Button>
+                        </Flex>
+                    </Space>
+                </div>
+            )
+        }
+        {/* Các món đã lên */}
+        {
+            tab == 2 && (
+                <div className="px-4">
+                    <Space direction="vertical" size={'large'} className="w-full">
+                        <Flex align="center" justify="center" >
+                            <Button type="primary" className="w-4/5 py-4 bg-[#00813D]" onClick={() => { handleChangeTab(1) }}>Gọi thêm món</Button>
+                        </Flex>
+                        <Flex align="center" justify="center" >
+                            <Button onClick={props.onShowPayment} className="w-4/5 py-4 border-[#00813D]">
+                                <Space align="center" size={'large'}>
+                                    <img width={24} src="./images/review.png" alt="icon" />
+                                    Thanh toán
+                                </Space>
+                            </Button>
+                        </Flex>
+                        <div className="text-lg font-semibold">Các món đã Order</div>
+
+                        <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                            <Card.Meta title={
+                                <div className="border rounded-md p-2 oredered-card">
                                     <Flex gap={4}>
-                                        <Checkbox value={'bb'} />
                                         <Flex flex={1} align="end" justify="space-between">
                                             <Flex gap={8}>
                                                 <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
@@ -87,7 +217,7 @@ const SiderOrder = (props: IProps) => {
                                                 </div>
                                             </Flex>
                                             <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <DeleteOutlined className="cursor-pointer text-[#EB5757]" />
+                                                <Tag color="orange">Đang chờ</Tag>
                                                 <div>
                                                     <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
@@ -95,87 +225,54 @@ const SiderOrder = (props: IProps) => {
                                             </Flex>
                                         </Flex>
                                     </Flex>
-                                } />
-                            </Card>
-                        )
-                    }
-                    {
-                        props.cart.map(i => (
-                            <Card key={i.id} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                                <Card.Meta title={
+                                    <Divider className="my-2" />
+                                    <Flex justify="space-between" align="center">
+                                        <span>01/11/2024, 08:28pm</span>
+                                        <div>
+                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
+                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                        </div>
+                                    </Flex>
+                                    <div className="del">Huỷ món</div>
+                                </div>
+                            } />
+                        </Card>
+                        <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                            <Card.Meta title={
+                                <div className="border rounded-md p-2">
                                     <Flex gap={4}>
-                                        <Checkbox value={i.id} />
                                         <Flex flex={1} align="end" justify="space-between">
                                             <Flex gap={8}>
-                                                <img className="rounded" width={50} src={i.image ? getImageUrl(i.image) : fallBackImg} alt="Ảnh sản phẩm" />
-                                                <Space direction="vertical" align="start">
-                                                    <p>{i.name}</p>
-                                                    <Flex gap={8} justify="center" align="center">
-                                                        <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
-                                                        <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.amount || 0}</p>
-                                                        <PlusCircleOutlined onClick={() => props.onIncreaseCart(i)} className="cursor-pointer" />
-                                                    </Flex>
-                                                </Space>
+                                                <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                <div>
+                                                    <p>Fish Burger</p>
+                                                    <p className="text-ghost text-sm">x4</p>
+                                                </div>
                                             </Flex>
                                             <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <DeleteOutlined onClick={() => props.onDelCartPro(i.id)} className="cursor-pointer text-[#EB5757]" />
+                                                <Tag color="green">Hoàn thành</Tag>
                                                 <div>
-                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i.price)}</span>
+                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                 </div>
                                             </Flex>
                                         </Flex>
                                     </Flex>
-                                } />
-                            </Card>
-                        ))
-                    }
-                    {
-                        props.cart.length == 0 && !props.loading && (
-                            <div className="text-center">
-                                <SmileOutlined style={{ fontSize: 24 }} />
-                                <p>Không có sản phẩm nào</p>
-                            </div>
-                        )
-                    }
-                </Space>
-            </Checkbox.Group>
-            {/*Btn choose all */}
-            <Space align="center" className="mt-4">
-                <Button onClick={props.onToggleCheckBox}>{props.cart.length != 0 && props.cart.length == props.checked.length ? 'Bỏ chọn' : 'Chọn tất cả'}</Button>
-                <span>{props.checked.length} sản phẩm đang chọn</span>
-            </Space>
-            <Divider />
-            <Space direction="vertical" size={'large'} className="w-full">
-                <Flex justify="space-between" align="center" >
-                    <span>Giảm giá</span>
-                    <div>
-                        <span className="text-sm font-bold">-{convertPriceVNDNotSupfix(100000)}</span>
-                        <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                    </div>
-                </Flex>
-                <Flex justify="space-between" align="center" >
-                    <span className="font-bold">Tổng tiền</span>
-                    <div>
-                        <span className="text-base font-bold">{convertPriceVNDNotSupfix(500000)}</span>
-                        <span className="text-[#00813D] text-sm font-bold">vnđ</span>
-                    </div>
-                </Flex>
-                <Flex align="center" justify="center" >
-                    <Button type="primary" className="w-4/5 py-4 bg-[#00813D]">Đặt ngay</Button>
-                </Flex>
-                <Flex align="center" justify="center" >
-                    <Button className="w-4/5 py-4 border-[#00813D]">
-                        <Space align="center" size={'large'}>
-                            <img width={24} src="./images/icon-order.png" alt="icon" />
-                            Các món đã gọi
-                            <RightOutlined />
-                        </Space>
-                    </Button>
-                </Flex>
-            </Space>
-        </div>
-        {/* Các món đã lên */}
+                                    <Divider className="my-2" />
+                                    <Flex justify="space-between" align="center">
+                                        <span>01/11/2024, 08:28pm</span>
+                                        <div>
+                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
+                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                        </div>
+                                    </Flex>
+                                </div>
+                            } />
+                        </Card>
+                    </Space>
+                </div>
+            )
+        }
     </Sider>
 }
 

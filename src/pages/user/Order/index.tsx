@@ -1,13 +1,13 @@
 import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
 import { Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
-import { apiAddOrderPro, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder } from "./utils/order.service";
-import useToast from "../../../hooks/useToast";
-import useDebounce from "../../../hooks/useDeBounce";
+import { apiGetOrderCate, apiGetProByCateId, apiGetProForOrder } from "./utils/order.service";
+import ModalPayment from "./components/ModalPayment";
 
 interface IState {
     loading: boolean;
@@ -23,6 +23,7 @@ interface IState {
     cartOrderPro: any[];
     orderedPro: any[];
     itemHandle?: any;
+    showModal: boolean;
 }
 
 const initState: IState = {
@@ -38,6 +39,7 @@ const initState: IState = {
     checkedOrder: [],
     cartOrderPro: [],
     orderedPro: [],
+    showModal: false,
 }
 
 const OrderPage = () => {
@@ -210,6 +212,14 @@ const OrderPage = () => {
         toast.showSuccess('Xoá sản phẩm thành công!')
     }, []);
 
+    const handleShowModal = useCallback(() => {
+        setState(prev => ({ ...prev, showModal: true }));
+    }, []);
+
+    const handleDismissModal = useCallback(() => {
+        setState(prev => ({ ...prev, showModal: false }));
+    }, []);
+
     return <>
         <Layout className="min-h-[100vh]">
             <Content className="bg-[#F5F5F5]">
@@ -254,8 +264,11 @@ const OrderPage = () => {
                 onIncreaseCart={handleAddPro}
                 onDecreaseCart={handleDecraesePro}
                 onCheckedPro={handleCheckedPro}
+                onShowPayment={handleShowModal}
             />
         </Layout>
+        {/* Modal thanh toán */}
+        {state.showModal && <ModalPayment onCancel={handleDismissModal} onSubmit={() => {}} />}
     </>
 }
 
