@@ -63,15 +63,15 @@ const ProContent = ({ data, loading, onClickAdd }: IProps) => {
                                                 <div className="line-clamp-1">{i.name} - {i.size.name}</div>
                                                 <Flex vertical>
                                                     {
-                                                        i.sale && (
+                                                        i.sale != 0 && (
                                                             <div>
-                                                                <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.price)}</span>
+                                                                <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.sale)}</span>
                                                                 <span className="text-[#00813D] font-bold">vnđ</span>
                                                             </div>
                                                         )
                                                     }
                                                     <div>
-                                                        <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale || i.price)}</span>
+                                                        <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale ? i.price : i.sale)}</span>
                                                         <span className="text-[#00813D] font-bold">vnđ</span>
                                                     </div>
                                                 </Flex>

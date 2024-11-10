@@ -1,12 +1,12 @@
 import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
 import { Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
-import { apiGetOrderCate, apiGetProByCateId, apiGetProForOrder } from "./utils/order.service";
+import { apiAddOrderPro, apiDelOrderCart, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
 import ModalPayment from "./components/ModalPayment";
 
 interface IState {
@@ -45,6 +45,8 @@ const initState: IState = {
 const OrderPage = () => {
     const [state, setState] = useState<IState>(initState);
     const toast = useToast();
+    const cartOrderProMemo = useMemo(() => state.cartOrderPro, [state.cartOrderPro]);
+    const checkedOrderMemo = useMemo(() => state.checkedOrder, [state.checkedOrder]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,35 +84,113 @@ const OrderPage = () => {
         fetchData();
     }, [state.refresh]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setState(prev => ({ ...prev, loadingCart: true }));
+                const res = await apiGetOrderByBillId("BILL-67239AB7BACB3");
+                setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data }));
+            } catch (error) {
+                console.log(error);
+                setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: [] }));
+            }
+        }
+        fetchData();
+    }, [state.refresh]);
+
     //Handle add pro to cart order
-    // useEffect(() => {
-    //     if (!state.itemHandle) {
-    //         return;
-    //     }
+    useEffect(() => {
+        if (!state.itemHandle) {
+            return;
+        }
 
-    //     const timeout = setTimeout(async () => {
-    //         const body = {
-    //             ma_bill: 111,
-    //             product_detail_id: state.itemHandle.id,
-    //             quantity: state.itemHandle.count
-    //         }
-    //         if (state.itemHandle.quantity < state.itemHandle.count) {
-    //             toast.showError('Số lượng sản phẩm còn lại là ' + state.itemHandle.quantity);
-    //             body.quantity = state.itemHandle.quantity;
-    //         }
-    //         try {
-    //             const res = await apiAddOrderPro(body);
+        const timeout = setTimeout(async () => {
+            if (state.itemHandle.isAdd) {
+                const body = {
+                    ma_bill: "BILL-67239AB7BACB3",
+                    product_detail_id: state.itemHandle.product_detail_id,
+                    quantity: state.itemHandle.quantity
+                }
+                try {
+                    const res: any = await apiAddOrderPro(body);
+                    const pro = state.cartOrderPro.filter(i => i.product_detail_id == state.itemHandle.product_detail_id);
+                    if (pro.length == 0) {
+                        const newPros = state.cartOrderPro.map(i => i.product_detail_id == state.itemHandle.product_detail_id ? { ...i, id: res.data.id } : i);
+                        setState(prev => {
+                            return { ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }
+                        });
+                    } else {
+                        setState(prev => ({ ...prev, itemHandle: undefined }));
+                    }
+                } catch (error: any) {
+                    console.log(error);
+                    setState(prev => {
+                        let newPros = [...prev.cartOrderPro];
+                        if (error?.quantity) {
+                            newPros.map(i => i.product_detail_id == state.itemHandle.product_detail_id ? { ...i, quantity: error.quantity } : i);
+                        }
+                        return { ...prev, itemHandle: undefined, cartOrderPro: newPros };
+                    });
+                    toast.showError(error);
+                }
+            }
+            if (state.itemHandle.isUpdate) {
+                const body = {
+                    id_cart_order: state.itemHandle.id,
+                    quantity: state.itemHandle.quantity,
+                }
+                try {
+                    await apiUpdateOrderCart(body);
+                    setState(prev => ({ ...prev, itemHandle: undefined }));
+                } catch (error: any) {
+                    console.log(error);
+                    setState(prev => {
+                        let newPros = [...prev.cartOrderPro];
+                        if (error?.quantity) {
+                            newPros.map(i => i.product_detail_id == state.itemHandle.product_detail_id ? { ...i, quantity: error.quantity } : i);
+                        }
+                        return { ...prev, itemHandle: undefined, cartOrderPro: newPros };
+                    });
+                    toast.showError(error);
+                }
+            }
+        }, 300);
 
-    //         } catch (error) {
-    //             console.log(error);
-    //             toast.showError('Thêm sản phẩm thất bại!');
-    //         } finally {
-    //             setState(prev => ({ ...prev, itemHandle: undefined }));
-    //         }
-    //     }, 300);
+        (async () => {
+            if (state.itemHandle.isDel) {
+                try {
+                    await apiDelOrderCart(state.itemHandle.id);
+                    toast.showSuccess('Xoá sản phẩm thành công!')
+                    const newPros = state.cartOrderPro.filter(i => i.product_detail_id != state.itemHandle.product_detail_id);
+                    setState(prev => ({ ...prev, itemHandle: undefined, cartOrderPro: newPros }));
+                } catch (error: any) {
+                    console.log(error);
+                    setState(prev => ({ ...prev, itemHandle: undefined }));
+                    toast.showError(error);
+                }
+            }
+        })();
 
-    //     return () => clearTimeout(timeout);
-    // }, [state.itemHandle]);
+        return () => clearTimeout(timeout);
+    }, [state.itemHandle]);
+
+    const fetchApiBillDetail = useCallback(async () => {
+
+    }, []);
+
+    const handleSumitOrderPros = useCallback(async () => {
+        try {
+            setState(prev => ({ ...prev, loadingBtn: true }));
+            await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: 'BILL-67239AB7BACB3' });
+            toast.showSuccess('Đặt món thành công!');
+            const newPros = state.cartOrderPro.filter(i => !state.checkedOrder.includes(i.id));
+            setState(prev => ({ ...prev, loadingBtn: false, checkedOrder: [], cartOrderPro: newPros }));
+        } catch (error: any) {
+            console.log(error);
+            toast.showError(error);
+            setState(prev => ({ ...prev, loadingBtn: false }));
+        }
+    }, [state.checkedOrder]);
 
     const getApiProByCateId = useCallback(async (id: number) => {
         try {
@@ -163,24 +243,26 @@ const OrderPage = () => {
 
     const handleAddPro = useCallback(async (item: any) => {
         setState(prev => {
-            let isExist = false;
-            const newPros = prev.cartOrderPro.map(i => {
-                if (i.id !== item.id) {
-                    return i;
-                }
-                isExist = true;
-                return {
-                    ...i,
-                    amount: i.amount + 1,
-                }
-            });
-
-            !isExist && newPros.push({ ...item, amount: 1 });
-
+            let newPros = [...prev.cartOrderPro];
+            let pro = prev.cartOrderPro.filter(i => i.product_detail_id == item.id);
+            if (pro.length > 0) {
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.id ? { ...i, quantity: i.quantity + 1 } : i);
+            } else {
+                pro = [{
+                    id: '1',
+                    product_name: item.name,
+                    product_thumbnail: item.image,
+                    size_name: item.size.name,
+                    price: item.price,
+                    quantity: 1,
+                    product_detail_id: item.id
+                }]
+                newPros.push(pro[0]);
+            }
             return {
                 ...prev,
                 cartOrderPro: newPros,
-                itemHandle: item
+                itemHandle: { ...pro[0], isAdd: true }
             }
         });
     }, []);
@@ -188,28 +270,29 @@ const OrderPage = () => {
     const handleDecraesePro = useCallback(async (item: any) => {
         setState(prev => {
             let newPros = [];
-            if (item.amount - 1 == 0) {
-                newPros = prev.cartOrderPro.filter(i => i.id !== item.id);
+            let itemHandle;
+            if (item.quantity - 1 == 0) {
+                newPros = prev.cartOrderPro.filter(i => i.product_detail_id !== item.product_detail_id);
+                itemHandle = { id: item.id, isDel: true };
             } else {
-                newPros = prev.cartOrderPro.map(i => i.id == item.id ? { ...i, amount: i.amount - 1 } : i);
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.product_detail_id ? { ...i, quantity: i.quantity - 1 } : i);
+                itemHandle = { id: item.id, quantity: item.quantity - 1, isUpdate: true };
             }
             return {
                 ...prev,
-                cartOrderPro: newPros
+                cartOrderPro: newPros,
+                itemHandle
             }
         })
     }, []);
 
     const handleDelCartPro = useCallback((id: number) => {
         setState(prev => {
-            const newPros = prev.cartOrderPro.filter(i => i.id !== id);
             return {
                 ...prev,
-                cartOrderPro: newPros,
-                checkedOrder: newPros.map(i => i.id)
+                itemHandle: { product_detail_id: id, isDel: true }
             }
         });
-        toast.showSuccess('Xoá sản phẩm thành công!')
     }, []);
 
     const handleShowModal = useCallback(() => {
@@ -255,20 +338,22 @@ const OrderPage = () => {
             </Content>
             {/* Sider order */}
             <SiderOder
-                cart={state.cartOrderPro}
+                cart={cartOrderProMemo}
                 loading={state.loadingCart}
                 onToggle={handleToggleSider}
                 onToggleCheckBox={handleToggleCheckAll}
                 onDelCartPro={handleDelCartPro}
-                checked={state.checkedOrder}
+                checked={checkedOrderMemo}
                 onIncreaseCart={handleAddPro}
                 onDecreaseCart={handleDecraesePro}
                 onCheckedPro={handleCheckedPro}
                 onShowPayment={handleShowModal}
+                loadingBtn={state.loadingBtn}
+                onOrderPro={handleSumitOrderPros}
             />
         </Layout>
         {/* Modal thanh toán */}
-        {state.showModal && <ModalPayment onCancel={handleDismissModal} onSubmit={() => {}} />}
+        {state.showModal && <ModalPayment onCancel={handleDismissModal} onSubmit={() => { }} />}
     </>
 }
 
