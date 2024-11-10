@@ -10,9 +10,10 @@ interface IProps {
     loading?: boolean;
     title?: ReactElement | string;
     footer?: ReactElement | string | boolean;
+    width?: number | null | string;
 }
 
-const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, loading, title, footer }: IProps) => {
+const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, loading, title, footer, width }: IProps) => {
 
     return <Modal
         open
@@ -24,6 +25,7 @@ const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, l
         loading={loading || false}
         title={title}
         footer={footer}
+        width={width || undefined}
     >
         {children}
     </Modal>

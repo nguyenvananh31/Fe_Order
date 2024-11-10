@@ -14,15 +14,18 @@ interface IProps {
     onDecreaseCart: (item: any) => void;
     onCheckedPro: (ids: number[]) => void;
     onShowPayment: () => void;
+    onOrderPro: () => void;
     cart: any[];
     loading: boolean;
-    checked: any[]
+    checked: any[];
+    loadingBtn: boolean;
 }
 
 
 const SiderOrder = (props: IProps) => {
     const [tab, setTab] = useState<number>(1);
-
+    console.log('Re-render side' , props.cart);
+        
     const handleChangeTab = useCallback((tab: number) => {
         setTab(tab);
     }, []);
@@ -116,12 +119,12 @@ const SiderOrder = (props: IProps) => {
                                                 <Checkbox value={i.id} />
                                                 <Flex flex={1} align="end" justify="space-between">
                                                     <Flex gap={8}>
-                                                        <img className="rounded" width={50} src={i.image ? getImageUrl(i.image) : fallBackImg} alt="Ảnh sản phẩm" />
+                                                        <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                         <Space direction="vertical" align="start">
-                                                            <p>{i.name}</p>
+                                                            <p>{i.product_name} - {i.size_name}</p>
                                                             <Flex gap={8} justify="center" align="center">
                                                                 <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
-                                                                <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.amount || 0}</p>
+                                                                <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>
                                                                 <PlusCircleOutlined onClick={() => props.onIncreaseCart(i)} className="cursor-pointer" />
                                                             </Flex>
                                                         </Space>
@@ -171,7 +174,7 @@ const SiderOrder = (props: IProps) => {
                             </div>
                         </Flex>
                         <Flex align="center" justify="center" >
-                            <Button type="primary" className="w-4/5 py-4 bg-[#00813D]">Đặt ngay</Button>
+                            <Button loading={props.loadingBtn} onClick={props.onOrderPro} type="primary" className="w-4/5 py-4 bg-[#00813D]">Đặt ngay</Button>
                         </Flex>
                         <Flex align="center" justify="center" >
                             <Button onClick={() => handleChangeTab(2)} className="w-4/5 py-4 border-[#00813D]">
@@ -227,7 +230,7 @@ const SiderOrder = (props: IProps) => {
                                     </Flex>
                                     <Divider className="my-2" />
                                     <Flex justify="space-between" align="center">
-                                        <span>01/11/2024, 08:28pm</span>
+                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
                                         <div>
                                             <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
                                             <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
@@ -260,7 +263,7 @@ const SiderOrder = (props: IProps) => {
                                     </Flex>
                                     <Divider className="my-2" />
                                     <Flex justify="space-between" align="center">
-                                        <span>01/11/2024, 08:28pm</span>
+                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
                                         <div>
                                             <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
                                             <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
