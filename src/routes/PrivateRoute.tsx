@@ -28,7 +28,7 @@ export default function PrivateRoute({ children }: IProps) {
         } catch {
             console.log('không có quyền');
             setLoading(false);
-            navigate('/' + RoutePath.HOME);
+            navigate(RoutePath.HOME);
         }
     }
 

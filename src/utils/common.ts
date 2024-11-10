@@ -4,6 +4,12 @@ export const convertPriceVND = (price: number) => {
   return price.toLocaleString('vi-VN') + 'đ';
 }
 
+export const convertPriceVNDNotSupfix = (price: number) => {
+  // Chuyển đổi số thành chuỗi với dấu chấm ngăn cách hàng nghìn
+  price = price * 1;
+  return price.toLocaleString('vi-VN', { style: 'decimal', useGrouping: true }).replace(/\./g, ',');
+}
+
 //Chuyển đổi từ dạng Date thành 1h30p20g
 export function formatDurationDate(date: Date): string {
   const now = new Date();

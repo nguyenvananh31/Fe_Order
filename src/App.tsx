@@ -2,18 +2,17 @@ import { ConfigProvider } from "antd";
 import locale from 'antd/locale/vi_VN';
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Provider } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import { Subscription } from "rxjs";
 import SpinnerLoader from './components/loader';
 import { themeToken } from "./constants/common";
-import { ProductProvider } from './context/ProductContext'; // Import ProductProvider
+import { RoutePath } from "./constants/path";
+import useToast from "./hooks/useToast";
 import { ToastProvider } from "./hooks/useToast/handling";
 import Router from "./routes";
 import { BaseEventPayload, EventBusName } from "./utils/event-bus";
 import EventBus from "./utils/event-bus/event-bus";
 import reduxStoreUtils from './utils/redux-store.utils';
-import useToast from "./hooks/useToast";
-import { useNavigate } from "react-router-dom";
-import { RoutePath } from "./constants/path";
 
 function Root({ children }: any) {
     const [mounted, setMounted] = useState<boolean>(false);
@@ -65,20 +64,17 @@ function App() {
 
     return (
         <>
-
-            <ProductProvider>
-                <Provider store={reduxStoreUtils}>
-                    <ToastProvider>
-                        <ConfigProvider locale={locale} theme={{ token: themeToken }}>
-                            <Root>
-                                <Suspense fallback={<SpinnerLoader />}>
-                                    <Router />
-                                </Suspense>
-                            </Root>
-                        </ConfigProvider>
-                    </ToastProvider>
-                </Provider>
-            </ProductProvider>
+            <Provider store={reduxStoreUtils}>
+                <ToastProvider>
+                    <ConfigProvider locale={locale} theme={{ token: themeToken }}>
+                        <Root>
+                            <Suspense fallback={<SpinnerLoader />}>
+                                <Router />
+                            </Suspense>
+                        </Root>
+                    </ConfigProvider>
+                </ToastProvider>
+            </Provider>
         </>
     );
 }

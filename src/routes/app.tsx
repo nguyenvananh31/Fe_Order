@@ -39,6 +39,9 @@ const EditProductScreen = lazy(() => import('../pages/admin/Products/components/
 //Quản lý đơn
 const BillScreen = lazy(() => import('../pages/admin/Bill/index.page'));
 
+//Page Order
+const OrderPageSceen = lazy(() => import('../pages/user/Order'));
+
 export interface IRoutesProperties {
     path: RouteProps['path'];
     name?: string;
@@ -160,6 +163,14 @@ const accountRoutes: IRoutesProperties[] = [
     }
 ];
 
+// Order page
+const orderRoutes: IRoutesProperties[] = [
+    {
+        path: RoutePath.ORDER,
+        element: <OrderPageSceen />
+    }
+]
+
 export const flattenRoutes = (routes: IRoutesProperties[]) => {
     let flatRoutes: IRoutesProperties[] = [];
     routes = routes || [];
@@ -175,5 +186,6 @@ export const flattenRoutes = (routes: IRoutesProperties[]) => {
 const privateRoutes = [...accountRoutes];
 const publicRoutes = [...authRoutes];
 
+export const orderFlattenRoutes = flattenRoutes([...orderRoutes]);
 export const publicProtectedFlattenRoutes = flattenRoutes([...publicRoutes]);
 export const privateProtectedFlattenRoutes = flattenRoutes([...privateRoutes]);

@@ -1,10 +1,9 @@
-import { Menu } from 'antd';
 import { AppstoreOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Menu } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import './SideBarsOrder.scss'
-import axios from 'axios';
 import ApiUtils from '../../../../utils/api/api.utils';
+import './SideBarsOrder.scss';
 const { SubMenu } = Menu;
 interface ISubcategory {
   id: number;
@@ -17,18 +16,34 @@ interface ICategory {
   parent_id: number;
   subcategory: ISubcategory[];
 }
+
+interface IState {
+  loading: boolean;
+  loadingBtn: boolean;
+  refresh: boolean;
+  cates: any[];
+}
+
+const initState: IState = {
+  loading: false,
+  loadingBtn: false,
+  refresh: false,
+  cates: [],
+}
+
 const SideBarsOrder: React.FC = () => {
+  const [state, setState] = useState<IState>(initState);
   const [collapsed, setCollapsed] = useState(false);
-  const [cates, setCates] = useState<ICategory[]>([]);
-  // const [subCates, setSubCates] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
+        setState(prev => ({ ...prev, loading: true }));
         const data = await apiGetCategory();
-        setCates(data.data)
+        setState(prev => ({ ...prev, loading: true,cates: data.data }));
       } catch (error) {
         console.log(error);
+        setState(prev => ({ ...prev, loading: true }));
       }
     })()
 
@@ -44,25 +59,25 @@ const SideBarsOrder: React.FC = () => {
         <h1 className={`text-mainColor1 text-2xl font-bold ${collapsed ? 'hidden' : 'block'}`}>YAGI ORDER</h1>
       </div>
       <Menu
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
+        defaultSelectedKeys={['0']}
+        // defaultOpenKeys={['sub1']}
         mode="inline"
         theme="light"
         inlineCollapsed={collapsed}
         className="h-full"
       >
         {/* Trang Order */}
-        <Menu.Item key="1" icon={<ShoppingCartOutlined />}>
+        <Menu.Item key="0" icon={<ShoppingCartOutlined />}>
           <Link to="/order">Trang Order</Link>
         </Menu.Item>
 
         {/* Danh mục */}
-        {cates.map((cate) => (
+        {state.cates.map((cate) => (
           <SubMenu key={cate.id} icon={<AppstoreOutlined />} className='capitalize' title={cate.name}>
             <Menu.Item>
               <Link className='capitalize text-[13px] ml-3' to={`cate/${cate.id}`}>{cate.name}</Link>
             </Menu.Item>
-            {cate.subcategory.map((subCate) => (
+            {cate.subcategory.map((subCate: any) => (
               <Menu.Item key={subCate.id}>
                 <Link className='capitalize text-[13px] ml-3' to={`cate/${subCate.id}`}>{subCate.name}</Link>
               </Menu.Item>

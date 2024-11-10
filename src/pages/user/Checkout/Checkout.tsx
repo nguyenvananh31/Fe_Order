@@ -55,7 +55,7 @@ const Checkout = () => {
         const res = await apiGetAddresandCustomer();
         setState(prev => ({
           ...prev, address: res.data.addresses, customer: res.data.customer,
-          addresActive: res.data.addresses.length > 0 ? res.data.addresses[0] : []
+          addresActive: res.data.addresses.length > 0 ? res.data?.addresses[0] : []
         })
         )
       } catch (error) {
@@ -72,7 +72,7 @@ const Checkout = () => {
         setState(prev => ({ ...prev, loading: true }));
         const res = await apiGetPayment();
         setState(prev => ({
-          ...prev, paymants: res.data, paymentValue: res.data[0].id
+          ...prev, paymants: res.data, paymentValue: res.data[0]?.id
         })
         )
       } catch (error) {

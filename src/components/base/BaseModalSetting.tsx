@@ -3,15 +3,17 @@ import { ReactElement } from "react";
 
 interface IProps {
     children: ReactElement | string;
-    onCancel?: () => void; 
+    onCancel: () => void; 
     onConfirm: () => void;
     okText?: ReactElement | string;
     cancelText?: ReactElement | string;
     loading?: boolean;
     title?: ReactElement | string;
+    footer?: ReactElement | string | boolean;
+    width?: number | null | string;
 }
 
-const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, loading, title }: IProps) => {
+const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, loading, title, footer, width }: IProps) => {
 
     return <Modal
         open
@@ -22,6 +24,8 @@ const BaseModalSetting = ({ children, okText, cancelText, onConfirm, onCancel, l
         onCancel={onCancel}
         loading={loading || false}
         title={title}
+        footer={footer}
+        width={width || undefined}
     >
         {children}
     </Modal>

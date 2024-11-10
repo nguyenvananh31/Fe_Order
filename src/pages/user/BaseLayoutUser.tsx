@@ -8,28 +8,16 @@ import Loading from '../../layout/users/Loading/Loading'
 import TopNav from '../../layout/users/TopNav/TopNav'
 import { BaseEventPayload, EventBusName } from '../../utils/event-bus'
 import EventBus from '../../utils/event-bus/event-bus'
-import { apiGetCart } from './Cart/utils/cart.service'
 
 function Root({ children }: any) {
 
   const [mounted, setMounted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const subscriptions = useRef<any>();
-  const { setProtoCart } = useCartStore();
+  const { refreshCartStore } = useCartStore();
 
   useEffect(() => {
-    getInnitCartStore();
-  }, []);
-
-  const getInnitCartStore = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await apiGetCart();
-      setProtoCart(res.data || []);
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
+    refreshCartStore();
   }, []);
 
   useEffect(() => {
