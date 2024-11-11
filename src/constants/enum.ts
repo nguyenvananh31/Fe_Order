@@ -54,3 +54,10 @@ export enum EPermisstionStaff {
     TABLE , 
     CUSTOMER ,
 }
+
+//Status table client
+export enum EStatusTable {
+    OPEN = 'open',
+    CLOSE = 'close',
+    PENDING = 'pending'
+}

@@ -11,6 +11,12 @@ export const showSideOder = (isOpen: boolean, orderId: number) => {
   });
 };
 
+export const handleLogout = () => {
+  EventBus.getInstance().post<any>({
+    type: EventBusName.LOGOUT_HANDLE
+  })
+}
+
 export const logout = () => {
   EventBus.getInstance().post<any>({
     type: EventBusName.LOGOUT

@@ -13,12 +13,14 @@ import Router from "./routes";
 import { BaseEventPayload, EventBusName } from "./utils/event-bus";
 import EventBus from "./utils/event-bus/event-bus";
 import reduxStoreUtils from './utils/redux-store.utils';
+import useAuth from "./hooks/redux/auth/useAuth";
 
 function Root({ children }: any) {
     const [mounted, setMounted] = useState<boolean>(false);
     const subscriptions = useRef<any>();
     const toast = useToast();
     const navigation = useNavigate();
+    const { clearStore } = useAuth();
 
     useEffect(() => {
         setMounted(true);
@@ -40,9 +42,16 @@ function Root({ children }: any) {
                     case EventBusName.INVALID_TOKEN:
                         handleLogout();
                         break;
+                    case EventBusName.LOGOUT_HANDLE:
+                        handleGetLogout();
+                        break;
                 }
             })
         )
+    }, []);
+
+    const handleGetLogout = useCallback(() => {
+        clearStore();
     }, []);
 
     const handleAlertLogout = () => {
