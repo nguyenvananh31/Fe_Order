@@ -1,7 +1,8 @@
 import { DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, RightOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Flex, QRCode, Tag } from "antd";
+import { Button, Card, Checkbox, Divider, Flex, QRCode, Skeleton, Tag } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Space } from "antd/lib";
+import moment from 'moment';
 import { memo, useCallback, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { convertPriceVNDNotSupfix } from "../../../../utils/common";
@@ -19,13 +20,15 @@ interface IProps {
     loading: boolean;
     checked: any[];
     loadingBtn: boolean;
+    loadBill: boolean;
+    billDetail: any;
+    billOnlinePro: any[];
 }
 
 
 const SiderOrder = (props: IProps) => {
     const [tab, setTab] = useState<number>(1);
-    console.log('Re-render side' , props.cart);
-        
+
     const handleChangeTab = useCallback((tab: number) => {
         setTab(tab);
     }, []);
@@ -53,27 +56,34 @@ const SiderOrder = (props: IProps) => {
             <img width={60} src='./images/logo/logo.png' alt="Logo" />
         </Flex>
         <Flex justify="space-between" align="center" className="px-4">
-            <div>
-                <p className="text-lg font-semibold mb-4">Thông tin bàn</p>
-                <Space direction="vertical" align="start">
-                    <Flex gap={8} justify="center" align="center">
-                        <InfoCircleOutlined className="text-[#00813D]" />
-                        <p className="font-bold">Số bàn: 11</p>
-                    </Flex>
-                    <Flex gap={8} justify="center" align="center">
-                        <InfoCircleOutlined className="text-[#00813D]" />
-                        <p className="font-bold">Tên khách hàng: Lê Độ</p>
-                    </Flex>
-                    <Flex gap={8} justify="center" align="center">
-                        <InfoCircleOutlined className="text-[#00813D]" />
-                        <p className="font-bold">Tổng tiền: {convertPriceVNDNotSupfix(100000)}vnđ</p>
-                    </Flex>
-                    <Flex gap={8} justify="center" align="center">
-                        <InfoCircleOutlined className="text-[#00813D]" />
-                        <p className="font-bold">Thời gian: 17:30:20 PM</p>
-                    </Flex>
-                </Space>
-            </div>
+            {
+                props.loadBill ? (
+                    <Skeleton style={{ width: '50%' }} />
+                ) :
+                    (
+                        <div>
+                            <p className="text-lg font-semibold mb-4">Thông tin bàn</p>
+                            <Space direction="vertical" align="start">
+                                <Flex gap={8} justify="center" align="center">
+                                    <InfoCircleOutlined className="text-[#00813D]" />
+                                    <p className="font-bold">Số bàn: {props.billDetail?.tableNumber}</p>
+                                </Flex>
+                                <Flex gap={8} justify="center" align="center">
+                                    <InfoCircleOutlined className="text-[#00813D]" />
+                                    <p className="font-bold">Tên khách hàng: {props.billDetail?.customerName}</p>
+                                </Flex>
+                                <Flex gap={8} justify="center" align="center">
+                                    <InfoCircleOutlined className="text-[#00813D]" />
+                                    <p className="font-bold">Tổng tiền: {convertPriceVNDNotSupfix(+props.billDetail?.totalAmount || 0)}vnđ</p>
+                                </Flex>
+                                <Flex gap={8} justify="center" align="center">
+                                    <InfoCircleOutlined className="text-[#00813D]" />
+                                    <p className="font-bold">Thời gian: {moment(props.billDetail?.orderDate || undefined, "YYYY-MM-DD HH:mm:ss").format("hh:mm:ss A")}</p>
+                                </Flex>
+                            </Space>
+                        </div>
+                    )
+            }
             <QRCode value={'-'} />
         </Flex>
         <Divider />
@@ -112,35 +122,37 @@ const SiderOrder = (props: IProps) => {
                                 )
                             }
                             {
-                                props.cart.map(i => (
-                                    <Card key={i.id} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                                        <Card.Meta title={
-                                            <Flex gap={4}>
-                                                <Checkbox value={i.id} />
-                                                <Flex flex={1} align="end" justify="space-between">
-                                                    <Flex gap={8}>
-                                                        <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
-                                                        <Space direction="vertical" align="start">
-                                                            <p>{i.product_name} - {i.size_name}</p>
-                                                            <Flex gap={8} justify="center" align="center">
-                                                                <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
-                                                                <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>
-                                                                <PlusCircleOutlined onClick={() => props.onIncreaseCart(i)} className="cursor-pointer" />
-                                                            </Flex>
-                                                        </Space>
-                                                    </Flex>
-                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                        <DeleteOutlined onClick={() => props.onDelCartPro(i.id)} className="cursor-pointer text-[#EB5757]" />
-                                                        <div>
-                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i.price)}</span>
-                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                                        </div>
+                                props.cart.map(i => {
+                                    return (
+                                        <Card key={i.id} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                            <Card.Meta title={
+                                                <Flex gap={4}>
+                                                    <Checkbox value={i.id} />
+                                                    <Flex flex={1} align="end" justify="space-between">
+                                                        <Flex gap={8}>
+                                                            <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
+                                                            <Space direction="vertical" align="start">
+                                                                <p>{i.product_name} - {i.size_name}</p>
+                                                                <Flex gap={8} justify="center" align="center">
+                                                                    <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
+                                                                    <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>
+                                                                    <PlusCircleOutlined onClick={() => props.onIncreaseCart(i)} className="cursor-pointer" />
+                                                                </Flex>
+                                                            </Space>
+                                                        </Flex>
+                                                        <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                            <DeleteOutlined onClick={() => props.onDelCartPro(i.id)} className="cursor-pointer text-[#EB5757]" />
+                                                            <div>
+                                                                <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i.price)}</span>
+                                                                <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                            </div>
+                                                        </Flex>
                                                     </Flex>
                                                 </Flex>
-                                            </Flex>
-                                        } />
-                                    </Card>
-                                ))
+                                            } />
+                                        </Card>
+                                    )
+                                })
                             }
                             {
                                 props.cart.length == 0 && !props.loading && (
@@ -206,40 +218,44 @@ const SiderOrder = (props: IProps) => {
                             </Button>
                         </Flex>
                         <div className="text-lg font-semibold">Các món đã Order</div>
-
-                        <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                            <Card.Meta title={
-                                <div className="border rounded-md p-2 oredered-card">
-                                    <Flex gap={4}>
-                                        <Flex flex={1} align="end" justify="space-between">
-                                            <Flex gap={8}>
-                                                <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
-                                                <div>
-                                                    <p>Fish Burger</p>
-                                                    <p className="text-ghost text-sm">x4</p>
-                                                </div>
+                        {
+                            props.billOnlinePro.length > 0 && 
+                            props.billOnlinePro.map((i , y) => (
+                                <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                    <Card.Meta title={
+                                        <div className="border rounded-md p-2 oredered-card">
+                                            <Flex gap={4}>
+                                                <Flex flex={1} align="end" justify="space-between">
+                                                    <Flex gap={8}>
+                                                        <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                        <div>
+                                                            <p>{i.name} - {i.size_name}</p>
+                                                            <p className="text-ghost text-sm">x{i.quantity}</p>
+                                                        </div>
+                                                    </Flex>
+                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                        <Tag color={i.status ? 'green' : 'orange'}>{i.status ? 'Hoàn thành' : 'Đang chờ'}</Tag>
+                                                        <div>
+                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i?.price || 0)}</span>
+                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                        </div>
+                                                    </Flex>
+                                                </Flex>
                                             </Flex>
-                                            <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <Tag color="orange">Đang chờ</Tag>
+                                            <Divider className="my-2" />
+                                            <Flex justify="space-between" align="center">
+                                                <span className="text-sm text-ghost">{moment(i?.time_order || undefined).format("DD/MM/YYYY, hh:mma")}</span>
                                                 <div>
-                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
+                                                    <span className="text-md font-bold">{convertPriceVNDNotSupfix(i?.price * i.quantity)}</span>
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                 </div>
                                             </Flex>
-                                        </Flex>
-                                    </Flex>
-                                    <Divider className="my-2" />
-                                    <Flex justify="space-between" align="center">
-                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
-                                        <div>
-                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
-                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                            {/* <div className="del">Huỷ món</div> */}
                                         </div>
-                                    </Flex>
-                                    <div className="del">Huỷ món</div>
-                                </div>
-                            } />
-                        </Card>
+                                    } />
+                                </Card>
+                            ))
+                        }
                         <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
                             <Card.Meta title={
                                 <div className="border rounded-md p-2">

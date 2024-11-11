@@ -4,10 +4,10 @@ import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
+import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
-import { apiAddOrderPro, apiDelOrderCart, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
-import ModalPayment from "./components/ModalPayment";
+import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
 
 interface IState {
     loading: boolean;
@@ -24,6 +24,10 @@ interface IState {
     orderedPro: any[];
     itemHandle?: any;
     showModal: boolean;
+    billOnlinePro: any[];
+    loadingBill: boolean;
+    apiCaling: boolean;
+    billDetail: any;
 }
 
 const initState: IState = {
@@ -40,6 +44,10 @@ const initState: IState = {
     cartOrderPro: [],
     orderedPro: [],
     showModal: false,
+    billOnlinePro: [],
+    apiCaling: false,
+    loadingBill: true,
+    billDetail: {}
 }
 
 const OrderPage = () => {
@@ -58,7 +66,7 @@ const OrderPage = () => {
                     if (i.product_details.length == 0) {
                         return [];
                     }
-                    return i.product_details.map((x: any) => ({ ...x, image: x.images.length > 0 ? x.images[0].name : '', name: i.name }));
+                    return i.product_details.map((x: any) => ({ ...x, image: i.thumbnail, name: i.name }));
                 })
 
                 setState(prev => ({ ...prev, loadingPro: false, products: items.flat() }));
@@ -105,23 +113,19 @@ const OrderPage = () => {
         }
 
         const timeout = setTimeout(async () => {
+            setState(prev => ({ ...prev, apiCaling: true }));
             if (state.itemHandle.isAdd) {
                 const body = {
                     ma_bill: "BILL-67239AB7BACB3",
                     product_detail_id: state.itemHandle.product_detail_id,
-                    quantity: state.itemHandle.quantity
+                    quantity: state.itemHandle.amount
                 }
                 try {
                     const res: any = await apiAddOrderPro(body);
-                    const pro = state.cartOrderPro.filter(i => i.product_detail_id == state.itemHandle.product_detail_id);
-                    if (pro.length == 0) {
-                        const newPros = state.cartOrderPro.map(i => i.product_detail_id == state.itemHandle.product_detail_id ? { ...i, id: res.data.id } : i);
-                        setState(prev => {
-                            return { ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }
-                        });
-                    } else {
-                        setState(prev => ({ ...prev, itemHandle: undefined }));
-                    }
+                    const newPros = state.cartOrderPro.map(i => i.product_detail_id == state.itemHandle.product_detail_id ? { ...i, id: res.data.id, amount: 0 } : i);
+                    setState(prev => {
+                        return { ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }
+                    });
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => {
@@ -154,28 +158,51 @@ const OrderPage = () => {
                     toast.showError(error);
                 }
             }
+            setState(prev => ({ ...prev, apiCaling: false }));
         }, 300);
 
         (async () => {
             if (state.itemHandle.isDel) {
+                setState(prev => ({ ...prev, apiCaling: true }));
                 try {
                     await apiDelOrderCart(state.itemHandle.id);
                     toast.showSuccess('Xoá sản phẩm thành công!')
-                    const newPros = state.cartOrderPro.filter(i => i.product_detail_id != state.itemHandle.product_detail_id);
-                    setState(prev => ({ ...prev, itemHandle: undefined, cartOrderPro: newPros }));
+                    const newPros = state.cartOrderPro.filter(i => i.id != state.itemHandle.id);
+                    setState(prev => ({ ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }));
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => ({ ...prev, itemHandle: undefined }));
                     toast.showError(error);
                 }
+                setState(prev => ({ ...prev, apiCaling: false }));
             }
         })();
 
         return () => clearTimeout(timeout);
     }, [state.itemHandle]);
 
-    const fetchApiBillDetail = useCallback(async () => {
+    useEffect(() => {
+        fetchApiBillDetail();
+    }, [state.refresh])
 
+    const fetchApiBillDetail = useCallback(async () => {
+        try {
+            setState(prev => ({ ...prev, loadingBill: true }));
+            const res: any = await apiGetbillDetailOnline({ ma_bill: "BILL-67239AB7BACB3" });
+            const billDetail = {
+                tableNumber: res.data.table_number,
+                customerName: res.data.khachhang?.name || 'Chưa có',
+                totalAmount: res.data.total_amount,
+                orderDate: res.data.order_date,
+            }
+            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
+                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
+                []);
+            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
+        } catch (error) {
+            console.log(error);
+            setState(prev => ({ ...prev, loadingBill: false }));
+        }
     }, []);
 
     const handleSumitOrderPros = useCallback(async () => {
@@ -184,7 +211,7 @@ const OrderPage = () => {
             await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: 'BILL-67239AB7BACB3' });
             toast.showSuccess('Đặt món thành công!');
             const newPros = state.cartOrderPro.filter(i => !state.checkedOrder.includes(i.id));
-            setState(prev => ({ ...prev, loadingBtn: false, checkedOrder: [], cartOrderPro: newPros }));
+            setState(prev => ({ ...prev, loadingBtn: false, checkedOrder: [], cartOrderPro: [...newPros] }));
         } catch (error: any) {
             console.log(error);
             toast.showError(error);
@@ -243,10 +270,14 @@ const OrderPage = () => {
 
     const handleAddPro = useCallback(async (item: any) => {
         setState(prev => {
+            if (prev.apiCaling) {
+                return prev;
+            }
             let newPros = [...prev.cartOrderPro];
             let pro = prev.cartOrderPro.filter(i => i.product_detail_id == item.id);
             if (pro.length > 0) {
-                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.id ? { ...i, quantity: i.quantity + 1 } : i);
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.id ? { ...i, quantity: i.quantity + 1, amount: (i?.amount || 0) + 1 } : i);
+                pro[0].amount = (pro[0]?.amount || 0) + 1;
             } else {
                 pro = [{
                     id: '1',
@@ -255,7 +286,8 @@ const OrderPage = () => {
                     size_name: item.size.name,
                     price: item.price,
                     quantity: 1,
-                    product_detail_id: item.id
+                    product_detail_id: item.id,
+                    amount: 1
                 }]
                 newPros.push(pro[0]);
             }
@@ -269,6 +301,9 @@ const OrderPage = () => {
 
     const handleDecraesePro = useCallback(async (item: any) => {
         setState(prev => {
+            if (prev.apiCaling) {
+                return prev;
+            }
             let newPros = [];
             let itemHandle;
             if (item.quantity - 1 == 0) {
@@ -288,9 +323,12 @@ const OrderPage = () => {
 
     const handleDelCartPro = useCallback((id: number) => {
         setState(prev => {
+            if (prev.apiCaling) {
+                return prev;
+            }
             return {
                 ...prev,
-                itemHandle: { product_detail_id: id, isDel: true }
+                itemHandle: { id, isDel: true }
             }
         });
     }, []);
@@ -350,6 +388,9 @@ const OrderPage = () => {
                 onShowPayment={handleShowModal}
                 loadingBtn={state.loadingBtn}
                 onOrderPro={handleSumitOrderPros}
+                loadBill={state.loadingBill}
+                billDetail={state.billDetail}
+                billOnlinePro={state.billOnlinePro}
             />
         </Layout>
         {/* Modal thanh toán */}
