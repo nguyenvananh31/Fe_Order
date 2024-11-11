@@ -6,7 +6,7 @@ const apiName = {
     getOrderByBillId: '/api/client/order_cart',
     cate: '/api/client/category',
     addCartPro: '/api/client/order_cart',
-    bill: '',
+    bill: '/api/client/bill_online',
     orderPro: '/api/client/oder_item'
 }
 
@@ -40,4 +40,8 @@ export const apiGetOrderCate = async () => {
 
 export const apiAddOrderPro = async (body: any) => {
     return await ApiUtils.post(apiName.addCartPro, body);
+}
+
+export const apiGetbillDetailOnline = async (body?: any) => {
+    return await ApiUtils.post<any, any>(apiName.bill, body);
 }

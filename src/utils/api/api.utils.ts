@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
   ResponseType
 } from "axios";
-import useAuth from "../../hooks/redux/auth/useAuth";
+import { handleLogout } from "../event-bus/event-bus.events";
 import localStorageUtils, { KeyStorage } from "../local-storage.utils";
 import { ResponseCode } from "./api.types";
 
@@ -96,7 +96,6 @@ const errorHandler = async (error: AxiosError) => {
   const resError: AxiosResponse<any> | undefined = error.response;
 
   const config: any = error.config;
-  console.log('resError: ', config.headers?.isRefresh);
   if (resError?.status === 402) {
     try {
       if (config.headers?.isRefresh == 'true') {
@@ -113,9 +112,8 @@ const errorHandler = async (error: AxiosError) => {
         return instance(config);
       }
     } catch (error) {
-      console.log(error);
-      const { clearStore } = useAuth();
-      clearStore();
+      console.log('error: ', error);
+      handleLogout();
     }
   }
 

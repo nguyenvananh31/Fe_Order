@@ -1,21 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CalendarFilled, SearchOutlined } from '@ant-design/icons';
-import { Input, Select, Pagination, Modal, DatePicker, message, Radio } from 'antd';
+import { DatePicker, Input, message, Modal, Pagination, Radio, Select, Spin } from 'antd';
 import axios from 'axios';
-import { log } from 'console';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { apiGetTableClient } from './utils/table.service';
+import { EStatusTable, PAGINATE_DEFAULT } from '../../../constants/enum';
 
 
 const { Option } = Select;
 
+interface IState {
+  loading: boolean;
+  loadingBtn: boolean;
+  loadingTable: boolean;
+  dataTable: any[];
+  refresh: boolean;
+  pageSize: number;
+  pageIndex: number;
+  totalTable: number;
+  showModalPayment: boolean;
+  dataPayment: any[];
+}
+
+const initState: IState = {
+  loading: false,
+  loadingBtn: false,
+  loadingTable: false,
+  dataTable: [],
+  refresh: false,
+  pageSize: PAGINATE_DEFAULT.LIMIT,
+  pageIndex: 1,
+  totalTable: 0,
+  showModalPayment: false,
+  dataPayment: [],
+}
+
 const Table = () => {
-  const [visible, setVisible] = useState(false);
-  const [tables, setTables] = useState([]);
+
+  const [state, setState] = useState<IState>(initState);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
 
   const [bookingModalVisible, setBookingModalVisible] = useState(false);
   const [orderModalVisible, setOrderModalVisible] = useState(false);
@@ -24,73 +48,102 @@ const Table = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [bookingDate, setBookingDate] = useState(null);
   const [bookingTime, setBookingTime] = useState(null);
-  const [tableDetail, setTableDetail] = useState<[]>([]);
   const [payment, setPayment] = useState('');
-  const [payments, setPayments] = useState([]);
 
 
-  // State for new "hello" modal
-  const [helloModalVisible, setHelloModalVisible] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/order_table/';
+    const fetchData = async () => {
       try {
-        const res = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
-        });
-        setTables(res.data.data.data || []);
+        setState(prev => ({ ...prev, loading: true }));
+        let conds = {
+          page: state.pageIndex
+        }
+        const res = await apiGetTableClient(conds);
+        setState(prev => ({ ...prev, loading: false, dataTable: res.data.data, totalTable: res.data.total }));
       } catch (error) {
-        console.error('Error fetching tables:', error);
-        setTables([]);
+        console.log(error);
+        setState(prev => ({ ...prev, loading: false }));
       }
-    })();
-    (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/list_payments';
-      try {
-        const { data } = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
-        });
-        // console.log(data.data);
-        setPayments(data.data);
-
-      } catch (error) {
-        console.error('Error fetching tables:', error);
-      }
-    })();
-
+    }
+    fetchData();
   }, []);
 
-  const getDetailOrder = async (tableId: any) => {
-    const url = `http://127.0.0.1:8000/api/client/order_table/${tableId}`;
+  useEffect(() => {
+    getApipayment();
+  }, []);
+
+  const getApipayment = useCallback(async () => {
     try {
-      const res = await axios.get(url, {
-        headers: {
-          'Api_key': import.meta.env.VITE_API_KEY,
-        },
-
-      });
-      console.log(res.data.data.data);
-      setTableDetail(res.data.data.data)
-      setHelloModalVisible(true); // Show the hello modal when calendar button is clicked
+      setState(prev => ({ ...prev, loading: true }));
+      const res = await apiGetTableClient();
+      setState(prev => ({ ...prev, loading: false, dataTable: res.data.data }));
     } catch (error) {
-      console.error('Error fetching tables:', error);
-      //  notification.warning()
-      alert(error.response.data.message)
+      console.log(error);
+      setState(prev => ({ ...prev, loading: false }));
     }
-  };
+  }, []);
 
-  const showDrawer = () => {
-    setVisible(true);
-  };
 
-  const onClose = () => {
-    setVisible(false);
-  };
+  // useEffect(() => {
+  //   (async () => {
+  //     const url = 'http://127.0.0.1:8000/api/client/order_table/';
+  //     try {
+  //       const res = await axios.get(url, {
+  //         headers: {
+  //           'Api_key': import.meta.env.VITE_API_KEY,
+  //         },
+  //       });
+  //       setTables(res.data.data.data || []);
+  //     } catch (error) {
+  //       console.error('Error fetching tables:', error);
+  //       setTables([]);
+  //     }
+  //   })();
+  //   (async () => {
+  //     const url = 'http://127.0.0.1:8000/api/client/list_payments';
+  //     try {
+  //       const { data } = await axios.get(url, {
+  //         headers: {
+  //           'Api_key': import.meta.env.VITE_API_KEY,
+  //         },
+  //       });
+  //       // console.log(data.data);
+  //       setPayments(data.data);
+
+  //     } catch (error) {
+  //       console.error('Error fetching tables:', error);
+  //     }
+  //   })();
+
+  // }, []);
+
+  // const getDetailOrder = async (tableId: any) => {
+  //   const url = `http://127.0.0.1:8000/api/client/order_table/${tableId}`;
+  //   try {
+  //     const res = await axios.get(url, {
+  //       headers: {
+  //         'Api_key': import.meta.env.VITE_API_KEY,
+  //       },
+
+  //     });
+  //     console.log(res.data.data.data);
+  //     setTableDetail(res.data.data.data)
+  //     setHelloModalVisible(true); // Show the hello modal when calendar button is clicked
+  //   } catch (error) {
+  //     console.error('Error fetching tables:', error);
+  //     //  notification.warning()
+  //     alert(error.response.data.message)
+  //   }
+  // };
+
+  // const showDrawer = () => {
+  //   setVisible(true);
+  // };
+
+  // const onClose = () => {
+  //   setVisible(false);
+  // };
 
   // Handle booking button click
   const handleBookingClick = (table) => {
@@ -138,10 +191,9 @@ const Table = () => {
     message.success('Booking confirmed!');
   };
 
-  const filteredTables = tables
-    .filter(table => table.table.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(table => (statusFilter ? table.status.toString() === statusFilter : true));
-  const paginatedTables = filteredTables.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const handleChangePage = useCallback((page: number) => {
+    setState(prev => ({ ...prev, pageIndex: page, refresh: !prev.refresh }));
+  }, []);
 
   return (
     <>
@@ -174,14 +226,18 @@ const Table = () => {
             onChange={(value) => setStatusFilter(value)}
             className="w-[50%] lg:w-full md:w-full active:border-mainColor2"
           >
-            <Option value="">All</Option>
-            <Option value="1">Available</Option>
-            <Option value="0">Unavailable</Option>
+            <Option value="">Tất cả</Option>
+            <Option value={EStatusTable.OPEN}>Đang mở</Option>
+            <Option value={EStatusTable.CLOSE}>Chưa mở</Option>
+            <Option value={EStatusTable.PENDING}>Đang chờ</Option>
           </Select>
         </div>
 
+        {
+          state.loading && (<Spin className='w-full' />)
+        }
         <div className="box-list-table p-0 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-[16px]">
-          {paginatedTables.map((table, index) => (
+          {state.dataTable.map((table, index) => (
             <div
               key={index}
               className={`group box-tables-item w-full bg-bodyColor border-[2px] shadow-sm rounded-md md:p-4 p-2 relative overflow-hidden ${table.status == 1 ? `hover:bg-mainColor2 border-mainColor2` : `hover:bg-mainColor1 border-mainColor1`} duration-200`}
@@ -190,7 +246,7 @@ const Table = () => {
                 #{index + 1} - {table.status == 1 ? `Available` : `Unavailable`}
               </span>
               <button className="btn-calender absolute bottom-3 right-2 z-50 bg-blue-400 text-black text-sm rounded-full w-8 h-8 mr-1 hover:bg-blue-600"
-                onClick={() => getDetailOrder(table.id)}
+              // onClick={() => getDetailOrder(table.id)}
               >
                 <CalendarFilled className='text-white' />
               </button>
@@ -222,10 +278,10 @@ const Table = () => {
         </div>
         <div className="flex justify-center mt-8">
           <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredTables.length}
-            onChange={(page) => setCurrentPage(page)}
+            current={state.pageIndex}
+            pageSize={state.pageSize}
+            total={state.totalTable}
+            onChange={handleChangePage}
           />
         </div>
       </div>
@@ -280,7 +336,7 @@ const Table = () => {
             value={payment} // Bind the selected value to state
             className="w-full grid grid-cols-3 gap-2 p-2 mx-auto "
           >
-            {payments.map((item) => (
+            {state.dataPayment.map((item) => (
               <Radio.Button value={item.id} className="flex flex-col items-center justify-center h-16 border-2  border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-mainColor2 active:scale-95">
                 {item.name}
               </Radio.Button>
@@ -290,7 +346,7 @@ const Table = () => {
         </div>
       </Modal>
       {/* "Hello" Modal */}
-      <Modal
+      {/* <Modal
         title="Danh sách đặt lịch"
         visible={helloModalVisible}
         onCancel={() => setHelloModalVisible(false)}
@@ -324,7 +380,7 @@ const Table = () => {
             ))}
           </tbody>
         </table>
-      </Modal>
+      </Modal> */}
       <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">
         <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
           <div className="max-w-2xl mx-auto text-center">
