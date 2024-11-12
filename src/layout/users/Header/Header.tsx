@@ -1,13 +1,15 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined } from '@ant-design/icons';
-import { Badge, Drawer, Image } from 'antd';
+import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, LogoutOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Drawer, Dropdown, Image } from 'antd';
+import { MenuProps } from 'antd/lib';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { RoutePath } from '../../../constants/path';
+import useAuth from '../../../hooks/redux/auth/useAuth';
 import useCartStore from '../../../hooks/redux/cart/useCartStore';
-import Navigation from '../component/Navigation/Navigation';
-import { apiDeleteCart, apiUpdateCart } from '../../../pages/user/Cart/utils/cart.service';
 import useToast from '../../../hooks/useToast';
 import useToastMessage from '../../../hooks/useToastMessage';
-import { RoutePath } from '../../../constants/path';
+import { apiDeleteCart, apiUpdateCart } from '../../../pages/user/Cart/utils/cart.service';
+import Navigation from '../component/Navigation/Navigation';
 
 interface IState {
   loading: boolean;
@@ -33,10 +35,11 @@ const Header = () => {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigate();
   const toast = useToast();
+  const { user, clearStore } = useAuth();
   const [updateCart, setUpdateCart] = useState<IUpdateCart>();
   const { cartStore, setProtoCart } = useCartStore();
   const { contextHolder, showToast } = useToastMessage();
-  const totalCart = useMemo(() => cartStore.proCarts.reduce((total: any, item: any) => total + item.quantity, 0), [cartStore])
+  const totalCart = useMemo(() => cartStore.proCarts.reduce((total: any, item: any) => total + item.quantity, 0), [cartStore]);
 
   // useEffect(() => {
   //   (async () => {
@@ -128,6 +131,56 @@ const Header = () => {
     navigation('/' + RoutePath.LOGIN);
   }, []);
 
+  const handleLogout = useCallback(() => () => {
+    clearStore();
+  }, []);
+
+  // Menu item Account
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      style: {
+        padding: 0,
+        margin: "4px"
+      },
+      label: (
+        <div className="flex items-center px-4 py-2 gap-4 min-w-[180px] rounded-primary group hover:bg-purple">
+          <Avatar className="w-[38px] h-[38px]" style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
+          <div className="flex flex-col">
+            <span className="text-primary font-semibold text-base group-hover:text-purple">Le Do</span>
+            <span className="text-ghost text-sm font-normal">Admin</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: '2',
+      style: {
+        padding: 0,
+        margin: "4px"
+      },
+      label: (
+        <div className="flex items-center px-4 py-2 gap-2 min-w-[180px] rounded-primary group hover:bg-purple">
+          <UserOutlined className="text-primary text-base group-hover:text-purple" />
+          <span className="text-primary text-base group-hover:text-purple">Quản lý tài khoản</span>
+        </div>
+      ),
+    },
+    {
+      key: '3',
+      style: {
+        padding: 0,
+        margin: "4px"
+      },
+      label: (
+        <div onClick={handleLogout()} className="flex items-center px-4 py-2 gap-2 min-w-[180px] rounded-primary group hover:bg-purple">
+          <LogoutOutlined className="text-primary text-base group-hover:text-purple" />
+          <span className="text-primary text-base group-hover:text-purple">Đăng xuất</span>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       {contextHolder}
@@ -207,7 +260,19 @@ const Header = () => {
                   </div>
                 </div>
               </Link>
-              <button className="btn uppercase text-[16px] tracking-wider text-textColor3 bg-mainColor1 rounded-md px-6 py-4 hidden md:block" onClick={gotoLogin}>Đăng nhập</button>
+              {
+                !user ? (
+                  <button className="btn uppercase text-[16px] tracking-wider text-textColor3 bg-mainColor1 rounded-md px-6 py-4 hidden md:block" onClick={gotoLogin}>Đăng nhập</button>
+                ) : (
+                  <>
+                    {/* Account */}
+                    <Dropdown menu={{ items }} placement="bottomRight" trigger={['click']}>
+                      <Avatar className="cursor-pointer w-[38px] h-[38px]" style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
+                    </Dropdown>
+                    {/* Account End */}
+                  </>
+                )
+              }
               <button className='text-3xl text-textColor1 group' onClick={showDrawer}><AlignLeftOutlined className='group-active:text-mainColor1' /></button>
             </div>
           </div>

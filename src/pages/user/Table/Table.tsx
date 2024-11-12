@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CalendarFilled, SearchOutlined } from '@ant-design/icons';
-import { DatePicker, Input, message, Modal, Pagination, Radio, Select, Spin } from 'antd';
-import axios from 'axios';
+import { Button, Input, Modal, Pagination, Select, Spin } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
-import { apiGetTableClient } from './utils/table.service';
 import { EStatusTable, PAGINATE_DEFAULT } from '../../../constants/enum';
-
+import { apiGetTableClient } from './utils/table.service';
+import useAuth from '../../../hooks/redux/auth/useAuth';
 
 const { Option } = Select;
 
@@ -20,6 +18,9 @@ interface IState {
   totalTable: number;
   showModalPayment: boolean;
   dataPayment: any[];
+  statusFilter: string;
+  searchText: string;
+  showModalHistoryOrdered: boolean;
 }
 
 const initState: IState = {
@@ -33,24 +34,22 @@ const initState: IState = {
   totalTable: 0,
   showModalPayment: false,
   dataPayment: [],
+  statusFilter: '',
+  searchText: '',
+  showModalHistoryOrdered: false,
 }
 
 const Table = () => {
 
   const [state, setState] = useState<IState>(initState);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const { user, checkPermission } = useAuth();
 
-  const [bookingModalVisible, setBookingModalVisible] = useState(false);
-  const [orderModalVisible, setOrderModalVisible] = useState(false);
-
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [bookingDate, setBookingDate] = useState(null);
-  const [bookingTime, setBookingTime] = useState(null);
-  const [payment, setPayment] = useState('');
-
-
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    checkPermission(user?.id || 0);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,7 +82,6 @@ const Table = () => {
       setState(prev => ({ ...prev, loading: false }));
     }
   }, []);
-
 
   // useEffect(() => {
   //   (async () => {
@@ -146,53 +144,76 @@ const Table = () => {
   // };
 
   // Handle booking button click
-  const handleBookingClick = (table) => {
-    setSelectedTable(table);
-    setBookingModalVisible(true);
-  };
-  const handleOrderClick = (table) => {
-    setSelectedTable(table);
-    setOrderModalVisible(true);
-  };
-  const handleOrderConfirm = async () => {
-    alert(payment)
-    console.log('Selected Gender:', payment);
-  }
+  // const handleBookingClick = (table) => {
+  //   setSelectedTable(table);
+  //   setBookingModalVisible(true);
+  // };
+  // const handleOrderClick = (table) => {
+  //   setSelectedTable(table);
+  //   setOrderModalVisible(true);
+  // };
+  // const handleOrderConfirm = async () => {
+  //   alert(payment)
+  //   console.log('Selected Gender:', payment);
+  // }
   // Handle booking confirmation
-  const handleBookingConfirm = async () => {
-    if (!phoneNumber || !bookingDate || !bookingTime) {
-      message.error('Please fill in all the booking details.');
-      return;
-    }
+  // const handleBookingConfirm = async () => {
+  //   if (!phoneNumber || !bookingDate || !bookingTime) {
+  //     message.error('Please fill in all the booking details.');
+  //     return;
+  //   }
 
-    const bookingData = {
-      table_id: selectedTable.id,
-      phone_number: phoneNumber,
-      date_order: bookingDate.format('DD-MM-YYYY'),
-      time_order: bookingTime.format('HH:mm'),
-      table_status: 1,
-    };
+  //   const bookingData = {
+  //     table_id: selectedTable.id,
+  //     phone_number: phoneNumber,
+  //     date_order: bookingDate.format('DD-MM-YYYY'),
+  //     time_order: bookingTime.format('HH:mm'),
+  //     table_status: 1,
+  //   };
 
-    console.log('Booking Data:', bookingData);
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/client/order_table/',
-      bookingData,
-      {
-        headers: {
-          'Api_key': 'X5eAbbdgwaEWF2fC2u6ZYSN8rLUCbtBzROW92ngJauftSO5gJ27HGsCzL9sw',
-        }
-      }
-    );
-    console.log(res);
-    setBookingModalVisible(false);
-    setPhoneNumber('');
-    setBookingDate(null);
-    setBookingTime(null);
-    message.success('Booking confirmed!');
-  };
+  //   console.log('Booking Data:', bookingData);
+  //   const res = await axios.post(
+  //     'http://127.0.0.1:8000/api/client/order_table/',
+  //     bookingData,
+  //     {
+  //       headers: {
+  //         'Api_key': 'X5eAbbdgwaEWF2fC2u6ZYSN8rLUCbtBzROW92ngJauftSO5gJ27HGsCzL9sw',
+  //       }
+  //     }
+  //   );
+  //   console.log(res);
+  //   setBookingModalVisible(false);
+  //   setPhoneNumber('');
+  //   setBookingDate(null);
+  //   setBookingTime(null);
+  //   message.success('Booking confirmed!');
+  // };
 
   const handleChangePage = useCallback((page: number) => {
     setState(prev => ({ ...prev, pageIndex: page, refresh: !prev.refresh }));
+  }, []);
+
+  const handleSearch = useCallback((e: any) => (type: any) => {
+    setState(prev => {
+      const params = {
+        searchText: prev.searchText,
+        statusFilter: prev.statusFilter,
+      }
+      if (type) {
+        params.searchText = e?.target?.value?.trim();
+      } else {
+        params.statusFilter = e;
+      }
+      return { ...prev, ...params }
+    })
+  }, []);
+
+  const handleDismissModal = useCallback(() => {
+    setState(prev => ({ ...prev, showModalPayment: false, showModalHistoryOrdered: false }));
+  }, []);
+
+  const handleShowModalHistory = useCallback(() => {
+    setState(prev => ({ ...prev, showModalHistoryOrdered: true }));
   }, []);
 
   return (
@@ -216,14 +237,14 @@ const Table = () => {
           <Input
             placeholder="Search table..."
             prefix={<SearchOutlined />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={state.searchText}
+            onChange={handleSearch(1)}
             className="border border-borderColor1 rounded-md flex items-center justify-between hover:border-mainColor2 w-full"
           />
           <Select
             placeholder="Filter by status"
-            value={statusFilter}
-            onChange={(value) => setStatusFilter(value)}
+            value={state.statusFilter}
+            onChange={handleSearch(0)}
             className="w-[50%] lg:w-full md:w-full active:border-mainColor2"
           >
             <Option value="">Tất cả</Option>
@@ -248,7 +269,7 @@ const Table = () => {
               <button className="btn-calender absolute bottom-3 right-2 z-50 bg-blue-400 text-black text-sm rounded-full w-8 h-8 mr-1 hover:bg-blue-600"
               // onClick={() => getDetailOrder(table.id)}
               >
-                <CalendarFilled className='text-white' />
+                <CalendarFilled className='text-white' onClick={handleShowModalHistory} />
               </button>
               <div className="table-content relative w-full group-hover:scale-[1.2] duration-300 mt-[30px]">
                 <div className={`table-img mx-auto text-center w-[60px] h-[60px] sm:w-[100px] sm:h-[100px] flex items-center justify-center border-[2px] ${table.status == 1 ? ` border-mainColor2` : ` border-mainColor1`} rounded-lg group-hover:border-bodyColor`}>
@@ -266,12 +287,17 @@ const Table = () => {
               <div
                 className={`table-acion flex items-center justify-center text-center opacity-0 translate-y-10 pt-6 duration-300 ${table.status == 1 ? `group-hover:block` : `group-hover:hidden`} group-hover:opacity-[1] group-hover:translate-y-0`}
               >
-                <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1" onClick={() => handleBookingClick(table)}>
+                {
+                  user?.roles.length > 0 && (
+                    <Button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1">Mở bàn</Button>
+                  )
+                }
+                {/* <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 m-1" onClick={() => handleBookingClick(table)}>
                   Đặt Trước
                 </button>
                 <button className="bg-mainColor3 text-black text-sm px-3 py-1 rounded-[40px] mr-1 mt-1" onClick={() => handleOrderClick(table)}>
                   Đặt Ngay
-                </button>
+                </button> */}
               </div>
             </div>
           ))}
@@ -287,9 +313,9 @@ const Table = () => {
       </div>
 
       {/* Booking Modal */}
-      <Modal
+      {/* <Modal
         title="Book a Table"
-        visible={bookingModalVisible}
+        open={bookingModalVisible}
         onCancel={() => setBookingModalVisible(false)}
         onOk={handleBookingConfirm}
         okText="Confirm"
@@ -320,11 +346,11 @@ const Table = () => {
           <Option value="19">Tối</Option>
           <Option value="">Khác</Option>
         </Select>
-      </Modal>
+      </Modal> */}
       {/* Booking Modal */}
-      <Modal
+      {/* <Modal
         title="Book a Table"
-        visible={orderModalVisible}
+        open={orderModalVisible}
         onCancel={() => setOrderModalVisible(false)}
         onOk={handleOrderConfirm}
         okText="Confirm"
@@ -344,43 +370,47 @@ const Table = () => {
 
           </Radio.Group>
         </div>
-      </Modal>
-      {/* "Hello" Modal */}
-      {/* <Modal
-        title="Danh sách đặt lịch"
-        visible={helloModalVisible}
-        onCancel={() => setHelloModalVisible(false)}
-        onOk={() => setHelloModalVisible(false)}
-        okText="OK"
-        cancelText="Cancel"
-      >
-        <table className="w-full mt-4 border-collapse">
-          <thead>
-            <tr>
-              <th className='px-2 border'>STT</th>
-              <th className='px-2 border'>Người Đặt</th>
-              <th className='px-2 border'>STĐ</th>
-              <th className='px-2 border'>Ngày Đặt</th>
-              <th className='px-2 border'>Giờ Đặt</th>
-              <th className='px-2 border'>Mô Tả</th>
-              <th className='px-2 border'>Trạng Thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableDetail.map((item, index) => (
-              <tr key={index}>
-                <td className='px-2 border'>{index + 1}</td>
-                <td className='px-2 border'>{item.user_name}</td>
-                <td className='px-2 border'>0{item.phone_number}</td>
-                <td className='px-2 border'>{item.date_oder}</td>
-                <td className='px-2 border'>{item.time_oder}</td>
-                <td className='px-2 border'>{item.description}</td>
-                <td className='px-2 border'>{item.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </Modal> */}
+      {/* History ordered */}
+      {
+        state.showModalHistoryOrdered && (
+          <Modal
+            title="Danh sách đặt lịch"
+            open
+            onCancel={handleDismissModal}
+            footer={
+              <Button onClick={handleDismissModal} type='default'>Đóng</Button>
+            }
+          >
+            <table className="w-full mt-4 border-collapse">
+              <thead>
+                <tr>
+                  <th className='px-2 border'>STT</th>
+                  <th className='px-2 border'>Người Đặt</th>
+                  <th className='px-2 border'>STĐ</th>
+                  <th className='px-2 border'>Ngày Đặt</th>
+                  <th className='px-2 border'>Giờ Đặt</th>
+                  <th className='px-2 border'>Mô Tả</th>
+                  <th className='px-2 border'>Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* {tableDetail.map((item, index) => (
+                  <tr key={index}>
+                    <td className='px-2 border'>{index + 1}</td>
+                    <td className='px-2 border'>{item.user_name}</td>
+                    <td className='px-2 border'>0{item.phone_number}</td>
+                    <td className='px-2 border'>{item.date_oder}</td>
+                    <td className='px-2 border'>{item.time_oder}</td>
+                    <td className='px-2 border'>{item.description}</td>
+                    <td className='px-2 border'>{item.status}</td>
+                  </tr>
+                ))} */}
+              </tbody>
+            </table>
+          </Modal>
+        )
+      }
       <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">
         <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
           <div className="max-w-2xl mx-auto text-center">

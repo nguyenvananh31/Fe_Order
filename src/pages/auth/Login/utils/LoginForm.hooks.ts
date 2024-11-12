@@ -9,15 +9,6 @@ export const LoginForm = () => {
   const { setAuth } = useAuth();
   const { showError , showSuccess} = useToast();
 
-  // Lấy dữ liệu từ local nếu người dùng đã từng lưu thông tin đăng nhập
-  // useEffect(() => {
-  //   const storedEmail = localStorage.getItem("rememberedEmail");
-  //   // Nếu tồn tại thì set lại dữ liệu cho form
-  //   if (storedEmail) {
-  //     form.setFieldsValue({ email: storedEmail, remember: true });
-  //   }
-  // }, [form]);
-
   // Xử lý dữ liệu khi ấn đăng nhập
   const onFinish = async (formData: {
     email: string;
