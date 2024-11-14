@@ -18,8 +18,8 @@ export const apiGetProByCateId = async (id: number) => {
     return await ApiUtils.fetch<any, any>(apiName.proByCateId + '/' + id);
 }
 
-export const apiGetOrderByBillId = async (id: string, params?: any) => {
-    return await ApiUtils.fetch<any, any>(apiName.getOrderByBillId + '/' + id, params);
+export const apiGetOrderByBillId = async (id: string) => {
+    return await ApiUtils.fetch<any, any>(apiName.getOrderByBillId + '/' + id);
 }
 
 export const apiUpdateOrderCart = async (body: any) => {

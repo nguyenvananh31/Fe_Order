@@ -5,7 +5,7 @@ import { Space } from "antd/lib";
 import moment from 'moment';
 import { memo, useCallback, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
-import { convertPriceVNDNotSupfix } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../../utils/common";
 
 interface IProps {
     onToggle: (e: boolean) => void;
@@ -16,6 +16,7 @@ interface IProps {
     onCheckedPro: (ids: number[]) => void;
     onShowPayment: () => void;
     onOrderPro: () => void;
+    onFetchBill: () => void;
     cart: any[];
     loading: boolean;
     checked: any[];
@@ -23,6 +24,7 @@ interface IProps {
     loadBill: boolean;
     billDetail: any;
     billOnlinePro: any[];
+    orderId: string;
 }
 
 
@@ -31,7 +33,10 @@ const SiderOrder = (props: IProps) => {
 
     const handleChangeTab = useCallback((tab: number) => {
         setTab(tab);
-    }, []);
+        if (tab == 2) {
+            props.onFetchBill();
+        }
+    }, [props.onFetchBill]);
 
     return <Sider
         onCollapse={props.onToggle}
@@ -84,7 +89,7 @@ const SiderOrder = (props: IProps) => {
                         </div>
                     )
             }
-            <QRCode value={'-'} />
+            <QRCode value={getUrlQrCheck() + '/' + props.orderId} />
         </Flex>
         <Divider />
         {/* Các món chưa gọi */}
@@ -219,8 +224,8 @@ const SiderOrder = (props: IProps) => {
                         </Flex>
                         <div className="text-lg font-semibold">Các món đã Order</div>
                         {
-                            props.billOnlinePro.length > 0 && 
-                            props.billOnlinePro.map((i , y) => (
+                            props.billOnlinePro.length > 0 &&
+                            props.billOnlinePro.map((i, y) => (
                                 <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
                                     <Card.Meta title={
                                         <div className="border rounded-md p-2 oredered-card">
@@ -256,38 +261,50 @@ const SiderOrder = (props: IProps) => {
                                 </Card>
                             ))
                         }
-                        <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                            <Card.Meta title={
-                                <div className="border rounded-md p-2">
-                                    <Flex gap={4}>
-                                        <Flex flex={1} align="end" justify="space-between">
-                                            <Flex gap={8}>
-                                                <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
-                                                <div>
-                                                    <p>Fish Burger</p>
-                                                    <p className="text-ghost text-sm">x4</p>
-                                                </div>
+                        {
+                            props.loadBill && (
+                                <Card loading={true} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                    <Card.Meta title={
+                                        <div className="border rounded-md p-2">
+                                            <Flex gap={4}>
+                                                <Flex flex={1} align="end" justify="space-between">
+                                                    <Flex gap={8}>
+                                                        <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                        <div>
+                                                            <p>Fish Burger</p>
+                                                            <p className="text-ghost text-sm">x4</p>
+                                                        </div>
+                                                    </Flex>
+                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                        <Tag color="green">Hoàn thành</Tag>
+                                                        <div>
+                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
+                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                        </div>
+                                                    </Flex>
+                                                </Flex>
                                             </Flex>
-                                            <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <Tag color="green">Hoàn thành</Tag>
+                                            <Divider className="my-2" />
+                                            <Flex justify="space-between" align="center">
+                                                <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
                                                 <div>
-                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
+                                                    <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                 </div>
                                             </Flex>
-                                        </Flex>
-                                    </Flex>
-                                    <Divider className="my-2" />
-                                    <Flex justify="space-between" align="center">
-                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
-                                        <div>
-                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
-                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                         </div>
-                                    </Flex>
+                                    } />
+                                </Card>
+                            )
+                        }
+                        {
+                            props.billOnlinePro.length == 0 && !props.loadBill && (
+                                <div className="text-center">
+                                    <SmileOutlined style={{ fontSize: 24 }} />
+                                    <p>Không có sản phẩm nào</p>
                                 </div>
-                            } />
-                        </Card>
+                            )
+                        }
                     </Space>
                 </div>
             )

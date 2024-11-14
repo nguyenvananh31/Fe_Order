@@ -2,6 +2,9 @@ import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
 import { Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../../../constants/path";
+import useOrder from "../../../hooks/useOrder";
 import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
 import ModalPayment from "./components/ModalPayment";
@@ -53,8 +56,48 @@ const initState: IState = {
 const OrderPage = () => {
     const [state, setState] = useState<IState>(initState);
     const toast = useToast();
+    const navigate = useNavigate();
+
+    const { orderId, clearOrder, isFisrtLoad } = useOrder();
+    
     const cartOrderProMemo = useMemo(() => state.cartOrderPro, [state.cartOrderPro]);
     const checkedOrderMemo = useMemo(() => state.checkedOrder, [state.checkedOrder]);
+    
+    if (!orderId && isFisrtLoad) {
+        toast.showError('Vui lòng quét mã Qr để đăng nhập!');
+        (async() => {
+            await navigate('/' + RoutePath.ERROR);
+        })();
+        return;
+    }
+
+    useEffect(() => {
+        if (!orderId || !isFisrtLoad) return;
+        fetchApiBillDetail();
+    }, [state.refresh, isFisrtLoad])
+
+    const fetchApiBillDetail = useCallback(async () => {
+        try {
+            setState(prev => ({ ...prev, loadingBill: true }));
+            const res: any = await apiGetbillDetailOnline({ ma_bill: orderId });
+            const billDetail = {
+                tableNumber: res.data.table_number,
+                customerName: res.data.khachhang?.name || 'Chưa có',
+                totalAmount: res.data.total_amount,
+                orderDate: res.data.order_date,
+            }
+            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
+                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
+                []);
+            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
+        } catch (error) {
+            console.log(error);
+            clearOrder();
+            toast.showError('Bàn đã được thanh toán hoặc huỷ!');
+            navigate(RoutePath.HOME);
+            return;
+        }
+    }, [isFisrtLoad]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,10 +136,11 @@ const OrderPage = () => {
     }, [state.refresh]);
 
     useEffect(() => {
+        if (!isFisrtLoad) return;
         const fetchData = async () => {
             try {
                 setState(prev => ({ ...prev, loadingCart: true }));
-                const res = await apiGetOrderByBillId("BILL-67239AB7BACB3");
+                const res = await apiGetOrderByBillId(orderId || '');
                 setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data }));
             } catch (error) {
                 console.log(error);
@@ -104,7 +148,7 @@ const OrderPage = () => {
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, isFisrtLoad]);
 
     //Handle add pro to cart order
     useEffect(() => {
@@ -116,7 +160,7 @@ const OrderPage = () => {
             setState(prev => ({ ...prev, apiCaling: true }));
             if (state.itemHandle.isAdd) {
                 const body = {
-                    ma_bill: "BILL-67239AB7BACB3",
+                    ma_bill: orderId || '',
                     product_detail_id: state.itemHandle.product_detail_id,
                     quantity: state.itemHandle.amount
                 }
@@ -181,34 +225,10 @@ const OrderPage = () => {
         return () => clearTimeout(timeout);
     }, [state.itemHandle]);
 
-    useEffect(() => {
-        fetchApiBillDetail();
-    }, [state.refresh])
-
-    const fetchApiBillDetail = useCallback(async () => {
-        try {
-            setState(prev => ({ ...prev, loadingBill: true }));
-            const res: any = await apiGetbillDetailOnline({ ma_bill: "BILL-67239AB7BACB3" });
-            const billDetail = {
-                tableNumber: res.data.table_number,
-                customerName: res.data.khachhang?.name || 'Chưa có',
-                totalAmount: res.data.total_amount,
-                orderDate: res.data.order_date,
-            }
-            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
-                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
-                []);
-            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
-        } catch (error) {
-            console.log(error);
-            setState(prev => ({ ...prev, loadingBill: false }));
-        }
-    }, []);
-
     const handleSumitOrderPros = useCallback(async () => {
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
-            await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: 'BILL-67239AB7BACB3' });
+            await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: orderId });
             toast.showSuccess('Đặt món thành công!');
             const newPros = state.cartOrderPro.filter(i => !state.checkedOrder.includes(i.id));
             setState(prev => ({ ...prev, loadingBtn: false, checkedOrder: [], cartOrderPro: [...newPros] }));
@@ -341,6 +361,8 @@ const OrderPage = () => {
         setState(prev => ({ ...prev, showModal: false }));
     }, []);
 
+    const handleClickBill = useCallback(() => {fetchApiBillDetail()}, [isFisrtLoad]);
+
     return <>
         <Layout className="min-h-[100vh]">
             <Content className="bg-[#F5F5F5]">
@@ -366,7 +388,7 @@ const OrderPage = () => {
                             size="large"
                         />
                     </Header>
-                    <Content className="max-sm:px-4 sm:mx-[50px]">
+                    <Content className="max-sm:px-4 max-sm:pt-4  sm:mx-[50px]">
                         {/* Danh mục */}
                         <CateContent data={state.cates} loading={state.loadingCate} onClickCate={handleClickCate} />
                         {/* Sản phẩm */}
@@ -391,6 +413,8 @@ const OrderPage = () => {
                 loadBill={state.loadingBill}
                 billDetail={state.billDetail}
                 billOnlinePro={state.billOnlinePro}
+                onFetchBill={handleClickBill}
+                orderId={orderId || ''}
             />
         </Layout>
         {/* Modal thanh toán */}

@@ -1,6 +1,7 @@
 //khai báo các key localstorage
 export enum KeyStorage {
     AUTH = 'AUTH',
+    ORDER = 'ORDER'
 }
 
 const localStorageUtils = {
