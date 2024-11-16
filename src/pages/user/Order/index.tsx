@@ -1,5 +1,5 @@
-import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
-import { Form, Input, Layout } from "antd";
+import { CloseOutlined, MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
+import { Drawer, Form, Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +10,9 @@ import CateContent from "./components/CateContent";
 import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
-import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
+import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "./utils/order.service";
 import ModalConfirmPayment from "./components/ModalConfirmPayment";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 interface IState {
     loading: boolean;
@@ -53,7 +54,7 @@ const initState: IState = {
     apiCaling: false,
     loadingBill: true,
     billDetail: {},
-    showConfirmPayment: true,
+    showConfirmPayment: false,
 }
 
 const OrderPage = () => {
@@ -61,16 +62,18 @@ const OrderPage = () => {
     const toast = useToast();
     const navigate = useNavigate();
 
+    const isMobile = useIsMobile();
+
     const [form] = Form.useForm();
 
     const { orderId, clearOrder, isFisrtLoad } = useOrder();
-    
+
     const cartOrderProMemo = useMemo(() => state.cartOrderPro, [state.cartOrderPro]);
     const checkedOrderMemo = useMemo(() => state.checkedOrder, [state.checkedOrder]);
-    
+
     if (!orderId && isFisrtLoad) {
         toast.showError('Vui lòng quét mã Qr để đăng nhập!');
-        (async() => {
+        (async () => {
             await navigate('/' + RoutePath.ERROR);
         })();
         return;
@@ -285,8 +288,8 @@ const OrderPage = () => {
         setState(prev => ({ ...prev, checkedOrder: ids }))
     }, []);
 
-    const handleToggleSider = useCallback((e: boolean) => {
-        setState(prev => ({ ...prev, showSider: e }));
+    const handleToggleSider = useCallback((_: any) => {
+        setState(prev => ({ ...prev, showSider: !prev.showSider }));
     }, []);
 
     const handleClickCate = useCallback((id: number) => {
@@ -358,17 +361,36 @@ const OrderPage = () => {
         });
     }, []);
 
-    const handleShowModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModal: true }));
+    const handleShowModalConfirm = useCallback(() => {
+        setState(prev => ({ ...prev, showConfirmPayment: true }));
     }, []);
 
     const handleDismissModal = useCallback(() => {
         setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false }));
     }, []);
 
-    const handleClickBill = useCallback(() => {fetchApiBillDetail()}, [isFisrtLoad]);
+    const handleClickBill = useCallback(() => { fetchApiBillDetail() }, [isFisrtLoad]);
 
-    const handleSubmitForm = useCallback(() => {form.submit()},[]);
+    const handleSubmitForm = useCallback(() => { form.submit() }, []);
+
+    const handleSaveBill = useCallback(async (values: any) => {
+        try {
+            const body = {
+                ma_bill: orderId,
+                phone: values.phone || undefined,
+                payment_id: values.payment,
+                note: values.note || undefined,
+                voucher: values.voucher || undefined
+            }
+            setState(prev => ({ ...prev, loadingBill: true }));
+            await apiSaveBill(body);
+            setState(prev => ({ ...prev, loadingBill: false, showConfirmPayment: false, showModal: true }));
+        } catch (error: any) {
+            console.log('error: ', error);
+            toast.showError(error);
+            setState(prev => ({ ...prev, loadingBill: false }));
+        }
+    }, [isFisrtLoad]);
 
     return <>
         <Layout className="min-h-[100vh]">
@@ -384,7 +406,8 @@ const OrderPage = () => {
                                 size="large"
                             />
                             <MenuFoldOutlined
-                                hidden={!state.showSider}
+                                onClick={handleToggleSider}
+                                hidden={state.showSider}
                                 className="text-2xl cursor-pointer"
                             />
                         </div>
@@ -404,30 +427,59 @@ const OrderPage = () => {
                 </Layout>
             </Content>
             {/* Sider order */}
-            <SiderOder
-                cart={cartOrderProMemo}
-                loading={state.loadingCart}
-                onToggle={handleToggleSider}
-                onToggleCheckBox={handleToggleCheckAll}
-                onDelCartPro={handleDelCartPro}
-                checked={checkedOrderMemo}
-                onIncreaseCart={handleAddPro}
-                onDecreaseCart={handleDecraesePro}
-                onCheckedPro={handleCheckedPro}
-                onShowPayment={handleShowModal}
-                loadingBtn={state.loadingBtn}
-                onOrderPro={handleSumitOrderPros}
-                loadBill={state.loadingBill}
-                billDetail={state.billDetail}
-                billOnlinePro={state.billOnlinePro}
-                onFetchBill={handleClickBill}
-                orderId={orderId || ''}
-            />
+            {
+                !isMobile && (
+                    <SiderOder
+                        cart={cartOrderProMemo}
+                        loading={state.loadingCart}
+                        onToggle={handleToggleSider}
+                        onToggleCheckBox={handleToggleCheckAll}
+                        onDelCartPro={handleDelCartPro}
+                        checked={checkedOrderMemo}
+                        onIncreaseCart={handleAddPro}
+                        onDecreaseCart={handleDecraesePro}
+                        onCheckedPro={handleCheckedPro}
+                        onShowPayment={handleShowModalConfirm}
+                        loadingBtn={state.loadingBtn}
+                        onOrderPro={handleSumitOrderPros}
+                        loadBill={state.loadingBill}
+                        billDetail={state.billDetail}
+                        billOnlinePro={state.billOnlinePro}
+                        onFetchBill={handleClickBill}
+                        orderId={orderId || ''}
+                    />
+                )
+            }
         </Layout>
         {/* Modal thông tin thanh toán */}
-        {state.showModal && <ModalPayment onCancel={handleDismissModal}/>}
+        {state.showModal && <ModalPayment
+            onCancel={handleDismissModal}
+            billPros={state.billOnlinePro}
+            billDetail={state.billDetail}
+        />
+        }
         {/* Modal xác nhận thanh toán */}
-        {state.showConfirmPayment && <ModalConfirmPayment onCancel={handleDismissModal} form={form} onSubmit={handleSubmitForm}/>}
+        {state.showConfirmPayment && <ModalConfirmPayment
+            onCancel={handleDismissModal}
+            form={form}
+            onSubmit={handleSubmitForm}
+            onSaveBill={handleSaveBill}
+        />
+        }
+        {/* Drawer sider */}
+        <Drawer
+            title={<span className="text-[#00813D] text-2xl font-bold">YaGI ORDER</span>}
+            placement={'right'}
+            closeIcon={false}
+            onClose={handleToggleSider}
+            open={state.showSider}
+            width={'100%'}
+            extra={
+                <CloseOutlined onClick={handleToggleSider} />
+            }
+        >
+            aaaa
+        </Drawer>
     </>
 }
 
