@@ -4,13 +4,12 @@ import { convertPriceVNDNotSupfix } from "../../../../utils/common";
 
 interface IProps {
     onCancel: () => void;
-    onSubmit: () => void;
 }
 
 const ModalPayment = (props: IProps) => {
 
     return <BaseModalSetting
-        onConfirm={props.onSubmit}
+        onConfirm={() => {}}
         onCancel={props.onCancel}
         title={
             <div className="text-lg font-bold text-[#00813D]">

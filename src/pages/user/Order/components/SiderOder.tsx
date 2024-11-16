@@ -3,7 +3,7 @@ import { Button, Card, Checkbox, Divider, Flex, QRCode, Skeleton, Tag } from "an
 import Sider from "antd/es/layout/Sider";
 import { Space } from "antd/lib";
 import moment from 'moment';
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../../utils/common";
 
@@ -27,9 +27,22 @@ interface IProps {
     orderId: string;
 }
 
+interface ITotal {
+    totalSale: number;
+    totalPrice: number;
+}
 
 const SiderOrder = (props: IProps) => {
     const [tab, setTab] = useState<number>(1);
+
+    const total: ITotal= useMemo(() => {
+        const pros = props.cart.filter(i => props.checked.includes(i.id));
+        const totalSale = pros.reduce((acc, curr) => acc + (+curr.sale || 0), 0);
+        const totalPrice = pros.reduce((acc, curr) => acc + (+curr.sale || +curr.price), 0);
+        return {
+            totalSale, totalPrice
+        };
+    }, [props.checked]);
 
     const handleChangeTab = useCallback((tab: number) => {
         setTab(tab);
@@ -179,14 +192,14 @@ const SiderOrder = (props: IProps) => {
                         <Flex justify="space-between" align="center" >
                             <span>Giảm giá</span>
                             <div>
-                                <span className="text-sm font-bold">-{convertPriceVNDNotSupfix(100000)}</span>
+                                <span className="text-sm font-bold">-{convertPriceVNDNotSupfix(total.totalSale)}</span>
                                 <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                             </div>
                         </Flex>
                         <Flex justify="space-between" align="center" >
                             <span className="font-bold">Tổng tiền</span>
                             <div>
-                                <span className="text-base font-bold">{convertPriceVNDNotSupfix(500000)}</span>
+                                <span className="text-base font-bold">{convertPriceVNDNotSupfix(total.totalPrice)}</span>
                                 <span className="text-[#00813D] text-sm font-bold">vnđ</span>
                             </div>
                         </Flex>

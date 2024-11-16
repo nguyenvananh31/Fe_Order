@@ -7,7 +7,7 @@ import { RootState } from "../../../utils/redux-store.utils";
 const initialState: IUser | null = getInitAuth();
 
 const auth = createSlice({
-    name: KeyStorage.AUTH,
+    name: 'AUTH',
     initialState: initialState,
     reducers: {
         changeAuth: (state: IUser | null, actions: PayloadAction<IUser | null>) => {
@@ -15,10 +15,9 @@ const auth = createSlice({
             state = !!state ? {...state, ...actions.payload} : actions.payload;
             return state;
         },
-        removeAuth: (state: IUser | null) => {
+        removeAuth: () => {
             localStorageUtils.remove(KeyStorage.AUTH);
-            state = null;
-            return state;
+            return null;
         }
     }
 })

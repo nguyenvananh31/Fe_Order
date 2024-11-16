@@ -1,19 +1,17 @@
 import { ConfigProvider } from "antd";
 import locale from 'antd/locale/vi_VN';
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { Provider } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { Subscription } from "rxjs";
 import SpinnerLoader from './components/loader';
 import { themeToken } from "./constants/common";
 import { RoutePath } from "./constants/path";
+import useAuth from "./hooks/redux/auth/useAuth";
 import useToast from "./hooks/useToast";
 import { ToastProvider } from "./hooks/useToast/handling";
 import Router from "./routes";
 import { BaseEventPayload, EventBusName } from "./utils/event-bus";
 import EventBus from "./utils/event-bus/event-bus";
-import reduxStoreUtils from './utils/redux-store.utils';
-import useAuth from "./hooks/redux/auth/useAuth";
 
 function Root({ children }: any) {
     const [mounted, setMounted] = useState<boolean>(false);
@@ -73,17 +71,15 @@ function App() {
 
     return (
         <>
-            <Provider store={reduxStoreUtils}>
-                <ToastProvider>
-                    <ConfigProvider locale={locale} theme={{ token: themeToken }}>
-                        <Root>
-                            <Suspense fallback={<SpinnerLoader />}>
-                                <Router />
-                            </Suspense>
-                        </Root>
-                    </ConfigProvider>
-                </ToastProvider>
-            </Provider>
+            <ToastProvider>
+                <ConfigProvider locale={locale} theme={{ token: themeToken }}>
+                    <Root>
+                        <Suspense fallback={<SpinnerLoader />}>
+                            <Router />
+                        </Suspense>
+                    </Root>
+                </ConfigProvider>
+            </ToastProvider>
         </>
     );
 }

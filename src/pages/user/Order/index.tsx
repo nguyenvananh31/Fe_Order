@@ -1,5 +1,5 @@
 import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
-import { Input, Layout } from "antd";
+import { Form, Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
 import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
+import ModalConfirmPayment from "./components/ModalConfirmPayment";
 
 interface IState {
     loading: boolean;
@@ -31,6 +32,7 @@ interface IState {
     loadingBill: boolean;
     apiCaling: boolean;
     billDetail: any;
+    showConfirmPayment: boolean;
 }
 
 const initState: IState = {
@@ -50,13 +52,16 @@ const initState: IState = {
     billOnlinePro: [],
     apiCaling: false,
     loadingBill: true,
-    billDetail: {}
+    billDetail: {},
+    showConfirmPayment: true,
 }
 
 const OrderPage = () => {
     const [state, setState] = useState<IState>(initState);
     const toast = useToast();
     const navigate = useNavigate();
+
+    const [form] = Form.useForm();
 
     const { orderId, clearOrder, isFisrtLoad } = useOrder();
     
@@ -358,10 +363,12 @@ const OrderPage = () => {
     }, []);
 
     const handleDismissModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModal: false }));
+        setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false }));
     }, []);
 
     const handleClickBill = useCallback(() => {fetchApiBillDetail()}, [isFisrtLoad]);
+
+    const handleSubmitForm = useCallback(() => {form.submit()},[]);
 
     return <>
         <Layout className="min-h-[100vh]">
@@ -417,8 +424,10 @@ const OrderPage = () => {
                 orderId={orderId || ''}
             />
         </Layout>
-        {/* Modal thanh toán */}
-        {state.showModal && <ModalPayment onCancel={handleDismissModal} onSubmit={() => { }} />}
+        {/* Modal thông tin thanh toán */}
+        {state.showModal && <ModalPayment onCancel={handleDismissModal}/>}
+        {/* Modal xác nhận thanh toán */}
+        {state.showConfirmPayment && <ModalConfirmPayment onCancel={handleDismissModal} form={form} onSubmit={handleSubmitForm}/>}
     </>
 }
 
