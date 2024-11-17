@@ -1,18 +1,16 @@
 import { Card, Divider, Flex, QRCode, Row, Space, Tag } from "antd";
 import moment from "moment";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
-import { useIsMobile } from "../../../../hooks/useIsMobile";
 import { convertPriceVNDNotSupfix } from "../../../../utils/common";
 
 interface IProps {
     onCancel: () => void;
     billPros: any[],
     billDetail: {}
+    isMobile: boolean;
 }
 
 const ModalPayment = (props: IProps) => {
-
-    const isMobile = useIsMobile();    
 
     return <BaseModalSetting
         onConfirm={() => { }}
@@ -28,7 +26,7 @@ const ModalPayment = (props: IProps) => {
         <Flex wrap={'wrap-reverse'} className="md:w-max" gap={16}>
             {
                 props.billPros.length > 0 && (
-                    <div className={`bg-[#F5F5F5] md:p-4 max-md:p-2 rounded-md md:w-[400px] ${isMobile ? 'flex-1' : ''}`}>
+                    <div className={`bg-[#F5F5F5] md:p-4 max-md:p-2 rounded-md md:w-[400px] ${props.isMobile ? 'flex-1' : ''}`}>
                         <div className="text-lg font-semibold text-center mb-4">Đơn hàng</div>
                         <Row gutter={[16, 16]} justify={'center'} className="px-4">
                             {
@@ -140,7 +138,7 @@ const ModalPayment = (props: IProps) => {
                     </div>
                 )
             }
-            <div className={`bg-[#F5F5F5] md:p-4 rounded-md md:w-[350px] ${isMobile ? 'flex-1 py-2 px-4' : ''}`}>
+            <div className={`bg-[#F5F5F5] md:p-4 rounded-md md:w-[350px] ${props.isMobile ? 'flex-1 py-2 px-4' : ''}`}>
                 <div className="text-lg font-semibold text-center mb-4">Thanh toán</div>
                 <div>
                     <div className="text-[#00813D] text-sm font-semibold my-2">Thông tin đơn</div>

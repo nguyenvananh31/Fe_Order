@@ -1,18 +1,19 @@
-import { CloseOutlined, MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
-import { Drawer, Form, Input, Layout } from "antd";
+import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
+import { Form, Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RoutePath } from "../../../constants/path";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 import useOrder from "../../../hooks/useOrder";
 import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
+import DrawerOrder from "./components/DrawerOrder";
+import ModalConfirmPayment from "./components/ModalConfirmPayment";
 import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
 import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "./utils/order.service";
-import ModalConfirmPayment from "./components/ModalConfirmPayment";
-import { useIsMobile } from "../../../hooks/useIsMobile";
 
 interface IState {
     loading: boolean;
@@ -34,6 +35,7 @@ interface IState {
     apiCaling: boolean;
     billDetail: any;
     showConfirmPayment: boolean;
+    showDrawer: boolean;
 }
 
 const initState: IState = {
@@ -55,6 +57,7 @@ const initState: IState = {
     loadingBill: true,
     billDetail: {},
     showConfirmPayment: false,
+    showDrawer: false,
 }
 
 const OrderPage = () => {
@@ -289,22 +292,26 @@ const OrderPage = () => {
     }, []);
 
     const handleToggleSider = useCallback((_: any) => {
-        setState(prev => ({ ...prev, showSider: !prev.showSider }));
+        setState(prev => ({ ...prev, showSider: !prev.showSider, showDrawer: prev.showSider ? false : prev.showDrawer }));
+    }, []);
+
+    const handleToggleDrawer = useCallback(() => {
+        setState(prev => ({ ...prev, showDrawer: !prev.showDrawer }));
     }, []);
 
     const handleClickCate = useCallback((id: number) => {
         getApiProByCateId(id);
     }, []);
 
-    const handleAddPro = useCallback(async (item: any) => {
+    const handleAddPro = useCallback(async (item: any) => { 
         setState(prev => {
             if (prev.apiCaling) {
                 return prev;
             }
             let newPros = [...prev.cartOrderPro];
-            let pro = prev.cartOrderPro.filter(i => i.product_detail_id == item.id);
+            let pro = prev.cartOrderPro.filter(i => i.product_detail_id == (item.product_detail_id || item.id));
             if (pro.length > 0) {
-                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.id ? { ...i, quantity: i.quantity + 1, amount: (i?.amount || 0) + 1 } : i);
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == (item.product_detail_id || item.id) ? { ...i, quantity: i.quantity + 1, amount: (i?.amount || 0) + 1 } : i);
                 pro[0].amount = (pro[0]?.amount || 0) + 1;
             } else {
                 pro = [{
@@ -396,7 +403,7 @@ const OrderPage = () => {
         <Layout className="min-h-[100vh]">
             <Content className="bg-[#F5F5F5]">
                 <Layout>
-                    <Header className="bg-transparent mt-8 mb-2  max-sm:px-4">
+                    <Header className={`bg-transparent max-sm:px-4 ${isMobile ? 'fixed top-0 right-0 left-0 bg-white min-h-[120px] z-50 py-4' : 'mt-8 mb-2 max-sm:px-4'}`}>
                         <div className="flex items-center justify-between   ">
                             <div className="text-xl font-bold">YaGI ORDER</div>
                             <Input
@@ -406,9 +413,8 @@ const OrderPage = () => {
                                 size="large"
                             />
                             <MenuFoldOutlined
-                                onClick={handleToggleSider}
-                                hidden={state.showSider}
-                                className="text-2xl cursor-pointer"
+                                onClick={handleToggleDrawer}
+                                className="text-2xl cursor-pointer xl:hidden"
                             />
                         </div>
                         <Input
@@ -418,9 +424,9 @@ const OrderPage = () => {
                             size="large"
                         />
                     </Header>
-                    <Content className="max-sm:px-4 max-sm:pt-4  sm:mx-[50px]">
+                    <Content className={`max-sm:px-4 max-lg:pt-4 sm:mx-[50px] ${isMobile ? 'mt-[120px]' : ''}`}>
                         {/* Danh mục */}
-                        <CateContent data={state.cates} loading={state.loadingCate} onClickCate={handleClickCate} />
+                        <CateContent data={state.cates} loading={state.loadingCate} onClickCate={handleClickCate} isMobile={isMobile} />
                         {/* Sản phẩm */}
                         <ProContent data={state.products} loading={state.loadingPro} onClickAdd={handleAddPro} />
                     </Content>
@@ -430,9 +436,9 @@ const OrderPage = () => {
             {
                 !isMobile && (
                     <SiderOder
+                        onToggle={handleToggleSider}
                         cart={cartOrderProMemo}
                         loading={state.loadingCart}
-                        onToggle={handleToggleSider}
                         onToggleCheckBox={handleToggleCheckAll}
                         onDelCartPro={handleDelCartPro}
                         checked={checkedOrderMemo}
@@ -456,6 +462,7 @@ const OrderPage = () => {
             onCancel={handleDismissModal}
             billPros={state.billOnlinePro}
             billDetail={state.billDetail}
+            isMobile={isMobile}
         />
         }
         {/* Modal xác nhận thanh toán */}
@@ -464,22 +471,31 @@ const OrderPage = () => {
             form={form}
             onSubmit={handleSubmitForm}
             onSaveBill={handleSaveBill}
+            isMobile={isMobile}
         />
         }
         {/* Drawer sider */}
-        <Drawer
-            title={<span className="text-[#00813D] text-2xl font-bold">YaGI ORDER</span>}
-            placement={'right'}
-            closeIcon={false}
-            onClose={handleToggleSider}
-            open={state.showSider}
-            width={'100%'}
-            extra={
-                <CloseOutlined onClick={handleToggleSider} />
-            }
-        >
-            aaaa
-        </Drawer>
+        <DrawerOrder
+            open={state.showDrawer}
+            onToggleDrawer={handleToggleDrawer}
+            isMobile={isMobile}
+            cart={cartOrderProMemo}
+            loading={state.loadingCart}
+            onToggleCheckBox={handleToggleCheckAll}
+            onDelCartPro={handleDelCartPro}
+            checked={checkedOrderMemo}
+            onIncreaseCart={handleAddPro}
+            onDecreaseCart={handleDecraesePro}
+            onCheckedPro={handleCheckedPro}
+            onShowPayment={handleShowModalConfirm}
+            loadingBtn={state.loadingBtn}
+            onOrderPro={handleSumitOrderPros}
+            loadBill={state.loadingBill}
+            billDetail={state.billDetail}
+            billOnlinePro={state.billOnlinePro}
+            onFetchBill={handleClickBill}
+            orderId={orderId || ''}
+        />
     </>
 }
 

@@ -1,14 +1,14 @@
 import { Form, Input, Radio } from "antd";
-import BaseModalSetting from "../../../../components/base/BaseModalSetting";
 import { useEffect, useState } from "react";
+import BaseModalSetting from "../../../../components/base/BaseModalSetting";
 import { apiGetPayment } from "../../Checkout/utils/checkout.service";
-import { useIsMobile } from "../../../../hooks/useIsMobile";
 
 interface IProps {
     onCancel: () => void;
     onSubmit: () => void;
     onSaveBill: (values: any) => void;
     form: any
+    isMobile: boolean;
 }
 
 interface IState {
@@ -24,7 +24,6 @@ const initState: IState = {
 const ModalConfirmPayment = (props: IProps) => {
 
     const [state, setState] = useState<IState>(initState);
-    const isMobile = useIsMobile();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,7 +49,7 @@ const ModalConfirmPayment = (props: IProps) => {
                 YaGi Thanh toán
             </div>
         }
-        width={isMobile ? '100%' : 500}
+        width={props.isMobile ? '100%' : 500}
         okText={'Thanh toán'}
         loading={state.loading}
     >
