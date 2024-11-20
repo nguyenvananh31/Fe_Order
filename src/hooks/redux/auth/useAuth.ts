@@ -3,6 +3,7 @@ import { IUser } from "../../../interFaces/common.types";
 import { changeAuth, getAuth, removeAuth } from "./reducer";
 import { useCallback } from "react";
 import { logout } from "../../../utils/event-bus/event-bus.events";
+import { apiGetOneUser } from "../../../pages/admin/Account/utils/account.service";
 
 export default function useAuth() {
     const dispatch = useDispatch();
@@ -18,11 +19,20 @@ export default function useAuth() {
         dispatch(changeAuth(user));
     }, []);
 
-
+    const checkPermission = useCallback(async (id: number) => {
+        try {
+            const res = await apiGetOneUser(id);
+            return res.data;
+        } catch {
+            console.log('không có quyền');
+            return false;
+        }
+    }, []);
 
     return {
         user,
         setAuth,
-        clearStore
+        clearStore,
+        checkPermission
     }
 }

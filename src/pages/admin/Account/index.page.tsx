@@ -123,7 +123,7 @@ export default function AccountPage() {
                         title: 'Dashboard',
                     },
                     {
-                        title: <h1 className="font-bold">Tài khoản</h1>,
+                        title: <div className="font-bold">Tài khoản</div>,
                     },
                 ]}
             />

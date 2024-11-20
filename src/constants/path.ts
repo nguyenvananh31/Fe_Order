@@ -22,6 +22,7 @@ export const RoutePath = {
     REGISTER : 'register',
     CHECKOUT : 'checkout',
     ORDER : 'order',
+    CHECK_QR: 'qr-check/:id',
     TABLE : 'table',
     CONTACT : 'contact',
     CART : 'cart',

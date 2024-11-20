@@ -1,30 +1,57 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ItemProduct from '../../../layout/users/component/ItemProduct/ItemProduct';
-
 import SliderTop from '../../../layout/users/component/SliderTop/SliderTop';
 import SliderCate from '../../../layout/users/component/SliderCate/SliderCate';
-import axios from 'axios';
+import { apiGetCateClient, apiGetProDetail } from './utils/home.service';
+import { Spin } from 'antd';
+
+interface IState {
+  loadingPro: boolean;
+  loadingBtn: boolean;
+  loadingCate: boolean;
+  proDetails: any[];
+  cates: any[];
+  refresh: boolean;
+}
+
+const initState: IState = {
+  loadingPro: true,
+  loadingCate: true,
+  loadingBtn: false,
+  proDetails: [],
+  cates: [],
+  refresh: false,
+}
+
 const Home = () => {
-  const [products, setProducts] = useState([])
+  const [state, setState] = useState<IState>(initState);
+
+  const catesMemo = useMemo(() => state.cates, [state.cates]);
 
   useEffect(() => {
     (async () => {
-      const url = 'http://127.0.0.1:8000/api/client/products_details/';
       try {
-        const res = await axios.get(url, {
-          headers: {
-            'Api_key': import.meta.env.VITE_API_KEY,
-          },
-        });
-        // console.log(res.data.data);
-        setProducts(res.data.data); // Sử dụng dấu || [] để đảm bảo products luôn là mảng
+        const res = await apiGetProDetail();
+        setState(prev => ({ ...prev, proDetails: res.data, loadingPro: false }));
       } catch (error) {
         console.error('Error fetching products:', error);
-        setProducts([]); // Trong trường hợp có lỗi, gán mảng rỗng
+        setState(prev => ({ ...prev, proDetails: [], loadingPro: false }));
       }
     })()
-  }, [setProducts]);
+  }, [state.refresh]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await apiGetCateClient();
+        setState(prev => ({ ...prev, cates: res.data, loadingCate: false }));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setState(prev => ({ ...prev, cates: [], loadingCate: false }));
+      }
+    })()
+  }, [state.refresh]);
 
   return (
     <div>
@@ -32,10 +59,16 @@ const Home = () => {
       <div className="container max-w-[1140px] md:px-20 px-6 text-center  gap-3 mx-auto mt-16">
         <h2 className='text-4xl text-mainColor2 block pb-5 font-bold'>Top Category</h2>
       </div>
-      <SliderCate />
+      <SliderCate cates={catesMemo} loadingCate={state.loadingCate} />
+        {
+          state.loadingPro && 
+          <div className='flex justify-center items-center min-h-20'>
+            <Spin />
+          </div>
+        }
       <div className="container max-w-[1140px] grid grid-cols-4 gap-10 mx-auto mt-16">
         {
-          products.map((item, index) => (
+          state.proDetails.map((item, index) => (
             <ItemProduct key={index} product={item} />
           ))
         }

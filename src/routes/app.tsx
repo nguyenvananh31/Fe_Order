@@ -41,6 +41,7 @@ const BillScreen = lazy(() => import('../pages/admin/Bill/index.page'));
 
 //Page Order
 const OrderPageSceen = lazy(() => import('../pages/user/Order'));
+const QRheckOrder = lazy(() => import('../pages/user/Order/qrCheckOrder'));
 
 export interface IRoutesProperties {
     path: RouteProps['path'];
@@ -168,7 +169,11 @@ const orderRoutes: IRoutesProperties[] = [
     {
         path: RoutePath.ORDER,
         element: <OrderPageSceen />
-    }
+    },
+    {
+        path: RoutePath.CHECK_QR,
+        element: <QRheckOrder />
+    },
 ]
 
 export const flattenRoutes = (routes: IRoutesProperties[]) => {

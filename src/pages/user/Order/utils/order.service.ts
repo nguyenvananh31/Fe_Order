@@ -7,7 +7,8 @@ const apiName = {
     cate: '/api/client/category',
     addCartPro: '/api/client/order_cart',
     bill: '/api/client/bill_online',
-    orderPro: '/api/client/oder_item'
+    orderPro: '/api/client/oder_item',
+    saveBill: '/api/client/pay_bill',
 }
 
 export const apiGetProForOrder = async () => {
@@ -18,8 +19,8 @@ export const apiGetProByCateId = async (id: number) => {
     return await ApiUtils.fetch<any, any>(apiName.proByCateId + '/' + id);
 }
 
-export const apiGetOrderByBillId = async (id: string, params?: any) => {
-    return await ApiUtils.fetch<any, any>(apiName.getOrderByBillId + '/' + id, params);
+export const apiGetOrderByBillId = async (id: string) => {
+    return await ApiUtils.fetch<any, any>(apiName.getOrderByBillId + '/' + id);
 }
 
 export const apiUpdateOrderCart = async (body: any) => {
@@ -44,4 +45,8 @@ export const apiAddOrderPro = async (body: any) => {
 
 export const apiGetbillDetailOnline = async (body?: any) => {
     return await ApiUtils.post<any, any>(apiName.bill, body);
+}
+
+export const apiSaveBill = async (body: any) => {
+    return await ApiUtils.put<any, any>(apiName.saveBill, body);
 }

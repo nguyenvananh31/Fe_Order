@@ -76,7 +76,7 @@ const ProContent = ({ data, loading, onClickAdd }: IProps) => {
                                                     </div>
                                                 </Flex>
                                             </Space>
-                                            <Button onClick={() => onClickAdd(i)}  type="primary" className="bg-[#00813D]" icon={<PlusOutlined />} />
+                                            <Button onClick={() => onClickAdd(i)}  type="primary" className="bg-[#00813D] mx-2" icon={<PlusOutlined />} />
                                         </Flex>
                                     }
                                     className=""

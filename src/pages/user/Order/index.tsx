@@ -1,13 +1,19 @@
 import { MenuFoldOutlined, SearchOutlined } from "@ant-design/icons";
-import { Input, Layout } from "antd";
+import { Form, Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../../../constants/path";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import useOrder from "../../../hooks/useOrder";
 import useToast from "../../../hooks/useToast";
 import CateContent from "./components/CateContent";
+import DrawerOrder from "./components/DrawerOrder";
+import ModalConfirmPayment from "./components/ModalConfirmPayment";
 import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
-import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiUpdateOrderCart } from "./utils/order.service";
+import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "./utils/order.service";
 
 interface IState {
     loading: boolean;
@@ -28,6 +34,8 @@ interface IState {
     loadingBill: boolean;
     apiCaling: boolean;
     billDetail: any;
+    showConfirmPayment: boolean;
+    showDrawer: boolean;
 }
 
 const initState: IState = {
@@ -47,14 +55,60 @@ const initState: IState = {
     billOnlinePro: [],
     apiCaling: false,
     loadingBill: true,
-    billDetail: {}
+    billDetail: {},
+    showConfirmPayment: false,
+    showDrawer: false,
 }
 
 const OrderPage = () => {
     const [state, setState] = useState<IState>(initState);
     const toast = useToast();
+    const navigate = useNavigate();
+
+    const isMobile = useIsMobile();
+
+    const [form] = Form.useForm();
+
+    const { orderId, clearOrder, isFisrtLoad } = useOrder();
+
     const cartOrderProMemo = useMemo(() => state.cartOrderPro, [state.cartOrderPro]);
     const checkedOrderMemo = useMemo(() => state.checkedOrder, [state.checkedOrder]);
+
+    if (!orderId && isFisrtLoad) {
+        toast.showError('Vui lòng quét mã Qr để đăng nhập!');
+        (async () => {
+            await navigate('/' + RoutePath.ERROR);
+        })();
+        return;
+    }
+
+    useEffect(() => {
+        if (!orderId || !isFisrtLoad) return;
+        fetchApiBillDetail();
+    }, [state.refresh, isFisrtLoad])
+
+    const fetchApiBillDetail = useCallback(async () => {
+        try {
+            setState(prev => ({ ...prev, loadingBill: true }));
+            const res: any = await apiGetbillDetailOnline({ ma_bill: orderId });
+            const billDetail = {
+                tableNumber: res.data.table_number,
+                customerName: res.data.khachhang?.name || 'Chưa có',
+                totalAmount: res.data.total_amount,
+                orderDate: res.data.order_date,
+            }
+            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
+                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
+                []);
+            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
+        } catch (error) {
+            console.log(error);
+            clearOrder();
+            toast.showError('Bàn đã được thanh toán hoặc huỷ!');
+            navigate(RoutePath.HOME);
+            return;
+        }
+    }, [isFisrtLoad]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,10 +147,11 @@ const OrderPage = () => {
     }, [state.refresh]);
 
     useEffect(() => {
+        if (!isFisrtLoad) return;
         const fetchData = async () => {
             try {
                 setState(prev => ({ ...prev, loadingCart: true }));
-                const res = await apiGetOrderByBillId("BILL-67239AB7BACB3");
+                const res = await apiGetOrderByBillId(orderId || '');
                 setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data }));
             } catch (error) {
                 console.log(error);
@@ -104,7 +159,7 @@ const OrderPage = () => {
             }
         }
         fetchData();
-    }, [state.refresh]);
+    }, [state.refresh, isFisrtLoad]);
 
     //Handle add pro to cart order
     useEffect(() => {
@@ -116,7 +171,7 @@ const OrderPage = () => {
             setState(prev => ({ ...prev, apiCaling: true }));
             if (state.itemHandle.isAdd) {
                 const body = {
-                    ma_bill: "BILL-67239AB7BACB3",
+                    ma_bill: orderId || '',
                     product_detail_id: state.itemHandle.product_detail_id,
                     quantity: state.itemHandle.amount
                 }
@@ -126,6 +181,7 @@ const OrderPage = () => {
                     setState(prev => {
                         return { ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }
                     });
+                    toast.showSuccess('Thêm món thành công!');
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => {
@@ -146,6 +202,7 @@ const OrderPage = () => {
                 try {
                     await apiUpdateOrderCart(body);
                     setState(prev => ({ ...prev, itemHandle: undefined }));
+                    toast.showSuccess('Cập nhật món thành công!');
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => {
@@ -181,34 +238,10 @@ const OrderPage = () => {
         return () => clearTimeout(timeout);
     }, [state.itemHandle]);
 
-    useEffect(() => {
-        fetchApiBillDetail();
-    }, [state.refresh])
-
-    const fetchApiBillDetail = useCallback(async () => {
-        try {
-            setState(prev => ({ ...prev, loadingBill: true }));
-            const res: any = await apiGetbillDetailOnline({ ma_bill: "BILL-67239AB7BACB3" });
-            const billDetail = {
-                tableNumber: res.data.table_number,
-                customerName: res.data.khachhang?.name || 'Chưa có',
-                totalAmount: res.data.total_amount,
-                orderDate: res.data.order_date,
-            }
-            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
-                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
-                []);
-            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
-        } catch (error) {
-            console.log(error);
-            setState(prev => ({ ...prev, loadingBill: false }));
-        }
-    }, []);
-
     const handleSumitOrderPros = useCallback(async () => {
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
-            await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: 'BILL-67239AB7BACB3' });
+            await apiOrderPros({ id_order_cart: state.checkedOrder, ma_bill: orderId });
             toast.showSuccess('Đặt món thành công!');
             const newPros = state.cartOrderPro.filter(i => !state.checkedOrder.includes(i.id));
             setState(prev => ({ ...prev, loadingBtn: false, checkedOrder: [], cartOrderPro: [...newPros] }));
@@ -260,8 +293,12 @@ const OrderPage = () => {
         setState(prev => ({ ...prev, checkedOrder: ids }))
     }, []);
 
-    const handleToggleSider = useCallback((e: boolean) => {
-        setState(prev => ({ ...prev, showSider: e }));
+    const handleToggleSider = useCallback((_: any) => {
+        setState(prev => ({ ...prev, showSider: !prev.showSider, showDrawer: prev.showSider ? false : prev.showDrawer }));
+    }, []);
+
+    const handleToggleDrawer = useCallback(() => {
+        setState(prev => ({ ...prev, showDrawer: !prev.showDrawer }));
     }, []);
 
     const handleClickCate = useCallback((id: number) => {
@@ -274,9 +311,9 @@ const OrderPage = () => {
                 return prev;
             }
             let newPros = [...prev.cartOrderPro];
-            let pro = prev.cartOrderPro.filter(i => i.product_detail_id == item.id);
+            let pro = prev.cartOrderPro.filter(i => i.product_detail_id == (item.product_detail_id || item.id));
             if (pro.length > 0) {
-                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.id ? { ...i, quantity: i.quantity + 1, amount: (i?.amount || 0) + 1 } : i);
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == (item.product_detail_id || item.id) ? { ...i, quantity: i.quantity + 1, amount: (i?.amount || 0) + 1 } : i);
                 pro[0].amount = (pro[0]?.amount || 0) + 1;
             } else {
                 pro = [{
@@ -284,7 +321,7 @@ const OrderPage = () => {
                     product_name: item.name,
                     product_thumbnail: item.image,
                     size_name: item.size.name,
-                    price: item.price,
+                    price: +item.sale || item.price,
                     quantity: 1,
                     product_detail_id: item.id,
                     amount: 1
@@ -333,19 +370,42 @@ const OrderPage = () => {
         });
     }, []);
 
-    const handleShowModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModal: true }));
+    const handleShowModalConfirm = useCallback(() => {
+        setState(prev => ({ ...prev, showConfirmPayment: true }));
     }, []);
 
     const handleDismissModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModal: false }));
+        setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false }));
     }, []);
+
+    const handleClickBill = useCallback(() => { fetchApiBillDetail() }, [isFisrtLoad]);
+
+    const handleSubmitForm = useCallback(() => { form.submit() }, []);
+
+    const handleSaveBill = useCallback(async (values: any) => {
+        try {
+            const body = {
+                ma_bill: orderId,
+                phone: values.phone || undefined,
+                payment_id: values.payment,
+                note: values.note || undefined,
+                voucher: values.voucher || undefined
+            }
+            setState(prev => ({ ...prev, loadingBill: true }));
+            await apiSaveBill(body);
+            setState(prev => ({ ...prev, loadingBill: false, showConfirmPayment: false, showModal: true }));
+        } catch (error: any) {
+            console.log('error: ', error);
+            toast.showError(error);
+            setState(prev => ({ ...prev, loadingBill: false }));
+        }
+    }, [isFisrtLoad]);
 
     return <>
         <Layout className="min-h-[100vh]">
             <Content className="bg-[#F5F5F5]">
                 <Layout>
-                    <Header className="bg-transparent mt-8 mb-2  max-sm:px-4">
+                    <Header className={`bg-transparent max-sm:px-4 ${isMobile ? 'fixed top-0 right-0 left-0 bg-white min-h-[120px] z-50 py-4' : 'mt-8 mb-2 max-sm:px-4'}`}>
                         <div className="flex items-center justify-between   ">
                             <div className="text-xl font-bold">YaGI ORDER</div>
                             <Input
@@ -355,8 +415,8 @@ const OrderPage = () => {
                                 size="large"
                             />
                             <MenuFoldOutlined
-                                hidden={!state.showSider}
-                                className="text-2xl cursor-pointer"
+                                onClick={handleToggleDrawer}
+                                className="text-2xl cursor-pointer xl:hidden"
                             />
                         </div>
                         <Input
@@ -366,35 +426,79 @@ const OrderPage = () => {
                             size="large"
                         />
                     </Header>
-                    <Content className="max-sm:px-4 sm:mx-[50px]">
+                    <Content className={`max-sm:px-4 max-lg:pt-4 sm:mx-[50px] ${isMobile ? 'mt-[120px]' : ''}`}>
                         {/* Danh mục */}
-                        <CateContent data={state.cates} loading={state.loadingCate} onClickCate={handleClickCate} />
+                        <CateContent data={state.cates} loading={state.loadingCate} onClickCate={handleClickCate} isMobile={isMobile} />
                         {/* Sản phẩm */}
                         <ProContent data={state.products} loading={state.loadingPro} onClickAdd={handleAddPro} />
                     </Content>
                 </Layout>
             </Content>
             {/* Sider order */}
-            <SiderOder
-                cart={cartOrderProMemo}
-                loading={state.loadingCart}
-                onToggle={handleToggleSider}
-                onToggleCheckBox={handleToggleCheckAll}
-                onDelCartPro={handleDelCartPro}
-                checked={checkedOrderMemo}
-                onIncreaseCart={handleAddPro}
-                onDecreaseCart={handleDecraesePro}
-                onCheckedPro={handleCheckedPro}
-                onShowPayment={handleShowModal}
-                loadingBtn={state.loadingBtn}
-                onOrderPro={handleSumitOrderPros}
-                loadBill={state.loadingBill}
-                billDetail={state.billDetail}
-                billOnlinePro={state.billOnlinePro}
-            />
+            {
+                !isMobile && (
+                    <SiderOder
+                        onToggle={handleToggleSider}
+                        cart={cartOrderProMemo}
+                        loading={state.loadingCart}
+                        onToggleCheckBox={handleToggleCheckAll}
+                        onDelCartPro={handleDelCartPro}
+                        checked={checkedOrderMemo}
+                        onIncreaseCart={handleAddPro}
+                        onDecreaseCart={handleDecraesePro}
+                        onCheckedPro={handleCheckedPro}
+                        onShowPayment={handleShowModalConfirm}
+                        loadingBtn={state.loadingBtn}
+                        onOrderPro={handleSumitOrderPros}
+                        loadBill={state.loadingBill}
+                        billDetail={state.billDetail}
+                        billOnlinePro={state.billOnlinePro}
+                        onFetchBill={handleClickBill}
+                        orderId={orderId || ''}
+                        isMobile={isMobile}
+                    />
+                )
+            }
         </Layout>
-        {/* Modal thanh toán */}
-        {state.showModal && <ModalPayment onCancel={handleDismissModal} onSubmit={() => { }} />}
+        {/* Modal thông tin thanh toán */}
+        {state.showModal && <ModalPayment
+            onCancel={handleDismissModal}
+            billPros={state.billOnlinePro}
+            billDetail={state.billDetail}
+            isMobile={isMobile}
+        />
+        }
+        {/* Modal xác nhận thanh toán */}
+        {state.showConfirmPayment && <ModalConfirmPayment
+            onCancel={handleDismissModal}
+            form={form}
+            onSubmit={handleSubmitForm}
+            onSaveBill={handleSaveBill}
+            isMobile={isMobile}
+        />
+        }
+        {/* Drawer sider */}
+        <DrawerOrder
+            open={state.showDrawer}
+            onToggleDrawer={handleToggleDrawer}
+            isMobile={isMobile}
+            cart={cartOrderProMemo}
+            loading={state.loadingCart}
+            onToggleCheckBox={handleToggleCheckAll}
+            onDelCartPro={handleDelCartPro}
+            checked={checkedOrderMemo}
+            onIncreaseCart={handleAddPro}
+            onDecreaseCart={handleDecraesePro}
+            onCheckedPro={handleCheckedPro}
+            onShowPayment={handleShowModalConfirm}
+            loadingBtn={state.loadingBtn}
+            onOrderPro={handleSumitOrderPros}
+            loadBill={state.loadingBill}
+            billDetail={state.billDetail}
+            billOnlinePro={state.billOnlinePro}
+            onFetchBill={handleClickBill}
+            orderId={orderId || ''}
+        />
     </>
 }
 

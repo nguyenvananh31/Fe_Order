@@ -14,7 +14,7 @@ const initialState: IState = {
 }
 
 const cartStore = createSlice({
-    name: 'CART_STORE',
+    name: 'CART',
     initialState,
     reducers: {
         addPro: (state: IState, actions: PayloadAction<ICart[]>) => {

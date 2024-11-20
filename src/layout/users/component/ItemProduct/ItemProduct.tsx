@@ -53,22 +53,33 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
   // Xử lý sự kiện khi nhấn nút Add to Cart
   const handleAddToCart = useCallback(async() => {
     try {
-      const data = {
+      let data: any = {
         product_detail_id: firstDetail.id,
         product_id: product.id,
         quantity: 1,
         price: firstDetail.price,
         size_id: firstDetail.size.id,
       }
-      const res = await apiAddtoCart(data);      
-      const newCart = [res, ...cartStore.proCarts];
-      setProtoCart(newCart); 
+      const res = await apiAddtoCart(data);
+      let newCart = [...cartStore.proCarts];
+      const exitedItem = newCart.filter(i => i.product_detail_id == data.product_detail_id);
+      if (exitedItem.length > 0) {
+        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? {...i, quantity: i.quantity + 1} : i);
+      }else {
+        data = {
+          ...data,
+          product_price: data.price,
+          price: res.data.price,
+        }
+        newCart.push(data);
+      }
+      setProtoCart(newCart);
       showSuccess('Thêm vào giỏ hàng thành công!');
     } catch (error) {
       console.log(error);
       showError('Thêm vào giỏ hàng thất bại!');
     }
-  }, []);
+  }, [cartStore.proCarts]);
 
 
   //Api add to cart
