@@ -243,7 +243,7 @@ const RightContent = ({props}: IProps) => {
                                                     <Flex gap={4} vertical={true} justify="space-between" align="end">
                                                         <Tag color={i.status ? 'green' : 'orange'}>{i.status ? 'Hoàn thành' : 'Đang chờ'}</Tag>
                                                         <div>
-                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i?.price || 0)}</span>
+                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) || 0)}</span>
                                                             <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                         </div>
                                                     </Flex>
@@ -253,7 +253,7 @@ const RightContent = ({props}: IProps) => {
                                             <Flex justify="space-between" align="center">
                                                 <span className="text-sm text-ghost">{moment(i?.time_order || undefined).format("DD/MM/YYYY, hh:mma")}</span>
                                                 <div>
-                                                    <span className="text-md font-bold">{convertPriceVNDNotSupfix(i?.price * i.quantity)}</span>
+                                                    <span className="text-md font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) * i.quantity)}</span>
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                 </div>
                                             </Flex>

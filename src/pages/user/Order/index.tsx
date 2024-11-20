@@ -181,6 +181,7 @@ const OrderPage = () => {
                     setState(prev => {
                         return { ...prev, itemHandle: undefined, cartOrderPro: [...newPros] }
                     });
+                    toast.showSuccess('Thêm món thành công!');
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => {
@@ -201,6 +202,7 @@ const OrderPage = () => {
                 try {
                     await apiUpdateOrderCart(body);
                     setState(prev => ({ ...prev, itemHandle: undefined }));
+                    toast.showSuccess('Cập nhật món thành công!');
                 } catch (error: any) {
                     console.log(error);
                     setState(prev => {
@@ -303,7 +305,7 @@ const OrderPage = () => {
         getApiProByCateId(id);
     }, []);
 
-    const handleAddPro = useCallback(async (item: any) => { 
+    const handleAddPro = useCallback(async (item: any) => {
         setState(prev => {
             if (prev.apiCaling) {
                 return prev;
@@ -319,7 +321,7 @@ const OrderPage = () => {
                     product_name: item.name,
                     product_thumbnail: item.image,
                     size_name: item.size.name,
-                    price: item.price,
+                    price: +item.sale || item.price,
                     quantity: 1,
                     product_detail_id: item.id,
                     amount: 1
@@ -453,6 +455,7 @@ const OrderPage = () => {
                         billOnlinePro={state.billOnlinePro}
                         onFetchBill={handleClickBill}
                         orderId={orderId || ''}
+                        isMobile={isMobile}
                     />
                 )
             }

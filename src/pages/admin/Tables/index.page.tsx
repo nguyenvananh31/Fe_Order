@@ -2,6 +2,7 @@ import { Breadcrumb, Card, Col, Row } from "antd";
 import useTable from "./utils/table.hooks";
 import { PlusOutlined } from "@ant-design/icons";
 import TableAddModal from "./components/ModalAddTable";
+import { EStatusTable } from "../../../constants/enum";
 
 export default function TablePage() {
 
@@ -29,7 +30,7 @@ export default function TablePage() {
                     !!state.data.length && state.data.map((item: any) => (
                         <Col key={item.id}>
                             <Card
-                                className={`border ${!!item.status ? 'border-sky-600 bg-sky-100' : 'border-ghost'} cursor-pointer`}
+                                className={`border ${item.reservation_status == EStatusTable.OPEN ? 'border-sky-600 bg-sky-100' : 'border-ghost'} cursor-pointer`}
                                 onClick={() => hooks.openModalTable(item.id)}
                                 styles={{
                                     body: {

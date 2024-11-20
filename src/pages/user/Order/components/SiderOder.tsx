@@ -21,6 +21,7 @@ interface IProps {
     billDetail: any;
     billOnlinePro: any[];
     orderId: string;
+    isMobile: boolean;
 }
 
 const SiderOrder = (props: IProps) => {
