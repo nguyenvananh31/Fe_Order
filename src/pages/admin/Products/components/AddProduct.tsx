@@ -179,7 +179,7 @@ export default function AddProduct() {
             formData.append(`product_details[${index}][size_id]`, variant.size_id)
             formData.append(`product_details[${index}][price]`, variant.price)
             formData.append(`product_details[${index}][quantity]`, variant.quantity)
-            formData.append(`product_details[${index}][sale]`, variant.sale)
+            formData.append(`product_details[${index}][sale]`, variant?.sale || 0)
             variant.images.forEach((item: any) => {
                 formData.append(`product_details[${index}][images][][file]`, item.originFileObj as FileType)
             });
@@ -216,7 +216,7 @@ export default function AddProduct() {
                     title: 'Dashboard',
                 },
                 {
-                    title: <h1 className="font-bold">Thêm sản phẩm</h1>,
+                    title: <div className="font-bold">Thêm sản phẩm</div>,
                 },
             ]}
         />
@@ -242,7 +242,7 @@ export default function AddProduct() {
                 layout="vertical"
                 onFinish={handleAdd}
                 initialValues={{
-                    variant: [{ quantity: 0, sale: 0 }]
+                    variant: [{ quantity: 1 }]
                 }}
             >
                 <Row gutter={40} className="px-4 pb-4">
@@ -351,7 +351,7 @@ export default function AddProduct() {
                                                     }
                                                 ]}
                                             >
-                                                <Input placeholder="Nhập số lượng" type="number" />
+                                                <Input placeholder="Nhập số lượng" type="number"/>
                                             </Form.Item>
                                         </Col>
                                         <Col xs={24} md={12}>
@@ -378,9 +378,12 @@ export default function AddProduct() {
                                                 label="Giảm giá"
                                                 name={[field.name, 'sale']}
                                                 rules={[
-                                                    { required: true, message: 'Giảm giá sản phẩm không được bỏ trống!' },
+                                                    // { required: true, message: 'Giảm giá sản phẩm không được bỏ trống!' },
                                                     {
                                                         validator: (_, value) => {
+                                                            if (!value?.trim()) {
+                                                                return Promise.resolve();
+                                                            }
                                                             if (value < 0) {
                                                                 return Promise.reject('Giảm giá không thể là số âm!');
                                                             }

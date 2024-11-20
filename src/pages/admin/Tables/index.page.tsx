@@ -20,7 +20,7 @@ export default function TablePage() {
                     title: 'Dashboard',
                 },
                 {
-                    title: <h1 className="font-bold">Danh sách bàn</h1>,
+                    title: <div className="font-bold">Danh sách bàn</div>,
                 },
             ]}
         />

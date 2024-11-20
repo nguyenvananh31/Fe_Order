@@ -109,7 +109,7 @@ export default function SizePage() {
                         title: 'Dashboard',
                     },
                     {
-                        title: <h1 className="font-bold">Kích thước</h1>,
+                        title: <div className="font-bold">Kích thước</div>,
                     },
                 ]}
             />

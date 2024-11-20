@@ -251,7 +251,7 @@ export default function EditProduct() {
             formData.append(`product_details[${index}][size_id]`, variant.size_id)
             formData.append(`product_details[${index}][price]`, variant.price)
             formData.append(`product_details[${index}][quantity]`, variant.quantity)
-            formData.append(`product_details[${index}][sale]`, variant.sale)
+            formData.append(`product_details[${index}][sale]`, variant?.sale || 0)
             variant.images.forEach((item: any) => {
                 if (!item.originFileObj) {
                     formData.append(`product_details[${index}][image_old][]`, item.uid);
@@ -294,7 +294,7 @@ export default function EditProduct() {
                     title: 'Dashboard',
                 },
                 {
-                    title: <h1 className="font-bold">Chi tiết sản phẩm</h1>,
+                    title: <div className="font-bold">Chi tiết sản phẩm</div>,
                 },
             ]}
         />
@@ -322,7 +322,7 @@ export default function EditProduct() {
                 layout="vertical"
                 onFinish={handleEdit}
                 initialValues={{
-                    variant: [{ quantity: 0, sale: 0 }]
+                    variant: [{ quantity: 0 }]
                 }}
             >
                 <Row gutter={40} className="px-4 pb-4">
@@ -462,7 +462,7 @@ export default function EditProduct() {
                                                 label="Giảm giá"
                                                 name={[field.name, 'sale']}
                                                 rules={[
-                                                    { required: true, message: 'Giảm giá sản phẩm không được bỏ trống!' },
+                                                    // { required: true, message: 'Giảm giá sản phẩm không được bỏ trống!' },
                                                     {
                                                         validator: (_, value) => {
                                                             if (value < 0) {

@@ -134,7 +134,7 @@ export default function ProductPage() {
                     title: 'Dashboard',
                 },
                 {
-                    title: <h1 className="font-bold">Sản phẩm</h1>,
+                    title: <div className="font-bold">Sản phẩm</div>,
                 },
             ]}
         />

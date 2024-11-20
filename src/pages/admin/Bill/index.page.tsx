@@ -127,7 +127,7 @@ export default function CatePage() {
                         title: 'Dashboard',
                     },
                     {
-                        title: <h1 className="font-bold">Quản lý đơn</h1>,
+                        title: <div className="font-bold">Quản lý đơn</div>,
                     },
                 ]}
             />
