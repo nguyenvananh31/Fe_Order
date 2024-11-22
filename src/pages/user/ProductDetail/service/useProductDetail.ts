@@ -1,31 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// src/hooks/useProductDetail.ts
-import { useEffect, useState } from 'react';
-import { fetchProductById, fetchRelatedProducts } from './productService';
+// import { useEffect, useState } from 'react';
+// import { fetchProductById } from './productService';
 
-export const useProductDetail = (productId: string | number) => {
-  const [product, setProduct] = useState<any>(null);
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const getProductData = async () => {
-      try {
-        const fetchedProduct = await fetchProductById(productId);
-        setProduct(fetchedProduct);
 
-        const relatedProducts = await fetchRelatedProducts(fetchedProduct.category.id);
-        setRelatedProducts(relatedProducts);
+// export const useProductDetail = (productId: string) => {
 
-      } catch (error) {
-        console.error('Error fetching product data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+//   const [state, setState] = useState<IState>(initState);
+//   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-    getProductData();
-  }, [productId]);
+//   useEffect(() => {
+//     const getProductData = async () => {
+//       try {
+//         const fetchedProduct = await fetchProductById(+productId);
+//         // setProduct(fetchedProduct);
 
-  return { product, relatedProducts, loading };
-};
+//         // const relatedProducts = await fetchRelatedProducts(fetchedProduct.category.id);
+//         // setRelatedProducts(relatedProducts);
+//         setState(prev => ({...prev, loading: false}));
+//       } catch (error) {
+//         console.error('Error fetching product data:', error);
+//         setState(prev => ({...prev, loading: false}));
+//       }
+//     };
+
+//     getProductData();
+//   }, [productId]);
+
+//   // return { ...state, relatedProducts };
+// };

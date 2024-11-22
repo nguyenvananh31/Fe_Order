@@ -1,8 +1,9 @@
 import { Layout } from 'antd';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { HeaderMain } from './HeaderMain';
 import Sidebar from './Sidebar';
+import SpinnerLoader from '../../components/loader';
 import SidebarOder from './SidebarOder';
 
 const { Header, Content, Footer } = Layout;
@@ -16,7 +17,9 @@ const BaseLayoutAdmin: React.FC = () => {
           <HeaderMain />
         </Header>
         <Content style={{ margin: '24px 24px 0 24px' }}>
-          <Outlet></Outlet>
+          <Suspense fallback={<SpinnerLoader />}>
+            <Outlet></Outlet>
+          </Suspense>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
           DATN ©{new Date().getFullYear()} Yagi

@@ -1,21 +1,14 @@
-import axios from 'axios';
+import ApiUtils from "../../../../utils/api/api.utils";
 
-export const fetchProductById = async (id: string | number) => {
-  const url = `http://127.0.0.1:8000/api/client/product/${id}`;
-  const res = await axios.get(url, {
-    headers: {
-      'Api_key': import.meta.env.VITE_API_KEY,
-    },
-  });
-  return res.data.data;
+const apiName = {
+  proById: '/api/client/product',
+  proByCate: '/api/client/product_cate'
+}
+
+export const fetchProductById = async (id: number) => {
+  return await ApiUtils.fetch<any, any>(`${apiName.proById}/${id}`);
 };
 
-export const fetchRelatedProducts = async (categoryId: string | number) => {
-  const url = `http://127.0.0.1:8000/api/client/product_cate/${categoryId}`;
-  const res = await axios.get(url, {
-    headers: {
-      'Api_key': import.meta.env.VITE_API_KEY,
-    },
-  });
-  return res.data.data;
-};
+export const apiGetProByCate = async (id: number) => {
+  return await ApiUtils.fetch<any, any>(`${apiName.proByCate}/${id}`);
+}
