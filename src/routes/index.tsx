@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import BaseLayoutAdmin from "../layout/admin/BaseLayoutAdmin";
 
 import Search from "antd/es/transfer/search";
-import { RoutePath } from "../constants/path";
+import { RouteConfig } from "../constants/path";
 import About from "../pages/user/About/About";
 import Contact from "../pages/user/Contact/Contact";
 
@@ -37,28 +37,28 @@ const Router = () => {
             <Route path={route.path} element={route.element} key={index} />
           ))}
         </Route>
-        <Route path={RoutePath.HOME} element={<BaseLayoutUser />}>
+        <Route path={RouteConfig.HOME} element={<BaseLayoutUser />}>
           <Route index element={<Home />} />
-          <Route path={RoutePath.ABOUT} element={<About />} />
-          <Route path={RoutePath.SEARCH} element={<Search />} />
-          <Route path={RoutePath.CONTACT} element={<Contact />} />
-          <Route path={RoutePath.CART} element={<Cart />} />
-          <Route path={RoutePath.CHECKOUT} element={<Checkout />} />
-          <Route path={RoutePath.PRODUCTS} element={<ListProducts />} />
+          <Route path={RouteConfig.ABOUT} element={<About />} />
+          <Route path={RouteConfig.SEARCH} element={<Search />} />
+          <Route path={RouteConfig.CONTACT} element={<Contact />} />
+          <Route path={RouteConfig.CART} element={<Cart />} />
+          <Route path={RouteConfig.CHECKOUT} element={<Checkout />} />
+          <Route path={RouteConfig.PRODUCTS} element={<ListProducts />} />
 
-          <Route path={RoutePath.CLINET_PRODUCTS} element={<ListProducts />} />
-          <Route path={RoutePath.PRODUCT_DETAIL} element={<ProductDetail />} />
+          <Route path={RouteConfig.CLINET_PRODUCTS} element={<ListProducts />} />
+          <Route path={RouteConfig.PRODUCT_DETAIL} element={<ProductDetail />} />
 
-          <Route path={RoutePath.TABLE} element={<Table />} />
+          <Route path={RouteConfig.TABLE} element={<Table />} />
 
           {/* Profile */}
-          <Route path={RoutePath.PROFILE} element={<Profiles />}>
+          <Route path={RouteConfig.PROFILE} element={<Profiles />}>
             <Route index element={<FormInforProfile />} />
-            <Route path={RoutePath.EDIT_PROFILE}element={<EditProfile />} />
-            <Route path={RoutePath.BILL}element={<Bill />} />
+            <Route path={RouteConfig.EDIT_PROFILE} element={<EditProfile />} />
+            <Route path={RouteConfig.BILL} element={<Bill />} />
           </Route>
 
-          <Route path={RoutePath.PRODUCT_CATE} element={<ProductByCate />} />
+          <Route path={RouteConfig.PRODUCT_CATE} element={<ProductByCate />} />
         </Route>
         {/* order page */}
         {
@@ -68,7 +68,7 @@ const Router = () => {
         }
 
         <Route path="*" element={<Error />} />
-        <Route path={RoutePath.ADMIN} element={<PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
+        <Route path={RouteConfig.ADMIN} element={<PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />

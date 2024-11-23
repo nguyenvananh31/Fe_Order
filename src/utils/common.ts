@@ -1,4 +1,3 @@
-import { RoutePath } from "../constants/path";
 
 export const convertPriceVND = (price: number) => {
   // Chuyển đổi số thành chuỗi với dấu chấm ngăn cách hàng nghìn
@@ -40,5 +39,5 @@ export function formatDurationDate(date: Date): string {
 
 //Lấy đường dẫn qr
 export function getUrlQrCheck() {
-  return import.meta.env.VITE_URL  + 'qr-check';
+  return import.meta.env.VITE_URL  + '/qr-check';
 }
