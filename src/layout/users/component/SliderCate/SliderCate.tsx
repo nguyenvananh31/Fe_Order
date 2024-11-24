@@ -67,7 +67,7 @@ const SliderCate = ({ cates, loadingCate }: IProps) => {
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
                                 <Link to={`/product/category/${cate.id}`}><h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3></Link>
-                                <span className="cate-item-quantity text-mainColor1 text-md block mt-2">{cate.subcategory.length} Sản phẩm</span>
+                                {/* <span className="cate-item-quantity text-mainColor1 text-md block mt-2">{cate.subcategory.length} Sản phẩm</span> */}
                             </div>
                         </div>
                     </SwiperSlide>

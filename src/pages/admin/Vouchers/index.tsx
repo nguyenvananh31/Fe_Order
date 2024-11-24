@@ -1,18 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, SearchOutlined, UndoOutlined, UploadOutlined, ZoomInOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Col, DatePicker, Form, Image, Input, Modal, Row, Select, Space, Table, Upload } from 'antd';
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { AutoComplete, Button, Col, DatePicker, Form, Image, Input, Modal, Row, Select, Space, Table, Upload, UploadFile } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
+import { RcFile } from 'antd/es/upload';
 import { AutoCompleteProps, TableProps } from 'antd/lib';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
-import { DateFomat, fallBackImg, getImageUrl } from '../../../constants/common';
+import { DateFomat, fallBackImg, FileRule, getImageUrl } from '../../../constants/common';
 import { PAGINATE_DEFAULT } from '../../../constants/enum';
 import useDebounce from '../../../hooks/useDeBounce';
 import useToast from '../../../hooks/useToast';
 import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
+
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
+
+const getBase64 = (file: RcFile): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+    });
 
 interface ISate {
     loadingSubmit: boolean;
@@ -69,10 +86,12 @@ const ListVoucher: React.FC = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState<null | any>(null);
     const [form] = Form.useForm();
-    const [imageFile, setImageFile] = useState<any>(null);
+    const [thumbnail, setThumbnail] = useState<UploadFile[]>([]);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
+    const [previewImage, setPreviewImage] = useState('');
     const toast = useToast();
+    const [previewOpen, setPreviewOpen] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -114,22 +133,38 @@ const ListVoucher: React.FC = () => {
     const handleAdd = () => {
         setEditingRecord(null);
         form.resetFields();
-        setImageFile(null);
+        setThumbnail([]);
         setModalVisible(true);
     };
 
     const handleEdit = (record: any) => {
         setEditingRecord(record);
-        form.setFieldsValue(record);
+        form.resetFields();
+        form.setFieldsValue({
+            name: record.name,
+            value: record.value,
+            quantity: record.quantity,
+            status: record.status,
+            image: [{
+                uid: '-1',
+                name: 'Ảnh 1',
+                status: 'done',
+                url: record?.image ? getImageUrl(record.image) : fallBackImg,
+            }]
+        });
         setModalVisible(true);
     };
 
+    //Handle upload
 
-    const handleUpload = (info: any) => {
-        if (info.file.status === 'done') {
-            setImageFile(info.file.originFileObj);
-            // toast.showSuccess('Image uploaded successfully!');
+    const handleBeforeUpload = async (file: any) => {
+        if (!FileRule.accepts.includes(file.type)) {
+            toast.showError('Chỉ được tải ảnh dạng JPG/PNG/JPEG!');
+            return Upload.LIST_IGNORE;
         }
+        setThumbnail([file]);
+
+        return false;
     };
 
     // const handleChangeStatus = async (id: number, status: number) => {
@@ -143,19 +178,18 @@ const ListVoucher: React.FC = () => {
     //     }
     // }
 
-    const handleSubmit = async (values: { name: string; value: string; expiration_date: any[]; status: number, quantity: number }) => {
+    const handleSubmit = async (values: { name: string; value: string; expiration_date: any[]; status: number, quantity: number, image: any[] }) => {
         console.log('values: ', values);
         const formData = new FormData();
         formData.append('name', values.name);
         formData.append('value', values.value);
-        formData.append('start_date', new Date(values.expiration_date[0]).toString());
-        formData.append('end_date', new Date(values.expiration_date[1]).toString());
+        formData.append('start_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
+        formData.append('end_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
         formData.append('status', values.status.toString());
         formData.append('quantity', values.quantity.toString());
-        if (imageFile) {
-            formData.append('image', imageFile);
+        if (values.image.length > 0) {
+            formData.append('image', values.image[0].originFileObj as any);
         }
-
         if (editingRecord) {
             ApiUtils.put(`/api/admin/vouchers/${editingRecord.key}`, formData)
                 .then(() => {
@@ -348,6 +382,23 @@ const ListVoucher: React.FC = () => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handlePreview = async (file: any) => {
+
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as any);
+        }
+
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+    };
+
+    const uploadButton = (
+        <button style={{ border: 0, background: 'none' }} type="button">
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </button>
+    );
+
     return (
         <>
             <section className="py-2 bg-white sm:py-8 lg:py-6 rounded-lg shadow-md">
@@ -447,6 +498,7 @@ const ListVoucher: React.FC = () => {
                         >
                             <DatePicker.RangePicker
                                 format={DateFomat} style={{ width: '100%' }}
+                                minDate={dayjs()}
                             />
                         </Form.Item>
                         <Form.Item
@@ -491,17 +543,20 @@ const ListVoucher: React.FC = () => {
                             <Input placeholder="Nhập số lượng" type="number" />
                         </Form.Item>
                         <Form.Item
-                            label="Upload Image"
+                            name={'image'}
+                            label="Ảnh voucher"
                             valuePropName="fileList"
+                            getValueFromEvent={normFile}
                         >
                             <Upload
-                                name="image"
-                                listType="picture"
+                                listType="picture-card"
+                                fileList={thumbnail}
+                                onPreview={handlePreview}
+                                beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                                 maxCount={1}
-                                beforeUpload={() => false}
-                                onChange={handleUpload}
                             >
-                                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>
                         </Form.Item>
                         <Form.Item>
@@ -512,6 +567,18 @@ const ListVoucher: React.FC = () => {
                     </Form>
                 </Modal>
             </section>
+            {/* Show ảnh */}
+            {previewImage && (
+                <Image
+                    wrapperStyle={{ display: 'none' }}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
         </>
     );
 };

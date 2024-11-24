@@ -236,7 +236,7 @@ const Checkout = () => {
         <Radio.Group onChange={onChangePayment} value={state.paymentValue}>
           {
             state.paymants.map(i => (
-              <Radio value={i.id}>{i.name}</Radio>
+              <Radio key={i.id} value={i.id}>{i.name}</Radio>
             ))
           }
         </Radio.Group>

@@ -38,7 +38,7 @@ const ProductByCate = () => {
 
     return (
         <div className="container max-w-[1140px] px-20 gap-3 mx-auto my-16">
-            <h2 className='text-4xl text-center text-textColor1 block pb-5 uppercase'>sản phẩm của Danh mục <Link to={`/product/category/${param.id}`} className='text-mainColor3'>{state.cate}</Link></h2>
+            <h2 className='text-4xl text-center text-textColor1 block pb-5 uppercase'>sản phẩm của Danh mục <Link to={`./product/category/${param.id}`} className='text-mainColor3'>{state.cate}</Link></h2>
             <div className="box-filter py-4 border-b-[1px]">
             </div>
             <div className="box-list-product bg-bgColor1 border mt-4 p-4 grid lg:grid-cols-4 grid-cols-2 gap-4">

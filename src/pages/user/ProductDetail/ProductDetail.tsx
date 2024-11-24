@@ -26,14 +26,14 @@ const ProductDetail = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [activeVariant, setActiveVariant] = useState<number>(0);
-  const {showError, showSuccess} = useToast();
+  const { showError, showSuccess } = useToast();
   const { cartStore, setProtoCart, setProBuyNow } = useCartStore();
   const navigate = useNavigate();
 
   // Kiểm tra và lấy chi tiết sản phẩm
   const firstDetail = useMemo(() => state.product.product_details && state.product.product_details.length > 0
     ? state.product.product_details[activeVariant]
-    : null, [activeVariant]);
+    : null, [activeVariant, state.product]);
 
   useEffect(() => {
     const getProductData = async () => {
@@ -61,7 +61,7 @@ const ProductDetail = () => {
   const handleVariantChange = (key: string) => setActiveVariant(Number(key));
 
   // Xử lý sự kiện khi nhấn nút Add to Cart
-  const handleAddToCart = useCallback(() => async (isBuyNow?: boolean) => {
+  const handleAddToCart = useCallback(async (isBuyNow: boolean = false) => {
     try {
       let data: any = {
         product_detail_id: firstDetail.id,
@@ -74,7 +74,7 @@ const ProductDetail = () => {
       let newCart = [...cartStore.proCarts];
       const exitedItem = newCart.filter(i => i.product_detail_id == data.product_detail_id);
       if (exitedItem.length > 0) {
-        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? { ...i, quantity: i.quantity + 1 } : i);
+        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? { ...i, quantity: i.quantity + quantity } : i);
       } else {
         data = {
           ...data,
@@ -85,7 +85,7 @@ const ProductDetail = () => {
       }
       setProtoCart(newCart);
       if (isBuyNow) {
-        setProBuyNow(firstDetail.id);
+        setProBuyNow(res.data.id);
         navigate(RouteConfig.CHECKOUT);
         return;
       }
@@ -94,14 +94,14 @@ const ProductDetail = () => {
       console.log(error);
       showError('Thêm vào giỏ hàng thất bại!');
     }
-  }, [cartStore.proCarts]);
+  }, [cartStore.proCarts, state.product]);
 
   //Api add to cart
   const apiAddtoCart = useCallback(async (body: any) => {
     return await ApiUtils.post<any, any>('/api/client/online_cart', body);
-  }, []);
+  }, [state.product]);
 
-  const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [activeVariant]);
+  const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [activeVariant, state.product]);
 
   if (state.loading) return <div>Loading...</div>;
   if (!state.product) return <div>Product not found</div>;
