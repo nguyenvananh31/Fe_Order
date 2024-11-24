@@ -10,6 +10,8 @@ import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { CheckboxProps } from "antd/lib";
 import useToast from "../../../hooks/useToast";
 import { IPayments } from "../../../interFaces/payments";
+import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "../../../constants/path";
 
 interface IState {
   loading: boolean;
@@ -41,6 +43,15 @@ const Checkout = () => {
 
   const [state, setState] = useState<IState>(initState);
   const { cartStore } = useCartStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (cartStore.optionSelect.length == 0) {
+      navigate(RouteConfig.CART);
+      return;
+    }
+  }, []);
+
   const toast = useToast();
   const listPros = useMemo(() => cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id)), [cartStore]);
 
@@ -138,11 +149,11 @@ const Checkout = () => {
     ]
   }, [cartStore]);
 
-  const handleAddBill = useCallback(async() => {
+  const handleAddBill = useCallback(async () => {
     try {
       const formData = new FormData();
       const proIDs = cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id));
-      
+
       proIDs?.forEach((i) => {
         formData.append(`cart_items[]`, `${i.id}`);
       });
@@ -157,8 +168,8 @@ const Checkout = () => {
     }
   }, [cartStore.optionSelect, state.tranferPoint, state.addresActive]);
 
-  const onChangePayment = useCallback( (e: RadioChangeEvent) => {
-    setState(prev => ({...prev, paymentValue: e.target.value}));
+  const onChangePayment = useCallback((e: RadioChangeEvent) => {
+    setState(prev => ({ ...prev, paymentValue: e.target.value }));
   }, []);
 
   return <div className="container mx-auto my-4 xl:px-40">

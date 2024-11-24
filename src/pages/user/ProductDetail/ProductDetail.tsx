@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchProductById } from './service/productService';
 import ProductImageGallery from './component/ProductImageGallery';
 import ProductInfo from './component/ProductInfo';
@@ -7,6 +7,7 @@ import ProductVariants from './component/ProductVariants';
 import useCartStore from '../../../hooks/redux/cart/useCartStore';
 import ApiUtils from '../../../utils/api/api.utils';
 import useToast from '../../../hooks/useToast';
+import { RouteConfig } from '../../../constants/path';
 
 interface IState {
   loading: boolean;
@@ -26,12 +27,13 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeVariant, setActiveVariant] = useState<number>(0);
   const {showError, showSuccess} = useToast();
-  const { cartStore, setProtoCart } = useCartStore();
+  const { cartStore, setProtoCart, setProBuyNow } = useCartStore();
+  const navigate = useNavigate();
 
   // Kiểm tra và lấy chi tiết sản phẩm
   const firstDetail = useMemo(() => state.product.product_details && state.product.product_details.length > 0
-    ? state.product.product_details[0]
-    : null, []);
+    ? state.product.product_details[activeVariant]
+    : null, [activeVariant]);
 
   useEffect(() => {
     const getProductData = async () => {
@@ -59,7 +61,7 @@ const ProductDetail = () => {
   const handleVariantChange = (key: string) => setActiveVariant(Number(key));
 
   // Xử lý sự kiện khi nhấn nút Add to Cart
-  const handleAddToCart = useCallback(async () => {
+  const handleAddToCart = useCallback(() => async (isBuyNow?: boolean) => {
     try {
       let data: any = {
         product_detail_id: firstDetail.id,
@@ -82,6 +84,11 @@ const ProductDetail = () => {
         newCart.push(data);
       }
       setProtoCart(newCart);
+      if (isBuyNow) {
+        setProBuyNow(firstDetail.id);
+        navigate(RouteConfig.CHECKOUT);
+        return;
+      }
       showSuccess('Thêm vào giỏ hàng thành công!');
     } catch (error) {
       console.log(error);
@@ -94,11 +101,10 @@ const ProductDetail = () => {
     return await ApiUtils.post<any, any>('/api/client/online_cart', body);
   }, []);
 
-  const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [state.product]);
+  const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [activeVariant]);
 
   if (state.loading) return <div>Loading...</div>;
   if (!state.product) return <div>Product not found</div>;
-
 
   return (
     <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">

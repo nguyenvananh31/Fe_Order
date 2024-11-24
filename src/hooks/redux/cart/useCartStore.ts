@@ -11,6 +11,10 @@ export default function useCartStore() {
         dispatch(addSelect(proIds));
     }
 
+    const setProBuyNow = (proId: number) => {
+        dispatch(addSelect([proId]));
+    }
+
     const setProtoCart = (pros: ICart[]) => {
         dispatch(addPro(pros));
     }
@@ -36,6 +40,7 @@ export default function useCartStore() {
         setProtoCart,
         clearCartStore,
         refreshCartStore,
-        setCartSelect
+        setCartSelect,
+        setProBuyNow
     }
 }

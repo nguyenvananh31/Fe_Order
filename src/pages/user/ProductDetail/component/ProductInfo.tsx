@@ -10,7 +10,7 @@ interface ProductInfoProps {
   currentQuantity: number;
   increment: () => void;
   decrement: () => void;
-  handleAddToCart: () => void;
+  handleAddToCart: any;
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({
@@ -64,8 +64,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
         </div>
       </div>
       <div className="product-action flex gap-4 mt-[20px]">
-        <button className="btn-type-1"><span>Đặt Ngay</span></button>
-        <button className="btn-type-2" onClick={handleAddToCart}><span>Thêm Vào Giỏ Hàng</span></button>
+        <button className="btn-type-1" onClick={handleAddToCart(true)}><span>Đặt Ngay</span></button>
+        <button className="btn-type-2" onClick={handleAddToCart()}><span>Thêm Vào Giỏ Hàng</span></button>
       </div>
       <span className="block mt-[12px] text-type-2">Quantity: <span className='text-mainColor2'>{quantity}</span></span>
     </div>
