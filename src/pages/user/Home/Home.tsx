@@ -57,7 +57,7 @@ const Home = () => {
     <div>
       <SliderTop />
       <div className="container max-w-[1140px] md:px-20 px-6 text-center  gap-3 mx-auto mt-16">
-        <h2 className='text-4xl text-mainColor2 block pb-5 font-bold'>Top Category</h2>
+        <h2 className='text-4xl text-mainColor2 block pb-5 font-bold'>Danh mục phổ biến</h2>
       </div>
       <SliderCate cates={catesMemo} loadingCate={state.loadingCate} />
         {

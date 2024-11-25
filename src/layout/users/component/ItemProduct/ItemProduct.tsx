@@ -114,7 +114,7 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
 
       <div className="itemProduct-main w-full opacity-0 scale-0 group-hover:opacity-[1] group-hover:scale-[1] duration-300">
         <div className="btn-add w-full flex justify-center">
-          <button onClick={handleAddToCart} className='text-white bg-textColor1 py-[5px] px-[50px] rounded-[19px] text-[14px] hover:bg-mainColor2 leading-[20px]'>
+          <button onClick={handleAddToCart} className='text-white bg-textColor1 py-[5px] px-[30px] rounded-[19px] text-[14px] hover:bg-mainColor2 leading-[20px]'>
             <ShoppingCartOutlined className='mr-2 text-[16px]' />
             <span className='capitalize py-2'>Thêm vào giỏ hàng</span>
           </button>
