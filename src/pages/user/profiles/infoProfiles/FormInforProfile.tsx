@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Card,
-  Modal,
+  Checkbox,
+  Descriptions,
   Form,
   Input,
   List,
-  Descriptions,
-  Checkbox,
+  Modal,
   Popconfirm,
-  Spin,
   Skeleton,
+  Spin,
   message,
 } from "antd";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import instance from "../../../../configs/Axios/AxiosConfig";
+import React, { useState } from "react";
+import ApiUtils from "../../../../utils/api/api.utils";
 
 const FormInforProfile: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -27,13 +27,13 @@ const FormInforProfile: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      return await instance.get("client/profile");
+      return await ApiUtils.fetch("/api/client/profile");
     },
   });
 
   const { mutate: createAddress, isPending: createPending } = useMutation({
     mutationFn: async (newAddress) => {
-      return await instance.post(`client/profile/store_address`, newAddress); // Gọi API tạo mới
+      return await ApiUtils.post(`/api/client/profile/store_address`, newAddress); // Gọi API tạo mới
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -48,8 +48,8 @@ const FormInforProfile: React.FC = () => {
 
   const { mutate: updateAddress, isPending: updatePending } = useMutation({
     mutationFn: async (updatedAddress) => {
-      return await instance.put(
-        `client/profile/update_address/${editingAddress.id}`,
+      return await ApiUtils.put(
+        `/api/client/profile/update_address/${editingAddress.id}`,
         updatedAddress
       ); // Gọi API cập nhật
     },
@@ -67,7 +67,7 @@ const FormInforProfile: React.FC = () => {
   const { mutate: deleteAddress, isPending } = useMutation({
     mutationFn: async (id) => {
       try {
-        return await instance.delete(`client/profile/destroy_address/${id}`);
+        return await ApiUtils.remove(`/api/client/profile/destroy_address/${id}`);
       } catch (error) {
         console.log(error);
       }
@@ -131,16 +131,16 @@ const FormInforProfile: React.FC = () => {
         <Card size="small" title="Thông Tin Khách Hàng" className="mb-4">
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Tên">
-              {data?.data.data.customer?.name || "Chưa có tên"}
+              {data?.data?.customer?.name || "Chưa có tên"}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
-              {data?.data.data.customer?.email || "Chưa có email"}
+              {data?.data?.customer?.email || "Chưa có email"}
             </Descriptions.Item>
             <Descriptions.Item label="Số Điện Thoại">
-              {data?.data.data?.customer?.phone_number || "Chưa có số điện thoại"}
+              {data?.data?.customer?.phone_number || "Chưa có số điện thoại"}
             </Descriptions.Item>
             <Descriptions.Item label="Điểm Thưởng">
-              {data?.data.data?.customer?.diemthuong || 0}
+              {data?.data?.customer?.diemthuong || 0}
             </Descriptions.Item>
           </Descriptions>
         </Card>
@@ -151,7 +151,7 @@ const FormInforProfile: React.FC = () => {
         >
           <List
             itemLayout="horizontal"
-            dataSource={data?.data.data?.addresses || []}
+            dataSource={data?.data?.addresses || []}
             renderItem={(address) => (
               <List.Item
                 actions={[
@@ -193,11 +193,11 @@ const FormInforProfile: React.FC = () => {
 
         <Modal
           title={isEditMode ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới"}
-          visible={isModalVisible}
+          open={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
           width="90%" // Điều chỉnh kích thước modal
-          bodyStyle={{ padding: '16px' }} // Thêm padding cho modal
+          styles={{body: { padding: '16px' }}} // Thêm padding cho modal
         >
           <Form form={form} layout="vertical">
             <Form.Item

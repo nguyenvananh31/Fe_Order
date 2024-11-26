@@ -590,19 +590,19 @@ const About = () => {
                 name: "Leslie Alexander",
                 role: "head chef",
                 image:
-                  "../../../../public/images/team/01.jpg",
+                  "/images/team/01.jpg",
               },
               {
                 name: "Henry Lucas",
                 role: "sr table manager",
                 image:
-                  "../../../../public/images/team/02.jpg",
+                  "/images/team/02.jpg",
               },
               {
                 name: "Mateo Levi",
                 role: "senior cooker",
                 image:
-                  "../../../../public/images/team/03.jpg",
+                  "/images/team/03.jpg",
               },
             ].map((member, index) => (
               <div
