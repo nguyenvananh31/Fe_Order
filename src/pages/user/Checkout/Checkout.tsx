@@ -56,8 +56,8 @@ const Checkout = () => {
   const listPros = useMemo(() => cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id)), [cartStore]);
 
   const totalPros = useMemo(() => listPros.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0), [listPros]);
-  const totalVoucher = useMemo(() => state.tranferPoint ? state.customer?.diemthuong : 0, [state.tranferPoint]);
-  const subTotal = useMemo(() => totalPros - totalVoucher! >= 0 ? totalPros - totalVoucher! : 0, [totalPros, totalVoucher])
+  const totalVoucher = useMemo(() => state.tranferPoint ? state.customer?.diemthuong || 0 > totalPros ? totalPros : state.customer?.diemthuong : 0, [state.tranferPoint]);
+  const subTotal = useMemo(() => totalPros - totalVoucher! >= 0 ? totalPros - totalVoucher! : 0, [totalPros, totalVoucher]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -222,8 +222,8 @@ const Checkout = () => {
           <span>Đổi điểm</span>
         </div>
         <div className="flex items-center gap-1">
-          <Col><span>{`[-${convertPriceVND(state.customer?.diemthuong || 0)}]`}</span></Col>
-          <Checkbox disabled={state.customer?.diemthuong == 0} onChange={onChangePoint} />
+          <Col><span>Số điểm hiện có: {state.customer?.diemthuong || 0} = {`[-${convertPriceVND(state.customer?.diemthuong || 0)}]`}</span></Col>
+          <Checkbox disabled={!state.customer?.diemthuong || (state.customer?.diemthuong == 0)} onChange={onChangePoint} />
         </div>
       </div>
     </div>
@@ -250,7 +250,7 @@ const Checkout = () => {
           </div>
           <div className="flex justify-between items-center my-4">
             <span className="text-base font-semibold">Tổng cộng Voucher giảm giá</span>
-            <span>{convertPriceVND(totalVoucher!)}</span>
+            <span>{convertPriceVND(totalVoucher || 0)}</span>
           </div>
           <div className="flex justify-between items-center my-4">
             <span className="text-base font-semibold">Tổng thanh toán</span>

@@ -10,6 +10,7 @@ import { convertPriceVND } from '../../../utils/common';
 import { apiDeleteCart, apiUpdateCart } from './utils/cart.service';
 
 interface IState {
+  isLoading: boolean;
   loading: boolean;
   loadingBtn: boolean;
   refresh: boolean;
@@ -23,6 +24,7 @@ interface IUpdateCart {
 }
 
 const initState: IState = {
+  isLoading: false,
   loading: false,
   loadingBtn: false,
   refresh: false,
@@ -55,22 +57,26 @@ const Cart = () => {
       return;
     }
     const timeout = setTimeout(async () => {
+
       if (updateCart?.quantity! < 1) {
         try {
-          setState(prev => ({ ...prev, loadingBtn: true }));
+          setState(prev => ({ ...prev, loadingBtn: true, isLoading: true }));
           await apiDeleteCart(updateCart?.id!);
         } catch (error) {
           console.log(error);
           showToast('error', 'Xoá sản phẩm thất bại!');
         }
-        setState(prev => ({ ...prev, loadingBtn: false }));
+        setState(prev => ({ ...prev, loadingBtn: false, isLoading: false }));
         return;
       }
 
       try {
+        setState(prev => ({ ...prev, isLoading: true }));
         await apiUpdateCart(updateCart?.id!, { quantity: updateCart?.quantity! });
+        setState(prev => ({ ...prev, isLoading: false }));
       } catch (error: any) {
         console.log(error);
+        setState(prev => ({ ...prev, isLoading: false }));
         if (error?.data?.soluong) {
           const newPros = cartStore.proCarts.map((i: any) => i.id == updateCart.id ? { ...i, quantity: error.data.soluong } : i);
           setProtoCart(newPros);
@@ -94,12 +100,18 @@ const Cart = () => {
 
   //Xử lý sự kiện thêm sửa 
   const handleIncrease = useCallback((id: number, quantity: number) => {
+    if (state.isLoading) {
+      return;
+    }
     setUpdateCart({ id, quantity: quantity + 1 });
     const newPros = cartStore.proCarts.map((i: any) => i.id == id ? { ...i, quantity: i.quantity + 1 } : i);
     setProtoCart(newPros);
-  }, [cartStore]);
+  }, [cartStore, state.isLoading]);
 
   const handleDecrease = useCallback((id: number, quantity: number) => {
+    if (state.isLoading) {
+      return;
+    }
     let newPros = [];
     setUpdateCart({ id, quantity: quantity - 1 });
     if (quantity - 1 == 0) {
@@ -108,13 +120,16 @@ const Cart = () => {
       newPros = cartStore.proCarts.map(i => i.id == id ? { ...i, quantity: i.quantity - 1 } : i);
     }
     setProtoCart(newPros);
-  }, [cartStore]);
+  }, [cartStore, state.isLoading]);
 
   const handleDeleteCart = useCallback((id: number) => {
+    if (state.isLoading) {
+      return;
+    }
     setUpdateCart({ id, quantity: 0 });
     let newPros = cartStore.proCarts.filter(i => i.id !== id);
     setProtoCart(newPros);
-  }, [cartStore]);
+  }, [cartStore, state.isLoading]);
 
   const onCheckAllChange = useCallback((e: any) => {
     const optionSelect = e.target.checked ? cartStore.proCarts.map(i => i.id) : [];

@@ -166,7 +166,48 @@ const orderRoutes: IRoutesProperties[] = [
         path: RouteConfig.CHECK_QR,
         element: <QRheckOrder />
     },
-]
+];
+
+const EditProfile = lazy(() => import('../pages/user/profiles/editProfiles/editProfile'));
+const Bill = lazy(() => import('../pages/user/profiles/billProfiles/bill'));
+
+// Profile page
+const profileRoutes: IRoutesProperties[] = [
+    {
+        path: RouteConfig.EDIT_PROFILE,
+        element: <EditProfile />
+    },
+    {
+        path: RouteConfig.BILL,
+        element: <Bill />
+    },
+];
+
+const About = lazy(() => import('../pages/user/About/About'));
+const Contact = lazy(() => import('../pages/user/Contact/Contact'));
+const Checkout = lazy(() => import('../pages/user/Checkout/Checkout'));
+// const Contact = lazy(() => import('../pages/user/Contact/Contact'));
+
+
+// Client route
+const clientRoutes: IRoutesProperties[] = [
+    {
+        path: RouteConfig.ABOUT,
+        element: <About />
+    },
+    {
+        path: RouteConfig.CONTACT,
+        element: <Contact />
+    },
+    {
+        path: RouteConfig.CHECKOUT,
+        element: <Checkout />
+    },
+    // {
+    //     path: RouteConfig.CONTACT,
+    //     element: <Contact />
+    // },
+];
 
 export const flattenRoutes = (routes: IRoutesProperties[]) => {
     let flatRoutes: IRoutesProperties[] = [];
@@ -184,5 +225,7 @@ const privateRoutes = [...accountRoutes];
 const publicRoutes = [...authRoutes];
 
 export const orderFlattenRoutes = flattenRoutes([...orderRoutes]);
+export const profileFlattenRoutes = flattenRoutes([...profileRoutes]);
+export const clientFlattenRoutes = flattenRoutes([...clientRoutes]);
 export const publicProtectedFlattenRoutes = flattenRoutes([...publicRoutes]);
 export const privateProtectedFlattenRoutes = flattenRoutes([...privateRoutes]);
