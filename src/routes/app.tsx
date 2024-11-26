@@ -42,7 +42,6 @@ const QRheckOrder = lazy(() => import('../pages/user/Order/QrCheckOrder'));
 const ListVoucher = lazy(() => import('../pages/admin/Vouchers'));
 
 const DetailOrderTable  = lazy(() => import('../pages/admin/Vouchers'));
-const ListSize  = lazy(() => import('../pages/admin/Tables/DetailOrderTable'));
 
 export interface IRoutesProperties {
     path: RouteProps['path'];
@@ -140,14 +139,6 @@ const accountRoutes: IRoutesProperties[] = [
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
             <CustomerScreen />,
         </ProtectedRoute>
-    },
-    {
-        path: RouteConfig.SIZES,
-        name: 'Quản lý kích cỡ',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <ListSize />,
-        </ProtectedRoute>
-
     },
     {
         path: RouteConfig.VOUCHER,

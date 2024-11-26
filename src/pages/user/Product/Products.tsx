@@ -2,14 +2,14 @@ import {
   ArrowLeftOutlined,
   ArrowRightOutlined
 } from "@ant-design/icons";
-import { List, Select } from "antd";
+import { List } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "./css/products.css";
-import { apiGetCateClient, apiGetProDetail } from "../Home/utils/home.service";
 import ItemProduct from "../../../layout/users/component/ItemProduct/ItemProduct";
+import { apiGetCateClient, apiGetProDetail } from "../Home/utils/home.service";
+import "./css/products.css";
 import { apiGetProByCate } from "./utils/cate.service";
 
-const { Option } = Select;
+// const { Option } = Select;
 
 interface IState {
   loading: boolean;
@@ -21,6 +21,7 @@ interface IState {
   pageSize: number;
   pageIndex: number;
   total: number;
+  cateActive: number;
 }
 
 const initState: IState = {
@@ -32,7 +33,8 @@ const initState: IState = {
   refresh: false,
   pageIndex: 1,
   pageSize: 12,
-  total: 0
+  total: 0,
+  cateActive: 0
 }
 
 function ListProducts() {
@@ -71,12 +73,12 @@ function ListProducts() {
 
   const getProByCateId = useCallback(async (id: number) => {
     try {
-      setState(prev => ({ ...prev, loadingPro: true }));
+      setState(prev => ({ ...prev, loadingPro: true, cateActive: id }));
       const res = await apiGetProByCate(id);
-      setState(prev => ({ ...prev, loading: false, pros: res.data }));
+      setState(prev => ({ ...prev, loadingPro: false, pros: res.data, total: res.data.length }));
     } catch (error) {
       console.error('Error fetching product:', error);
-      setState(prev => ({ ...prev, loadingPro: false }));
+      setState(prev => ({ ...prev, loadingPro: false, pros: [], total: 0 }));
     }
   }, []);
 
@@ -102,7 +104,7 @@ function ListProducts() {
                               className="flex items-center space-x-2"
                             >
                               <i className="flaticon-burger"></i>
-                              <span className="cursor-pointer" onClick={handleClickCate(i.id)}>{i.name}</span>
+                              <span className={`cursor-pointer ${state.cateActive == i.id ? 'text-[#00813D]' : ''}`} onClick={handleClickCate(i.id)}>{i.name}</span>
                             </span>
                           </li>
                         ))
@@ -220,6 +222,7 @@ function ListProducts() {
 
               {/* Products */}
               <List
+                loading={state.loadingPro}
                 grid={{
                   gutter: 16,
                   xs: 1,
@@ -238,27 +241,31 @@ function ListProducts() {
               />
 
               {/* Pagination */}
-              <div className="page-nav-wrap mt-8 text-center">
-                <ul className="inline-flex space-x-2">
-                  <li>
-                    <p className="page-numbers cursor-pointer">
-                      <ArrowLeftOutlined />
-                    </p>
-                  </li>
-                  {
-                    [...Array(paginateNumber)].map((_: any, index: number) => (
-                      <li key={index}>
-                        <p className={`page-numbers cursor-pointer ${index + 1 == state.pageIndex ? 'bg-[#00813D]' : ''}`}>{index + 1}</p>
+              {
+                state.total > 0 && (
+                  <div className="page-nav-wrap mt-8 text-center">
+                    <ul className="inline-flex space-x-2">
+                      <li>
+                        <p className="page-numbers cursor-pointer">
+                          <ArrowLeftOutlined />
+                        </p>
                       </li>
-                    ))
-                  }
-                  <li>
-                    <p className="page-numbers cursor-pointer">
-                      <ArrowRightOutlined />
-                    </p>
-                  </li>
-                </ul>
-              </div>
+                      {
+                        [...Array(paginateNumber)].map((_: any, index: number) => (
+                          <li key={index}>
+                            <p className={`page-numbers cursor-pointer ${index + 1 == state.pageIndex ? 'text-[white]' : ''}`} style={{background: index + 1 == state.pageIndex ? '#00813D' : ''}}>{index + 1}</p>
+                          </li>
+                        ))
+                      }
+                      <li>
+                        <p className="page-numbers cursor-pointer">
+                          <ArrowRightOutlined />
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                )
+              }
             </div>
           </div>
         </div>

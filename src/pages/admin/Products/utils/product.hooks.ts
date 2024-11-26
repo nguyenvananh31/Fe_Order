@@ -3,7 +3,7 @@ import { TableProps } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
-import { RoutePath } from "../../../../constants/path";
+import { RouteConfig, RoutePath } from "../../../../constants/path";
 import useDebounce from "../../../../hooks/useDeBounce";
 import useToastMessage from "../../../../hooks/useToastMessage";
 import { IProduct } from "../../../../interFaces/product";
@@ -108,12 +108,12 @@ export default function useProduct() {
 
     //Handle chuyển trang add sản phẩm
     const handleToAdd = useCallback(() => {
-        navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_ADD_PRODUCT}`);
+        navigate(`${RouteConfig.ADMIN_ADD_PRODUCT}`);
     }, []);
 
     //Handle chuyển trang add sản phẩm
     const handleToEdit = useCallback((id: number) => {
-        navigate(`/${RoutePath.ADMIN}/${RoutePath.ADMIN_EDIT_PRODUCT}/${id}`);
+        navigate(`${RouteConfig.ADMIN_EDIT_PRODUCT}/${id}`);
     }, []);
 
     // Chuyển trang và phân trang

@@ -32,11 +32,11 @@ const Router = () => {
   return (
     <>
       <Routes>
-        <Route>
-          {publicProtectedFlattenRoutes.map((route, index) => (
-            <Route path={route.path} element={route.element} key={index} />
-          ))}
-        </Route>
+        {/* Login && Regiter */}
+        {publicProtectedFlattenRoutes.map((route, index) => (
+          <Route path={route.path} element={route.element} key={index} />
+        ))}
+
         <Route path={RouteConfig.HOME} element={<BaseLayoutUser />}>
           <Route index element={<Home />} />
           <Route path={RouteConfig.ABOUT} element={<About />} />
@@ -44,7 +44,6 @@ const Router = () => {
           <Route path={RouteConfig.CONTACT} element={<Contact />} />
           <Route path={RouteConfig.CART} element={<Cart />} />
           <Route path={RouteConfig.CHECKOUT} element={<Checkout />} />
-          <Route path={RouteConfig.PRODUCTS} element={<ListProducts />} />
 
           <Route path={RouteConfig.CLINET_PRODUCTS} element={<ListProducts />} />
           <Route path={RouteConfig.PRODUCT_DETAIL} element={<ProductDetail />} />
@@ -57,9 +56,9 @@ const Router = () => {
             <Route path={RouteConfig.EDIT_PROFILE} element={<EditProfile />} />
             <Route path={RouteConfig.BILL} element={<Bill />} />
           </Route>
-
           <Route path={RouteConfig.PRODUCT_CATE} element={<ProductByCate />} />
         </Route>
+
         {/* order page */}
         {
           orderFlattenRoutes.map((route, index) => (
@@ -67,14 +66,16 @@ const Router = () => {
           ))
         }
 
-        <Route path="*" element={<Error />} />
         <Route path={RouteConfig.ADMIN} element={<PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
+          <Route index element={<></>} />
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
             ))
           }
         </Route>
+
+        <Route path="*" element={<Error />} />
       </Routes>
     </>
   );

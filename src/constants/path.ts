@@ -57,20 +57,18 @@ export const menuActive: { [key: string]: string } = {
 export const RouteConfig = {
     HOME: '/',
     ABOUT: '/about',
-    PRODUCTS: '/products',
     PROFILE: '/profile',
     EDIT_PROFILE: '/profile/editProfile',
-    CLINET_PRODUCTS: '/product',
+    CLINET_PRODUCTS: '/products',
     PRODUCT_DETAIL: '/product/:id',
     INFO_PROFILES: "/profile/infoProfiles",
     PRODUCT_CATE: '/product/category/:id',
     BILL: '/profile/bill',
+    
     //Admin
     ADMIN: '/admin',
     ACCOUNT: '/admin/accounts',
     CATEGORY: '/admin/categories',
-    LOGIN: '/login',
-    REGISTER: '/register',
     CHECKOUT: '/checkout',
     ORDER: '/order',
     CHECK_QR: '/qr-check/:id',
@@ -88,7 +86,13 @@ export const RouteConfig = {
     CUSTOMERS: '/admin/customers',
     AD_BILL: '/admin/bills',
     SIZES: '/admin/sizes',
-    ERROR: '/error',
     ADMIN_EDIT_PRODUCT: '/admin/product-edit',
-    VOUCHER: '/admin/vouchers'
+    VOUCHER: '/admin/vouchers',
+
+    // Error page
+    ERROR: '/error',
+
+    // Other routes
+    LOGIN: '/login',
+    REGISTER: '/register',
 }

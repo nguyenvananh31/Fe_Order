@@ -1,4 +1,3 @@
-import React from 'react'
 import './Footer.scss'
 const Footer = () => {
   return (
@@ -11,28 +10,28 @@ const Footer = () => {
         </div>
         <div className="container-center">
           <ul className="menu-list">
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-3">Quick Links</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-3">My account</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 3</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Quick Links</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">My account</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 3</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
           </ul>
           <div className="address-box">
             <ul className="address-list">
-              <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-3">Address:</a></li>
+              <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Address:</a></li>
               <li className="address-list-item"><p className="address-list-item__desc text-type-4">
                 Magadhi, Atal Path, near Rajdhani Apartment, Mahesh Nagar, Keshri Nagar, Patna, Bihar 800024 India
               </p></li>
             </ul>
             <ul className="address-list">
-              <li className="menu-list-item"><a href="" className="menu-list-item__link text-type-3">Hours:</a></li>
+              <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Hours:</a></li>
               <li className="address-list-item"><p className="address-list-item__desc text-type-4">
                 11:00am – 23:00pm
                 Monday to Sunday
