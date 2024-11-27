@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Table, Button, Typography, Card, Modal, message, Row, Col } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import instance from "../../../../configs/Axios/AxiosConfig";
+import { Button, Card, Col, message, Modal, Row, Table, Typography } from "antd";
+import React, { useState } from "react";
+import ApiUtils from "../../../../utils/api/api.utils";
 
 const { Title, Text } = Typography;
 
@@ -24,7 +24,7 @@ const Bill: React.FC = () => {
     queryKey: ["bill"],
     queryFn: async () => {
       try {
-        const res = await instance.get(`/client/bill_user`);
+        const res = await ApiUtils.fetch(`/api/client/bill_user`);
         return res.data.data;
       } catch (error) {
         console.error("Error", error);
@@ -39,22 +39,18 @@ const Bill: React.FC = () => {
 
   const fetchProductDetails = async (orderId: number) => {
     try {
-      const res = await instance.get(`/client/billdetail/${orderId}`);
-      if (res.status === 200) {
-        setProductDetails(res.data.data);
-      } else {
-        throw new Error("Product details not found");
-      }
+      const res = await ApiUtils.fetch(`/api/client/billdetail/${orderId}`);
+      setProductDetails(res?.data?.data);
     } catch (error) {
       console.error("Error fetching product details:", error);
       message.error("Có lỗi xảy ra khi lấy chi tiết đơn hàng. Vui lòng thử lại sau.");
     }
-  };  
+  };
 
   const handleCancelOrder = async (orderId: number) => {
     try {
       setIsLoadingCancel(true);
-      await instance.put(`/client/bills/${orderId}/cancel`, {
+      await ApiUtils.put(`/api/client/bills/${orderId}/cancel`, {
         status: 'awaitingApproval',
       });
       message.success("Yêu cầu hủy đơn hàng đang chờ duyệt!");
@@ -225,105 +221,107 @@ const Bill: React.FC = () => {
 
   return (
     <Card
-  title="Chi tiết đơn hàng"
-  style={{
-    maxWidth: "100%",
-    margin: "20px auto",
-    padding: "16px",
-    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-    marginTop: "6px",
-  }}
-  bodyStyle={{
-    maxHeight: "450px", // Set max height for the card content area
-    padding: "12px",
-    overflowY: "auto", // Enable vertical scrolling if content exceeds max height
-  }}
->
-  <Row justify="center">
-    <Col xs={24}>
-      <div className="border-t rounded-[6px] text-gray-800 text-sm leading-[21px] p-5 bg-white">
-        <h3 className="text-lg font-bold mb-4">Danh sách đơn hàng</h3>
-        <div style={{ overflowX: "auto" }}> {/* Add this wrapper for horizontal scrolling */}
-          <Table
-            columns={columns}
-            dataSource={orders}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-            scroll={{ x: 'max-content' }} // Ensure horizontal scroll is enabled
-            locale={{ emptyText: "Không có đơn hàng" }}
-          />
-        </div>
-      </div>
-    </Col>
-  </Row>
+      title="Chi tiết đơn hàng"
+      style={{
+        maxWidth: "100%",
+        margin: "20px auto",
+        padding: "16px",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+        marginTop: "6px",
+      }}
+      styles={{
+        body: {
+          maxHeight: "450px", // Set max height for the card content area
+          padding: "12px",
+          overflowY: "auto", // Enable vertical scrolling if content exceeds max height
+        }
+      }}
+    >
+      <Row justify="center">
+        <Col xs={24}>
+          <div className="border-t rounded-[6px] text-gray-800 text-sm leading-[21px] p-5 bg-white">
+            <h3 className="text-lg font-bold mb-4">Danh sách đơn hàng</h3>
+            <div style={{ overflowX: "auto" }}> {/* Add this wrapper for horizontal scrolling */}
+              <Table
+                columns={columns}
+                dataSource={orders}
+                rowKey="id"
+                pagination={{ pageSize: 5 }}
+                scroll={{ x: 'max-content' }} // Ensure horizontal scroll is enabled
+                locale={{ emptyText: "Không có đơn hàng" }}
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
 
-  <Modal
-    title="Chi tiết đơn hàng"
-    visible={isModalVisible}
-    onCancel={handleCancel}
-    footer={[
-      <Button key="back" onClick={handleCancel}>
-        Thoát
-      </Button>,
-    ]}
-    width="90%"
-    bodyStyle={{ maxHeight: "70vh", overflowY: "auto", padding: "16px" }}
-    centered
-  >
-    {selectedOrder && (
-      <>
-        <div style={{ marginBottom: "20px" }}>
-          <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12}>
-              <Text strong>Mã đơn hàng:</Text> #{selectedOrder.ma_bill}
-            </Col>
-            <Col xs={24} sm={12}>
-              <Text strong>Cách thức:</Text> {selectedOrder.order_type}
-            </Col>
-          </Row>
-          <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12}>
-              <Text strong>Tên khách hàng:</Text> {selectedOrder.name}
-            </Col>
-            <Col xs={24} sm={12}>
-              <Text strong>Trạng thái:</Text>
-              <span style={{ color: statusBill[selectedOrder.status]?.color }}>
-                {statusBill[selectedOrder.status]?.title}
-              </span>
-            </Col>
-          </Row>
-          <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12}>
-              <Text strong>Địa chỉ:</Text> {selectedOrder.address || "Chưa có"}
-            </Col>
-            <Col xs={24} sm={12}>
-              <Text strong>Thanh toán:</Text> {selectedOrder.payment}
-            </Col>
-          </Row>
-          <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12}>
-              <Text strong>Ngày đặt:</Text> {selectedOrder.date}
-            </Col>
-            <Col xs={24} sm={12}>
-              <Text strong>Tổng tiền:</Text> {selectedOrder.total}₫
-            </Col>
-          </Row>
-        </div>
+      <Modal
+        title="Chi tiết đơn hàng"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Thoát
+          </Button>,
+        ]}
+        width="90%"
+        styles={{ body: { maxHeight: "70vh", overflowY: "auto", padding: "16px" } }}
+        centered
+      >
+        {selectedOrder && (
+          <>
+            <div style={{ marginBottom: "20px" }}>
+              <Row gutter={[16, 8]}>
+                <Col xs={24} sm={12}>
+                  <Text strong>Mã đơn hàng:</Text> #{selectedOrder.ma_bill}
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Text strong>Cách thức:</Text> {selectedOrder.order_type}
+                </Col>
+              </Row>
+              <Row gutter={[16, 8]}>
+                <Col xs={24} sm={12}>
+                  <Text strong>Tên khách hàng:</Text> {selectedOrder.name}
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Text strong>Trạng thái:</Text>
+                  <span style={{ color: statusBill[selectedOrder.status]?.color }}>
+                    {statusBill[selectedOrder.status]?.title}
+                  </span>
+                </Col>
+              </Row>
+              <Row gutter={[16, 8]}>
+                <Col xs={24} sm={12}>
+                  <Text strong>Địa chỉ:</Text> {selectedOrder.address || "Chưa có"}
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Text strong>Thanh toán:</Text> {selectedOrder.payment}
+                </Col>
+              </Row>
+              <Row gutter={[16, 8]}>
+                <Col xs={24} sm={12}>
+                  <Text strong>Ngày đặt:</Text> {selectedOrder.date}
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Text strong>Tổng tiền:</Text> {selectedOrder.total}₫
+                </Col>
+              </Row>
+            </div>
 
-        <Title level={5}>Danh sách sản phẩm</Title>
-        <div> {/* Wrapper for horizontal scroll in the product table */}
-          <Table
-            columns={productColumns} // Use productColumns for the product details table
-            dataSource={productDetails}
-            rowKey="id"
-            pagination={false}
-            scroll={{ x: 'max-content' }}
-          />
-        </div>
-      </>
-    )}
-  </Modal>
-</Card>
+            <Title level={5}>Danh sách sản phẩm</Title>
+            <div> {/* Wrapper for horizontal scroll in the product table */}
+              <Table
+                columns={productColumns} // Use productColumns for the product details table
+                dataSource={productDetails}
+                rowKey="id"
+                pagination={false}
+                scroll={{ x: 'max-content' }}
+              />
+            </div>
+          </>
+        )}
+      </Modal>
+    </Card>
 
   );
 };

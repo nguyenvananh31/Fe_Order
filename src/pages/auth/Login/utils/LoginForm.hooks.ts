@@ -1,5 +1,6 @@
 import { Form } from "antd";
 import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "../../../../constants/path";
 import useAuth from "../../../../hooks/redux/auth/useAuth";
 import useToast from "../../../../hooks/useToast";
 import { loginService } from "./LoginForm.services";
@@ -21,7 +22,7 @@ export const LoginForm = () => {
       if (dataLogin && dataLogin !== undefined) {
         setAuth({ ...dataLogin.user, access_token: dataLogin.access_token, refresh_token: dataLogin.refresh_token });
         showSuccess('Đăng nhập thành công!');
-        navigate("/admin");
+        navigate(RouteConfig.ADMIN);
       }
     } catch (error) {
       showError('Tài khoản hoặc mật khẩu chưa chính xác!');

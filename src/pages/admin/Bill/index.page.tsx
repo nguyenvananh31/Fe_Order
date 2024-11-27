@@ -52,6 +52,18 @@ export default function CatePage() {
                 }
             },
             {
+                title: 'Tên khách hàng',
+                dataIndex: 'customer_name',
+                key: 'customer_name',
+                render: (_: any, item: IBill) => {
+                    return (
+                        <div className={`text-purple font-semibold`}>
+                            {(item.khachhang.name || item.khachhang.email) || 'Không có'}
+                        </div>
+                    )
+                }
+            },
+            {
                 title: 'Đặt tại',
                 dataIndex: 'order_type',
                 align: 'center',

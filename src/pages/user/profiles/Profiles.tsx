@@ -43,9 +43,9 @@ const Profiles: React.FC = () => {
           title="Menu"
           placement="left"
           onClose={closeDrawer}
-          visible={drawerVisible}
+          open={drawerVisible}
           width="75%"
-          bodyStyle={{ padding: 0, overflow: 'hidden', height: '100%' }}
+          styles={{body: { padding: 0, overflow: 'hidden', height: '100%' }}}
         >
           <div style={{ height: '100%', }}>
             <HeaderProfile />

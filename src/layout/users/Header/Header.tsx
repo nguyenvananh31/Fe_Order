@@ -1,44 +1,40 @@
-import { AlignLeftOutlined, ClockCircleOutlined, CloseCircleFilled, HomeOutlined, InstagramOutlined, LogoutOutlined, MailOutlined, MinusCircleOutlined, PhoneOutlined, PinterestOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TikTokOutlined, TwitterOutlined, UserOutlined } from '@ant-design/icons';
+import { AlignLeftOutlined, CloseCircleFilled, LogoutOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Drawer, Dropdown, Image } from 'antd';
 import { MenuProps } from 'antd/lib';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { RoutePath } from '../../../constants/path';
+import { RouteConfig } from '../../../constants/path';
 import useAuth from '../../../hooks/redux/auth/useAuth';
 import useCartStore from '../../../hooks/redux/cart/useCartStore';
-import useToast from '../../../hooks/useToast';
-import useToastMessage from '../../../hooks/useToastMessage';
-import { apiDeleteCart, apiUpdateCart } from '../../../pages/user/Cart/utils/cart.service';
 import Navigation from '../component/Navigation/Navigation';
 
-interface IState {
-  loading: boolean;
-  loadingBtn: boolean;
-  refresh: boolean;
-  itemId?: number;
-  quantity?: number;
-}
+// interface IState {
+//   loading: boolean;
+//   loadingBtn: boolean;
+//   refresh: boolean;
+//   itemId?: number;
+//   quantity?: number;
+// }
 
-interface IUpdateCart {
-  id: number;
-  quantity: number;
-}
+// interface IUpdateCart {
+//   id: number;
+//   quantity: number;
+// }
 
-const initState: IState = {
-  loading: false,
-  loadingBtn: false,
-  refresh: false,
-}
+// const initState: IState = {
+//   loading: false,
+//   loadingBtn: false,
+//   refresh: false,
+// }
 
 const Header = () => {
-  const [state, setState] = useState<IState>(initState);
+  // const [state, setState] = useState<IState>(initState);
   const [visible, setVisible] = useState(false);
   const navigation = useNavigate();
-  const toast = useToast();
+  // const toast = useToast();
   const { user, clearStore } = useAuth();
-  const [updateCart, setUpdateCart] = useState<IUpdateCart>();
-  const { cartStore, setProtoCart } = useCartStore();
-  const { contextHolder, showToast } = useToastMessage();
+  // const [updateCart, setUpdateCart] = useState<IUpdateCart>();
+  const { cartStore } = useCartStore();
   const totalCart = useMemo(() => cartStore.proCarts.reduce((total: any, item: any) => total + item.quantity, 0), [cartStore]);
 
   // useEffect(() => {
@@ -53,39 +49,39 @@ const Header = () => {
   // }, [state.refresh]);
 
   //Handle update cart
-  useEffect(() => {
-    if (!updateCart) {
-      return;
-    }
-    const timeout = setTimeout(async () => {
-      if (updateCart?.quantity! < 1) {
-        try {
-          setState(prev => ({ ...prev, loadingBtn: true }));
-          await apiDeleteCart(updateCart?.id!);
-        } catch (error) {
-          console.log(error);
-          showToast('error', 'Xoá sản phẩm thất bại!');
-        }
-        setState(prev => ({ ...prev, loadingBtn: false }));
-        return;
-      }
+  // useEffect(() => {
+  //   if (!updateCart) {
+  //     return;
+  //   }
+  //   const timeout = setTimeout(async () => {
+  //     if (updateCart?.quantity! < 1) {
+  //       try {
+  //         setState(prev => ({ ...prev, loadingBtn: true }));
+  //         await apiDeleteCart(updateCart?.id!);
+  //       } catch (error) {
+  //         console.log(error);
+  //         showToast('error', 'Xoá sản phẩm thất bại!');
+  //       }
+  //       setState(prev => ({ ...prev, loadingBtn: false }));
+  //       return;
+  //     }
 
-      try {
-        await apiUpdateCart(updateCart?.id!, { quantity: updateCart?.quantity! });
-      } catch (error: any) {
-        console.log(error);
-        if (error?.data?.soluong) {
-          const newPros = cartStore.proCarts.map((i: any) => i.id == updateCart.id ? { ...i, quantity: error.data.soluong } : i);
-          setProtoCart(newPros);
-          toast.showError(error.error);
-          return;
-        }
-        toast.showError('Đã có lỗi xảy ra!');
-      }
-    }, 300);
+  //     try {
+  //       await apiUpdateCart(updateCart?.id!, { quantity: updateCart?.quantity! });
+  //     } catch (error: any) {
+  //       console.log(error);
+  //       if (error?.data?.soluong) {
+  //         const newPros = cartStore.proCarts.map((i: any) => i.id == updateCart.id ? { ...i, quantity: error.data.soluong } : i);
+  //         setProtoCart(newPros);
+  //         toast.showError(error.error);
+  //         return;
+  //       }
+  //       toast.showError('Đã có lỗi xảy ra!');
+  //     }
+  //   }, 300);
 
-    return () => clearTimeout(timeout);
-  }, [updateCart]);
+  //   return () => clearTimeout(timeout);
+  // }, [updateCart]);
 
   const showDrawer = () => {
     setVisible(true);
@@ -95,40 +91,44 @@ const Header = () => {
     setVisible(false);
   };
 
-  // Tính tổng giá trị giỏ hàng
-  const cartTotal = useMemo(() => {
-    return cartStore.proCarts.reduce((total, item) => {
-      const itemPrice = item.price || 0;
-      return total + (itemPrice * item.quantity);
-    }, 0)
-  }, [cartStore]);
+  // // Tính tổng giá trị giỏ hàng
+  // const cartTotal = useMemo(() => {
+  //   return cartStore.proCarts.reduce((total, item) => {
+  //     const itemPrice = item.price || 0;
+  //     return total + (itemPrice * item.quantity);
+  //   }, 0)
+  // }, [cartStore]);
 
-  //Xử lý sự kiện thêm sửa 
-  const handleIncrease = useCallback((id: number, quantity: number) => {
-    setUpdateCart({ id, quantity: quantity + 1 });
-    const newPros = cartStore.proCarts.map((i: any) => i.id == id ? { ...i, quantity: i.quantity + 1 } : i);
-    setProtoCart(newPros);
-  }, [cartStore]);
+  // //Xử lý sự kiện thêm sửa 
+  // const handleIncrease = useCallback((id: number, quantity: number) => {
+  //   setUpdateCart({ id, quantity: quantity + 1 });
+  //   const newPros = cartStore.proCarts.map((i: any) => i.id == id ? { ...i, quantity: i.quantity + 1 } : i);
+  //   setProtoCart(newPros);
+  // }, [cartStore]);
 
-  const handleDecrease = useCallback((id: number, quantity: number) => {
-    let newPros = [];
-    setUpdateCart({ id, quantity: quantity - 1 });
-    if (quantity - 1 == 0) {
-      newPros = cartStore.proCarts.filter(i => i.id !== id);
-    } else {
-      newPros = cartStore.proCarts.map(i => i.id == id ? { ...i, quantity: i.quantity - 1 } : i);
-    }
-    setProtoCart(newPros);
-  }, [cartStore]);
+  // const handleDecrease = useCallback((id: number, quantity: number) => {
+  //   let newPros = [];
+  //   setUpdateCart({ id, quantity: quantity - 1 });
+  //   if (quantity - 1 == 0) {
+  //     newPros = cartStore.proCarts.filter(i => i.id !== id);
+  //   } else {
+  //     newPros = cartStore.proCarts.map(i => i.id == id ? { ...i, quantity: i.quantity - 1 } : i);
+  //   }
+  //   setProtoCart(newPros);
+  // }, [cartStore]);
 
-  const handleDeleteCart = useCallback((id: number) => {
-    setUpdateCart({ id, quantity: 0 });
-    let newPros = cartStore.proCarts.filter(i => i.id !== id);
-    setProtoCart(newPros);
-  }, [cartStore]);
+  // const handleDeleteCart = useCallback((id: number) => {
+  //   setUpdateCart({ id, quantity: 0 });
+  //   let newPros = cartStore.proCarts.filter(i => i.id !== id);
+  //   setProtoCart(newPros);
+  // }, [cartStore]);
 
   const gotoLogin = useCallback(() => {
-    navigation('/' + RoutePath.LOGIN);
+    navigation(RouteConfig.LOGIN);
+  }, []);
+
+  const gotoProfile = useCallback(() => {
+    navigation(RouteConfig.PROFILE);
   }, []);
 
   const handleLogout = useCallback(() => () => {
@@ -147,8 +147,8 @@ const Header = () => {
         <div className="flex items-center px-4 py-2 gap-4 min-w-[180px] rounded-primary group hover:bg-purple">
           <Avatar className="w-[38px] h-[38px]" style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
           <div className="flex flex-col">
-            <span className="text-primary font-semibold text-base group-hover:text-purple">Le Do</span>
-            <span className="text-ghost text-sm font-normal">Admin</span>
+            <span className="text-primary font-semibold text-base group-hover:text-purple">{user?.name || 'Chưa có'}</span>
+            <span className="text-ghost text-sm font-normal">User</span>
           </div>
         </div>
       ),
@@ -160,7 +160,7 @@ const Header = () => {
         margin: "4px"
       },
       label: (
-        <div className="flex items-center px-4 py-2 gap-2 min-w-[180px] rounded-primary group hover:bg-purple">
+        <div onClick={gotoProfile} className="flex items-center px-4 py-2 gap-2 min-w-[180px] rounded-primary group hover:bg-purple">
           <UserOutlined className="text-primary text-base group-hover:text-purple" />
           <span className="text-primary text-base group-hover:text-purple">Quản lý tài khoản</span>
         </div>
@@ -183,7 +183,6 @@ const Header = () => {
 
   return (
     <>
-      {contextHolder}
       <header className='bg-bgColor1 w-full relative'>
         <div className="container max-w-[1140px] mx-auto px-[20px] py-6 border-b-[1px] border-borderColor1 flex items-center justify-between">
           <div className="container-left">
@@ -198,67 +197,11 @@ const Header = () => {
           </div>
           <div className="container-right">
             <div className="action-header flex items-center gap-10">
-              <Link to="/cart" className="cart cursor-pointer relative hidden md:block group">
+              <Link to={RouteConfig.CART} className="cart cursor-pointer relative hidden md:block group">
                 {/* Hiển thị số lượng tổng sản phẩm trong giỏ hàng */}
                 <Badge count={totalCart} offset={[2, 0]} showZero>
                   <ShoppingCartOutlined className='text-3xl text-mainColor1' />
                 </Badge>
-
-                <div className="hidden mini-cart min-w-[350px] absolute left-[-50px] overflow-hidden border-[1px] rounded-md bg-bodyColor z-[99] shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out h-0 group-hover:h-[340px]">
-                  <div className="mini-cart-body w-max px-4 pt-4">
-                    {cartStore.proCarts.length > 0 ? (
-                      cartStore.proCarts.map((item: any, index: any) => (
-                        <div key={index} className="cart-item grid grid-cols-gridCartItem items-center gap-4 pb-3 mb-3 border-b-[1px] border-borderColor1">
-                          <div className="cart-item-img">
-                            <img className='w-20 h-20 object-cover' src="https://modinatheme.com/html/foodking-html/assets/img/food/burger.png" alt={item.product_name} />
-                          </div>
-                          <div className="cart-item-main flex items-center justify-between max-w-[100px]">
-                            <div className="w-full">
-                              <h3 className="cart-item-main__title text-[16px] line-clamp-1 text-type-1">
-                                <Link to={`/product/${item.product_detail_id}`}>{item.product_name}</Link>
-                              </h3>
-                              <span className="cart-item-man__price text-[15px] text-type-1 block mt-1">${item.price}</span>
-                              {/* Thêm các nút tăng giảm số lượng */}
-                              <div className="cart-item-quantity-controls flex items-center mt-1">
-                                <MinusCircleOutlined
-                                  className="text-red-500 cursor-pointer"
-                                  onClick={() => handleDecrease(item.id, item.quantity)}
-                                />
-                                <span className="mx-2">{item.quantity}</span>
-                                <PlusCircleOutlined
-                                  className="text-green-500 cursor-pointer"
-                                  onClick={() => handleIncrease(item.id, item.quantity)}
-                                />
-                              </div>
-                            </div>
-                            <div className="absolute right-5">
-                              {/* Nút xóa sản phẩm khỏi giỏ hàng */}
-                              <button className="cursor-pointer btn-type-error" onClick={() => handleDeleteCart(item.id)}>
-                                <CloseCircleFilled />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p>Your cart is empty.</p>
-                    )}
-                  </div>
-                  <div className="mini-cart-action flex gap-2 items-center justify-evenly px-4 pb-4">
-                    <div className="mini-cart-action-left">
-                      <h4 className='text-[14px] py-2 text-center'>
-                        Total: <span> ${cartTotal}</span>
-                      </h4>
-                      <Link to="/cart" className="btn-type-3 rounded-md bg-red-400 p-1.5">View cart</Link>
-                    </div>
-                    <div className="mini-cart-action-right">
-                      <h4 className='text-[14px] py-2 text-center'>
-                        Total: <span> ${cartTotal}</span>
-                      </h4>
-                      <Link to="/checkout" className="btn-type-4 bg-blue-400 p-1.5 rounded-md"><span>Checkout</span></Link>
-                    </div>
-                  </div>
-                </div>
               </Link>
               {
                 !user ? (
@@ -297,16 +240,14 @@ const Header = () => {
             <div className="container">
               <ul className="menus-mobile md:hidden block ">
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={``} className="menus-item__link text-type-2">Home</Link><PlusOutlined /></li>
+                  to={RouteConfig.HOME} className="menus-item__link text-type-2">Home</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={``} className="menus-item__link text-type-2">Product</Link><PlusOutlined /></li>
+                  to={RouteConfig.CLINET_PRODUCTS} className="menus-item__link text-type-2">Product</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={``} className="menus-item__link text-type-2">Table</Link><PlusOutlined /></li>
+                  to={RouteConfig.TABLE} className="menus-item__link text-type-2">Table</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={``} className="menus-item__link text-type-2">Order</Link><PlusOutlined /></li>
-                <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={``} className="menus-item__link text-type-2">About us</Link><PlusOutlined /></li>
-                <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link to={``} className="menus-item__link text-type-2">Contact</Link><PlusOutlined /></li>
+                  to={RouteConfig.ABOUT} className="menus-item__link text-type-2">About us</Link><PlusOutlined /></li>
+                <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link to={RouteConfig.CONTACT} className="menus-item__link text-type-2">Contact</Link><PlusOutlined /></li>
               </ul>
             </div>
             <div className="container">
@@ -351,7 +292,7 @@ const Header = () => {
             <div className="container my-5 flex justify-center">
               <button className="btn-type-2"><span>Order now</span></button>
             </div>
-            <div className="container">
+            {/* <div className="container">
               <div className="box-contact-sideBar">
                 <ul className="contact-list">
                   <li className="contact-list-item mb-6 text-[16px] text-textColor1"><MailOutlined className='text-[18px] text-mainColor1' /><span className='ml-2 text-type-1'>Email : </span><Link to="mailto:annguyen04@homail.com" className="contact-list-item__link text-type-2">annguyen04@homail.com</Link></li>
@@ -368,16 +309,16 @@ const Header = () => {
                 <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><PinterestOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
                 <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               </ul>
-            </div>
+            </div> */}
           </div>
-          <div className="container">
+          {/* <div className="container">
             <ul className="box-social flex gap-4 mb-4 border-t-[1px] border-borderColor1 pt-6">
               <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><TwitterOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><TikTokOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><PinterestOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
               <li className="box-social-item p-3 border rounded-full group hover:bg-textColor1 cursor-pointer"><Link to={``} className="box-social-item__link group block w-[50px] h-[50px]"><InstagramOutlined className='text-textColor1 text-2xl group-hover:text-textColor3 ' /></Link></li>
             </ul>
-          </div>
+          </div> */}
         </Drawer>
       </header>
     </>
@@ -385,3 +326,5 @@ const Header = () => {
 };
 
 export default Header;
+
+

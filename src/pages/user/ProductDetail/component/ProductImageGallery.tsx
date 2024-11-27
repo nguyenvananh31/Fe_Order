@@ -19,7 +19,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ thumbnail, im
         />
       </div>
       <div className="box-image-list grid grid-cols-3 gap-[24px] md:mt-[24px] mt-3 md:px-4 p-0">
-        {images.map((image, idx) => (
+        {images?.map((image, idx) => (
           <Image
             key={idx}
             className="box-image-list__img w-40 h-40 object-cover"

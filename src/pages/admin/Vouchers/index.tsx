@@ -1,17 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined, UploadOutlined, ZoomInOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Col, Form, Image, Input, Modal, notification, Popconfirm, Row, Select, Space, Table, Tooltip, Upload } from 'antd';
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { AutoComplete, Button, Col, DatePicker, Form, Image, Input, Modal, Row, Select, Space, Table, Upload, UploadFile } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
+import { RcFile } from 'antd/es/upload';
 import { AutoCompleteProps, TableProps } from 'antd/lib';
+import dayjs from 'dayjs';
+import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
-import { fallBackImg, getImageUrl } from '../../../constants/common';
+import { DateFomat, fallBackImg, FileRule, getImageUrl } from '../../../constants/common';
 import { PAGINATE_DEFAULT } from '../../../constants/enum';
 import useDebounce from '../../../hooks/useDeBounce';
+import useToast from '../../../hooks/useToast';
 import ApiUtils from '../../../utils/api/api.utils';
 
 const { Option } = Select;
 
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
+
+const getBase64 = (file: RcFile): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+    });
 
 interface ISate {
     loadingSubmit: boolean;
@@ -56,7 +74,8 @@ interface Voucher {
     name: string;
     value: string;
     image: string;
-    expiration_date: string;
+    end_date: string;
+    start_date: string;
     status: number;
     customer_id: string | null;
 }
@@ -67,9 +86,12 @@ const ListVoucher: React.FC = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState<null | any>(null);
     const [form] = Form.useForm();
-    const [imageFile, setImageFile] = useState<any>(null);
+    const [thumbnail, setThumbnail] = useState<UploadFile[]>([]);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
+    const [previewImage, setPreviewImage] = useState('');
+    const toast = useToast();
+    const [previewOpen, setPreviewOpen] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -111,65 +133,83 @@ const ListVoucher: React.FC = () => {
     const handleAdd = () => {
         setEditingRecord(null);
         form.resetFields();
-        setImageFile(null);
+        setThumbnail([]);
         setModalVisible(true);
     };
 
     const handleEdit = (record: any) => {
         setEditingRecord(record);
-        form.setFieldsValue(record);
+        form.resetFields();
+        form.setFieldsValue({
+            name: record.name,
+            value: record.value,
+            quantity: record.quantity,
+            status: record.status,
+            image: [{
+                uid: '-1',
+                name: 'Ảnh 1',
+                status: 'done',
+                url: record?.image ? getImageUrl(record.image) : fallBackImg,
+            }]
+        });
         setModalVisible(true);
     };
 
+    //Handle upload
 
-    const handleUpload = (info: any) => {
-        if (info.file.status === 'done') {
-            setImageFile(info.file.originFileObj);
-            notification.success({ message: 'Image uploaded successfully!' });
+    const handleBeforeUpload = async (file: any) => {
+        if (!FileRule.accepts.includes(file.type)) {
+            toast.showError('Chỉ được tải ảnh dạng JPG/PNG/JPEG!');
+            return Upload.LIST_IGNORE;
         }
+        setThumbnail([file]);
+
+        return false;
     };
-    
-    const handleChangeStatus = async (id: number, status: number) => {
-        try {
-            setState(prev => ({ ...prev, loading: true }));
-            await ApiUtils.put('/api/admin/vouchers/' + id, { status });
-            setState(prev => ({ ...prev, loading: false, refresh: !prev.refresh }));
-        } catch (error) {
-            console.log(error);
-            setState(prev => ({ ...prev, loading: false }));
-        }
-    }
 
-    const handleSubmit = async (values: { name: string; value: string; expiration_date: string; status: number }) => {
+    // const handleChangeStatus = async (id: number, status: number) => {
+    //     try {
+    //         setState(prev => ({ ...prev, loading: true }));
+    //         await ApiUtils.put('/api/admin/vouchers/' + id, { status });
+    //         setState(prev => ({ ...prev, loading: false, refresh: !prev.refresh }));
+    //     } catch (error) {
+    //         console.log(error);
+    //         setState(prev => ({ ...prev, loading: false }));
+    //     }
+    // }
+
+    const handleSubmit = async (values: { name: string; value: string; expiration_date: any[]; status: number, quantity: number, image: any[] }) => {
+        console.log('values: ', values);
         const formData = new FormData();
         formData.append('name', values.name);
         formData.append('value', values.value);
-        formData.append('expiration_date', values.expiration_date);
+        formData.append('start_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
+        formData.append('end_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
         formData.append('status', values.status.toString());
-        if (imageFile) {
-            formData.append('image', imageFile);
+        formData.append('quantity', values.quantity.toString());
+        if (values.image.length > 0) {
+            formData.append('image', values.image[0].originFileObj as any);
         }
-
         if (editingRecord) {
             ApiUtils.put(`/api/admin/vouchers/${editingRecord.key}`, formData)
                 .then(() => {
                     fetchData();
-                    notification.success({ message: 'Voucher updated successfully!' });
+                    toast.showSuccess('Cập nhật voucher thành công!');
                     setModalVisible(false);
                 })
                 .catch(error => {
-                    notification.error({ message: 'Error updating voucher!' });
+                    toast.showError('Cập nhật voucher thất bại!');
                     console.error('Error updating voucher:', error);
                 });
         } else {
             ApiUtils.postForm('/api/admin/vouchers', formData)
                 .then(() => {
                     fetchData();
-                    notification.success({ message: 'Voucher added successfully!' });
+                    toast.showSuccess('Tạo voucher thành công!');
                     setModalVisible(false);
                 })
                 .catch(error => {
-                    notification.error({ message: 'Error adding voucher!' });
+                    toast.showError('Tạo voucher thất bại!');
                     console.error('Error adding voucher:', error);
                 });
         }
@@ -180,13 +220,14 @@ const ListVoucher: React.FC = () => {
             setState(prev => {
                 let rePage = false;
                 if (
-                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length-3) ||
+                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length - 3) ||
                     prev.filterSort !== sorter.field
                 ) {
                     rePage = true;
                 }
-                return { ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined,
-                     filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
+                return {
+                    ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length - 3) : undefined,
+                    filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
                 }
             })
         }
@@ -212,7 +253,7 @@ const ListVoucher: React.FC = () => {
             dataIndex: 'name',
             key: 'name',
             sorter: true,
-            showSorterTooltip: {title: 'Sắp xếp theo tên'},
+            showSorterTooltip: { title: 'Sắp xếp theo tên' },
             render: (_: any, item: any) => {
                 return (
                     <div onClick={() => handleEdit(item)} className='text-purple font-semibold cursor-pointer'>
@@ -226,12 +267,19 @@ const ListVoucher: React.FC = () => {
             dataIndex: 'value',
             key: 'value',
             sorter: true,
-            showSorterTooltip: {title: 'Sắp xếp theo số điểm'},
+            showSorterTooltip: { title: 'Sắp xếp theo số điểm' },
+        },
+        {
+            title: 'Ngày bắt đầu',
+            dataIndex: 'start_date',
+            key: 'start_date',
+            render: (i: string) => <>{moment(i).format(DateFomat)}</>
         },
         {
             title: 'Ngày hết hạn',
-            dataIndex: 'expiration_date',
-            key: 'expiration_date',
+            dataIndex: 'end_date',
+            key: 'end_date',
+            render: (i: string) => <>{moment(i).format(DateFomat)}</>
         },
         {
             title: 'Hình ảnh',
@@ -239,16 +287,16 @@ const ListVoucher: React.FC = () => {
             key: 'image',
             render: (image: string) => (
                 <Image
-                style={{ objectFit: 'cover', width: '120px', height: '80px', borderRadius: "5px" }}
-                src={image ? getImageUrl(image) : fallBackImg}
-                preview={{
-                    mask: (
-                        <Space direction="vertical" align="center">
-                            <ZoomInOutlined />
-                        </Space>
-                    ),
-                }}
-            />
+                    style={{ objectFit: 'cover', width: '120px', height: '80px', borderRadius: "5px" }}
+                    src={image ? getImageUrl(image) : fallBackImg}
+                    preview={{
+                        mask: (
+                            <Space direction="vertical" align="center">
+                                <ZoomInOutlined />
+                            </Space>
+                        ),
+                    }}
+                />
             ),
         },
         // {
@@ -307,7 +355,6 @@ const ListVoucher: React.FC = () => {
     //Search
     /** Event KeyEnter */
     useEffect(() => {
-
         const keyDownListener = (event: KeyboardEvent) => {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 setState((prev) => ({ ...prev, pageIndex: 1, search: false, enterSearch: true, refresh: !prev.refresh }));
@@ -334,6 +381,23 @@ const ListVoucher: React.FC = () => {
     const refreshPage = useCallback(() => {
         setState((prev) => ({ ...initState, refresh: !prev.refresh }));
     }, []);
+
+    const handlePreview = async (file: any) => {
+
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as any);
+        }
+
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+    };
+
+    const uploadButton = (
+        <button style={{ border: 0, background: 'none' }} type="button">
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </button>
+    );
 
     return (
         <>
@@ -392,13 +456,13 @@ const ListVoucher: React.FC = () => {
                             },
                         }}
                         onChange={handleTableChange}
-                        scroll={{x: 'max-content'}}
+                        scroll={{ x: 'max-content' }}
                     />
                 </div>
 
                 <Modal
                     open={modalVisible}
-                    title={editingRecord ? 'Edit Voucher' : 'Add Voucher'}
+                    title={editingRecord ? 'Cập nhật voucher' : 'Tạo voucher'}
                     onCancel={() => setModalVisible(false)}
                     footer={null}
                     destroyOnClose
@@ -406,24 +470,36 @@ const ListVoucher: React.FC = () => {
                     <Form form={form} onFinish={handleSubmit} layout="vertical">
                         <Form.Item
                             name="name"
-                            label="Voucher Name"
-                            rules={[{ required: true, message: 'Please enter voucher name!' }]}
+                            label="Tên voucher"
+                            rules={[{ required: true, message: 'Tên voucher là bắt buộc!' }]}
                         >
-                            <Input placeholder="Enter voucher name" />
+                            <Input placeholder="Tên voucher" />
                         </Form.Item>
                         <Form.Item
                             name="value"
-                            label="Value"
-                            rules={[{ required: true, message: 'Please enter value!' }]}
+                            label="Điểm"
+                            rules={[{ required: true, message: 'Điểm là bắt buộc!' },
+                            {
+                                validator: (_, value) => {
+                                    if (value < 1) {
+                                        return Promise.reject('Số điểm phải lớn hơn 0!');
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
+                            ]}
                         >
-                            <Input placeholder="Enter voucher value" />
+                            <Input placeholder="Nhập số điểm" type="number" />
                         </Form.Item>
                         <Form.Item
                             name="expiration_date"
-                            label="Expiration Date"
-                            rules={[{ required: true, message: 'Please enter expiration date!' }]}
+                            label="Ngày bắt đầu"
+                            rules={[{ required: true, message: 'Ngày bắt đầu và kết thúc là bắt buộc!' }]}
                         >
-                            <Input type="date" />
+                            <DatePicker.RangePicker
+                                format={DateFomat} style={{ width: '100%' }}
+                                minDate={dayjs()}
+                            />
                         </Form.Item>
                         <Form.Item
                             name="status"
@@ -431,32 +507,78 @@ const ListVoucher: React.FC = () => {
                             rules={[{ required: true, message: 'Please select status!' }]}
                         >
                             <Select placeholder="Select status">
-                                <Option value={1}>Active</Option>
-                                <Option value={0}>Inactive</Option>
+                                <Option value={1}>Hoạt động</Option>
+                                <Option value={0}>Khoá</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            label="Upload Image"
+                            label="Tài khoản áp dụng voucher"
+                            name={'customer_id'}
+                        // rules={[{ required: true, message: 'Kích thước sản phẩm không được bỏ trống!' }]}
+                        >
+                            <Select
+                                loading={state.loading}
+                                showSearch
+                                placeholder="Chọn khách hàng"
+                                style={{ width: '100%' }}
+                                optionFilterProp="label"
+                                options={[]}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Số lượng"
+                            name={'quantity'}
+                            rules={[
+                                { required: true, message: 'Số lượng sản phẩm không được bỏ trống!' },
+                                {
+                                    validator: (_, value) => {
+                                        if (value < 1) {
+                                            return Promise.reject('Số lượng phải lớn hơn 0!');
+                                        }
+                                        return Promise.resolve();
+                                    }
+                                }
+                            ]}
+                        >
+                            <Input placeholder="Nhập số lượng" type="number" />
+                        </Form.Item>
+                        <Form.Item
+                            name={'image'}
+                            label="Ảnh voucher"
                             valuePropName="fileList"
+                            getValueFromEvent={normFile}
                         >
                             <Upload
-                                name="image"
-                                listType="picture"
+                                listType="picture-card"
+                                fileList={thumbnail}
+                                onPreview={handlePreview}
+                                beforeUpload={(file) => handleBeforeUpload(file)}
+                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
                                 maxCount={1}
-                                beforeUpload={() => false}
-                                onChange={handleUpload}
                             >
-                                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                {thumbnail.length > 0 ? null : uploadButton}
                             </Upload>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" className="w-full">
+                            <Button type="primary" htmlType="submit" className="w-full mt-4">
                                 Save
                             </Button>
                         </Form.Item>
                     </Form>
                 </Modal>
             </section>
+            {/* Show ảnh */}
+            {previewImage && (
+                <Image
+                    wrapperStyle={{ display: 'none' }}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
         </>
     );
 };

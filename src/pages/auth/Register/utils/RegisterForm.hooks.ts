@@ -1,7 +1,7 @@
 import { Form } from "antd";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { RoutePath } from "../../../../constants/path";
+import { RouteConfig } from "../../../../constants/path";
 import useToast from "../../../../hooks/useToast";
 import { registerService } from "./RegisterForm.services";
 export const RegisterForm = () => {
@@ -20,7 +20,7 @@ export const RegisterForm = () => {
       const dataRegister: any = await registerService(formData);
       if (dataRegister && dataRegister !== undefined) {
         toast.showSuccess('Đăng ký tài khoản thành công!');
-        navigate('/' + RoutePath.LOGIN);
+        navigate(RouteConfig.LOGIN);
       }
     } catch (error) {
       console.log(error);

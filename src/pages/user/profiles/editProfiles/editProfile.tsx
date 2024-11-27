@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useToast from "../../../../hooks/useToast";
-import instance from "../../../../configs/Axios/AxiosConfig";
 import { Button, Card, Form, Input } from "antd";
 import { FormProps } from "antd/lib";
+import useToast from "../../../../hooks/useToast";
+import ApiUtils from "../../../../utils/api/api.utils";
 
 type FieldType = {
   name: string;
@@ -19,7 +19,7 @@ const EditProfile = () => {
   const { data } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      return await instance.get("client/profile");
+      return await ApiUtils.fetch("/api/client/profile");
     },
   });
 
@@ -28,7 +28,7 @@ const EditProfile = () => {
   const { mutate } = useMutation({
     mutationFn: async (values: FieldType) => {
       try {
-        const response = await instance.put(`client/profile/${id}`, values);
+        const response = await ApiUtils.put(`/api/client/profile/${id}`, values);
         return response;
       } catch (error) {
         console.log(error);

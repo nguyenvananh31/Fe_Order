@@ -1,15 +1,15 @@
 export const RoutePath = {
     //Client
     HOME: '/',
-    ABOUT : 'about',
-    PRODUCTS : 'products',
-    PROFILE:'profile',
-    EDIT_PROFILE:'editProfile',
+    ABOUT: 'about',
+    PRODUCTS: 'products',
+    PROFILE: 'profile',
+    EDIT_PROFILE: 'editProfile',
     CLINET_PRODUCTS: 'product',
     PRODUCT_DETAIL: 'product/:id',
-    INFO_PROFILES:"infoProfiles",
+    INFO_PROFILES: "infoProfiles",
     PRODUCT_CATE: 'product/category/:id',
-    BILL:'bill',
+    BILL: 'bill',
 
 
 
@@ -18,15 +18,15 @@ export const RoutePath = {
     ADMIN: 'admin',
     ACCOUNT: 'accounts',
     CATEGORY: 'categories',
-    LOGIN : 'login',
-    REGISTER : 'register',
-    CHECKOUT : 'checkout',
-    ORDER : 'order',
+    LOGIN: 'login',
+    REGISTER: 'register',
+    CHECKOUT: 'checkout',
+    ORDER: 'order',
     CHECK_QR: 'qr-check/:id',
-    TABLE : 'table',
-    CONTACT : 'contact',
-    CART : 'cart',
-    SEARCH : 'search',
+    TABLE: 'table',
+    CONTACT: 'contact',
+    CART: 'cart',
+    SEARCH: 'search',
     PAYMENT: 'payments',
     ADMIN_PRODUCT_MAIN: 'products-main',
     ADMIN_PRODUCT: 'products',
@@ -39,7 +39,7 @@ export const RoutePath = {
     SIZES: 'sizes',
     ERROR: 'error',
     ADMIN_EDIT_PRODUCT: 'product-edit',
-    VOUCHER : 'vouchers'
+    VOUCHER: 'vouchers'
 }
 
 export const menuPath: { [key: string]: string } = {
@@ -52,4 +52,47 @@ export const menuPath: { [key: string]: string } = {
 
 export const menuActive: { [key: string]: string } = {
     'product-edit': 'products'
+}
+
+export const RouteConfig = {
+    HOME: '/',
+    ABOUT: '/about',
+    PROFILE: '/profile',
+    EDIT_PROFILE: '/profile/editProfile',
+    CLINET_PRODUCTS: '/products',
+    PRODUCT_DETAIL: '/product/:id',
+    INFO_PROFILES: "/profile/infoProfiles",
+    PRODUCT_CATE: '/product/category/:id',
+    BILL: '/profile/bill',
+    
+    //Admin
+    ADMIN: '/admin',
+    ACCOUNT: '/admin/accounts',
+    CATEGORY: '/admin/categories',
+    CHECKOUT: '/checkout',
+    ORDER: '/order',
+    CHECK_QR: '/qr-check/:id',
+    TABLE: '/table',
+    CONTACT: '/contact',
+    CART: '/cart',
+    SEARCH: '/search',
+    PAYMENT: '/admin/payments',
+    ADMIN_PRODUCT_MAIN: '/admin/products-main',
+    ADMIN_PRODUCT: '/admin/products',
+    ADMIN_ADD_PRODUCT: '/admin/product-add',
+    ADMIN_TABLE_MAIN: '/admin/tables-main',
+    ADMIN_TABLE: '/admin/tables',
+    ADMIN_TABLE_ORDER: '/admin/tables-order',
+    CUSTOMERS: '/admin/customers',
+    AD_BILL: '/admin/bills',
+    SIZES: '/admin/sizes',
+    ADMIN_EDIT_PRODUCT: '/admin/product-edit',
+    VOUCHER: '/admin/vouchers',
+
+    // Error page
+    ERROR: '/error',
+
+    // Other routes
+    LOGIN: '/login',
+    REGISTER: '/register',
 }

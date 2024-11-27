@@ -3,7 +3,7 @@ import { Form, Input, Layout } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RoutePath } from "../../../constants/path";
+import { RouteConfig } from "../../../constants/path";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import useOrder from "../../../hooks/useOrder";
 import useToast from "../../../hooks/useToast";
@@ -77,7 +77,7 @@ const OrderPage = () => {
     if (!orderId && isFisrtLoad) {
         toast.showError('Vui lòng quét mã Qr để đăng nhập!');
         (async () => {
-            await navigate('/' + RoutePath.ERROR);
+            await navigate(RouteConfig.ERROR);
         })();
         return;
     }
@@ -105,7 +105,7 @@ const OrderPage = () => {
             console.log(error);
             clearOrder();
             toast.showError('Bàn đã được thanh toán hoặc huỷ!');
-            navigate(RoutePath.HOME);
+            navigate(RouteConfig.HOME);
             return;
         }
     }, [isFisrtLoad]);

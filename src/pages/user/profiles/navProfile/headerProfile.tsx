@@ -1,21 +1,9 @@
 import { Avatar, Space } from "antd";
-import instance from "../../../../configs/Axios/AxiosConfig";
-import { useQuery } from "@tanstack/react-query";
+import useAuth from "../../../../hooks/redux/auth/useAuth";
 
 const HeaderProfile = () => {
 
-  const { data } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      try {
-        return await instance.get(`client/profile`);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        return null;
-      }
-    },
-    refetchInterval: 60000, 
-  });
+  const { user } = useAuth();
 
   return (
     <div className="flex flex-col text-sm leading-[21px] px-3">
@@ -26,7 +14,7 @@ const HeaderProfile = () => {
           </Space>
         </div>
         <div className="font-medium text-base capitalize">
-        {data?.data.data.email || "email@exam.com"}
+          {user?.email || "email@exam.com"}
         </div>
       </div>
     </div>

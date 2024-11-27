@@ -6,6 +6,8 @@ import useCartStore from '../../../../hooks/redux/cart/useCartStore';
 import useToast from '../../../../hooks/useToast';
 import ApiUtils from '../../../../utils/api/api.utils';
 import './ItemProducts.scss';
+import { fallBackImg, getImageUrl } from '../../../../constants/common';
+import { convertPriceVND } from '../../../../utils/common';
 
 interface Size {
   id: number;
@@ -91,14 +93,14 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
     <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>
       <div className="itemProduct-img py-12 px-2 relative bg-white group-hover:bg-transparent rounded-md">
         <img
-          src="https://modinatheme.com/html/foodking-html/assets/img/food/burger-2.png"
+          src={product.thumbnail ? getImageUrl(product.thumbnail) : fallBackImg}
           alt={product.name}
-          className="itemProduct__img w-full max-h-[145px] object-contain group-hover:scale-110 transition-all duration-1s"
+          className="itemProduct__img w-full max-h-[145px] h-[145px] object-contain group-hover:scale-110 transition-all duration-1s"
         />
-        <div className={`itemProduct-btn absolute top-0 left-0 p-1 flex justify-center items-center m-3 rounded-md transition-all ${liked ? 'bg-white' : 'bg-black hover:bg-white'}`}>
+        <div className={`itemProduct-btn absolute top-0 left-0 p-1 flex justify-center items-center m-3 rounded-md transition-all ${liked ? 'bg-white' : 'bg-black hover:bg-black'}`}>
           <Button
             type="text"
-            icon={liked ? <HeartFilled style={{ color: '#ffb936 ' }} /> : <HeartOutlined />}
+            icon={liked ? <HeartFilled style={{ color: '#ffb936' }} /> : <HeartOutlined />}
             onClick={handleClick}
             style={{
               fontSize: '18px',
@@ -112,9 +114,9 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
 
       <div className="itemProduct-main w-full opacity-0 scale-0 group-hover:opacity-[1] group-hover:scale-[1] duration-300">
         <div className="btn-add w-full flex justify-center">
-          <button onClick={handleAddToCart} className='text-white bg-textColor1 py-[5px] px-[50px] rounded-[19px] text-[14px] hover:bg-mainColor2 leading-[20px]'>
+          <button onClick={handleAddToCart} className='text-white bg-textColor1 py-[5px] px-[30px] rounded-[19px] text-[14px] hover:bg-mainColor2 leading-[20px]'>
             <ShoppingCartOutlined className='mr-2 text-[16px]' />
-            <span className='capitalize'>Add to cart</span>
+            <span className='capitalize py-2'>Thêm vào giỏ hàng</span>
           </button>
         </div>
       </div>
@@ -122,12 +124,12 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
       {firstDetail && (
         <div className="sale-preview flex text-white items-center justify-center gap-[10px] py-[16px]">
           <span className="discount bg-mainColor3 text-[16px] text-textColor1 font-light py-[4px] px-[6px] group-hover:bg-bodyColor rounded-[3px] ">-5%</span>
-          <span className="default text-mainColor1 text-[16px] font-light">${firstDetail.price}</span>
-          <span className="price text-textColor2 text-[16px]">${(firstDetail.price - (firstDetail.sale || 0)).toFixed(2)}</span>
+          <span className="default text-mainColor1 text-[16px] font-light">{convertPriceVND(+firstDetail.sale || +firstDetail.price)}</span>
+          <span className="price text-textColor2 text-[16px]">{!!firstDetail.sale && convertPriceVND(+firstDetail.price)}</span>
         </div>
       )}
 
-      <Link to={`product/${product.id}`} className='pro-info__title text-center text-[18px] text-textColor1'>
+      <Link to={`/product/${product.id}`} className='pro-info__title text-center text-[18px] text-textColor1'>
         <h2>{product.name}</h2>
       </Link>
 

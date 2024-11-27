@@ -10,6 +10,8 @@ import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { CheckboxProps } from "antd/lib";
 import useToast from "../../../hooks/useToast";
 import { IPayments } from "../../../interFaces/payments";
+import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "../../../constants/path";
 
 interface IState {
   loading: boolean;
@@ -41,12 +43,21 @@ const Checkout = () => {
 
   const [state, setState] = useState<IState>(initState);
   const { cartStore } = useCartStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (cartStore.optionSelect.length == 0) {
+      navigate(RouteConfig.CART);
+      return;
+    }
+  }, []);
+
   const toast = useToast();
   const listPros = useMemo(() => cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id)), [cartStore]);
 
   const totalPros = useMemo(() => listPros.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0), [listPros]);
-  const totalVoucher = useMemo(() => state.tranferPoint ? state.customer?.diemthuong : 0, [state.tranferPoint]);
-  const subTotal = useMemo(() => totalPros - totalVoucher! >= 0 ? totalPros - totalVoucher! : 0, [totalPros, totalVoucher])
+  const totalVoucher = useMemo(() => state.tranferPoint ? state.customer?.diemthuong || 0 > totalPros ? totalPros : state.customer?.diemthuong : 0, [state.tranferPoint]);
+  const subTotal = useMemo(() => totalPros - totalVoucher! >= 0 ? totalPros - totalVoucher! : 0, [totalPros, totalVoucher]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,11 +149,11 @@ const Checkout = () => {
     ]
   }, [cartStore]);
 
-  const handleAddBill = useCallback(async() => {
+  const handleAddBill = useCallback(async () => {
     try {
       const formData = new FormData();
       const proIDs = cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id));
-      
+
       proIDs?.forEach((i) => {
         formData.append(`cart_items[]`, `${i.id}`);
       });
@@ -157,8 +168,8 @@ const Checkout = () => {
     }
   }, [cartStore.optionSelect, state.tranferPoint, state.addresActive]);
 
-  const onChangePayment = useCallback( (e: RadioChangeEvent) => {
-    setState(prev => ({...prev, paymentValue: e.target.value}));
+  const onChangePayment = useCallback((e: RadioChangeEvent) => {
+    setState(prev => ({ ...prev, paymentValue: e.target.value }));
   }, []);
 
   return <div className="container mx-auto my-4 xl:px-40">
@@ -211,8 +222,8 @@ const Checkout = () => {
           <span>Đổi điểm</span>
         </div>
         <div className="flex items-center gap-1">
-          <Col><span>{`[-${convertPriceVND(state.customer?.diemthuong || 0)}]`}</span></Col>
-          <Checkbox disabled={state.customer?.diemthuong == 0} onChange={onChangePoint} />
+          <Col><span>Số điểm hiện có: {state.customer?.diemthuong || 0} = {`[-${convertPriceVND(state.customer?.diemthuong || 0)}]`}</span></Col>
+          <Checkbox disabled={!state.customer?.diemthuong || (state.customer?.diemthuong == 0)} onChange={onChangePoint} />
         </div>
       </div>
     </div>
@@ -225,7 +236,7 @@ const Checkout = () => {
         <Radio.Group onChange={onChangePayment} value={state.paymentValue}>
           {
             state.paymants.map(i => (
-              <Radio value={i.id}>{i.name}</Radio>
+              <Radio key={i.id} value={i.id}>{i.name}</Radio>
             ))
           }
         </Radio.Group>
@@ -239,7 +250,7 @@ const Checkout = () => {
           </div>
           <div className="flex justify-between items-center my-4">
             <span className="text-base font-semibold">Tổng cộng Voucher giảm giá</span>
-            <span>{convertPriceVND(totalVoucher!)}</span>
+            <span>{convertPriceVND(totalVoucher || 0)}</span>
           </div>
           <div className="flex justify-between items-center my-4">
             <span className="text-base font-semibold">Tổng thanh toán</span>
