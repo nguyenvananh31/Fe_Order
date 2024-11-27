@@ -1,8 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
-import Loader from "../../../components/loader"
 import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Loader from "../../../components/loader";
+import { RouteConfig } from "../../../constants/path";
 import useOrder from "../../../hooks/useOrder";
-import { RoutePath } from "../../../constants/path";
 import useToast from "../../../hooks/useToast";
 
 const QrCheckOrder = () => {
@@ -15,10 +15,10 @@ const QrCheckOrder = () => {
     useEffect(() => {
         if (id) {
             setOrderToLocal(id);
-            navigate('/' + RoutePath.ORDER);
+            navigate(RouteConfig.ORDER);
         }else {
             toast.showError('Qr không hợp lệ!');
-            navigate(RoutePath.HOME);
+            navigate(RouteConfig.HOME);
         }
     }, []);
 
