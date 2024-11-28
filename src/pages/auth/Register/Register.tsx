@@ -258,8 +258,8 @@ const Register = () => {
                                                 message: "Mật khảu không được để trống, vui lòng nhập lại!",
                                             },
                                             {
-                                                min: 6,
-                                                message: "Mật khẩu phải dài hơn 6 ký tự, vui lòng nhập lại!",
+                                                min: 8,
+                                                message: "Mật khẩu phải dài hơn 8 ký tự, vui lòng nhập lại!",
                                             },
                                         ]}
                                     >

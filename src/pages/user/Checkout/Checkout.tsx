@@ -102,8 +102,8 @@ const Checkout = () => {
     setState(prev => ({ ...prev, showModalAddress: false }));
   }, []);
 
-  const handleChangeAddress = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false }));
+  const handleChangeAddress = useCallback((item?: IAddress) => () => {
+    setState(prev => ({ ...prev, showModalAddress: false, addresActive: item }));
   }, []);
 
   const onChangePoint: CheckboxProps['onChange'] = (e) => {
@@ -274,7 +274,7 @@ const Checkout = () => {
         onCancel={handleHiddenModalAddres}
         onConfirm={handleChangeAddress}
         addresses={state.address}
-        defaultActive={state.addresActive?.id!}
+        defaultActive={state.addresActive}
       />
     }
   </div>

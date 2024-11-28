@@ -3,8 +3,8 @@ import { ReactElement } from "react";
 
 interface IProps {
     children: ReactElement | string;
-    onCancel: () => void; 
-    onConfirm: () => void;
+    onCancel?: () => void; 
+    onConfirm?: () => void;
     okText?: ReactElement | string;
     cancelText?: ReactElement | string;
     loading?: boolean;
