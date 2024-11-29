@@ -13,4 +13,8 @@ export interface IAddress {
     city: string;
     country: string;
     is_default: number;
+    fullname: string;
+    phone: string;
+    commune: string;
+    postal_code: string;
 }

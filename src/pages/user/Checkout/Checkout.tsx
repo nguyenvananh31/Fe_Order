@@ -64,11 +64,15 @@ const Checkout = () => {
       try {
         setState(prev => ({ ...prev, loading: true }));
         const res = await apiGetAddresandCustomer();
+        let addresActive: IAddress | undefined;
+        if (res.data.addresses.length > 0) {
+          const addDefault = res.data.addresses.filter((i: IAddress) => i.is_default == 1);
+          addresActive = addDefault.length > 0 ? addDefault[0] : res.data.addresses[0];
+        }
         setState(prev => ({
           ...prev, address: res.data.addresses, customer: res.data.customer,
-          addresActive: res.data.addresses.length > 0 ? res.data?.addresses[0] : []
-        })
-        )
+          addresActive
+        }));
       } catch (error) {
         console.log(error);
         setState(prev => ({ ...prev, loading: false }));
@@ -182,12 +186,12 @@ const Checkout = () => {
             <span className="pl-2">Địa chỉ nhận hàng</span>
           </div>
           <div className="font-semibold text-base">
-            <div>{state.customer?.name}</div>
-            <div>{'(+84) ' + state.customer?.phone_number}</div>
+            <div>{state.addresActive?.fullname}</div>
+            <div>{'(+84) ' + state.addresActive?.phone}</div>
           </div>
         </Col>
         <Col span={8}>
-          <span className="text-sm">{state.addresActive?.address}</span>
+          <span className="text-sm line-clamp-2">{state.addresActive?.city} - {state.addresActive?.city} - {state.addresActive?.commune} - {state.addresActive?.address}</span>
         </Col>
         <Col>
           <Tag color="red" title="Mặc định">Mặc định</Tag>
