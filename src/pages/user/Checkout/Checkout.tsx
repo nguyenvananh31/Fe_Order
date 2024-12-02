@@ -73,6 +73,7 @@ const Checkout = () => {
           ...prev, address: res.data.addresses, customer: res.data.customer,
           addresActive
         }));
+
       } catch (error) {
         console.log(error);
         setState(prev => ({ ...prev, loading: false }));
@@ -166,6 +167,7 @@ const Checkout = () => {
       formData.append('payment_id', `${1}`);
       await apiAddBill(formData);
       toast.showSuccess('Đặt hàng thành công!');
+      navigate(RouteConfig.HOME);
     } catch (error: any) {
       console.log(error);
       toast.showError(error);
@@ -191,10 +193,10 @@ const Checkout = () => {
           </div>
         </Col>
         <Col span={8}>
-          <span className="text-sm line-clamp-2">{state.addresActive?.city} - {state.addresActive?.city} - {state.addresActive?.commune} - {state.addresActive?.address}</span>
+          <span className="text-sm line-clamp-2">{state.addresActive?.province} - {state.addresActive?.district} - {state.addresActive?.commune} - {state.addresActive?.address}</span>
         </Col>
         <Col>
-          <Tag color="red" title="Mặc định">Mặc định</Tag>
+          {state.addresActive?.is_default == 1 && <Tag color="red" className="ml-4 h-max" title="Mặc định">Mặc định</Tag>}
         </Col>
         <Col>
           <span className="text-sky-500 cursor-pointer" onClick={handleShowModalAddres}>Thay đổi</span>

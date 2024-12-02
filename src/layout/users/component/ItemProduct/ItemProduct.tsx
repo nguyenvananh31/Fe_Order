@@ -36,8 +36,8 @@ interface ItemProductProps {
 
 const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
   const [liked, setLiked] = useState(false);
-  const { cartStore,setProtoCart } = useCartStore();
-  const {showError, showSuccess} = useToast();
+  const { cartStore, setProtoCart } = useCartStore();
+  const { showError, showSuccess } = useToast();
 
   const handleClick = () => {
     setLiked(!liked);
@@ -46,14 +46,10 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
   // Kiểm tra và lấy chi tiết sản phẩm
   const firstDetail = useMemo(() => product.product_details && product.product_details.length > 0
     ? product.product_details[0]
-    : null, []);
-
-  if (!firstDetail) {
-    return <p>No product details available</p>;
-  }
+    : null, [product]);
 
   // Xử lý sự kiện khi nhấn nút Add to Cart
-  const handleAddToCart = useCallback(async() => {
+  const handleAddToCart = useCallback(async () => {
     try {
       let data: any = {
         product_detail_id: firstDetail.id,
@@ -66,8 +62,8 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
       let newCart = [...cartStore.proCarts];
       const exitedItem = newCart.filter(i => i.product_detail_id == data.product_detail_id);
       if (exitedItem.length > 0) {
-        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? {...i, quantity: i.quantity + 1} : i);
-      }else {
+        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? { ...i, quantity: i.quantity + 1 } : i);
+      } else {
         data = {
           ...data,
           product_price: data.price,
@@ -83,11 +79,14 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
     }
   }, [cartStore.proCarts]);
 
-
   //Api add to cart
   const apiAddtoCart = useCallback(async (body: any) => {
-      return await ApiUtils.post<any, any>('/api/client/online_cart', body);
+    return await ApiUtils.post<any, any>('/api/client/online_cart', body);
   }, []);
+
+  if (!firstDetail) {
+    return <p>No product details available</p>;
+  }
 
   return (
     <div className='w-full itemProduct group hover:bg-mainColor3 bg-transparent transition-all duration-1s cursor-pointer rounded-lg hover:shadow-lg'>
@@ -130,7 +129,7 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
       )}
 
       <Link to={`/product/${product.id}`} className='pro-info__title text-center text-[18px] text-textColor1'>
-        <h2>{product.name}</h2>
+        <h4 className='line-clamp-2'>{product.name}</h4>
       </Link>
 
       <div className="pro-ratting mt-[16px] pb-[16px] flex items-center justify-center text-[14px] text-mainColor3 group-hover:text-bgColor1">

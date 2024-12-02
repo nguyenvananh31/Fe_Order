@@ -80,6 +80,7 @@ const ProductDetail = () => {
           ...data,
           product_price: data.price,
           price: res.data.price,
+          product_thumbnail: state.product.thumbnail
         }
         newCart.push(data);
       }

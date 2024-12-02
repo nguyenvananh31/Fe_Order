@@ -29,8 +29,8 @@ const BaseModalAddOrEditAddress = ({ onConfirm, onCancel, address }: IProps) => 
         form.setFieldsValue({
             fullname: address?.fullname,
             phone: address?.phone,
-            province: address?.country,
-            district: address?.city,
+            province: address?.province,
+            district: address?.district,
             commune: address?.commune,
             address_detail: address?.address,
             is_default: address?.is_default
@@ -46,8 +46,8 @@ const BaseModalAddOrEditAddress = ({ onConfirm, onCancel, address }: IProps) => 
             id: address?.id || 1234,
             fullname: values.fullname,
             phone: values.phone,
-            country: values.province,
-            city: values.district,
+            province: values.province,
+            district: values.district,
             commune: values.commune,
             address: values.address_detail,
             is_default: values.is_default,

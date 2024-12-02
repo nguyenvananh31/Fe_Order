@@ -60,7 +60,10 @@ const BaseModalAddress = ({ onConfirm, onCancel, addresses, defaultActive }: IPr
                     return { ...i, ...item };
                 }
                 return i;
-            })
+            });
+            if (!isExist) {
+                newAddresses.push(item);
+            }
             return { ...prev, addresses: newAddresses }
         });
         handleDissmis();
@@ -107,7 +110,7 @@ const BaseModalAddress = ({ onConfirm, onCancel, addresses, defaultActive }: IPr
                             <Radio value={item.id} checked={!!state.address?.id && state.address?.id == item.id} onChange={onChange(item)} />
                             <div className="font-semibold max-w-[330px]">
                                 <p>{item.fullname} - {item.phone || '0374339124'}</p>
-                                <p className="line-clamp-2">{item.country} - {item.city} - {item.commune} - {item.address}</p>
+                                <p className="line-clamp-2">{item.province} - {item.district} - {item.commune} - {item.address}</p>
                             </div>
                             {item.is_default == 1 && <Tag color="red" className="ml-4 h-max" title="Mặc định">Mặc định</Tag>}
                         </Flex>
