@@ -35,6 +35,7 @@ interface ItemProductProps {
 }
 
 const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [liked, setLiked] = useState(false);
   const { cartStore, setProtoCart } = useCartStore();
   const { showError, showSuccess } = useToast();
@@ -51,6 +52,7 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
   // Xử lý sự kiện khi nhấn nút Add to Cart
   const handleAddToCart = useCallback(async () => {
     try {
+      if (!firstDetail || loading) return;
       let data: any = {
         product_detail_id: firstDetail.id,
         product_id: product.id,
@@ -58,6 +60,7 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
         price: firstDetail.price,
         size_id: firstDetail.size.id,
       }
+      setLoading(true);
       const res = await apiAddtoCart(data);
       let newCart = [...cartStore.proCarts];
       const exitedItem = newCart.filter(i => i.product_detail_id == data.product_detail_id);
@@ -73,11 +76,13 @@ const ItemProduct: React.FC<ItemProductProps> = ({ product }) => {
       }
       setProtoCart(newCart);
       showSuccess('Thêm vào giỏ hàng thành công!');
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
       showError('Thêm vào giỏ hàng thất bại!');
     }
-  }, [cartStore.proCarts]);
+  }, [cartStore.proCarts, loading]);
 
   //Api add to cart
   const apiAddtoCart = useCallback(async (body: any) => {

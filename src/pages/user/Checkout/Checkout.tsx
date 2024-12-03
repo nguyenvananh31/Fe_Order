@@ -12,6 +12,7 @@ import useToast from "../../../hooks/useToast";
 import { IPayments } from "../../../interFaces/payments";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "../../../constants/path";
+import BaseModalVoucher from "./components/VoucherModal";
 
 interface IState {
   loading: boolean;
@@ -24,6 +25,7 @@ interface IState {
   tranferPoint: boolean;
   paymants: IPayments[];
   paymentValue: number;
+  showModalVoucher: boolean;
 }
 
 const initState: IState = {
@@ -36,7 +38,8 @@ const initState: IState = {
   showModalAddress: false,
   tranferPoint: false,
   paymants: [],
-  paymentValue: 0
+  paymentValue: 0,
+  showModalVoucher: true,
 }
 
 const Checkout = () => {
@@ -103,8 +106,8 @@ const Checkout = () => {
     setState(prev => ({ ...prev, showModalAddress: true }));
   }, []);
 
-  const handleHiddenModalAddres = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false }));
+  const handleHiddenModal = useCallback(() => {
+    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: true }));
   }, []);
 
   const handleChangeAddress = useCallback((item?: IAddress) => () => {
@@ -277,10 +280,16 @@ const Checkout = () => {
 
     {
       state.showModalAddress && <BaseModalAddress
-        onCancel={handleHiddenModalAddres}
+        onCancel={handleHiddenModal}
         onConfirm={handleChangeAddress}
         addresses={state.address}
         defaultActive={state.addresActive}
+      />
+    }
+
+    {
+      state.showModalVoucher && <BaseModalVoucher
+        onCancel={handleHiddenModal}
       />
     }
   </div>

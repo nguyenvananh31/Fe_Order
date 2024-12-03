@@ -63,6 +63,7 @@ export const RouteConfig = {
     PRODUCT_DETAIL: '/product/:id',
     INFO_PROFILES: "/profile/infoProfiles",
     PRODUCT_CATE: '/product/category/:id',
+    PRODUCT_CATE_id: '/product/category/',
     BILL: '/profile/bill',
     
     //Admin
