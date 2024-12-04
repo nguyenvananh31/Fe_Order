@@ -2,11 +2,14 @@ import { BellOutlined, CloseOutlined, LogoutOutlined, MenuUnfoldOutlined, Search
 import { Avatar, Badge, Drawer, Dropdown, Menu, MenuProps } from "antd";
 import useHeader from "./header.hooks";
 import { LISTMENU } from "./menu";
+import { RouteConfig } from "../../constants/path";
+import { useNavigate } from "react-router-dom";
 
 
 export const HeaderMain = () => {
 
   const { ...hooks } = useHeader();
+  const navigate = useNavigate();
 
   // Menu item Account
   const items: MenuProps['items'] = [
@@ -54,6 +57,10 @@ export const HeaderMain = () => {
     },
   ];
 
+  const handleGotoHome = () => {
+    navigate(RouteConfig.ADMIN);
+  }
+
   return (
     <>
       <div className="bg-white drop-shadow-primary rounded-primary mx-6 px-5 leading-none py-3 mt-4">
@@ -96,7 +103,7 @@ export const HeaderMain = () => {
         width={230}
       >
         <div className={`m-1 justify-around py-3 flex items-center`}>
-          <div className="flex justify-around items-center gap-3">
+          <div onClick={handleGotoHome} className="cursor-pointer flex justify-around items-center gap-3">
             <div className="flex gap-2 items-center">
               <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
               <h1 className="text-xl font-bold">Nhà Hàng Yagi</h1>

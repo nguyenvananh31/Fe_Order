@@ -65,7 +65,7 @@ const authRoutes: IRoutesProperties[] = [
         name: 'Quên mật khẩu',
         element: <GuestGuard>
             <RegisterScreen />
-        </GuestGuard>,
+        </GuestGuard>
     },
 ];
 
@@ -76,39 +76,39 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý tài khoản',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
             <AccountScreen />
-        </ProtectedRoute>,
+        </ProtectedRoute>
     },
     {
         path: RouteConfig.CATEGORY,
         name: 'Quản lý danh mục',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
             <CateScreen />
-        </ProtectedRoute>,
+        </ProtectedRoute>
     },
     {
         path: RouteConfig.SIZES,
         name: 'Quản lý kích thước',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <SizesScreen />,
+            <SizesScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.PAYMENT,
         name: 'Quản lý phương thức thanh toán',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <PaymentsScreen />,
+            <PaymentsScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_TABLE,
         name: 'Quản lý bàn',
-        element: <TableScreen />,
+        element: <TableScreen />
     },
     {
         path: RouteConfig.ADMIN_TABLE_ORDER,
         name: 'Quản lý bàn đặt',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <DetailOrderTable />,
+            <DetailOrderTable />
         </ProtectedRoute>
     },
 
@@ -116,42 +116,42 @@ const accountRoutes: IRoutesProperties[] = [
         path: `${RouteConfig.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <EditProductScreen />,
+            <EditProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_PRODUCT,
         name: 'Quản lý sản phẩm',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <ProductScreen />,
+            <ProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_ADD_PRODUCT,
         name: 'Quản lý thêm sản phẩm',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <AddProductScreen />,
+            <AddProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.CUSTOMERS,
         name: 'Quản lý khách hàng',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <CustomerScreen />,
+            <CustomerScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.VOUCHER,
         name: 'Quản lý Voucher',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <ListVoucher />,
+            <ListVoucher />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.AD_BILL,
         name: 'Quản lý đơn',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
-            <BillScreen />,
+            <BillScreen />
         </ProtectedRoute>
     }
 ];

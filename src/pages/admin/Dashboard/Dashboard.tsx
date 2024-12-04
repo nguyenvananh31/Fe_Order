@@ -1,18 +1,17 @@
-import React from "react";
-import { Card, Col, Row, Statistic, Progress, Table, Avatar } from "antd";
-import { Line } from "react-chartjs-2";  // Thêm Line chart từ react-chartjs-2
 import { ArrowUpOutlined } from "@ant-design/icons";
-import './Dashboard.scss';  // Import SCSS file
+import { Avatar, Card, Col, Progress, Row, Statistic, Table } from "antd";
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
+import { Line } from "react-chartjs-2"; // Thêm Line chart từ react-chartjs-2
+import './Dashboard.scss'; // Import SCSS file
 
 // Đăng ký các thành phần cho Chart.js
 ChartJS.register(

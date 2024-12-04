@@ -13,6 +13,7 @@ import { PAGINATE_DEFAULT } from '../../../constants/enum';
 import useDebounce from '../../../hooks/useDeBounce';
 import useToast from '../../../hooks/useToast';
 import ApiUtils from '../../../utils/api/api.utils';
+import { convertPriceVND } from '../../../utils/common';
 
 const { Option } = Select;
 
@@ -156,11 +157,20 @@ const ListVoucher: React.FC = () => {
 
     const handleEdit = (record: any) => {
         setEditingRecord(record);
+        if (!+record.value) {
+            setType(1);
+        } else {
+            setType(2);
+        }
         form.resetFields();
         form.setFieldsValue({
             name: record.name,
-            value: record.value,
+            value: +record?.value,
+            discount_percentage: +record?.discount_percentage,
+            max_discount_value: +record?.max_discount_value,
             quantity: record.quantity,
+            customer_id: record?.customer_id,
+            expiration_date: [dayjs(record.start_date), dayjs(record.end_date)],
             status: record.status,
             image: [{
                 uid: '-1',
@@ -201,21 +211,18 @@ const ListVoucher: React.FC = () => {
         if (values?.customer_id) {
             formData.append('customer_id', values.customer_id);
         }
-        if (type == 1) {
-            formData.append('discount_percentage', values?.discount_percentage);
-            formData.append('max_discount_value', values?.max_discount_value);
-        } else {
-            formData.append('value', values.value);
-        }
-        formData.append('start_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
-        formData.append('end_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
+        formData.append('discount_percentage', values?.discount_percentage || 0);
+        formData.append('max_discount_value', values?.max_discount_value || 0);
+        formData.append('value', values?.value || 0);
+        formData.append('start_date', moment(new Date(values.expiration_date[0])).format('YYYY/MM/DD'));
+        formData.append('end_date', moment(new Date(values.expiration_date[1])).format('YYYY/MM/DD'));
         formData.append('status', values.status.toString());
         formData.append('quantity', values.quantity.toString());
-        if (values.image.length > 0) {
+        if (values.image[0].originFileObj) {
             formData.append('image', values.image[0].originFileObj as any);
         }
         if (editingRecord) {
-            ApiUtils.put(`/api/admin/vouchers/${editingRecord.key}`, formData)
+            ApiUtils.postForm(`/api/admin/vouchers/${editingRecord?.id}?_method=PUT`, formData)
                 .then(() => {
                     fetchData();
                     toast.showSuccess('Cập nhật voucher thành công!');
@@ -291,7 +298,10 @@ const ListVoucher: React.FC = () => {
             dataIndex: 'value',
             key: 'value',
             sorter: true,
-            showSorterTooltip: { title: 'Sắp xếp theo số điểm' },
+            // showSorterTooltip: { title: 'Sắp xếp theo số điểm' },
+            render: (_: any, item: any) => (
+                <>{!!+item.value ? item.value : `${+item.discount_percentage || 0}% (Tối đa ${convertPriceVND(+item.max_discount_value || 0)})`}</>
+            )
         },
         {
             title: 'Ngày bắt đầu',
@@ -349,6 +359,7 @@ const ListVoucher: React.FC = () => {
         {
             title: 'Hành động',
             key: 'action',
+            align: 'center',
             render: (_, record: any) => (
                 <span>
                     <Button
@@ -525,6 +536,7 @@ const ListVoucher: React.FC = () => {
                                 // rules={[{ required: true, message: 'Kích thước sản phẩm không được bỏ trống!' }]}
                                 >
                                     <Select
+                                        allowClear
                                         loading={state.loading}
                                         showSearch
                                         placeholder="Chọn khách hàng"
@@ -676,14 +688,14 @@ const ListVoucher: React.FC = () => {
                         </Row>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" className="w-full mt-4">
-                                Save
+                                Lưu
                             </Button>
                         </Form.Item>
                     </Form>
                 </Modal>
             </section>
             {/* Show ảnh */}
-            {previewImage && (
+            {!!previewImage && (
                 <Image
                     wrapperStyle={{ display: 'none' }}
                     preview={{

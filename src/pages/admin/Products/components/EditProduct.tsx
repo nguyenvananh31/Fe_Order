@@ -72,7 +72,7 @@ export default function EditProduct() {
                     setThumbnail(thumbnail);
                     form.setFieldsValue({
                         product_name: res.data.name,
-                        category_id: res.data.category.id,
+                        categories: res.data.categories.map(i => i.id),
                         thumbnail,
                         variant: res.data.product_details.map(detail => ({
                             id: detail.id,
@@ -236,7 +236,9 @@ export default function EditProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('categories', values.category_id);
+        values.categories?.map((i: any) => {
+            formData.append('categories[]', i);
+        })
         formData.append('status', `${state.starusPro}`);
         values.description && formData.append('description', values.description);
 
@@ -337,7 +339,7 @@ export default function EditProduct() {
                     </Col>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            name={'category_id'}
+                            name={'categories'}
                             label="Danh mục sản phẩm"
                             rules={[{ required: true, message: 'Danh mục sản phẩm không được bỏ trống!' }]}
                         >

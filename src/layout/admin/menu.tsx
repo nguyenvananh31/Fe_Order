@@ -1,37 +1,44 @@
 // components/SharedMenu.tsx
-import { ClockCircleOutlined, FileSearchOutlined, FileTextOutlined, GiftOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, FileSearchOutlined, FileTextOutlined, GiftOutlined, HomeOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import { Link } from "react-router-dom";
-import { RoutePath } from "../../constants/path";
+import { RouteConfig, RoutePath } from "../../constants/path";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 export const LISTMENU: MenuItem[] = [
   {
+    key: RoutePath.ADMIN,
+    label: (
+      <Link to={RouteConfig.ADMIN}>Trang chủ</Link>
+    ),
+    icon: <HomeOutlined />,
+  },
+  {
     key: RoutePath.ACCOUNT,
     label: (
-      <Link to={RoutePath.ACCOUNT}>Quản lý tài khoản</Link>
+      <Link to={RouteConfig.ACCOUNT}>Quản lý tài khoản</Link>
     ),
     icon: <UserOutlined />,
   },
   {
     key: RoutePath.CUSTOMERS,
     label: (
-      <Link to={RoutePath.CUSTOMERS}>Quản lý khách hàng</Link>
+      <Link to={RouteConfig.CUSTOMERS}>Quản lý khách hàng</Link>
     ),
     icon: <UsergroupAddOutlined />,
   },
   {
     key: RoutePath.CATEGORY,
     label: (
-      <Link to={RoutePath.CATEGORY}>Quản lý danh mục</Link>
+      <Link to={RouteConfig.CATEGORY}>Quản lý danh mục</Link>
     ),
     icon: <FileTextOutlined />,
   },
   {
     key: RoutePath.SIZES,
     label: (
-      <Link to={RoutePath.SIZES}>Quản lý kích thước</Link>
+      <Link to={RouteConfig.SIZES}>Quản lý kích thước</Link>
     ),
     icon: <LineHeightOutlined />,
   },
@@ -41,11 +48,11 @@ export const LISTMENU: MenuItem[] = [
     icon: <InboxOutlined />,
     children: [
       { key: RoutePath.ADMIN_PRODUCT, label: (
-        <Link to={RoutePath.ADMIN_PRODUCT}>Danh sách sản phẩm</Link>
+        <Link to={RouteConfig.ADMIN_PRODUCT}>Danh sách sản phẩm</Link>
       ) },
       {
         key: RoutePath.ADMIN_ADD_PRODUCT, label: (
-          <Link to={RoutePath.ADMIN_ADD_PRODUCT}>Thêm sản phẩm</Link>
+          <Link to={RouteConfig.ADMIN_ADD_PRODUCT}>Thêm sản phẩm</Link>
         )
       }
     ],
@@ -56,11 +63,11 @@ export const LISTMENU: MenuItem[] = [
     icon: <ClockCircleOutlined />,
     children: [
       { key: RoutePath.ADMIN_TABLE, label: (
-        <Link to={RoutePath.ADMIN_TABLE}>Danh sách bàn</Link>
+        <Link to={RouteConfig.ADMIN_TABLE}>Danh sách bàn</Link>
       ) },
       {
         key: RoutePath.ADMIN_TABLE_ORDER, label: (
-          <Link to={RoutePath.ADMIN_TABLE_ORDER}>Danh sách đặt bàn</Link>
+          <Link to={RouteConfig.ADMIN_TABLE_ORDER}>Danh sách đặt bàn</Link>
         )
       }
     ],
@@ -69,21 +76,21 @@ export const LISTMENU: MenuItem[] = [
     key: RoutePath.AD_BILL,
     icon: <FileSearchOutlined />,
     label: (
-      <Link to={RoutePath.AD_BILL}>Quản lý đơn</Link>
+      <Link to={RouteConfig.AD_BILL}>Quản lý đơn</Link>
     ),
   },
   {
     key: RoutePath.PAYMENT,
     icon: <PayCircleOutlined />,
     label: (
-      <Link to={RoutePath.PAYMENT}>Quản lý thanh toán</Link>
+      <Link to={RouteConfig.PAYMENT}>Quản lý thanh toán</Link>
     ),
   },
   {
     key: RoutePath.VOUCHER,
     icon: <GiftOutlined />,
     label: (
-      <Link to={RoutePath.VOUCHER}>Quản lý khuyến mại</Link>
+      <Link to={RouteConfig.VOUCHER}>Quản lý khuyến mại</Link>
     ),
   },
 ];

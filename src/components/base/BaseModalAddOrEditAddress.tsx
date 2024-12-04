@@ -24,11 +24,11 @@ const BaseModalAddOrEditAddress = ({ onConfirm, onCancel, address }: IProps) => 
         if (!address) {
             return;
         }
-        console.log(address);
-
+        console.log(('0' + address?.phone));
+        
         form.setFieldsValue({
             fullname: address?.fullname,
-            phone: address?.phone,
+            phone: ('0' + address?.phone),
             province: address?.province,
             district: address?.district,
             commune: address?.commune,

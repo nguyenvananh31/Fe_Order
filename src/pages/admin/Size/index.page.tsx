@@ -171,7 +171,7 @@ export default function SizePage() {
             </div>
 
             {
-                state.showModal &&
+                !!state.showModal &&
                 <SizeModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />
             }
         </>

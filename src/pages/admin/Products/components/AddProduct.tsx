@@ -171,7 +171,9 @@ export default function AddProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('categories', values.category_id);
+        values.categories?.map((i: any) => {
+            formData.append('categories[]', i);
+        })
         formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
         values.description && formData.append('description', values.description);
 

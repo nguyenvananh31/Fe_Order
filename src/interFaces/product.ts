@@ -4,7 +4,7 @@ export interface IProduct {
   name: string;
   thumbnail: string;
   status: number;
-  category: ICate;
+  categories: ICate[];
   product_details: ProductDetail[];
   created_at: string;
   updated_at: string;
