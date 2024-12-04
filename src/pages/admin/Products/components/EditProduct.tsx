@@ -99,7 +99,7 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetCates();
+                const res = await apiGetCates({per_page: 100});
                 if (res.data) {
                     setState(prev => ({ ...prev, loading: false, cate: convertCategories(res.data) }));
                 }
@@ -117,7 +117,7 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetSizes();
+                const res = await apiGetSizes({per_page: 100});
                 if (res.data) {
                     const size: { label: string, value: string | number }[] = res.data.map(item => ({ label: item.name, value: item.id }));
                     setState(prev => ({ ...prev, loading: false, size }));

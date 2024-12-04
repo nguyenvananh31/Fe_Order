@@ -27,7 +27,7 @@ const ProductByCate = () => {
         (async () => {
             try {
                 const res = await apiGetProByCate(+param.id!);
-                const cate = res.data.length > 0 ? res.data[0].category.name : '';
+                const cate = res.data.length > 0 ? res.data[0].categories[0].name : '';
                 setState(prev => ({ ...prev, loading: false, products: res.data, cate }));
             } catch (error) {
                 console.error('Error fetching product:', error);

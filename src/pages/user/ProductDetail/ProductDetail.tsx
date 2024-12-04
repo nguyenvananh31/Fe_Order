@@ -96,7 +96,7 @@ const ProductDetail = () => {
       console.log(error);
       showError('Thêm vào giỏ hàng thất bại!');
     }
-  }, [cartStore.proCarts, state.product, state.quantity]);
+  }, [cartStore.proCarts, state.product, state.quantity, firstDetail]);
 
   //Api add to cart
   const apiAddtoCart = useCallback(async (body: any) => {
@@ -105,8 +105,8 @@ const ProductDetail = () => {
 
   const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [activeVariant, state.product]);
 
-  if (state.loading) return <div>Loading...</div>;
-  if (!state.product) return <div>Product not found</div>;
+  if (state.loading) return <div>Đang tải...</div>;
+  if (!state.product) return <div>Sản phẩm không tồn tại</div>;
 
   return (
     <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">
