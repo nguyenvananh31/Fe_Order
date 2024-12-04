@@ -1,4 +1,4 @@
-import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, EditOutlined, LoadingOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { AutoComplete, Breadcrumb, Button, Col, Popconfirm, Row, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
@@ -108,7 +108,7 @@ export default function AccountPage() {
         ];
 
         return tblColumns;
-    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal,])
+    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal])
 
     return (
         <>

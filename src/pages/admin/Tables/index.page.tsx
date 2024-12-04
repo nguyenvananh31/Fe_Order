@@ -42,10 +42,14 @@ export default function TablePage() {
                                     <div>
                                         Bàn {item.table}
                                     </div>
-                                    <div className="flex gap-4 justify-between">
-                                        <span>2h20</span>
-                                        <span>1.000.000d</span>
-                                    </div>
+                                    {
+                                        item.reservation_status == EStatusTable.OPEN && (
+                                            <div className="flex gap-4 justify-between">
+                                                <span>2h20</span>
+                                                <span>1.000.000d</span>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                             </Card>
                         </Col>
@@ -53,7 +57,7 @@ export default function TablePage() {
                 }
                 <Col>
                     <Card
-                    
+
                         className="border group/item border-dashed border-ghost cursor-pointer hover:border-purple"
                         styles={{
                             body: {

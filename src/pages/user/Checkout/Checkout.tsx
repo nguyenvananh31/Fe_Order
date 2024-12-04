@@ -106,8 +106,12 @@ const Checkout = () => {
     setState(prev => ({ ...prev, showModalAddress: true }));
   }, []);
 
+  const handleShowModalVoucher = useCallback(() => {
+    setState(prev => ({ ...prev, showModalVoucher: true }));
+  }, []);
+
   const handleHiddenModal = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: true }));
+    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: false }));
   }, []);
 
   const handleChangeAddress = useCallback((item?: IAddress) => () => {
@@ -222,7 +226,7 @@ const Checkout = () => {
           <span>Voucher</span>
         </div>
         <Col>
-          <p className="text-sky-500 cursor-pointer">Chọn Voucher</p>
+          <p onClick={handleShowModalVoucher} className="text-sky-500 cursor-pointer">Chọn Voucher</p>
         </Col>
       </div>
       <Divider className="m-0" />

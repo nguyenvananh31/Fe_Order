@@ -236,7 +236,7 @@ export default function EditProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('category_id', values.category_id);
+        formData.append('categories', values.category_id);
         formData.append('status', `${state.starusPro}`);
         values.description && formData.append('description', values.description);
 
@@ -342,6 +342,8 @@ export default function EditProduct() {
                             rules={[{ required: true, message: 'Danh mục sản phẩm không được bỏ trống!' }]}
                         >
                             <TreeSelect
+                                allowClear
+                                multiple
                                 treeDataSimpleMode
                                 loading={state.loading}
                                 style={{ width: '100%' }}

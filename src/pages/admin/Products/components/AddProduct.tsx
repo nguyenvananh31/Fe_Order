@@ -171,7 +171,7 @@ export default function AddProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('category_id', values.category_id);
+        formData.append('categories', values.category_id);
         formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
         values.description && formData.append('description', values.description);
 
@@ -257,11 +257,13 @@ export default function AddProduct() {
                     </Col>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            name={'category_id'}
+                            name={'categories'}
                             label="Danh mục sản phẩm"
                             rules={[{ required: true, message: 'Danh mục sản phẩm không được bỏ trống!' }]}
                         >
                             <TreeSelect
+                                allowClear
+                                multiple
                                 treeDataSimpleMode
                                 loading={state.loading}
                                 style={{ width: '100%' }}
@@ -351,7 +353,7 @@ export default function AddProduct() {
                                                     }
                                                 ]}
                                             >
-                                                <Input placeholder="Nhập số lượng" type="number"/>
+                                                <Input placeholder="Nhập số lượng" type="number" />
                                             </Form.Item>
                                         </Col>
                                         <Col xs={24} md={12}>

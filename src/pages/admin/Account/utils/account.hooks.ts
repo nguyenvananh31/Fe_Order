@@ -90,7 +90,7 @@ const useAccount = () => {
                     setOptions(res.data.map(i => ({ value: `${i.id}`, label: i.name || i.email })))
                     setState(prev => ({ ...prev, loading: false, search: false, loadingSearch: false }));
                 } else {
-                    setState(prev => ({ ...prev, data: res.data || [], loading: false, total: res.meta.total, search: false, loadingSearch: false, enterSearch: false }));
+                    setState(prev => ({ ...prev, data: res.data || [], loading: false, total: res?.meta?.total || 0, search: false, loadingSearch: false, enterSearch: false }));
                 }
             } catch (error: any) {
                 console.log(error);

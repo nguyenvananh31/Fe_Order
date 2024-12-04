@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Card, Col, message, Modal, Row, Table, Typography } from "antd";
 import React, { useState } from "react";
 import ApiUtils from "../../../../utils/api/api.utils";
+import { fallBackImg, getImageUrl } from "../../../../constants/common";
 
 const { Title, Text } = Typography;
 
@@ -25,7 +26,7 @@ const Bill: React.FC = () => {
     queryFn: async () => {
       try {
         const res = await ApiUtils.fetch(`/api/client/bill_user`);
-        return res.data.data;
+        return res.data;
       } catch (error) {
         console.error("Error", error);
         return null;
@@ -40,7 +41,7 @@ const Bill: React.FC = () => {
   const fetchProductDetails = async (orderId: number) => {
     try {
       const res = await ApiUtils.fetch(`/api/client/billdetail/${orderId}`);
-      setProductDetails(res?.data?.data);
+      setProductDetails(res?.data);
     } catch (error) {
       console.error("Error fetching product details:", error);
       message.error("Có lỗi xảy ra khi lấy chi tiết đơn hàng. Vui lòng thử lại sau.");
@@ -182,7 +183,7 @@ const Bill: React.FC = () => {
       key: "thumbnail",
       render: (thumbnail: string) => (
         <img
-          src={thumbnail}
+          src={thumbnail ? getImageUrl(thumbnail) : fallBackImg}
           alt="product"
           style={{ width: "50px", height: "50px", objectFit: "cover" }}
         />

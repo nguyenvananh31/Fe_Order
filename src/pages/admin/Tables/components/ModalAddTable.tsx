@@ -1,10 +1,10 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import { Form, Input, Modal, Spin } from "antd";
+import { Col, Form, Input, Modal, Row, Spin } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import { useState } from "react";
+import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
 import { apiAddTable } from "../utils/rable.service";
-import useToast from "../../../../hooks/useToast";
 
 interface IProps {
     onRefresh: () => void;
@@ -28,7 +28,7 @@ export default function TableAddModal({ onClose, onRefresh }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
     const [form] = Form.useForm();
-    const {showError, showSuccess} = useToast();
+    const { showError, showSuccess } = useToast();
 
     // handle submit form và cập nhật
     const handleSubmit = () => {
@@ -36,14 +36,21 @@ export default function TableAddModal({ onClose, onRefresh }: IProps) {
     }
 
     const onFinish = async (values: any) => {
+        console.log('values: ', values);
         try {
+            const data = {
+                table: values.name,
+                min_guest: values.min_guest,
+                max_guest: values.max_guest,
+                deposit: values.deposit
+            }
             setState(prev => ({ ...prev, loadingBtn: true }));
-            await apiAddTable({'table': values.name});
-            showSuccess('Thêm danh mục thành công!');
+            await apiAddTable(data);
+            showSuccess('Thêm bàn thành công!');
             onRefresh();
         } catch (error) {
             console.log(error);
-            showError('danh mục thất bại!');
+            showError('Thêm bàn thất bại!');
         }
         setState(prev => ({ ...prev, loadingBtn: false }));
     }
@@ -78,17 +85,44 @@ export default function TableAddModal({ onClose, onRefresh }: IProps) {
                     onFinish={onFinish}
                     layout="vertical"
                 >
-                    <Form.Item
-                        label={(
-                            <div className='font-bold'>
-                                Tên bàn
-                            </div>
-                        )}
-                        name="name"
-                        rules={[{ required: true, message: 'Vui lòng không để trống tên!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Form.Item
+                                label={'Tên bàn'}
+                                name="name"
+                                rules={[{ required: true, message: 'Vui lòng không để trống tên!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                label={'Số người tối thiểu'}
+                                name="min_guest"
+                                // rules={[{ required: true, message: 'Vui lòng không để trống tên!' }]}
+                            >
+                                <Input defaultValue={1} type="number" placeholder="Nhập số người tối thiểu"/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                label={'Số người tối đa'}
+                                name="max_guest"
+                                // rules={[{ required: true, message: 'Vui lòng không để trống tên!' }]}
+                            >
+                                <Input placeholder="Nhập số người tối đa" type="number"/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                label={'Giá mở bàn'}
+                                name="deposit"
+                                // rules={[{ required: true, message: 'Vui lòng không để trống tên!' }]}
+                            >
+                                <Input placeholder="Nhập giá mở bàn" type="number"/>
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
             </Modal>
         </>
