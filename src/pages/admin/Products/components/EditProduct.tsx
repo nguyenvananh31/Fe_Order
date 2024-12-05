@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FileRule, getImageUrl } from "../../../../constants/common";
 import { RoutePath } from "../../../../constants/path";
-import useToastMessage from "../../../../hooks/useToastMessage";
+import useToast from "../../../../hooks/useToast";
 import { ICate } from "../../../../interFaces/categories";
 import { apiGetCates } from "../../Categories/utils/categories.service";
 import { apiGetSizes } from "../../Size/utils/size.service";
@@ -52,7 +52,7 @@ const initState: IState = {
 export default function EditProduct() {
 
     const [state, setState] = useState<IState>(initState);
-    const { contextHolder, showToast } = useToastMessage();
+    const toast = useToast();
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -85,9 +85,9 @@ export default function EditProduct() {
                     });
                     setState(prev => ({ ...prev, loading: false, loadingBtn: false, starusPro: res.data.status }));
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error);
                 setState(prev => ({ ...prev, loading: false, loadingBtn: false }));
             }
         }
@@ -99,13 +99,13 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetCates({per_page: 100});
+                const res = await apiGetCates({ per_page: 100 });
                 if (res.data) {
                     setState(prev => ({ ...prev, loading: false, cate: convertCategories(res.data) }));
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error);
             }
         }
         setState(prev => ({ ...prev, loading: false }));
@@ -117,14 +117,14 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetSizes({per_page: 100});
+                const res = await apiGetSizes({ per_page: 100 });
                 if (res.data) {
                     const size: { label: string, value: string | number }[] = res.data.map(item => ({ label: item.name, value: item.id }));
                     setState(prev => ({ ...prev, loading: false, size }));
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error);
             }
         }
         setState(prev => ({ ...prev, loading: false }));
@@ -181,7 +181,7 @@ export default function EditProduct() {
     const handleBeforeUpload = async (file: any, index?: number) => {
 
         if (!FileRule.accepts.includes(file.type)) {
-            showToast('error', 'Chỉ được tải ảnh dạng JPG/PNG/JPEG!');
+            toast.showError('Chỉ được tải ảnh dạng JPG/PNG/JPEG!');
             return Upload.LIST_IGNORE;
         }
 
@@ -263,14 +263,14 @@ export default function EditProduct() {
             });
         });
         try {
-            setState((prev) => ({ ...prev, loadingBtn: false, isEdit: false  }));
+            setState((prev) => ({ ...prev, loadingBtn: false, isEdit: false }));
             const res = await apiUpdatePro(+productId!, formData);
 
             if (res.data) {
-                showToast('success', 'Cập nhật sản phẩm thành công!');
+                toast.showSuccess('Cập nhật sản phẩm thành công!');
             }
-        } catch (error) {
-            showToast('error', 'Cập nhật sản phẩm thất bại!');
+        } catch (error: any) {
+            toast.showError(error);
         }
         setState((prev) => ({ ...prev, loadingBtn: false }));
     }
@@ -285,7 +285,6 @@ export default function EditProduct() {
     }, []);
 
     return <>
-        {contextHolder}
         <Breadcrumb
             style={{
                 fontSize: "24px",
