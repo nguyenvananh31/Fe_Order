@@ -1,68 +1,61 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Card,
-  Checkbox,
   Descriptions,
   Form,
-  Input,
   List,
-  Modal,
   Popconfirm,
   Skeleton,
   Spin,
-  message,
+  Tag,
+  message
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import BaseModalAddOrEditAddress from "../../../../components/base/BaseModalAddOrEditAddress";
 import ApiUtils from "../../../../utils/api/api.utils";
 
+interface IState {
+  loading: boolean;
+  showModal: boolean;
+  itemAddress?: any;
+  refresh: boolean;
+  data: any;
+}
+
+const initState: IState = {
+  loading: true,
+  showModal: false,
+  refresh: false,
+  data: {},
+}
+
 const FormInforProfile: React.FC = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);
+
+  const [state, setState] = useState<IState>(initState);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  // Lấy thông tin profile (bao gồm địa chỉ)
-  const { data, isLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      return await ApiUtils.fetch("/api/client/profile");
-    },
-  });
+  // // Lấy thông tin profile (bao gồm địa chỉ)
+  // const { data, isLoading }: any = useQuery({
+  //   queryKey: ["profile"],
+  //   queryFn: async () => {
+  //     return await ApiUtils.fetch("/api/client/profile");
+  //   },
+  // });
 
-  const { mutate: createAddress, isPending: createPending } = useMutation({
-    mutationFn: async (newAddress) => {
-      return await ApiUtils.post(`/api/client/profile/store_address`, newAddress); // Gọi API tạo mới
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      setIsModalVisible(false);
-      form.resetFields();
-      message.success("Thêm địa chỉ thành công!");
-    },
-    onError: () => {
-      message.error("Thêm địa chỉ thất bại, vui lòng thử lại.");
-    },
-  });
+  useEffect(() => {
+    (async () => {
+      try {
+        const res: any = await ApiUtils.fetch("/api/client/profile");
+        setState(prev => ({ ...prev, loading: false, data: res?.data || [] }))
+      } catch (error) {
+        console.log(error);
+        setState(prev => ({ ...prev, loading: false }));
+      }
+    })();
+  }, [state.refresh])
 
-  const { mutate: updateAddress, isPending: updatePending } = useMutation({
-    mutationFn: async (updatedAddress) => {
-      return await ApiUtils.put(
-        `/api/client/profile/update_address/${editingAddress.id}`,
-        updatedAddress
-      ); // Gọi API cập nhật
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      setIsModalVisible(false);
-      form.resetFields();
-      message.success("Cập nhật địa chỉ thành công!");
-    },
-    onError: () => {
-      message.error("Cập nhật địa chỉ thất bại, vui lòng thử lại.");
-    },
-  });
 
   const { mutate: deleteAddress, isPending } = useMutation({
     mutationFn: async (id) => {
@@ -70,6 +63,8 @@ const FormInforProfile: React.FC = () => {
         return await ApiUtils.remove(`/api/client/profile/destroy_address/${id}`);
       } catch (error) {
         console.log(error);
+      } finally {
+        setState(prev => ({ ...prev, refresh: !prev.refresh }));
       }
     },
     onSuccess: () => {
@@ -81,7 +76,38 @@ const FormInforProfile: React.FC = () => {
     },
   });
 
-  if (isPending || createPending || updatePending)
+  // Hiển thị modal thêm hoặc chỉnh sửa địa chỉ
+  const showModal = (address?: any) => {
+    setState(prev => ({ ...prev, showModal: true, itemAddress: address }));
+  };
+
+  // Đóng modal
+  const handleCancel = () => {
+    setState(prev => ({ ...prev, showModal: false, itemAddress: undefined }));
+    form.resetFields();
+  };
+
+  const handleConfirm = () => {
+    setState(prev => ({ ...prev, showModal: false, itemAddress: undefined, refresh: !prev.refresh }));
+  }
+
+  // // Xử lý submit form
+  // const handleOk = () => {
+  //   form
+  //     .validateFields()
+  //     .then((values) => {
+  //       if (isEditMode) {
+  //         updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+  //       } else {
+  //         createAddress({ ...values, is_default: values.is_default ? 1 : 0 });
+  //       }
+  //     })
+  //     .catch((info) => {
+  //       console.error("Validate Failed:", info);
+  //     });
+  // };
+
+  if (isPending)
     return (
       <Spin tip="Đang tải dữ liệu...">
         <div className="content">
@@ -90,57 +116,22 @@ const FormInforProfile: React.FC = () => {
       </Spin>
     );
 
-  // Hiển thị modal thêm hoặc chỉnh sửa địa chỉ
-  const showModal = (address = null) => {
-    if (address) {
-      setIsEditMode(true);
-      setEditingAddress(address); // Gán địa chỉ đang chỉnh sửa
-      form.setFieldsValue(address); // Đặt giá trị form thành địa chỉ cần chỉnh sửa
-    } else {
-      setIsEditMode(false);
-      form.resetFields(); // Reset form khi thêm mới
-    }
-    setIsModalVisible(true);
-  };
-
-  // Đóng modal
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    form.resetFields();
-  };
-
-  // Xử lý submit form
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        if (isEditMode) {
-          updateAddress({ ...values, is_default: values.is_default ? 1 : 0 });
-        } else {
-          createAddress({ ...values, is_default: values.is_default ? 1 : 0 });
-        }
-      })
-      .catch((info) => {
-        console.error("Validate Failed:", info);
-      });
-  };
-
   return (
-    <Spin spinning={isLoading}>
+    <Spin spinning={state.loading}>
       <div>
         <Card size="small" title="Thông Tin Khách Hàng" className="mb-4">
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Tên">
-              {data?.data?.customer?.name || "Chưa có tên"}
+              {state.data?.customer?.name || "Chưa có tên"}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
-              {data?.data?.customer?.email || "Chưa có email"}
+              {state.data?.customer?.email || "Chưa có email"}
             </Descriptions.Item>
             <Descriptions.Item label="Số Điện Thoại">
-              {data?.data?.customer?.phone_number || "Chưa có số điện thoại"}
+              {state.data?.customer?.phone_number || "Chưa có số điện thoại"}
             </Descriptions.Item>
             <Descriptions.Item label="Điểm Thưởng">
-              {data?.data?.customer?.diemthuong || 0}
+              {state.data?.customer?.diemthuong || 0}
             </Descriptions.Item>
           </Descriptions>
         </Card>
@@ -150,9 +141,10 @@ const FormInforProfile: React.FC = () => {
           extra={<Button onClick={() => showModal()}>Thêm địa chỉ</Button>}
         >
           <List
+            loading={state.loading}
             itemLayout="horizontal"
-            dataSource={data?.data?.addresses || []}
-            renderItem={(address) => (
+            dataSource={state.data?.addresses || []}
+            renderItem={(address: any) => (
               <List.Item
                 actions={[
                   <a key="edit" onClick={() => showModal(address)}>
@@ -183,15 +175,19 @@ const FormInforProfile: React.FC = () => {
                 ]}
               >
                 <List.Item.Meta
-                  title={`${address.city}, ${address.state}, ${address.commune}`}
-                  description={`${address.address}, ${address.postal_code}, ${address.country}`}
+                  title={<>
+                    {`${address.fullname} - ${address.phone}`}
+                    {address.is_default == 1 && <Tag color="red" className="ml-4 h-max" title="Mặc định">Mặc định</Tag>}
+                  </>}
+                  description={`${address.commune}, ${address.district}, ${address.province} - ${address.address}`}
                 />
               </List.Item>
             )}
           />
         </Card>
 
-        <Modal
+        {state.showModal && <BaseModalAddOrEditAddress address={state.itemAddress} onCancel={handleCancel} onConfirm={handleConfirm} />}
+        {/* <Modal
           title={isEditMode ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới"}
           open={isModalVisible}
           onOk={handleOk}
@@ -255,7 +251,7 @@ const FormInforProfile: React.FC = () => {
               <Checkbox>Đặt là địa chỉ mặc định</Checkbox>
             </Form.Item>
           </Form>
-        </Modal>
+        </Modal> */}
       </div>
     </Spin>
   );

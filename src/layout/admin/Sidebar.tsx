@@ -5,6 +5,8 @@ import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
 import { LISTMENU } from "./menu";
 import useMenu from "./useMenu";
+import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "../../constants/path";
 
 const { Sider } = Layout;
 
@@ -13,6 +15,7 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { activeMenu, handleChange } = useMenu();
   const subscriptions = useRef(new Subscription());
+  const navigate = useNavigate();
 
   useEffect(() => {
     registerEventBus();
@@ -40,6 +43,10 @@ const Sidebar: React.FC = () => {
     setCollapsed(value);
     handleChange([], !value);
   }, []);
+ 
+  const handleGotoHome = () => {
+    navigate(RouteConfig.ADMIN);
+  }
 
   return (
     <Sider
@@ -60,7 +67,7 @@ const Sidebar: React.FC = () => {
       width={260}
     >
       <div className={`m-1 justify-around py-3 flex items-center`}>
-        <div className="flex gap-2 items-center">
+        <div onClick={handleGotoHome} className="cursor-pointer flex gap-2 items-center">
           <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
           {!collapsed && (
             <div

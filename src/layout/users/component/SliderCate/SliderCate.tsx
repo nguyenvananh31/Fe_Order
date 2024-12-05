@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Spin } from 'antd';
-import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/pagination'; // Import pagination styles
@@ -8,6 +9,7 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'tailwindcss/tailwind.css';
 import { getImageUrl } from '../../../../constants/common';
+import { RouteConfig } from '../../../../constants/path';
 // interface Subcategory {
 //     id: number;
 //     name: string;
@@ -40,6 +42,12 @@ interface IProps {
 
 const SliderCate = ({ cates, loadingCate }: IProps) => {
 
+    const navigate = useNavigate(); 
+
+    const handleClickToCate = useCallback((id: number) => () => {
+        navigate(RouteConfig.PRODUCT_CATE_id + id);
+    }, []);
+ 
     if (loadingCate) {
         return <div className='flex justify-center items-center min-h-20'>
             <Spin />
@@ -62,11 +70,11 @@ const SliderCate = ({ cates, loadingCate }: IProps) => {
                     <SwiperSlide key={index} className="flex justify-center items-center">
                         <div className="cate-item-wrapper bg-white hover:bg-mainColor3 px-6 py-12 rounded-md cursor-pointer group w-[228px] h-[410px]">
                             <div className="cate-item-img">
-                                <img src={`${getImageUrl(cate.image)}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
+                                <img onClick={handleClickToCate(cate.id)} src={`${getImageUrl(cate.image)}`} className="cate-item__img w-full min-w-[180px] h-[200px] object-contain" />
                             </div>
                             <div className="cate-item-content text-center">
                                 <span className='block w-[30%] h-1 bg-mainColor1 mx-auto my-6'></span>
-                                <Link to={`/product/category/${cate.id}`}><h3 className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3></Link>
+                                <h3 onClick={handleClickToCate(cate.id)} className='cate-item__title text-center text-textColor1 text-3xl group-hover:text-white'>{cate?.name}</h3>
                                 {/* <span className="cate-item-quantity text-mainColor1 text-md block mt-2">{cate.subcategory.length} Sản phẩm</span> */}
                             </div>
                         </div>

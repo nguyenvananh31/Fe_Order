@@ -12,11 +12,13 @@ import { RouteConfig } from '../../../constants/path';
 interface IState {
   loading: boolean;
   product: any;
+  quantity: number;
 }
 
 const initState: IState = {
   loading: true,
-  product: {}
+  product: {},
+  quantity: 1
 }
 
 const ProductDetail = () => {
@@ -24,7 +26,6 @@ const ProductDetail = () => {
   const [state, setState] = useState<IState>(initState);
 
   const { id } = useParams();
-  const [quantity, setQuantity] = useState(1);
   const [activeVariant, setActiveVariant] = useState<number>(0);
   const { showError, showSuccess } = useToast();
   const { cartStore, setProtoCart, setProBuyNow } = useCartStore();
@@ -55,8 +56,8 @@ const ProductDetail = () => {
     getProductData();
   }, [id]);
 
-  const increment = () => setQuantity((prev) => prev + 1);
-  const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const increment = () => setState((prev) => ({ ...prev, quantity: prev.quantity + 1 }));
+  const decrement = () => setState((prev) => ({ ...prev, quantity: prev.quantity - 1 < 1 ? prev.quantity - 1 : 1 }));
 
   const handleVariantChange = (key: string) => setActiveVariant(Number(key));
 
@@ -66,7 +67,7 @@ const ProductDetail = () => {
       let data: any = {
         product_detail_id: firstDetail.id,
         product_id: state.product.id,
-        quantity: quantity,
+        quantity: state.quantity,
         price: firstDetail.price,
         size_id: firstDetail.size.id,
       }
@@ -74,12 +75,13 @@ const ProductDetail = () => {
       let newCart = [...cartStore.proCarts];
       const exitedItem = newCart.filter(i => i.product_detail_id == data.product_detail_id);
       if (exitedItem.length > 0) {
-        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? { ...i, quantity: i.quantity + quantity } : i);
+        newCart = newCart.map(i => i.product_detail_id == data.product_detail_id ? { ...i, quantity: i.quantity + state.quantity } : i);
       } else {
         data = {
           ...data,
           product_price: data.price,
           price: res.data.price,
+          product_thumbnail: state.product.thumbnail
         }
         newCart.push(data);
       }
@@ -94,7 +96,7 @@ const ProductDetail = () => {
       console.log(error);
       showError('Thêm vào giỏ hàng thất bại!');
     }
-  }, [cartStore.proCarts, state.product]);
+  }, [cartStore.proCarts, state.product, state.quantity, firstDetail]);
 
   //Api add to cart
   const apiAddtoCart = useCallback(async (body: any) => {
@@ -103,8 +105,8 @@ const ProductDetail = () => {
 
   const activeProductDetail = useMemo(() => state?.product?.product_details?.length > 0 ? state?.product?.product_details[activeVariant] : undefined, [activeVariant, state.product]);
 
-  if (state.loading) return <div>Loading...</div>;
-  if (!state.product) return <div>Product not found</div>;
+  if (state.loading) return <div>Đang tải...</div>;
+  if (!state.product) return <div>Sản phẩm không tồn tại</div>;
 
   return (
     <div className="container max-w-[1140px] px-[16px] lg:px-[20px] mx-auto md:mt-12 mt-4 md:gap-[24px]">
@@ -123,7 +125,7 @@ const ProductDetail = () => {
             price={activeProductDetail?.price}
             sale={activeProductDetail?.sale || 0}
             quantity={activeProductDetail?.quantity}
-            currentQuantity={quantity}
+            currentQuantity={state.quantity}
             increment={increment}
             decrement={decrement}
             handleAddToCart={handleAddToCart}

@@ -72,7 +72,7 @@ export default function EditProduct() {
                     setThumbnail(thumbnail);
                     form.setFieldsValue({
                         product_name: res.data.name,
-                        category_id: res.data.category.id,
+                        categories: res.data.categories.map(i => i.id),
                         thumbnail,
                         variant: res.data.product_details.map(detail => ({
                             id: detail.id,
@@ -99,7 +99,7 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetCates();
+                const res = await apiGetCates({per_page: 100});
                 if (res.data) {
                     setState(prev => ({ ...prev, loading: false, cate: convertCategories(res.data) }));
                 }
@@ -117,7 +117,7 @@ export default function EditProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetSizes();
+                const res = await apiGetSizes({per_page: 100});
                 if (res.data) {
                     const size: { label: string, value: string | number }[] = res.data.map(item => ({ label: item.name, value: item.id }));
                     setState(prev => ({ ...prev, loading: false, size }));
@@ -236,7 +236,9 @@ export default function EditProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('category_id', values.category_id);
+        values.categories?.map((i: any) => {
+            formData.append('categories[]', i);
+        })
         formData.append('status', `${state.starusPro}`);
         values.description && formData.append('description', values.description);
 
@@ -337,11 +339,13 @@ export default function EditProduct() {
                     </Col>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            name={'category_id'}
+                            name={'categories'}
                             label="Danh mục sản phẩm"
                             rules={[{ required: true, message: 'Danh mục sản phẩm không được bỏ trống!' }]}
                         >
                             <TreeSelect
+                                allowClear
+                                multiple
                                 treeDataSimpleMode
                                 loading={state.loading}
                                 style={{ width: '100%' }}

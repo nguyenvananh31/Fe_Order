@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Col, DatePicker, Form, Image, Input, Modal, Row, Select, Space, Table, Upload, UploadFile } from 'antd';
+import { AutoComplete, Button, Col, DatePicker, Form, Image, Input, InputNumber, Modal, Row, Select, Space, Table, Upload, UploadFile } from 'antd';
 import 'antd/dist/reset.css';
 import type { ColumnsType } from 'antd/es/table';
 import { RcFile } from 'antd/es/upload';
@@ -13,6 +13,7 @@ import { PAGINATE_DEFAULT } from '../../../constants/enum';
 import useDebounce from '../../../hooks/useDeBounce';
 import useToast from '../../../hooks/useToast';
 import ApiUtils from '../../../utils/api/api.utils';
+import { convertPriceVND } from '../../../utils/common';
 
 const { Option } = Select;
 
@@ -50,6 +51,7 @@ interface ISate {
     enterSearch: boolean;
     filterSort?: string;
     filterOrderBy?: string;
+    customers: any[];
 }
 
 const initState: ISate = {
@@ -66,7 +68,8 @@ const initState: ISate = {
     textSearch: '',
     filtertatus: undefined,
     filterDate: undefined,
-    enterSearch: false
+    enterSearch: false,
+    customers: [],
 }
 
 interface Voucher {
@@ -92,6 +95,7 @@ const ListVoucher: React.FC = () => {
     const [previewImage, setPreviewImage] = useState('');
     const toast = useToast();
     const [previewOpen, setPreviewOpen] = useState(false);
+    const [type, setType] = useState<number | undefined>();
 
     useEffect(() => {
         fetchData();
@@ -130,20 +134,43 @@ const ListVoucher: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await ApiUtils.fetch<any, any>('/api/admin/customers', { per_page: 100 });
+                const customers = res.data.map((i: any) => ({ label: i.email, value: i.id }));
+                setState(prev => ({ ...prev, customers }));
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, []);
+
     const handleAdd = () => {
         setEditingRecord(null);
         form.resetFields();
         setThumbnail([]);
         setModalVisible(true);
+        setType(undefined);
     };
 
     const handleEdit = (record: any) => {
         setEditingRecord(record);
+        if (!+record.value) {
+            setType(1);
+        } else {
+            setType(2);
+        }
         form.resetFields();
         form.setFieldsValue({
             name: record.name,
-            value: record.value,
+            value: +record?.value,
+            discount_percentage: +record?.discount_percentage,
+            max_discount_value: +record?.max_discount_value,
             quantity: record.quantity,
+            customer_id: record?.customer_id,
+            expiration_date: [dayjs(record.start_date), dayjs(record.end_date)],
             status: record.status,
             image: [{
                 uid: '-1',
@@ -178,20 +205,24 @@ const ListVoucher: React.FC = () => {
     //     }
     // }
 
-    const handleSubmit = async (values: { name: string; value: string; expiration_date: any[]; status: number, quantity: number, image: any[] }) => {
-        console.log('values: ', values);
+    const handleSubmit = async (values: any) => {
         const formData = new FormData();
         formData.append('name', values.name);
-        formData.append('value', values.value);
-        formData.append('start_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
-        formData.append('end_date', moment(values.expiration_date[0]).format('YYYY/MM/DD'));
+        if (values?.customer_id) {
+            formData.append('customer_id', values.customer_id);
+        }
+        formData.append('discount_percentage', values?.discount_percentage || 0);
+        formData.append('max_discount_value', values?.max_discount_value || 0);
+        formData.append('value', values?.value || 0);
+        formData.append('start_date', moment(new Date(values.expiration_date[0])).format('YYYY/MM/DD'));
+        formData.append('end_date', moment(new Date(values.expiration_date[1])).format('YYYY/MM/DD'));
         formData.append('status', values.status.toString());
         formData.append('quantity', values.quantity.toString());
-        if (values.image.length > 0) {
+        if (values.image[0].originFileObj) {
             formData.append('image', values.image[0].originFileObj as any);
         }
         if (editingRecord) {
-            ApiUtils.put(`/api/admin/vouchers/${editingRecord.key}`, formData)
+            ApiUtils.postForm(`/api/admin/vouchers/${editingRecord?.id}?_method=PUT`, formData)
                 .then(() => {
                     fetchData();
                     toast.showSuccess('Cập nhật voucher thành công!');
@@ -209,7 +240,7 @@ const ListVoucher: React.FC = () => {
                     setModalVisible(false);
                 })
                 .catch(error => {
-                    toast.showError('Tạo voucher thất bại!');
+                    toast.showError(error);
                     console.error('Error adding voucher:', error);
                 });
         }
@@ -267,7 +298,10 @@ const ListVoucher: React.FC = () => {
             dataIndex: 'value',
             key: 'value',
             sorter: true,
-            showSorterTooltip: { title: 'Sắp xếp theo số điểm' },
+            // showSorterTooltip: { title: 'Sắp xếp theo số điểm' },
+            render: (_: any, item: any) => (
+                <>{!!+item.value ? item.value : `${+item.discount_percentage || 0}% (Tối đa ${convertPriceVND(+item.max_discount_value || 0)})`}</>
+            )
         },
         {
             title: 'Ngày bắt đầu',
@@ -325,6 +359,7 @@ const ListVoucher: React.FC = () => {
         {
             title: 'Hành động',
             key: 'action',
+            align: 'center',
             render: (_, record: any) => (
                 <span>
                     <Button
@@ -391,6 +426,22 @@ const ListVoucher: React.FC = () => {
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
+
+    const handleChange = useCallback((type: number) => (e: any) => {
+        if (!e?.toString()) {
+            setType(undefined);
+        } else {
+            setType(type);
+        }
+        form.setFields(
+            form
+                .getFieldsError()
+                .map(({ name }) => ({
+                    name,
+                    errors: [], // Xóa lỗi để ẩn validate
+                }))
+        );
+    }, []);
 
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type="button">
@@ -468,107 +519,183 @@ const ListVoucher: React.FC = () => {
                     destroyOnClose
                 >
                     <Form form={form} onFinish={handleSubmit} layout="vertical">
-                        <Form.Item
-                            name="name"
-                            label="Tên voucher"
-                            rules={[{ required: true, message: 'Tên voucher là bắt buộc!' }]}
-                        >
-                            <Input placeholder="Tên voucher" />
-                        </Form.Item>
-                        <Form.Item
-                            name="value"
-                            label="Điểm"
-                            rules={[{ required: true, message: 'Điểm là bắt buộc!' },
-                            {
-                                validator: (_, value) => {
-                                    if (value < 1) {
-                                        return Promise.reject('Số điểm phải lớn hơn 0!');
-                                    }
-                                    return Promise.resolve();
-                                }
-                            }
-                            ]}
-                        >
-                            <Input placeholder="Nhập số điểm" type="number" />
-                        </Form.Item>
-                        <Form.Item
-                            name="expiration_date"
-                            label="Ngày bắt đầu"
-                            rules={[{ required: true, message: 'Ngày bắt đầu và kết thúc là bắt buộc!' }]}
-                        >
-                            <DatePicker.RangePicker
-                                format={DateFomat} style={{ width: '100%' }}
-                                minDate={dayjs()}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="status"
-                            label="Status"
-                            rules={[{ required: true, message: 'Please select status!' }]}
-                        >
-                            <Select placeholder="Select status">
-                                <Option value={1}>Hoạt động</Option>
-                                <Option value={0}>Khoá</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            label="Tài khoản áp dụng voucher"
-                            name={'customer_id'}
-                        // rules={[{ required: true, message: 'Kích thước sản phẩm không được bỏ trống!' }]}
-                        >
-                            <Select
-                                loading={state.loading}
-                                showSearch
-                                placeholder="Chọn khách hàng"
-                                style={{ width: '100%' }}
-                                optionFilterProp="label"
-                                options={[]}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số lượng"
-                            name={'quantity'}
-                            rules={[
-                                { required: true, message: 'Số lượng sản phẩm không được bỏ trống!' },
-                                {
-                                    validator: (_, value) => {
-                                        if (value < 1) {
-                                            return Promise.reject('Số lượng phải lớn hơn 0!');
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item
+                                    name="name"
+                                    label="Tên voucher"
+                                    rules={[{ required: true, message: 'Tên voucher là bắt buộc!' }]}
+                                >
+                                    <Input placeholder="Tên voucher" />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Tài khoản áp dụng voucher"
+                                    name={'customer_id'}
+                                // rules={[{ required: true, message: 'Kích thước sản phẩm không được bỏ trống!' }]}
+                                >
+                                    <Select
+                                        allowClear
+                                        loading={state.loading}
+                                        showSearch
+                                        placeholder="Chọn khách hàng"
+                                        style={{ width: '100%' }}
+                                        optionFilterProp="label"
+                                        options={state.customers}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={'discount_percentage'}
+                                    label={'Phần trăm giảm'}
+                                    rules={type !== 2 ? [{ required: true, message: 'Phần trăm giảm là bắt buộc!' },
+                                    {
+                                        validator: (_, value) => {
+                                            if (value < 1) {
+                                                return Promise.reject('Phần trăm giảm phải lớn hơn 0!');
+                                            }
+                                            return Promise.resolve();
                                         }
-                                        return Promise.resolve();
                                     }
-                                }
-                            ]}
-                        >
-                            <Input placeholder="Nhập số lượng" type="number" />
-                        </Form.Item>
-                        <Form.Item
-                            name={'image'}
-                            label="Ảnh voucher"
-                            valuePropName="fileList"
-                            getValueFromEvent={normFile}
-                        >
-                            <Upload
-                                listType="picture-card"
-                                fileList={thumbnail}
-                                onPreview={handlePreview}
-                                beforeUpload={(file) => handleBeforeUpload(file)}
-                                onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
-                                maxCount={1}
-                            >
-                                {thumbnail.length > 0 ? null : uploadButton}
-                            </Upload>
-                        </Form.Item>
+                                    ] : undefined}
+                                >
+                                    <InputNumber
+                                        onChange={handleChange(1)}
+                                        disabled={type === 2}
+                                        className='w-full'
+                                        addonAfter={'%'}
+                                        type='number'
+                                        placeholder="Phần trăm giảm"
+                                        min={0}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={'max_discount_value'}
+                                    label={'Giảm tối đa'}
+                                    rules={type !== 2 ? [{ required: true, message: 'Giảm tối đa là bắt buộc!' },
+                                    {
+                                        validator: (_, value) => {
+                                            if (value < 1) {
+                                                return Promise.reject('Giảm tối đa phải lớn hơn 0!');
+                                            }
+                                            return Promise.resolve();
+                                        }
+                                    }
+                                    ] : undefined}
+                                >
+                                    <InputNumber
+                                        onChange={handleChange(1)}
+                                        disabled={type === 2}
+                                        className='w-full'
+                                        addonAfter={'đ'}
+                                        type='number'
+                                        placeholder="Giảm tối đa"
+                                        min={0}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="value"
+                                    label="Điểm"
+                                    rules={type !== 1 ? [{ required: true, message: 'Điểm là bắt buộc!' },
+                                    {
+                                        validator: (_, value) => {
+                                            if (value < 1) {
+                                                return Promise.reject('Số điểm phải lớn hơn 0!');
+                                            }
+                                            return Promise.resolve();
+                                        }
+                                    }
+                                    ] : undefined}
+                                >
+                                    <InputNumber
+                                        disabled={type === 1}
+                                        onChange={handleChange(2)}
+                                        placeholder="Nhập số điểm"
+                                        type="number"
+                                        className='w-full'
+                                        min={0}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="expiration_date"
+                                    label="Ngày bắt đầu"
+                                    rules={[{ required: true, message: 'Ngày bắt đầu và kết thúc là bắt buộc!' }]}
+                                >
+                                    <DatePicker.RangePicker
+                                        format={DateFomat} style={{ width: '100%' }}
+                                        minDate={dayjs()}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name="status"
+                                    label="Trạng thái"
+                                    rules={[{ required: true, message: 'Trạng thái là bắt buộc!' }]}
+                                >
+                                    <Select placeholder="Chọn trạng thái">
+                                        <Option value={1}>Hoạt động</Option>
+                                        <Option value={0}>Khoá</Option>
+                                    </Select>
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Số lượng"
+                                    name={'quantity'}
+                                    rules={[
+                                        { required: true, message: 'Số lượng là bắt buộc!' },
+                                        {
+                                            validator: (_, value) => {
+                                                if (value < 1) {
+                                                    return Promise.reject('Số lượng phải lớn hơn 0!');
+                                                }
+                                                return Promise.resolve();
+                                            }
+                                        }
+                                    ]}
+                                >
+                                    <Input placeholder="Nhập số lượng" type="number" />
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    name={'image'}
+                                    label="Ảnh voucher"
+                                    valuePropName="fileList"
+                                    getValueFromEvent={normFile}
+                                >
+                                    <Upload
+                                        listType="picture-card"
+                                        fileList={thumbnail}
+                                        onPreview={handlePreview}
+                                        beforeUpload={(file) => handleBeforeUpload(file)}
+                                        onChange={({ fileList }) => { if (fileList.length == 0) setThumbnail([]) }}
+                                        maxCount={1}
+                                    >
+                                        {thumbnail.length > 0 ? null : uploadButton}
+                                    </Upload>
+                                </Form.Item>
+                            </Col>
+                        </Row>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" className="w-full mt-4">
-                                Save
+                                Lưu
                             </Button>
                         </Form.Item>
                     </Form>
                 </Modal>
             </section>
             {/* Show ảnh */}
-            {previewImage && (
+            {!!previewImage && (
                 <Image
                     wrapperStyle={{ display: 'none' }}
                     preview={{

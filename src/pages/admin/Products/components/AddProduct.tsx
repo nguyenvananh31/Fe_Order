@@ -63,7 +63,7 @@ export default function AddProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetCates();
+                const res = await apiGetCates({per_page: 100});
                 if (res.data) {
                     setState(prev => ({ ...prev, loading: false, cate: convertCategories(res.data) }));
                 }
@@ -81,7 +81,7 @@ export default function AddProduct() {
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetSizes();
+                const res = await apiGetSizes({per_page: 100});
                 if (res.data) {
                     const size: { label: string, value: string | number }[] = res.data.map(item => ({ label: item.name, value: item.id }));
                     setState(prev => ({ ...prev, loading: false, size }));
@@ -171,7 +171,9 @@ export default function AddProduct() {
 
         const formData = new FormData();
         formData.append('name', values.product_name);
-        formData.append('category_id', values.category_id);
+        values.categories?.map((i: any) => {
+            formData.append('categories[]', i);
+        })
         formData.append('thumbnail', values.thumbnail[0].originFileObj as FileType);
         values.description && formData.append('description', values.description);
 
@@ -257,12 +259,14 @@ export default function AddProduct() {
                     </Col>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            name={'category_id'}
+                            name={'categories'}
                             label="Danh mục sản phẩm"
                             rules={[{ required: true, message: 'Danh mục sản phẩm không được bỏ trống!' }]}
                         >
                             <TreeSelect
-                                treeDataSimpleMode
+                                allowClear
+                                multiple
+                                // treeDataSimpleMode
                                 loading={state.loading}
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -351,7 +355,7 @@ export default function AddProduct() {
                                                     }
                                                 ]}
                                             >
-                                                <Input placeholder="Nhập số lượng" type="number"/>
+                                                <Input placeholder="Nhập số lượng" type="number" />
                                             </Form.Item>
                                         </Col>
                                         <Col xs={24} md={12}>

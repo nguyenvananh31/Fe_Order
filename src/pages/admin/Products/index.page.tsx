@@ -1,5 +1,5 @@
 import { CloseCircleFilled, EditOutlined, LoadingOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined, UndoOutlined, ZoomInOutlined } from "@ant-design/icons";
-import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Image, Popconfirm, Row, Select, Space, Tooltip } from "antd";
+import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Image, Popconfirm, Row, Select, Space, Tag, Tooltip } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { Table } from "antd/lib";
 import { useMemo } from "react";
@@ -27,7 +27,7 @@ export default function ProductPage() {
                 dataIndex: 'name',
                 key: 'name',
                 sorter: true,
-                showSorterTooltip: {title: 'Sắp xếp theo tên sản phẩm'},
+                showSorterTooltip: { title: 'Sắp xếp theo tên sản phẩm' },
                 render: (_: any, item: any) => {
                     return (
                         <div className={`text-purple font-semibold cursor-pointer`}>
@@ -71,13 +71,19 @@ export default function ProductPage() {
             },
             {
                 title: 'Danh mục',
-                dataIndex: 'category_id',
+                dataIndex: 'categories',
                 align: 'center',
-                showSorterTooltip: {title: 'Sắp xếp theo tên danh mục'},
+                showSorterTooltip: { title: 'Sắp xếp theo tên danh mục' },
                 sorter: true,
-                render: (_: any, { category: { name } }: any) => {
+                render: (_: any, { categories }: any) => {
                     return (
-                        <span>{name}</span>
+                        <>
+                            {
+                                categories.map((i: any) => (
+                                    <Tag>{i.name}</Tag>
+                                ))
+                            }
+                        </>
                     )
                 }
             },
@@ -212,7 +218,7 @@ export default function ProductPage() {
                     },
                 }}
                 onChange={hooks.handleTableChange}
-                scroll={{x: 'max-content'}}
+                scroll={{ x: 'max-content' }}
             />
         </div>
     </>

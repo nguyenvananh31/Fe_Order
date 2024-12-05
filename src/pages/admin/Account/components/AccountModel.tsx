@@ -41,7 +41,10 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                 const res = await apiGetOneUser(itemId!);
                 if (res.data) {
                     setState(prev => ({ ...prev, loading: false, account: res.data }));
-                    form.setFieldsValue(res.data);
+                    form.setFieldsValue({
+                        ...res.data,
+                        roles: res?.data?.roles.map(role => role.id),
+                    });
                 }
             } catch (error) {
                 console.log(error);
@@ -123,9 +126,6 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     form={form}
                     onFinish={onFinish}
                     disabled={!state.isEdit}
-                    // initialValues={{
-                    //     'roles':  [1]
-                    // }}
                 >
                     <div className='flex justify-center items-center gap-6 my-6'>
                         <Avatar className="cursor-pointer" name={state.account?.name || state.account?.email} size="60" round={true} />
@@ -147,10 +147,11 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     <Form.Item
                         name='roles'
                         label="Vai trò"
+                        // getValueProps={}
                     >
                         <Checkbox.Group
                             style={{ width: '100%' }}
-                            defaultValue={state.account?.roles.map(role => role.id)}
+                            // defaultValue={state.account?.roles.map(role => role.id)}
                         >
                             <Row>
                                 {

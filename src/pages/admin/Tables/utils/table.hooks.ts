@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { PAGINATE_DEFAULT } from "../../../../constants/enum";
+import { EStatusTable, PAGINATE_DEFAULT } from "../../../../constants/enum";
 import useToastMessage from "../../../../hooks/useToastMessage";
 import { showSideOder } from "../../../../utils/event-bus/event-bus.events";
 import { apiGetTables } from "./rable.service";
@@ -50,7 +50,10 @@ export default function useTable() {
         setState(prev => ({ ...initState, refresh: !prev.refresh }))
     }, []);
 
-    const openModalTable = useCallback(async (id: number) => {
+    const openModalTable = useCallback(async (id: number, type?: string) => {
+        if (type && type !== EStatusTable.OPEN) {
+            return;
+        }
         showSideOder(true, id);
     }, []);
 

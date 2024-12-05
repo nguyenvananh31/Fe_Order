@@ -97,7 +97,7 @@ const RightContent = ({props}: IProps) => {
         {/* Các món chưa gọi */}
         {
             tab == 1 && (
-                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[220px] xl:pt-[290px]'}`}>
+                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[240px] xl:pt-[300px]'}`}>
                     <div className="text-lg font-semibold">Danh sách Order</div>
                     <Checkbox.Group className="w-full" value={props.checked} onChange={props.onCheckedPro}>
                         <Space direction="vertical" size={'large'} className="w-full">
@@ -211,7 +211,7 @@ const RightContent = ({props}: IProps) => {
         {/* Các món đã lên */}
         {
             tab == 2 && (
-                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[220px] xl:pt-[290px]'}`}>
+                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[220px] xl:pt-[330px]'}`}>
                     <Space direction="vertical" size={'large'} className="w-full">
                         <Flex align="center" justify="center" >
                             <Button type="primary" className="w-4/5 py-4 bg-[#00813D]" onClick={() => { handleChangeTab(1) }}>Gọi thêm món</Button>

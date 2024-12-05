@@ -12,6 +12,7 @@ import useToast from "../../../hooks/useToast";
 import { IPayments } from "../../../interFaces/payments";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "../../../constants/path";
+import BaseModalVoucher from "./components/VoucherModal";
 
 interface IState {
   loading: boolean;
@@ -24,6 +25,8 @@ interface IState {
   tranferPoint: boolean;
   paymants: IPayments[];
   paymentValue: number;
+  showModalVoucher: boolean;
+  voucher: any[];
 }
 
 const initState: IState = {
@@ -36,7 +39,9 @@ const initState: IState = {
   showModalAddress: false,
   tranferPoint: false,
   paymants: [],
-  paymentValue: 0
+  paymentValue: 0,
+  showModalVoucher: true,
+  voucher: []
 }
 
 const Checkout = () => {
@@ -64,11 +69,16 @@ const Checkout = () => {
       try {
         setState(prev => ({ ...prev, loading: true }));
         const res = await apiGetAddresandCustomer();
+        let addresActive: IAddress | undefined;
+        if (res.data.addresses.length > 0) {
+          const addDefault = res.data.addresses.filter((i: IAddress) => i.is_default == 1);
+          addresActive = addDefault.length > 0 ? addDefault[0] : res.data.addresses[0];
+        }
         setState(prev => ({
           ...prev, address: res.data.addresses, customer: res.data.customer,
-          addresActive: res.data.addresses.length > 0 ? res.data?.addresses[0] : []
-        })
-        )
+          addresActive
+        }));
+
       } catch (error) {
         console.log(error);
         setState(prev => ({ ...prev, loading: false }));
@@ -98,12 +108,16 @@ const Checkout = () => {
     setState(prev => ({ ...prev, showModalAddress: true }));
   }, []);
 
-  const handleHiddenModalAddres = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false }));
+  const handleShowModalVoucher = useCallback(() => {
+    setState(prev => ({ ...prev, showModalVoucher: true }));
   }, []);
 
-  const handleChangeAddress = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false }));
+  const handleHiddenModal = useCallback(() => {
+    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: false }));
+  }, []);
+
+  const handleChangeAddress = useCallback((item?: IAddress) => () => {
+    setState(prev => ({ ...prev, showModalAddress: false, addresActive: item }));
   }, []);
 
   const onChangePoint: CheckboxProps['onChange'] = (e) => {
@@ -162,6 +176,7 @@ const Checkout = () => {
       formData.append('payment_id', `${1}`);
       await apiAddBill(formData);
       toast.showSuccess('Đặt hàng thành công!');
+      navigate(RouteConfig.HOME);
     } catch (error: any) {
       console.log(error);
       toast.showError(error);
@@ -170,6 +185,10 @@ const Checkout = () => {
 
   const onChangePayment = useCallback((e: RadioChangeEvent) => {
     setState(prev => ({ ...prev, paymentValue: e.target.value }));
+  }, []);
+
+  const handleChooseVoucher = useCallback((voucher: any[]) => () => {
+    setState(prev => ({ ...prev, voucher, showModalVoucher: false }));
   }, []);
 
   return <div className="container mx-auto my-4 xl:px-40">
@@ -182,15 +201,15 @@ const Checkout = () => {
             <span className="pl-2">Địa chỉ nhận hàng</span>
           </div>
           <div className="font-semibold text-base">
-            <div>{state.customer?.name}</div>
-            <div>{'(+84) ' + state.customer?.phone_number}</div>
+            <div>{state.addresActive?.fullname}</div>
+            <div>{'(+84) ' + state.addresActive?.phone}</div>
           </div>
         </Col>
         <Col span={8}>
-          <span className="text-sm">{state.addresActive?.address}</span>
+          <span className="text-sm line-clamp-2">{state.addresActive?.province} - {state.addresActive?.district} - {state.addresActive?.commune} - {state.addresActive?.address}</span>
         </Col>
         <Col>
-          <Tag color="red" title="Mặc định">Mặc định</Tag>
+          {state.addresActive?.is_default == 1 && <Tag color="red" className="ml-4 h-max" title="Mặc định">Mặc định</Tag>}
         </Col>
         <Col>
           <span className="text-sky-500 cursor-pointer" onClick={handleShowModalAddres}>Thay đổi</span>
@@ -213,7 +232,8 @@ const Checkout = () => {
           <span>Voucher</span>
         </div>
         <Col>
-          <p className="text-sky-500 cursor-pointer">Chọn Voucher</p>
+          <span className="mr-4">{state.voucher.length > 0 && `x${state.voucher.length} đang sử dụng`}</span>
+          <span onClick={handleShowModalVoucher} className="text-sky-500 cursor-pointer">Chọn Voucher</span>
         </Col>
       </div>
       <Divider className="m-0" />
@@ -271,10 +291,18 @@ const Checkout = () => {
 
     {
       state.showModalAddress && <BaseModalAddress
-        onCancel={handleHiddenModalAddres}
+        onCancel={handleHiddenModal}
         onConfirm={handleChangeAddress}
         addresses={state.address}
-        defaultActive={state.addresActive?.id!}
+        defaultActive={state.addresActive}
+      />
+    }
+
+    {
+      state.showModalVoucher && <BaseModalVoucher
+        onCancel={handleHiddenModal}
+        onConfirm={handleChooseVoucher}
+        voucher={state.voucher}
       />
     }
   </div>

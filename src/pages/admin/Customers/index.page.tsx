@@ -7,7 +7,7 @@ import CustomerModel from "./components/CustomerModal";
 import useCustomer from "./util/customer.hook";
 
 
-export default function CatePage() {
+export default function CustomerPage() {
 
     const { state, ...hooks } = useCustomer();
 
@@ -32,7 +32,7 @@ export default function CatePage() {
                 dataIndex: 'name',
                 key: 'name',
                 sorter: true,
-                showSorterTooltip: {title: 'Sắp xếp theo tên'},
+                showSorterTooltip: { title: 'Sắp xếp theo tên' },
                 render: (_: any, custoner: Icustomer) => {
                     return (
                         <div
@@ -48,7 +48,7 @@ export default function CatePage() {
                 dataIndex: 'email',
                 key: 'email',
                 sorter: true,
-                showSorterTooltip: {title: 'Sắp xếp theo email'},
+                showSorterTooltip: { title: 'Sắp xếp theo email' },
                 render: (_: any, customer: Icustomer) => {
                     return (
                         <div className={`font-semibold cursor-pointer`}>
@@ -74,7 +74,7 @@ export default function CatePage() {
                 dataIndex: 'point',
                 key: 'point',
                 sorter: true,
-                showSorterTooltip: {title: 'Sắp xếp theo điểm thưởng'},
+                showSorterTooltip: { title: 'Sắp xếp theo điểm thưởng' },
                 render: (_: any, customer: Icustomer) => {
                     return (
                         <div className={`font-semibold cursor-pointer`}>
@@ -106,7 +106,7 @@ export default function CatePage() {
                 ]}
             />
             <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
+                <Row gutter={[16, 16]} className="px-6 py-6" align={"middle"} justify={"space-between"} >
                     <Col xs={24} sm={24} md={24} lg={15} className="flex gap-2 max-sm:flex-col">
                         <AutoComplete
                             size="large"
@@ -147,7 +147,7 @@ export default function CatePage() {
                     pagination={{
                         pageSize: state.pageSize,
                         showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+                        pageSizeOptions: ['5', '10', '20', '50'],
                         total: state.total,
                         current: state.pageIndex,
                         style: {
@@ -158,10 +158,9 @@ export default function CatePage() {
                         },
                     }}
                     onChange={hooks.handleTableChange}
-                    scroll={{x: 'max-content'}}
+                    scroll={{ x: 'max-content' }}
                 />
             </div>
-
             {
                 state.showModal &&
                 <CustomerModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />

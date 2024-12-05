@@ -36,7 +36,7 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
             try {
                 setState(prev => ({ ...prev, loading: true }));
                 const res = await apiGetTableDetail(id);
-                setState(prev => ({ ...prev, data: res.data[0].bill_details, loading: false }));
+                setState(prev => ({ ...prev, data: res?.data[0]?.bill_details || [], loading: false }));
             } catch (error) {
                 setState(prev => ({ ...prev, loading: false }));
                 console.log(error);

@@ -33,6 +33,6 @@ export const apiUpadateRoles = async (id: number, body: any) => {
 }
 
 export const apiChangeLock = async (id: number) => {
-    const res = await ApiUtils.post<any, any>(`${apiName.user}/${id}/locked`);
+    const res = await ApiUtils.put<any, any>(`${apiName.user}/${id}/locked`);
     return res;
 }

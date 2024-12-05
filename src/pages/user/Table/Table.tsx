@@ -223,7 +223,7 @@ const Table = () => {
                 </div>
                 {table.reservation_status !== EStatusTable.CLOSE ? (
                   <p className="absolute bottom-5 left-[50%] translate-x-[-50%] hidden group-hover:block text-[15px] text-center text-white">
-                    Choose Other
+                    Bàn đang được sử dụng
                   </p>
                 ) : (
                   <p className="absolute bottom-3 left-[50%] translate-x-[-50%] hidden group-hover:block text-[15px] text-center text-white"></p>

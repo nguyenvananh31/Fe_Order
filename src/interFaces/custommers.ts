@@ -10,7 +10,11 @@ export interface Icustomer{
 export interface IAddress {
     id: number;
     address: string;
-    city: string;
-    country: string;
+    district: string;
+    province: string;
     is_default: number;
+    fullname: string;
+    phone: string;
+    commune: string;
+    postal_code: string;
 }

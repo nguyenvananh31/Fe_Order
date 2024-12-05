@@ -1,4 +1,3 @@
-import { Color } from "antd/es/color-picker";
 
 /** @type {import('tailwindcss').Config} */
 export default {

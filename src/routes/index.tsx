@@ -23,6 +23,7 @@ import ProductDetail from "../pages/user/ProductDetail/ProductDetail";
 import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfile";
 import Table from "../pages/user/Table/Table";
 import PrivateRoute from "./PrivateRoute";
+import Dashboard from "../pages/admin/Dashboard/Dashboard";
 
 const Router = () => {
   return (
@@ -71,7 +72,7 @@ const Router = () => {
         }
 
         <Route path={RouteConfig.ADMIN} element={<PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
-          <Route index element={<></>} />
+          <Route index element={<Dashboard />} />
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
