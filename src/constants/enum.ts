@@ -6,7 +6,7 @@ export enum PAGINATE_DEFAULT {
 //Quyền admin
 export enum ROLES {
     ADMIN = 'admin',
-    QTV= 'qtv'
+    QTV = 'qtv'
 }
 
 //order type
@@ -23,36 +23,39 @@ export enum EOrderStatus {
     Shipping = 'shipping',
     Completed = 'completed',
     Cancelled = 'cancelled',
-    Failed = 'failed'
+    Failed = 'failed',
+    cancellation_requested = 'cancellation_requested',
+    cancellation_approved = 'cancellation_approved',
+    cancellation_rejected = 'cancellation_rejected',
 }
 
 //Permission
 export enum EPermisstion {
-    USER ,
-    CUSTOMER , 
-    CATEGORY ,
-    SIZE , 
-    VOUCHER  , 
-    TABLE , 
-    PRODUCT , 
-    PAYMENT , 
+    USER,
+    CUSTOMER,
+    CATEGORY,
+    SIZE,
+    VOUCHER,
+    TABLE,
+    PRODUCT,
+    PAYMENT,
     BILL
 }
 
 //Permission qtv
 export enum EPermisstionQTV {
-    TABLE , 
-    PRODUCT , 
-    CUSTOMER , 
-    CATEGORY ,
-    SIZE , 
-    VOUCHER  , 
+    TABLE,
+    PRODUCT,
+    CUSTOMER,
+    CATEGORY,
+    SIZE,
+    VOUCHER,
 }
 
 //Permission qtv
 export enum EPermisstionStaff {
-    TABLE , 
-    CUSTOMER ,
+    TABLE,
+    CUSTOMER,
 }
 
 //Status table client

@@ -15,6 +15,9 @@ const statusBill: any = {
   completed: { color: "green", title: "Đã hoàn thành" },
   cancelled: { color: "red", title: "Đã huỷ" },
   failed: { color: "volcano", title: "Thất bại" },
+  cancellation_requested: { color: 'red', title: 'Chờ xác nhận hủy' },
+  cancellation_approved: { color: 'volcano', title: 'Xác nhận hủy' },
+  cancellation_rejected: { color: 'volcano', title: 'Hủy thất bại' },
 };
 
 const Bill: React.FC = () => {
