@@ -21,6 +21,14 @@ const statusBill: any = {
   cancellation_rejected: { color: 'volcano', title: 'Hủy thất bại' },
 };
 
+const statusPayment: any = {
+  pending: { color: "magenta", title: "Đang chờ" },
+  paid: { color: "cyan", title: "Trả hàng" },
+  successful: { color: "green", title: "Đã thanh toán" },
+  failed: { color: "red", title: "Thanh toán thất bại" },
+  refunded: { color: "volcano", title: "Hoàn trả tiền" },
+}
+
 const Bill: React.FC = () => {
   const queryClient = useQueryClient();
   const [isLoadingCancel, setIsLoadingCancel] = useState(false);
@@ -129,6 +137,20 @@ const Bill: React.FC = () => {
       responsive: ['sm'],
     },
     {
+      title: "Trạng thái thanh toán",
+      dataIndex: "payment_status",
+      key: "payment_status",
+      render: (_: string, { payment_status }: any) => {
+        return (
+          <span style={{ color: statusPayment[payment_status]?.color }}>
+            {statusPayment[payment_status]?.title}
+          </span>
+        )
+      },
+      width: 120,
+      responsive: ['sm'],
+    },
+    {
       title: "Thao tác",
       key: "action",
       render: (text: any, record: any) => (
@@ -222,6 +244,7 @@ const Bill: React.FC = () => {
     total: order.total_amount || "0",
     status: order.status,
     payment: order.payment || "Chưa có",
+    payment_status: order.payment_status
   }));
 
   return (

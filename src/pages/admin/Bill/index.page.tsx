@@ -21,6 +21,14 @@ const statusBill: any = {
     'cancellation_rejected': { color: 'volcano', title: 'Hủy thất bại' },
 };
 
+const statusPayment: any = {
+    pending: { color: "magenta", title: "Đang chờ" },
+    paid: { color: "cyan", title: "Trả hàng" },
+    successful: { color: "green", title: "Đã thanh toán" },
+    failed: { color: "red", title: "Thanh toán thất bại" },
+    refunded: { color: "volcano", title: "Hoàn trả tiền" },
+}
+
 export default function CatePage() {
 
     const { state, ...hooks } = useBill();
@@ -112,6 +120,17 @@ export default function CatePage() {
                             {statusBill[item.status]?.title}
                         </Tag>
                     </Tooltip>
+                )
+            },
+            {
+                title: 'Trạng thái thanh toán',
+                dataIndex: 'payment_status',
+                align: 'center',
+                width: '15%',
+                render: (_: any, item: IBill) => (
+                    <Tag color={statusPayment[item.payment_status]?.color} className={`min-w-[80px]`} >
+                        {statusPayment[item.payment_status]?.title}
+                    </Tag>
                 )
             },
             {
