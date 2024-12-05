@@ -35,7 +35,7 @@ export default function useTable() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await apiGetTables();
+                const res = await apiGetTables({ per_page: 100 });
                 setState(prev => ({ ...prev, data: res.data }))
             } catch (error) {
                 console.log(error);

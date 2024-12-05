@@ -3,6 +3,7 @@ import { Button, Card, Col, message, Modal, Row, Table, Typography } from "antd"
 import React, { useState } from "react";
 import ApiUtils from "../../../../utils/api/api.utils";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { convertPriceVND } from "../../../../utils/common";
 
 const { Title, Text } = Typography;
 
@@ -111,7 +112,7 @@ const Bill: React.FC = () => {
       title: "Tổng tiền",
       dataIndex: "total",
       key: "total",
-      render: (total: number) => `${total}₫`,
+      render: (total: number) => `${convertPriceVND(total)}`,
       width: 100,
       responsive: ['sm'],
     },

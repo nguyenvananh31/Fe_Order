@@ -60,23 +60,25 @@ const ProContent = ({ data, loading, onClickAdd }: IProps) => {
                                     title={
                                         <Flex align="center" justify="space-between" >
                                             <Space direction="vertical" align="start">
-                                                <div className="line-clamp-1">{i.name} - {i.size.name}</div>
-                                                <Flex vertical>
-                                                    {
-                                                        !!i.sale && (
-                                                            <div>
-                                                                <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.sale)}</span>
-                                                                <span className="text-[#00813D] font-bold">vnđ</span>
-                                                            </div>
-                                                        )
-                                                    }
-                                                    <div>
-                                                        <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale ? i.price : i.sale)}</span>
-                                                        <span className="text-[#00813D] font-bold">vnđ</span>
-                                                    </div>
+                                                <div className="line-clamp-2 w-max">{i.name} - {i.size.name}</div>
+                                                <Flex>
+                                                    <Flex vertical>
+                                                        {
+                                                            !!i.sale && (
+                                                                <div>
+                                                                    <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.sale)}</span>
+                                                                    <span className="text-[#00813D] font-bold">vnđ</span>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        <div>
+                                                            <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale ? i.price : i.sale)}</span>
+                                                            <span className="text-[#00813D] font-bold">vnđ</span>
+                                                        </div>
+                                                    </Flex>
+                                                    <Button onClick={() => onClickAdd(i)} type="primary" className="bg-[#00813D] mx-2" icon={<PlusOutlined />} />
                                                 </Flex>
                                             </Space>
-                                            <Button onClick={() => onClickAdd(i)}  type="primary" className="bg-[#00813D] mx-2" icon={<PlusOutlined />} />
                                         </Flex>
                                     }
                                     className=""

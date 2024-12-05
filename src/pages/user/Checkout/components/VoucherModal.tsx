@@ -61,7 +61,7 @@ const BaseModalVoucher = ({ onCancel, voucher, onConfirm }: IProps) => {
         const voucherForCustomer = state.voucherForCustomer.map((i: any) => i.id).includes(id) ? state.voucherForCustomer.map((i: any) => id === i.id && !i?.isChoose ? { ...i, isChoose: true } : { ...i, isChoose: false }) || [] : [...state.voucherForCustomer];
         const voucherWithOutCustomer = state.voucherWithOutCustomer.map((i: any) => i.id).includes(id) ? state.voucherWithOutCustomer.map((i: any) => id === i.id && !i?.isChoose ? { ...i, isChoose: true } : { ...i, isChoose: false }) || [] : [...state.voucherWithOutCustomer];
         const voucher = voucherForCustomer.filter(i => i.isChoose);
-        voucher.push(voucherWithOutCustomer.filter(i => i.isChoose));
+        voucher.push(...voucherWithOutCustomer.filter(i => i.isChoose));
         setState(prev => ({ ...prev, voucher, voucherForCustomer, voucherWithOutCustomer }))
     }
 
@@ -88,7 +88,7 @@ const BaseModalVoucher = ({ onCancel, voucher, onConfirm }: IProps) => {
                             <List.Item.Meta
                                 avatar={<Avatar className="mt-1 w-[45px] h-[45px] object-cover object-center" src={item?.image ? getImageUrl(item?.image) : fallBackImg} />}
                                 title={<p>{item?.name || ''}</p>}
-                                description={+item.value > 0 ? convertPriceVND(+item.value || 0) : `${+item.discount_percentage} (Tối đa ${+item.max_discount_value})`}
+                                description={+item.value > 0 ? convertPriceVND(+item.value || 0) : `${+item.discount_percentage}% (Tối đa ${+item.max_discount_value})`}
                             />
                             <div>x{item?.quantity}</div>
                         </Skeleton>
@@ -110,7 +110,7 @@ const BaseModalVoucher = ({ onCancel, voucher, onConfirm }: IProps) => {
                             <List.Item.Meta
                                 avatar={<Avatar className="mt-1 w-[45px] h-[45px] object-cover object-center" src={item?.image ? getImageUrl(item?.image) : fallBackImg} />}
                                 title={<p>{item?.name || ''}</p>}
-                                description={+item.value > 0 ? convertPriceVND(+item.value || 0) : `${+item.discount_percentage} (Tối đa ${+item.max_discount_value})`}
+                                description={+item.value > 0 ? convertPriceVND(+item.value || 0) : `${+item.discount_percentage}% (Tối đa ${+item.max_discount_value})`}
                             />
                             <div>x{item?.quantity}</div>
                         </Skeleton>

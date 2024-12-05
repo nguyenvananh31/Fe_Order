@@ -40,7 +40,7 @@ const initState: IState = {
   tranferPoint: false,
   paymants: [],
   paymentValue: 0,
-  showModalVoucher: true,
+  showModalVoucher: false,
   voucher: []
 }
 
@@ -60,7 +60,7 @@ const Checkout = () => {
   const toast = useToast();
   const listPros = useMemo(() => cartStore.proCarts.filter(i => cartStore.optionSelect.includes(i.id)), [cartStore]);
 
-  const totalPros = useMemo(() => listPros.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0), [listPros]);
+  const totalPros = useMemo(() => listPros.reduce((acc, curr) => acc + ((curr.sale || curr.price) * curr.quantity), 0), [listPros]);
   const totalVoucher = useMemo(() => state.tranferPoint ? state.customer?.diemthuong || 0 > totalPros ? totalPros : state.customer?.diemthuong : 0, [state.tranferPoint]);
   const subTotal = useMemo(() => totalPros - totalVoucher! >= 0 ? totalPros - totalVoucher! : 0, [totalPros, totalVoucher]);
 
@@ -171,6 +171,9 @@ const Checkout = () => {
       proIDs?.forEach((i) => {
         formData.append(`cart_items[]`, `${i.id}`);
       });
+      state.voucher?.forEach((i) => {
+        formData.append(`vouchers[]`, `${i.id}`);
+      });
       formData.append('use_points', `${state.tranferPoint ? 1 : 0}`);
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
       formData.append('payment_id', `${1}`);
@@ -181,7 +184,7 @@ const Checkout = () => {
       console.log(error);
       toast.showError(error);
     }
-  }, [cartStore.optionSelect, state.tranferPoint, state.addresActive]);
+  }, [cartStore.optionSelect, state.tranferPoint, state.addresActive, state.voucher]);
 
   const onChangePayment = useCallback((e: RadioChangeEvent) => {
     setState(prev => ({ ...prev, paymentValue: e.target.value }));

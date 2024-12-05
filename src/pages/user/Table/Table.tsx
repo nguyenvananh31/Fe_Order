@@ -71,7 +71,8 @@ const Table = () => {
       try {
         setState(prev => ({ ...prev, loading: true }));
         let conds = {
-          page: state.pageIndex
+          page: state.pageIndex,
+          per_page: 100
         }
         const res = await apiGetTableClient(conds);
         setState(prev => ({ ...prev, loading: false, dataTable: res.data.data, totalTable: res.data.total }));
