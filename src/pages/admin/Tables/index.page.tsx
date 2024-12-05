@@ -31,7 +31,7 @@ export default function TablePage() {
                         <Col key={item.id}>
                             <Card
                                 className={`border ${item.reservation_status == EStatusTable.OPEN ? 'border-sky-600 bg-sky-100' : 'border-ghost'} cursor-pointer`}
-                                onClick={() => hooks.openModalTable(item.id)}
+                                onClick={() => hooks.openModalTable(item.id, item.reservation_status)}
                                 styles={{
                                     body: {
                                         padding: 0

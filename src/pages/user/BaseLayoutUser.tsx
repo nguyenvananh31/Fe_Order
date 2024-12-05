@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Subscription } from 'rxjs'
 import useCartStore from '../../hooks/redux/cart/useCartStore'
 import Footer from '../../layout/users/Footer/Footer'
@@ -8,6 +8,10 @@ import Loading from '../../layout/users/Loading/Loading'
 import TopNav from '../../layout/users/TopNav/TopNav'
 import { BaseEventPayload, EventBusName } from '../../utils/event-bus'
 import EventBus from '../../utils/event-bus/event-bus'
+import { FloatButton } from 'antd'
+import { InfoCircleOutlined } from '@ant-design/icons'
+import useOrder from '../../hooks/useOrder'
+import { RouteConfig } from '../../constants/path'
 
 function Root({ children }: any) {
 
@@ -47,21 +51,22 @@ function Root({ children }: any) {
 }
 
 const BaseLayoutUser = () => {
+
+  const { orderId } = useOrder();
+  const navigate = useNavigate();
+
+  const handleGotoOrder = () => {
+    navigate(RouteConfig.ORDER)
+  }
+
   return (
     <Root>
       <div className='wrapper'>
         <TopNav />
         <Header />
         <Outlet />
-        {/* <div className="container max-w-[1140px] mx-auto">
-          <div className="box p-4 grid grid-cols-4 gap-8">
-            <ItemProuduct />
-            <ItemProuduct />
-            <ItemProuduct />
-            <ItemProuduct />
-          </div>
-        </div> */}
         <Footer />
+        {orderId && <FloatButton tooltip={'Order'} icon={<InfoCircleOutlined />} type='primary' onClick={handleGotoOrder} />}
       </div>
     </Root>
   )

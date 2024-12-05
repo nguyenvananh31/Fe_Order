@@ -26,6 +26,7 @@ interface IState {
   paymants: IPayments[];
   paymentValue: number;
   showModalVoucher: boolean;
+  voucher: any[];
 }
 
 const initState: IState = {
@@ -40,6 +41,7 @@ const initState: IState = {
   paymants: [],
   paymentValue: 0,
   showModalVoucher: true,
+  voucher: []
 }
 
 const Checkout = () => {
@@ -185,6 +187,10 @@ const Checkout = () => {
     setState(prev => ({ ...prev, paymentValue: e.target.value }));
   }, []);
 
+  const handleChooseVoucher = useCallback((voucher: any[]) => () => {
+    setState(prev => ({ ...prev, voucher, showModalVoucher: false }));
+  }, []);
+
   return <div className="container mx-auto my-4 xl:px-40">
     <h1 className="text-2xl my-4">Thanh toán</h1>
     <div className="bg-primary rounded-primary drop-shadow-primary">
@@ -226,7 +232,8 @@ const Checkout = () => {
           <span>Voucher</span>
         </div>
         <Col>
-          <p onClick={handleShowModalVoucher} className="text-sky-500 cursor-pointer">Chọn Voucher</p>
+          <span className="mr-4">{state.voucher.length > 0 && `x${state.voucher.length} đang sử dụng`}</span>
+          <span onClick={handleShowModalVoucher} className="text-sky-500 cursor-pointer">Chọn Voucher</span>
         </Col>
       </div>
       <Divider className="m-0" />
@@ -294,6 +301,8 @@ const Checkout = () => {
     {
       state.showModalVoucher && <BaseModalVoucher
         onCancel={handleHiddenModal}
+        onConfirm={handleChooseVoucher}
+        voucher={state.voucher}
       />
     }
   </div>
