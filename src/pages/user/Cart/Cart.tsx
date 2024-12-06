@@ -93,7 +93,7 @@ const Cart = () => {
   // Tính tổng giá trị giỏ hàng
   const cartTotal = useMemo(() => {
     return listProsChecked.reduce((total, item) => {
-      const itemPrice = item.price || 0;
+      const itemPrice = (+item.product_sale || +item.product_price) || 0;
       return total + (itemPrice * item.quantity);
     }, 0)
   }, [cartStore]);
@@ -189,7 +189,7 @@ const Cart = () => {
 
                       {/* Hiển thị giá sản phẩm từ API */}
                       <td className="py-4 whitespace-nowrap">
-                        {convertPriceVND(item.price || 0)}  {/* Hiển thị giá sản phẩm */}
+                        {convertPriceVND((+item.product_sale || +item.product_price) || 0)}  {/* Hiển thị giá sản phẩm */}
                       </td>
 
                       <td className="py-4">
@@ -217,7 +217,7 @@ const Cart = () => {
 
                       {/* Tính toán Subtotal (Tổng tiền cho mỗi sản phẩm) */}
                       <td className="py-4 whitespace-nowrap min-w-[100px]">
-                        {convertPriceVND(item.price * item.quantity)} {/* Tính tổng tiền */}
+                        {convertPriceVND((+item.product_sale || +item.product_price) * item.quantity)} {/* Tính tổng tiền */}
                       </td>
                       <td className="py-4 text-center">
                         <button className="text-red-600" onClick={() => handleDeleteCart(item.id)} >
