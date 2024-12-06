@@ -2,6 +2,7 @@
 export interface ICart {
     id: number;
     quantity: number;
+    sale: number;
     price: number;
     product_detail_id: number;
     product_name: string;

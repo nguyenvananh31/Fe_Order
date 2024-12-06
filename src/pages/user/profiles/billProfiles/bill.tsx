@@ -3,6 +3,7 @@ import { Button, Card, Col, message, Modal, Row, Table, Typography } from "antd"
 import React, { useState } from "react";
 import ApiUtils from "../../../../utils/api/api.utils";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { convertPriceVND } from "../../../../utils/common";
 
 const { Title, Text } = Typography;
 
@@ -15,7 +16,18 @@ const statusBill: any = {
   completed: { color: "green", title: "Đã hoàn thành" },
   cancelled: { color: "red", title: "Đã huỷ" },
   failed: { color: "volcano", title: "Thất bại" },
+  cancellation_requested: { color: 'red', title: 'Chờ xác nhận hủy' },
+  cancellation_approved: { color: 'volcano', title: 'Xác nhận hủy' },
+  cancellation_rejected: { color: 'volcano', title: 'Hủy thất bại' },
 };
+
+const statusPayment: any = {
+  pending: { color: "magenta", title: "Đang chờ" },
+  paid: { color: "cyan", title: "Trả hàng" },
+  successful: { color: "green", title: "Đã thanh toán" },
+  failed: { color: "red", title: "Thanh toán thất bại" },
+  refunded: { color: "volcano", title: "Hoàn trả tiền" },
+}
 
 const Bill: React.FC = () => {
   const queryClient = useQueryClient();
@@ -108,7 +120,7 @@ const Bill: React.FC = () => {
       title: "Tổng tiền",
       dataIndex: "total",
       key: "total",
-      render: (total: number) => `${total}₫`,
+      render: (total: number) => `${convertPriceVND(total)}`,
       width: 100,
       responsive: ['sm'],
     },
@@ -121,6 +133,20 @@ const Bill: React.FC = () => {
           {statusBill[status]?.title}
         </span>
       ),
+      width: 120,
+      responsive: ['sm'],
+    },
+    {
+      title: "Trạng thái thanh toán",
+      dataIndex: "payment_status",
+      key: "payment_status",
+      render: (_: string, { payment_status }: any) => {
+        return (
+          <span style={{ color: statusPayment[payment_status]?.color }}>
+            {statusPayment[payment_status]?.title}
+          </span>
+        )
+      },
       width: 120,
       responsive: ['sm'],
     },
@@ -218,6 +244,7 @@ const Bill: React.FC = () => {
     total: order.total_amount || "0",
     status: order.status,
     payment: order.payment || "Chưa có",
+    payment_status: order.payment_status
   }));
 
   return (

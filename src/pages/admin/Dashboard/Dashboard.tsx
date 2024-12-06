@@ -215,7 +215,7 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
+      <Row gutter={[8, 8]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
         <Col span={24}><h4>Tổng</h4></Col>
         <Col span={5}>
           <Card type="inner" hoverable>
@@ -279,7 +279,7 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
+      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow my-4">
         <Col span={24}><h4>Tổng Theo Tháng trước</h4></Col>
         <Col span={5}>
           <Card type="inner" hoverable>
@@ -306,6 +306,38 @@ const Dashboard = () => {
           <Card type="inner" hoverable>
             <Card.Meta title={'Tổng bàn'}
               description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.last_month?.tables} <StockOutlined /></p>}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
+        <Col span={24}><h4>Tổng Theo Ngày</h4></Col>
+        <Col span={5}>
+          <Card type="inner" hoverable>
+            <Card.Meta title={'Tổng sản phẩm'}
+              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.products} <StockOutlined /></p>}
+            />
+          </Card>
+        </Col>
+        <Col span={5}>
+          <Card type="inner" hoverable>
+            <Card.Meta title={'Tổng tài khoản'}
+              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.users} <UserAddOutlined /></p>}
+            />
+          </Card>
+        </Col>
+        <Col span={5}>
+          <Card type="inner" hoverable>
+            <Card.Meta title={'Tổng đơn hàng'}
+              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.bills} <FileTextOutlined /></p>}
+            />
+          </Card>
+        </Col>
+        <Col span={5}>
+          <Card type="inner" hoverable>
+            <Card.Meta title={'Tổng bàn'}
+              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.tables} <StockOutlined /></p>}
             />
           </Card>
         </Col>
