@@ -1,14 +1,13 @@
 import { CheckOutlined, PauseOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Empty, Flex, Image, Segmented, Space, Spin } from "antd";
+import { Button, Card, Checkbox, Empty, Flex, Image, QRCode, Segmented, Space, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
-import { convertPriceVND } from "../../../utils/common";
+import { convertPriceVND, getUrlQrCheck } from "../../../utils/common";
 import useToast from "../../../hooks/useToast";
 
 type Props = {
     id?: number;
-    showToastMes: any;
 }
 
 interface IState {
@@ -16,16 +15,18 @@ interface IState {
     loadingBtn: boolean;
     data: any[];
     checkedOrder: any[];
+    billId: string;
 }
 
 const initState: IState = {
     loading: false,
     loadingBtn: false,
     data: [],
-    checkedOrder: []
+    checkedOrder: [],
+    billId: '',
 }
 
-export default function OrderCartComponent({ id, showToastMes }: Props) {
+export default function OrderCartComponent({ id }: Props) {
     const [state, setState] = useState<IState>(initState);
     const [option, setOption] = useState<boolean>(false);
     const toast = useToast();
@@ -36,11 +37,11 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
             try {
                 setState(prev => ({ ...prev, loading: true }));
                 const res = await apiGetTableDetail(id);
-                setState(prev => ({ ...prev, data: res?.data[0]?.bill_details || [], loading: false }));
-            } catch (error) {
+                setState(prev => ({ ...prev, data: res?.data[0]?.bill_details || [], loading: false , billId: res?.data[0]?.ma_bill || ''}));
+            } catch (error: any) {
                 setState(prev => ({ ...prev, loading: false }));
+                toast.showError(error);
                 console.log(error);
-                showToastMes('error', 'Có lỗi xảy ra!')
             }
         }
         fetchData();
@@ -75,10 +76,10 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
         }
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
-            await apiActiveItem({id_billdetails: ids});
+            await apiActiveItem({ id_billdetails: ids });
             toast.showSuccess('Xác nhận món thành công!');
             setState(prev => {
-                const newPros = [...prev.data.map(i => ids.includes(i.id_bill_detail) ? {...i, product: { ...i.product, status: !i.product.status}} : i)];
+                const newPros = [...prev.data.map(i => ids.includes(i.id_bill_detail) ? { ...i, product: { ...i.product, status: !i.product.status } } : i)];
                 return { ...prev, loadingBtn: false, data: newPros, checkedOrder: [] };
             });
         } catch (error: any) {
@@ -100,6 +101,7 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
 
     return (
         <div className="pt-5">
+            <QRCode value={getUrlQrCheck(state.billId)} className="mx-auto"/>
             <Segmented
                 className="m-2"
                 options={[
@@ -147,7 +149,7 @@ export default function OrderCartComponent({ id, showToastMes }: Props) {
                             <span>{state.checkedOrder.length} sản phẩm đang chọn</span>
                         </Space>
                         <Flex align="center" justify="center" className="mt-4">
-                            <Button loading={state.loading} type="primary" onClick={() => handleActiveItem(state.checkedOrder)}  className="w-4/5 py-4 bg-[#00813D]">Xác nhận món</Button>
+                            <Button loading={state.loading} type="primary" onClick={() => handleActiveItem(state.checkedOrder)} className="w-4/5 py-4 bg-[#00813D]">Xác nhận món</Button>
                         </Flex>
                     </>
                 )

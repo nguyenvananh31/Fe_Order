@@ -1,13 +1,14 @@
 import { CalendarFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Modal, Pagination, Select, Spin } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
-import { EStatusTable, PAGINATE_DEFAULT } from '../../../constants/enum';
-import { apiGetTableClient, apiOpenTable } from './utils/table.service';
-import useAuth from '../../../hooks/redux/auth/useAuth';
-import useToast from '../../../hooks/useToast';
 import { useNavigate } from 'react-router-dom';
+import { EStatusTable } from '../../../constants/enum';
+import { RouteConfig } from '../../../constants/path';
+import useAuth from '../../../hooks/redux/auth/useAuth';
 import useOrder from '../../../hooks/useOrder';
-import { RoutePath } from '../../../constants/path';
+import useToast from '../../../hooks/useToast';
+import { apiGetTableClient, apiOpenTable } from './utils/table.service';
+import ModalOpenTable from './components/ModalOpenTable';
 
 const { Option } = Select;
 
@@ -26,6 +27,7 @@ interface IState {
   searchText: string;
   showModalHistoryOrdered: boolean;
   user: any;
+  showModalOpenTable: boolean;
 }
 
 const initState: IState = {
@@ -34,7 +36,7 @@ const initState: IState = {
   loadingTable: false,
   dataTable: [],
   refresh: false,
-  pageSize: PAGINATE_DEFAULT.LIMIT,
+  pageSize: 12,
   pageIndex: 1,
   totalTable: 0,
   showModalPayment: false,
@@ -43,6 +45,7 @@ const initState: IState = {
   searchText: '',
   showModalHistoryOrdered: false,
   user: null,
+  showModalOpenTable: false,
 }
 
 const Table = () => {
@@ -72,7 +75,7 @@ const Table = () => {
         setState(prev => ({ ...prev, loading: true }));
         let conds = {
           page: state.pageIndex,
-          per_page: 100
+          per_page: state.pageSize
         }
         const res = await apiGetTableClient(conds);
         setState(prev => ({ ...prev, loading: false, dataTable: res.data.data, totalTable: res.data.total }));
@@ -82,7 +85,7 @@ const Table = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [state.pageIndex, state.pageSize, state.refresh]);
 
   useEffect(() => {
     getApipayment();
@@ -119,7 +122,11 @@ const Table = () => {
   }, []);
 
   const handleDismissModal = useCallback(() => {
-    setState(prev => ({ ...prev, showModalPayment: false, showModalHistoryOrdered: false }));
+    setState(prev => ({ ...prev, showModalPayment: false, showModalHistoryOrdered: false, showModalOpenTable: false }));
+  }, []);
+
+  const handleShowModalOpenTable = useCallback(() => {
+    setState(prev => ({ ...prev, showModalOpenTable: true }));
   }, []);
 
   const handleShowModalHistory = useCallback(() => {
@@ -135,7 +142,7 @@ const Table = () => {
       const res = await apiOpenTable({ table_id: tableId, payment_id: 1 });
       if (res?.ma_bill) {
         setOrderToLocal(res?.ma_bill);
-        await navigate('/' + RoutePath.ORDER);
+        await navigate(RouteConfig.ORDER);
         toast.showSuccess('Mở bàn thành công!');
       }
       setState(prev => ({ ...prev, loadingTable: false }));
@@ -155,17 +162,17 @@ const Table = () => {
               <h2 className="mt-10 text-3xl font-bold uppercase leading-tight text-black sm:text-4xl lg:text-5xl">
                 Danh Sách bàn
               </h2>
-              <p className="max-w-xl mx-auto mt-4 text-base leading-relaxed text-gray-600">
+              {/* <p className="max-w-xl mx-auto mt-4 text-base leading-relaxed text-gray-600">
                 Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet
                 sint. Velit officia consequat duis.
-              </p>
+              </p> */}
             </div>
           </div>
         </section>
 
         <div className="box-filter flex justify-start sm:grid grid-cols-3 lg:grid-cols-4 gap-4 items-center mb-4">
           <Input
-            placeholder="Search table..."
+            placeholder="Tìm kiếm bàn..."
             prefix={<SearchOutlined />}
             value={state.searchText}
             onChange={handleSearch(1)}
@@ -182,6 +189,11 @@ const Table = () => {
             <Option value={EStatusTable.CLOSE}>Chưa mở</Option>
             <Option value={EStatusTable.PENDING}>Đang chờ</Option>
           </Select>
+          {
+            state?.user?.roles.length > 0 && (
+              <Button onClick={handleShowModalOpenTable} type='primary'>Gộp bàn</Button>
+            )
+          }
         </div>
 
         {
@@ -248,7 +260,7 @@ const Table = () => {
             )
           })}
         </div>
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center my-8">
           <Pagination
             current={state.pageIndex}
             pageSize={state.pageSize}
@@ -358,7 +370,12 @@ const Table = () => {
           </Modal>
         )
       }
-      <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">
+      {
+        state.showModalOpenTable && (
+          <ModalOpenTable onCancel={handleDismissModal} toast={toast} navigate={navigate} setOrderToLocal={setOrderToLocal}/>
+        )
+      }
+      {/* <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">
         <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl">
@@ -383,8 +400,7 @@ const Table = () => {
           src="https://cdn.rareblocks.xyz/collection/celebration/images/integration/1/services-icons.png"
           alt=""
         />
-      </section>
-
+      </section> */}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { EStatusTable, PAGINATE_DEFAULT } from "../../../../constants/enum";
-import useToastMessage from "../../../../hooks/useToastMessage";
+import useToast from "../../../../hooks/useToast";
 import { showSideOder } from "../../../../utils/event-bus/event-bus.events";
 import { apiGetTables } from "./rable.service";
 
@@ -30,17 +30,17 @@ const initState: IState = {
 export default function useTable() {
 
     const [state, setState] = useState<IState>(initState);
-    const { contextHolder, showToast } = useToastMessage();
+    const toast = useToast();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await apiGetTables({ per_page: 100 });
                 setState(prev => ({ ...prev, data: res.data }))
-            } catch (error) {
+            } catch (error: any) {
                 console.log(error);
                 setState(prev => ({ ...prev, loading: false, total: 0 }))
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error);
             }
         }
         fetchData();
@@ -67,7 +67,6 @@ export default function useTable() {
 
     return {
         state,
-        contextHolder,
         openModalTable,
         handleCloseModal,
         handleShowModal,

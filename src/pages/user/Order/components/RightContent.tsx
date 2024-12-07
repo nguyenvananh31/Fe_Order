@@ -90,7 +90,7 @@ const RightContent = ({props}: IProps) => {
                             </div>
                         )
                 }
-                <QRCode value={getUrlQrCheck() + '/' + props.orderId} />
+                <QRCode value={getUrlQrCheck(props.orderId || '')} />
             </Flex>
             <Divider  className="mb-0"/>
         </div>

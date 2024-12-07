@@ -5,7 +5,6 @@ import { TabsProps } from "antd/lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { useIsMobile } from "../../hooks/useIsMobile";
-import useToastMessage from "../../hooks/useToastMessage";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
 import OrderCartComponent from "./components/OrderCartComponent";
@@ -30,7 +29,6 @@ export default function SidebarOder() {
 
     const isMobile = useIsMobile();
     const [state, setState] = useState<ISate>(innitState);
-    const {contextHolder, showToast} = useToastMessage();
     const subscriptions = useRef(new Subscription());
 
     // useEffect(() => {
@@ -89,13 +87,12 @@ export default function SidebarOder() {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,
             icon: <InboxOutlined />,
-            children: <OrderCartComponent id={state.orderId} showToastMes={showToast} />,
+            children: <OrderCartComponent id={state.orderId}/>,
         },
     ];
 
     return (
         <>
-        {contextHolder}
         <Sider
             collapsed={!state.isOpenRight}
             collapsedWidth={0}

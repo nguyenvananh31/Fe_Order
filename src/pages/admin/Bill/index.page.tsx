@@ -126,7 +126,7 @@ export default function CatePage() {
                 title: 'Trạng thái thanh toán',
                 dataIndex: 'payment_status',
                 align: 'center',
-                width: '15%',
+                width: 'max-content',
                 render: (_: any, item: IBill) => (
                     <Tag color={statusPayment[item.payment_status]?.color} className={`min-w-[80px]`} >
                         {statusPayment[item.payment_status]?.title}
