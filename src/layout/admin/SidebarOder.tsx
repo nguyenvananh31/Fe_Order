@@ -81,7 +81,7 @@ export default function SidebarOder() {
         //     key: '1',
         //     label: <span className="pr-2">Giỏ hàng</span>,
         //     icon: <ShoppingCartOutlined />,
-        //     children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
+        //     children: <ProCartComponent id={state.orderId} />,
         // },
         {
             key: '2',
@@ -96,13 +96,16 @@ export default function SidebarOder() {
         <Sider
             collapsed={!state.isOpenRight}
             collapsedWidth={0}
-            width={isMobile ? '100%' : 350}
+            width={isMobile ? '100%' : 330}
             className="drop-shadow-primary"
             style={{
                 position: "sticky",
                 top: 0,
                 left: 0,
                 bottom: 0,
+                height: '100vh',
+                overflowY: 'auto',
+                overflowX: 'hidden'
             }}
             theme="light"
         >
@@ -113,7 +116,7 @@ export default function SidebarOder() {
                     tabBarExtraContent={{ left: <CloseOutlined onClick={closeNavRight} className="cursor-pointer p-2" /> }}
                     className="pt-4 h-[100vh]"
                     style={{
-                        height: '100%'
+                        height: '100%',
                     }}
                 />
         </Sider>

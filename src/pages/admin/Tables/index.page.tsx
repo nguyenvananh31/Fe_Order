@@ -1,34 +1,37 @@
-import { Breadcrumb, Card, Col, Row, Splitter } from "antd";
-import useTable from "./utils/table.hooks";
-import { PlusOutlined } from "@ant-design/icons";
-import TableAddModal from "./components/ModalAddTable";
+import { PlusOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { AutoComplete, Avatar, Breadcrumb, Button, Card, Col, List, Row, Splitter, Tag, TreeSelect } from "antd";
+import VirtualList from 'rc-virtual-list';
 import { EStatusTable } from "../../../constants/enum";
+import { convertPriceVND } from "../../../utils/common";
+import TableAddModal from "./components/ModalAddTable";
+import useTable from "./utils/table.hooks";
+import { fallBackImg, getImageUrl } from "../../../constants/common";
 
 export default function TablePage() {
 
     const { state, ...hooks } = useTable();
 
     return <>
-        <Splitter>
-            <Splitter.Panel style={{
-                overflowY: 'auto',
-                overflowX: 'hidden'
-            }}>
-                <Breadcrumb
-                    style={{
-                        fontSize: "24px",
-                        margin: "16px 0 28px 0"
-                    }}
-                    items={[
-                        {
-                            title: 'Dashboard',
-                        },
-                        {
-                            title: <div className="font-bold">Danh sách bàn</div>,
-                        },
-                    ]}
-                />
-                <div className='bg-primary drop-shadow-primary rounded-primary'>
+        <Breadcrumb
+            style={{
+                fontSize: "24px",
+                margin: "16px 0 28px 0"
+            }}
+            items={[
+                {
+                    title: 'Dashboard',
+                },
+                {
+                    title: <div className="font-bold">Danh sách bàn</div>,
+                },
+            ]}
+        />
+        <div className='bg-primary drop-shadow-primary rounded-primary'>
+            <Splitter>
+                <Splitter.Panel style={{
+                    overflowY: 'auto',
+                    overflowX: 'hidden'
+                }}>
                     <Row gutter={[20, 16]} className="px-6 py-6" justify={'space-around'}>
                         {
                             !!state.data.length && state.data.map((item: any) => (
@@ -46,14 +49,14 @@ export default function TablePage() {
                                             <div>
                                                 Bàn {item.table}
                                             </div>
-                                            {
+                                            {/* {
                                                 item.reservation_status == EStatusTable.OPEN && (
                                                     <div className="flex gap-4 justify-between">
                                                         <span>2h20</span>
                                                         <span>1.000.000d</span>
                                                     </div>
                                                 )
-                                            }
+                                            } */}
                                         </div>
                                     </Card>
                                 </Col>
@@ -78,12 +81,76 @@ export default function TablePage() {
                             </Card>
                         </Col>
                     </Row>
-                </div>
-            </Splitter.Panel>
-            <Splitter.Panel>
-                âa
-            </Splitter.Panel>
-        </Splitter>
+                </Splitter.Panel>
+                {
+                    state.showManageOrder && (
+                        <Splitter.Panel collapsible max={'90%'} defaultSize={'40%'} style={{
+                            overflowY: 'auto',
+                            overflowX: 'hidden'
+                        }}>
+                            <Row gutter={[16, 16]} className="px-6 pb-6 pt-4" align={"middle"} justify={"space-between"} >
+                                <Col span={24} className="flex gap-2 max-sm:flex-col">
+                                    <AutoComplete
+                                        size="large"
+                                        options={[]}
+                                        className="max-sm:w-full md:w-[400px] flex-1"
+                                        // onSearch={hooks.handleChangeTextSearch}
+                                        placeholder={
+                                            <div className="flex items-center gap-1 cursor-pointer h-max">
+                                                <SearchOutlined className="text-lg text-ghost" />
+                                                <span className="text-ghost text-[14px]">Tìm sản phẩm</span>
+                                            </div>
+                                        }
+                                    // allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                                    // onSelect={(id) => hooks.handleToEdit(+id)}
+                                    // value={state.textSearch}
+                                    />
+                                    <div className="flex gap-2">
+                                        {/* <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button> */}
+                                        <Button className="w-max" size="large" icon={<UndoOutlined />}
+                                        //  onClick={hooks.refreshPage}
+                                        >Làm mới</Button>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <TreeSelect
+                                        allowClear
+                                        multiple
+                                        loading={true}
+                                        style={{ width: '100%' }}
+                                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                        placeholder="Chọn danh mục cần lọc"
+                                        treeData={[]}
+                                    />
+                                </Col>
+                            </Row>
+                            <List
+                                className="px-4"
+                            >
+                                <VirtualList
+                                    data={state.pros}
+                                    height={350}
+                                    itemHeight={80}
+                                    itemKey="id"
+                                    onScroll={hooks.handleScroll}
+                                >
+                                    {(item: any) => (
+                                        <List.Item key={item.id}>
+                                            <List.Item.Meta
+                                                avatar={<Avatar className="w-[60px] h-[60px]" src={item.image ? getImageUrl(item.image) : fallBackImg} />}
+                                                title={<span className="line-clamp-1">{item?.name} <Tag className="ml-2">{item.size.name}</Tag></span>}
+                                                description={<span className="line-clamp-2 mr-4 text-xs">{convertPriceVND(+item.sale || +item.price)}</span>}
+                                            />
+                                            <Button onClick={hooks.handleAddPro(item)} type="text" className="text-sky-400" icon={<PlusOutlined />} />
+                                        </List.Item>
+                                    )}
+                                </VirtualList>
+                            </List>
+                        </Splitter.Panel>
+                    )
+                }
+            </Splitter>
+        </div>
         {
             state.showModalAdd && <TableAddModal onRefresh={hooks.handleRefreshPage} onClose={hooks.handleCloseModal} />
         }

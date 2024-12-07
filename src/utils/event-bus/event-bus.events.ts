@@ -2,7 +2,7 @@ import EventBus from './event-bus';
 import { BaseEventPayload, EventBusName } from './event-bus.types';
 
 export const showSideOder = (isOpen: boolean, orderId: number) => {
-  EventBus.getInstance().post<BaseEventPayload<{isOpen: boolean, orderId: number}>>({
+  EventBus.getInstance().post<BaseEventPayload<{ isOpen: boolean, orderId: number }>>({
     type: EventBusName.ON_SHOW_SiDE_ORDER,
     payload: {
       isOpen,
@@ -10,6 +10,19 @@ export const showSideOder = (isOpen: boolean, orderId: number) => {
     }
   });
 };
+
+export const showManageOrder = () => {
+  EventBus.getInstance().post<any>({
+    type: EventBusName.ON_SHOW_MANAGE_ORDER
+  });
+}
+
+export const addProToTable = (item: any) => {
+  EventBus.getInstance().post<BaseEventPayload<{ item: any }>>({
+    type: EventBusName.ADD_PRO_TO_TABLE,
+    payload: { item }
+  });
+}
 
 export const handleLogout = () => {
   EventBus.getInstance().post<any>({
