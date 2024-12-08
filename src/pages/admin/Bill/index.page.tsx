@@ -146,7 +146,7 @@ export default function CatePage() {
             },
         ];
         return tblColumns;
-    }, [state.pageIndex, state.pageSize])
+    }, [state.pageIndex, state.pageSize]);
 
     return (
         <>
@@ -243,7 +243,7 @@ export default function CatePage() {
             </div>
             {
                 state.showModal &&
-                <BillModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} data={state.bill} />
+                <BillModel onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} data={state.bill} />
             }
             {/* Update status */}
             <Modal

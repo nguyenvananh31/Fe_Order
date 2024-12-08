@@ -12,6 +12,7 @@ export const RegisterForm = () => {
   const onFinish = useCallback(async (formData: {
     name: string;
     email: string;
+    phone_number: string;
     password: string;
     password_confirmation: string;
     remember: boolean;
@@ -24,7 +25,7 @@ export const RegisterForm = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.showError('Tài khoản đăng ký đã tồn tại!');
+      toast.showError(error as any);
     }
   }, []);
 

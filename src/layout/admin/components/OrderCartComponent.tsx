@@ -1,21 +1,23 @@
 import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Empty, Flex, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
+import { Button, Card, Checkbox, Divider, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import useToast from "../../../hooks/useToast";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
-import { apiAddOrderPro, apiDelOrderCart, apiOrderPros, apiUpdateOrderCart } from "../../../pages/user/Order/utils/order.service";
+import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "../../../pages/user/Order/utils/order.service";
 import ApiUtils from "../../../utils/api/api.utils";
 import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../utils/common";
 import { BaseEventPayload, EventBusName } from "../../../utils/event-bus";
 import EventBus from "../../../utils/event-bus/event-bus";
 import { showManageOrder } from "../../../utils/event-bus/event-bus.events";
+import ModalConfirmPayment from "../../../pages/user/Order/components/ModalConfirmPayment";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import ModalPayment from "../../../pages/user/Order/components/ModalPayment";
 
 type Props = {
     id?: number;
-    isShow: boolean;
 }
 
 interface IState {
@@ -29,6 +31,9 @@ interface IState {
     checkedOrder: any[];
     apiCaling: boolean;
     itemHandle?: any;
+    showConfirmPayment: boolean;
+    showModal: boolean;
+    billOnlinePro: any[];
 }
 
 const initState: IState = {
@@ -41,6 +46,9 @@ const initState: IState = {
     cartOrderPro: [],
     checkedOrder: [],
     apiCaling: false,
+    showConfirmPayment: false,
+    showModal: false,
+    billOnlinePro: [],
 }
 
 interface ITotal {
@@ -48,11 +56,13 @@ interface ITotal {
     totalPrice: number;
 }
 
-export default function OrderCartComponent({ id, isShow }: Props) {
+export default function OrderCartComponent({ id }: Props) {
 
     const [state, setState] = useState<IState>(initState);
     const [option, setOption] = useState<number>(1);
     const toast = useToast();
+    const [form] = Form.useForm();
+    const isMobile = useIsMobile();
     const subscriptions = useRef(new Subscription());
 
     useEffect(() => {
@@ -68,9 +78,6 @@ export default function OrderCartComponent({ id, isShow }: Props) {
         subscriptions.current.add(
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<any>) => {
                 if (data.type === EventBusName.ADD_PRO_TO_TABLE) {
-                    if (!isShow) {
-                        return;
-                    }
                     const item = data.payload?.item;
                     setState(prev => {
                         if (prev.apiCaling) {
@@ -206,6 +213,27 @@ export default function OrderCartComponent({ id, isShow }: Props) {
 
         return () => clearTimeout(timeout);
     }, [state.itemHandle, state.billDetail]);
+
+    const fetchApiBillDetail = useCallback(async () => {
+        try {
+            setState(prev => ({ ...prev, loadingBill: true }));
+            const res: any = await apiGetbillDetailOnline({ ma_bill: state?.billDetail?.ma_bill });
+            const billDetail = {
+                tableNumber: res.data.table_number,
+                customerName: res.data.khachhang?.name || 'Chưa có',
+                totalAmount: res.data.total_amount,
+                orderDate: res.data.order_date,
+            }
+            const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
+                acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
+                []);
+            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
+        } catch (error) {
+            console.log(error);
+            toast.showError('Bàn đã được thanh toán hoặc huỷ!');
+            return;
+        }
+    }, [state.billDetail]);
 
     const handleCheckedPro = useCallback((ids: number[]) => {
         setState(prev => ({ ...prev, checkedCofirm: ids }))
@@ -376,6 +404,36 @@ export default function OrderCartComponent({ id, isShow }: Props) {
         showManageOrder(false);
     }, []);
 
+    const handleDismissModal = useCallback(() => {
+        setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false }));
+    }, []);
+
+    const handleSubmitForm = useCallback(() => { form.submit() }, []);
+
+    const handleSaveBill = useCallback(async (values: any) => {
+        try {
+            const body = {
+                ma_bill: state?.billDetail?.ma_bill,
+                phone: values.phone || undefined,
+                payment_id: values.payment,
+                note: values.note || undefined,
+                voucher: values.voucher || undefined
+            }
+            setState(prev => ({ ...prev, loadingBill: true }));
+            fetchApiBillDetail();
+            await apiSaveBill(body);
+            setState(prev => ({ ...prev, loadingBill: false, showConfirmPayment: false, showModal: true }));
+        } catch (error: any) {
+            console.log('error: ', error);
+            toast.showError(error);
+            setState(prev => ({ ...prev, loadingBill: false }));
+        }
+    }, [state.billDetail]);
+
+    const handleShowModalConfirm = useCallback(() => {
+        setState(prev => ({ ...prev, showConfirmPayment: true }));
+    }, []);
+
     if (!id) {
         return <div className="mt-60">
             <Empty description={'Không có dữ liệu.'} />
@@ -456,7 +514,7 @@ export default function OrderCartComponent({ id, isShow }: Props) {
                 )
             }
             {
-                state.data.length == 0 && !state.loading && option == 3 && (
+                state.data.length == 0 && !state.loading && option !== 3 && (
                     <div className="text-center">
                         <SmileOutlined style={{ fontSize: 24 }} />
                         <p>Không có sản phẩm nào</p>
@@ -584,8 +642,27 @@ export default function OrderCartComponent({ id, isShow }: Props) {
                 <Button onClick={handleShowManageOrder} icon={<PlusOutlined />} className="w-4/5 py-4">Thêm món vào bàn</Button>
             </Flex>
             <Flex align="center" justify="center" className="my-4">
-                <Button icon={<PayCircleOutlined />} type="primary" danger className="w-4/5 py-4 mb-4">Thanh toán</Button>
+                <Button icon={<PayCircleOutlined />} onClick={handleShowModalConfirm} type="primary" danger className="w-4/5 py-4 mb-4">Thanh toán</Button>
             </Flex>
+            {/* Modal xác nhận thanh toán */}
+            {
+                state.showConfirmPayment && <ModalConfirmPayment
+                    onCancel={handleDismissModal}
+                    form={form}
+                    onSubmit={handleSubmitForm}
+                    onSaveBill={handleSaveBill}
+                    isMobile={isMobile}
+                />
+            }
+            {/* Modal thông tin thanh toán */}
+            {
+                state.showModal && <ModalPayment
+                    onCancel={handleDismissModal}
+                    billPros={state.billOnlinePro}
+                    billDetail={state.billDetail}
+                    isMobile={isMobile}
+                />
+            }
         </div>
     )
 }

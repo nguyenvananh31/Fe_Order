@@ -8,6 +8,7 @@ import { convertPriceVND } from "../../../../utils/common";
 import { ZoomInOutlined } from "@ant-design/icons";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { Table } from "antd/lib";
+import useToast from "../../../../hooks/useToast";
 
 const statusBill: any = {
     pending: { color: 'magenta', title: 'Đang chờ' },
@@ -22,7 +23,6 @@ interface IProps {
     itemId?: number;
     onRefresh: () => void;
     onClose: () => void;
-    showToast: (type: string, message: string) => void;
     data?: IBill;
 }
 
@@ -39,9 +39,10 @@ const initState: IState = {
     isEdit: false,
 }
 
-export default function BillModel({ onClose, showToast, itemId = undefined, data }: IProps) {
+export default function BillModel({ onClose, itemId = undefined, data }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
+    const toast = useToast();
 
     useEffect(() => {
         if (!itemId) {
@@ -57,7 +58,7 @@ export default function BillModel({ onClose, showToast, itemId = undefined, data
                 }
             } catch (error) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error as any);
                 setState(prev => ({ ...prev, isEdit: true, loading: false }));
             }
         }

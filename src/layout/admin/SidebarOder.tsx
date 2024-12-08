@@ -89,7 +89,7 @@ export default function SidebarOder() {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,
             icon: <InboxOutlined />,
-            children: <OrderCartComponent id={state.orderId} isShow={state.isOpenRight}/>,
+            children: <OrderCartComponent id={state.orderId} />,
         },
     ];
 

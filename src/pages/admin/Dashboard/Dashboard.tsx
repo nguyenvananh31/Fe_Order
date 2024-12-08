@@ -13,7 +13,6 @@ import {
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2"; // Thêm Line chart từ react-chartjs-2
-import useToast from "../../../hooks/useToast";
 import './Dashboard.scss'; // Import SCSS file
 import { apiGetDashboard } from "./utils/dashboard.service";
 
@@ -45,7 +44,7 @@ const initState: IState = {
 const Dashboard = () => {
 
   const [state, setState] = useState<IState>(initState);
-  const toast = useToast();
+  // const toast = useToast();
 
   useEffect(() => {
     (async () => {
@@ -58,7 +57,7 @@ const Dashboard = () => {
         setState(prev => ({ ...prev, loading: false, data: res }));
       } catch (error: any) {
         console.log(error);
-        toast.showError(error);
+        // toast.showError(error);
         setState(prev => ({ ...prev, loading: false }));
       }
     })();
