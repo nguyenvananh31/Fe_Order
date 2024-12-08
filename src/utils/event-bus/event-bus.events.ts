@@ -11,9 +11,10 @@ export const showSideOder = (isOpen: boolean, orderId: number) => {
   });
 };
 
-export const showManageOrder = () => {
+export const showManageOrder = (isOpen: boolean) => {
   EventBus.getInstance().post<any>({
-    type: EventBusName.ON_SHOW_MANAGE_ORDER
+    type: EventBusName.ON_SHOW_MANAGE_ORDER,
+    payload: isOpen
   });
 }
 

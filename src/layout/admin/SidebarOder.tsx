@@ -8,6 +8,7 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
 import OrderCartComponent from "./components/OrderCartComponent";
+import { showManageOrder } from "../../utils/event-bus/event-bus.events";
 
 interface ISate {
     loading: boolean;
@@ -73,6 +74,7 @@ export default function SidebarOder() {
     };
 
     const closeNavRight = useCallback(() => {
+        showManageOrder(true);
         setState(prev => ({ ...prev, isOpenRight: false }))
     }, []);
 
@@ -87,28 +89,30 @@ export default function SidebarOder() {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,
             icon: <InboxOutlined />,
-            children: <OrderCartComponent id={state.orderId}/>,
+            children: <OrderCartComponent id={state.orderId} isShow={state.isOpenRight}/>,
         },
     ];
 
     return (
         <>
-        <Sider
-            collapsed={!state.isOpenRight}
-            collapsedWidth={0}
-            width={isMobile ? '100%' : 330}
-            className="drop-shadow-primary"
-            style={{
-                position: "sticky",
-                top: 0,
-                left: 0,
-                bottom: 0,
-                height: '100vh',
-                overflowY: 'auto',
-                overflowX: 'hidden'
-            }}
-            theme="light"
-        >
+            <Sider
+                collapsed={!state.isOpenRight}
+                collapsedWidth={0}
+                width={isMobile ? '100%' : 330}
+                className="drop-shadow-primary"
+                style={{
+                    position: "sticky",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    height: '100vh',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    msOverflowStyle: 'none', /* Ẩn thanh cuộn cho IE và Edge */
+                    scrollbarWidth: 'none'   /* Ẩn thanh cuộn cho Firefox */
+                }}
+                theme="light"
+            >
                 <Tabs
                     defaultActiveKey="2"
                     items={items}
@@ -119,7 +123,7 @@ export default function SidebarOder() {
                         height: '100%',
                     }}
                 />
-        </Sider>
+            </Sider>
         </>
     )
 }

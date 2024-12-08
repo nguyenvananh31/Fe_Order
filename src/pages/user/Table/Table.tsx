@@ -7,7 +7,7 @@ import { RouteConfig } from '../../../constants/path';
 import useAuth from '../../../hooks/redux/auth/useAuth';
 import useOrder from '../../../hooks/useOrder';
 import useToast from '../../../hooks/useToast';
-import { apiGetTableClient, apiOpenTable } from './utils/table.service';
+import { apiGetTableClient, apiOpenTable, apiOpenTables } from './utils/table.service';
 import ModalOpenTable from './components/ModalOpenTable';
 
 const { Option } = Select;
@@ -152,6 +152,20 @@ const Table = () => {
       setState(prev => ({ ...prev, loadingTable: false }));
     }
   }, [state.loadingTable]);
+
+  const handleOpenManyTable = useCallback((table_ids: any[]) => async () => {
+    try {
+        const res = await apiOpenTables({ table_ids, payment_id: 1 });
+        if (res?.ma_bill) {
+            setOrderToLocal(res?.ma_bill);
+            await navigate(RouteConfig.ORDER);
+            toast.showSuccess('Mở bàn thành công!');
+        }
+    } catch (error: any) {
+        console.log(error);
+        toast.showError(error);
+    }
+}, []);
 
   return (
     <>
@@ -372,7 +386,7 @@ const Table = () => {
       }
       {
         state.showModalOpenTable && (
-          <ModalOpenTable onCancel={handleDismissModal} toast={toast} navigate={navigate} setOrderToLocal={setOrderToLocal}/>
+          <ModalOpenTable onCancel={handleDismissModal} onConfirm={handleOpenManyTable}/>
         )
       }
       {/* <section className="pt-10 mt-6 pb-8 overflow-hidden bg-gray-100 sm:pt-16 lg:pt-24">

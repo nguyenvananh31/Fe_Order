@@ -1,14 +1,12 @@
 import { Checkbox, Pagination, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
-import { apiGetTableClient, apiOpenTables } from "../utils/table.service";
-import { RouteConfig } from "../../../../constants/path";
+import { apiGetTableClient } from "../utils/table.service";
+import { EStatusTable } from "../../../../constants/enum";
 
 interface IProps {
     onCancel: () => void;
-    toast: any;
-    setOrderToLocal: any;
-    navigate: any;
+    onConfirm: (table_ids: any[]) => () => void;
 }
 
 interface IState {
@@ -31,7 +29,7 @@ const initState: IState = {
     options: [],
 }
 
-const ModalOpenTable = ({ onCancel, navigate, setOrderToLocal, toast }: IProps) => {
+const ModalOpenTable = ({ onCancel, onConfirm }: IProps) => {
 
     const [state, setState] = useState<IState>(initState);
 
@@ -65,24 +63,10 @@ const ModalOpenTable = ({ onCancel, navigate, setOrderToLocal, toast }: IProps) 
         });
     }, []);
 
-    const handleOpenTable = useCallback((table_ids: any[]) => async () => {
-        try {
-          const res = await apiOpenTables({ table_ids, payment_id: 1 });
-          if (res?.ma_bill) {
-            setOrderToLocal(res?.ma_bill);
-            await navigate(RouteConfig.ORDER);
-            toast.showSuccess('Mở bàn thành công!');
-          }
-        } catch (error: any) {
-          console.log(error);
-          toast.showError(error);
-        }
-      }, []);
-
     return <BaseModalSetting
         title={'Chọn bàn cần mở'}
         onCancel={onCancel}
-        onConfirm={handleOpenTable(state.options)}
+        onConfirm={onConfirm(state.options)}
         okText={'Mở bàn'}
     >
         <>
@@ -92,7 +76,7 @@ const ModalOpenTable = ({ onCancel, navigate, setOrderToLocal, toast }: IProps) 
                         <Checkbox.Group className="w-full" onChange={handleChooseTable}>
                             {
                                 state.dataTable.map((i, index) => (
-                                    <Checkbox value={i.id} key={i.id}><span className="line-clamp-1 w-16">{i?.table || `Bàn ${index + 1}`}</span></Checkbox>
+                                    <Checkbox disabled={i.reservation_status == EStatusTable.OPEN} value={i.id} key={i.id}><span className="line-clamp-1 w-16">{i?.table || `Bàn ${index + 1}`}</span></Checkbox>
                                 ))
                             }
                         </Checkbox.Group>

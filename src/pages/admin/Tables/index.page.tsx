@@ -1,11 +1,12 @@
 import { PlusOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
-import { AutoComplete, Avatar, Breadcrumb, Button, Card, Col, List, Row, Splitter, Tag, TreeSelect } from "antd";
+import { AutoComplete, Avatar, Breadcrumb, Button, Card, Col, List, Pagination, Row, Splitter, Tag, TreeSelect } from "antd";
 import VirtualList from 'rc-virtual-list';
 import { EStatusTable } from "../../../constants/enum";
 import { convertPriceVND } from "../../../utils/common";
 import TableAddModal from "./components/ModalAddTable";
 import useTable from "./utils/table.hooks";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
+import ModalOpenTable from "../../user/Table/components/ModalOpenTable";
 
 export default function TablePage() {
 
@@ -27,12 +28,47 @@ export default function TablePage() {
             ]}
         />
         <div className='bg-primary drop-shadow-primary rounded-primary'>
-            <Splitter>
+            <Splitter onResize={hooks.handleResize}>
                 <Splitter.Panel style={{
                     overflowY: 'auto',
                     overflowX: 'hidden'
                 }}>
                     <Row gutter={[20, 16]} className="px-6 py-6" justify={'space-around'}>
+                        <Col span={15}
+                        // className="flex gap-2 max-sm:flex-col"
+                        >
+                            <AutoComplete
+                                size="large"
+                                options={[]}
+                                className="max-sm:w-full md:w-[300px] w-full"
+                                // onSearch={hooks.handleChangeTextSearch}
+                                placeholder={
+                                    <div className="flex items-center gap-1 cursor-pointer h-max">
+                                        <SearchOutlined className="text-lg text-ghost" />
+                                        <span className="text-ghost text-[14px]">Tìm kích thước</span>
+                                    </div>
+                                }
+                            // allowClear={{ clearIcon: state.loadingSearch ? <LoadingOutlined /> : <CloseCircleFilled /> }}
+                            // onSelect={(id) => hooks.handleOpenModal(+id)}
+                            // value={state.textSearch}
+                            />
+                            {/* <div className="flex gap-2">
+                                <Button onClick={hooks.handleSearchBtn} className="w-max" size="large" icon={<SearchOutlined />}>Tìm kiếm</Button>
+                                <Button className="w-max" size="large" icon={<UndoOutlined />}
+                                onClick={hooks.refreshPage}
+                                >Làm mới</Button>
+                            </div> */}
+                        </Col>
+                        <Col span={9}>
+                            <Button
+                                size="large"
+                                type='primary'
+                                icon={<PlusOutlined />}
+                                onClick={hooks.handleShowModalOpenTable}
+                            >
+                                Gộp bàn
+                            </Button>
+                        </Col>
                         {
                             !!state.data.length && state.data.map((item: any) => (
                                 <Col key={item.id}>
@@ -80,11 +116,14 @@ export default function TablePage() {
                                 </div>
                             </Card>
                         </Col>
+                        <Col span={24}>
+                            <Pagination defaultCurrent={state.pageIndex} total={state.total} align="end" onChange={hooks.handlePageChange} />
+                        </Col>
                     </Row>
                 </Splitter.Panel>
                 {
                     state.showManageOrder && (
-                        <Splitter.Panel collapsible max={'90%'} defaultSize={'40%'} style={{
+                        <Splitter.Panel collapsible resizable={false} size={hooks.size} style={{
                             overflowY: 'auto',
                             overflowX: 'hidden'
                         }}>
@@ -129,7 +168,7 @@ export default function TablePage() {
                             >
                                 <VirtualList
                                     data={state.pros}
-                                    height={350}
+                                    height={420}
                                     itemHeight={80}
                                     itemKey="id"
                                     onScroll={hooks.handleScroll}
@@ -153,6 +192,12 @@ export default function TablePage() {
         </div>
         {
             state.showModalAdd && <TableAddModal onRefresh={hooks.handleRefreshPage} onClose={hooks.handleCloseModal} />
+        }
+        {
+            state.showModalOpenTable && <ModalOpenTable
+                onCancel={hooks.handleCloseModal}
+                onConfirm={hooks.handleOpenManyTable}
+            />
         }
     </>
 }

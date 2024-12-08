@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { EStatusTable } from "../../../../constants/enum";
+import useOrder from "../../../../hooks/useOrder";
 import useToast from "../../../../hooks/useToast";
 import { BaseEventPayload, EventBusName } from "../../../../utils/event-bus";
 import EventBus from "../../../../utils/event-bus/event-bus";
 import { addProToTable, showSideOder } from "../../../../utils/event-bus/event-bus.events";
+import { apiOpenTable, apiOpenTables } from "../../../user/Table/utils/table.service";
 import { apiGetAllProduct, apiGetTables } from "./rable.service";
 
 interface IState {
@@ -21,6 +23,7 @@ interface IState {
     pros: any[];
     pageIndexPro: number;
     showManageOrder: boolean;
+    showModalOpenTable: boolean;
 }
 
 const initState: IState = {
@@ -36,13 +39,16 @@ const initState: IState = {
     pros: [],
     pageIndexPro: 1,
     showManageOrder: false,
+    showModalOpenTable: false,
 }
 
 export default function useTable() {
 
     const [state, setState] = useState<IState>(initState);
     const [addPro, setAddPro] = useState<any>();
+    const [size, setSize] = useState<string>('45%');
     const toast = useToast();
+    const { setOrderToLocal } = useOrder();
     const subscriptions = useRef(new Subscription());
 
     useEffect(() => {
@@ -58,11 +64,12 @@ export default function useTable() {
         subscriptions.current.add(
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<any>) => {
                 if (data.type === EventBusName.ON_SHOW_MANAGE_ORDER) {
+                    fetchApiPros();
                     setState(prev => {
-                        if (prev.showManageOrder) {
+                        if (prev.showManageOrder == !data.payload) {
                             return prev;
                         }
-                        return { ...prev, showManageOrder: true };
+                        return { ...prev, showManageOrder: !data.payload };
                     });
                 }
             })
@@ -89,7 +96,7 @@ export default function useTable() {
                     per_page: state.pageSize,
                 }
                 const res = await apiGetTables(conds);
-                setState(prev => ({ ...prev, data: res.data }))
+                setState(prev => ({ ...prev, data: res.data, total: res?.meta?.total || 0 }))
             } catch (error: any) {
                 console.log(error);
                 setState(prev => ({ ...prev, loading: false, total: 0 }))
@@ -97,7 +104,6 @@ export default function useTable() {
             }
         }
         fetchData();
-        fetchApiPros();
     }, [state.refresh]);
 
     const fetchApiPros = useCallback(async () => {
@@ -130,6 +136,19 @@ export default function useTable() {
 
     const openModalTable = useCallback(async (id: number, type?: string) => {
         if (type && type !== EStatusTable.OPEN) {
+            try {
+                setState(prev => ({ ...prev, loadingTable: true }));
+                const res = await apiOpenTable({ table_id: id, payment_id: 1 });
+                if (res?.ma_bill) {
+                    showSideOder(true, id);
+                    toast.showSuccess('Mở bàn thành công!');
+                }
+                setState(prev => ({ ...prev, loadingTable: false, refresh: !prev.refresh }));
+            } catch (error: any) {
+                console.log(error);
+                toast.showError(error);
+                setState(prev => ({ ...prev, loadingTable: false }));
+            }
             return;
         }
         // setState(prev => ({ ...prev, selectedItemId: id }));
@@ -137,15 +156,19 @@ export default function useTable() {
     }, []);
 
     const handleCloseModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModalAdd: false }));
+        setState(prev => ({ ...prev, showModalAdd: false, showModalOpenTable: false }));
     }, [])
 
     const handleShowModal = useCallback(() => {
         setState(prev => ({ ...prev, showModalAdd: true }));
     }, []);
 
+    const handleShowModalOpenTable = useCallback(() => {
+        setState(prev => ({ ...prev, showModalOpenTable: true }));
+    }, [])
+
     const handleScroll = useCallback((e: React.UIEvent<HTMLElement, UIEvent>) => {
-        if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - 350) <= 1) {
+        if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - 420) <= 1) {
             setState(prev => ({ ...prev, pageIndexPro: prev.pageIndexPro + 1 }))
             fetchApiPros();
         }
@@ -155,13 +178,46 @@ export default function useTable() {
         setAddPro((prev: any) => ({ ...item, sl: prev?.sl ? prev.sl + 1 : 1 }));
     }, []);
 
+    // Chuyển trang và phân trang
+    const handlePageChange = (page: any) => {
+        setState(prev => ({ ...prev, pageIndex: page, refresh: !prev.refresh }));
+    };
+
+    const handleResize = useCallback((sizes: any) => {
+        if (!sizes[1]) {
+            setSize('0');
+        }
+        if (sizes[0] == sizes[1]) {
+            setSize('45%');
+        }
+    }, []);
+
+    const handleOpenManyTable = useCallback((table_ids: any[]) => async () => {
+        try {
+            const res = await apiOpenTables({ table_ids, payment_id: 1 });
+            if (res?.ma_bill) {
+                showSideOder(true, table_ids[0]);
+                setState(prev => ({ ...prev, refresh: !prev.refresh, showModalOpenTable: false }));
+            }
+        } catch (error: any) {
+            console.log(error);
+            toast.showError(error);
+        }
+    }, []);
+
     return {
         state,
+        size,
+        setOrderToLocal,
         openModalTable,
         handleCloseModal,
         handleShowModal,
         handleRefreshPage,
         handleScroll,
-        handleAddPro
+        handleAddPro,
+        handlePageChange,
+        handleResize,
+        handleShowModalOpenTable,
+        handleOpenManyTable,
     }
 }

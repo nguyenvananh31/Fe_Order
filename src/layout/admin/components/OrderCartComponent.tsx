@@ -1,20 +1,21 @@
-import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PlusCircleOutlined, PlusOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
+import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
 import { Button, Card, Checkbox, Divider, Empty, Flex, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Subscription } from "rxjs";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
 import useToast from "../../../hooks/useToast";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
-import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../utils/common";
-import ApiUtils from "../../../utils/api/api.utils";
 import { apiAddOrderPro, apiDelOrderCart, apiOrderPros, apiUpdateOrderCart } from "../../../pages/user/Order/utils/order.service";
-import { showManageOrder } from "../../../utils/event-bus/event-bus.events";
-import { Subscription } from "rxjs";
-import EventBus from "../../../utils/event-bus/event-bus";
+import ApiUtils from "../../../utils/api/api.utils";
+import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../utils/common";
 import { BaseEventPayload, EventBusName } from "../../../utils/event-bus";
+import EventBus from "../../../utils/event-bus/event-bus";
+import { showManageOrder } from "../../../utils/event-bus/event-bus.events";
 
 type Props = {
     id?: number;
+    isShow: boolean;
 }
 
 interface IState {
@@ -47,7 +48,7 @@ interface ITotal {
     totalPrice: number;
 }
 
-export default function OrderCartComponent({ id }: Props) {
+export default function OrderCartComponent({ id, isShow }: Props) {
 
     const [state, setState] = useState<IState>(initState);
     const [option, setOption] = useState<number>(1);
@@ -67,6 +68,9 @@ export default function OrderCartComponent({ id }: Props) {
         subscriptions.current.add(
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<any>) => {
                 if (data.type === EventBusName.ADD_PRO_TO_TABLE) {
+                    if (!isShow) {
+                        return;
+                    }
                     const item = data.payload?.item;
                     setState(prev => {
                         if (prev.apiCaling) {
@@ -369,7 +373,7 @@ export default function OrderCartComponent({ id }: Props) {
     }, [state.checkedOrder, state.billDetail]);
 
     const handleShowManageOrder = useCallback(() => {
-        showManageOrder();
+        showManageOrder(false);
     }, []);
 
     if (!id) {
@@ -390,7 +394,14 @@ export default function OrderCartComponent({ id }: Props) {
                     <Space direction="vertical" align="start">
                         <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
-                            <p className="font-bold">Số bàn: {state.billDetail?.table_number}</p>
+                            <p className="font-bold">Số bàn:
+                                {state.billDetail?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
+                                    if (arr.length == index + 1) {
+                                        return acc + curr?.table;
+                                    }
+                                    return acc + curr?.table + ' - ';
+                                }, '')}
+                            </p>
                         </Flex>
                         {/* <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
@@ -570,7 +581,10 @@ export default function OrderCartComponent({ id }: Props) {
                 )
             }
             <Flex align="center" justify="center" className="my-4">
-                <Button onClick={handleShowManageOrder} icon={<PlusOutlined />} className="w-4/5 py-4 mb-4">Thêm món vào bàn</Button>
+                <Button onClick={handleShowManageOrder} icon={<PlusOutlined />} className="w-4/5 py-4">Thêm món vào bàn</Button>
+            </Flex>
+            <Flex align="center" justify="center" className="my-4">
+                <Button icon={<PayCircleOutlined />} type="primary" danger className="w-4/5 py-4 mb-4">Thanh toán</Button>
             </Flex>
         </div>
     )
