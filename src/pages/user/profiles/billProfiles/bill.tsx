@@ -87,9 +87,7 @@ const Bill: React.FC = () => {
 
   const handleCancelOrder = useCallback(async (orderId: number) => {
     try {
-      await ApiUtils.put(`/api/client/bills/${orderId}/cancel`, {
-        status: 'awaitingApproval',
-      });
+      await ApiUtils.put(`/api/client/bills/${orderId}/cancel`);
 
     } catch (error) {
       console.error("Error sending cancellation request", error);
@@ -268,7 +266,7 @@ const Bill: React.FC = () => {
           pagination={{
             pageSize: state.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn số lượng bản ghi
+            pageSizeOptions: ['5', '10', '20', '50'],
             total: state.total,
             current: state.pageIndex,
             style: {

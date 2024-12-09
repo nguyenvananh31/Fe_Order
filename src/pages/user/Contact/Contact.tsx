@@ -13,7 +13,7 @@ const Contact: React.FC = () => {
                                 <div className="mb-3 ">
                                     <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/location.svg" alt="Phone icon" className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0 " />
                                 </div>
-                                <h3 className="text-sm md:text-base font-semibold">Address Line</h3>
+                                <h3 className="text-sm md:text-base font-semibold">Địa chỉ</h3>
                                 <p className="mt-2 text-xs md:text-sm">
                                     Bowery St, New York, 37 USA <br />
                                     NY 10013, USA
@@ -25,7 +25,7 @@ const Contact: React.FC = () => {
                                 <div className="mb-3">
                                     <img src="https://modinatheme.com/html/foodking-html/assets/img/icon/phone.svg" alt="Phone icon" className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0" />
                                 </div>
-                                <h3 className="text-sm md:text-base font-semibold">Phone Number</h3>
+                                <h3 className="text-sm md:text-base font-semibold">Số điện thoại</h3>
                                 <p className="mt-2 text-xs md:text-sm">
                                     +1255 - 568 - 6523 4374-221 <br />
                                     +1255 - 568 - 6523
@@ -41,7 +41,7 @@ const Contact: React.FC = () => {
                                         className="mx-auto h-10 w-10 md:h-11 md:w-11 filter brightness-0 "
                                     />
                                 </div>
-                                <h3 className="text-sm md:text-base font-semibold">Mail Address</h3>
+                                <h3 className="text-sm md:text-base font-semibold">Địa chỉ Email</h3>
                                 <p className="mt-2 text-xs md:text-sm">
                                     email@example.com <br />
                                     info@yourdomain.com

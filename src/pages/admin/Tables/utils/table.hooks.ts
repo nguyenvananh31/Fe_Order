@@ -6,7 +6,7 @@ import useToast from "../../../../hooks/useToast";
 import { BaseEventPayload, EventBusName } from "../../../../utils/event-bus";
 import EventBus from "../../../../utils/event-bus/event-bus";
 import { addProToTable, showSideOder } from "../../../../utils/event-bus/event-bus.events";
-import { apiOpenTable, apiOpenTables } from "../../../user/Table/utils/table.service";
+import { apiOpenTables } from "../../../user/Table/utils/table.service";
 import { apiGetAllProduct, apiGetTables } from "./rable.service";
 
 interface IState {
@@ -64,12 +64,15 @@ export default function useTable() {
         subscriptions.current.add(
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<any>) => {
                 if (data.type === EventBusName.ON_SHOW_MANAGE_ORDER) {
-                    fetchApiPros();
                     setState(prev => {
+                        const refresh = data.payload ? !prev.refresh : prev.refresh;
                         if (prev.showManageOrder == !data.payload) {
-                            return prev;
+                            return { ...prev, refresh };
                         }
-                        return { ...prev, showManageOrder: !data.payload };
+                        if (!prev.showManageOrder) {
+                            fetchApiPros();
+                        }
+                        return { ...prev, showManageOrder: !data.payload, refresh };
                     });
                 }
             })
@@ -136,19 +139,6 @@ export default function useTable() {
 
     const openModalTable = useCallback(async (id: number, type?: string) => {
         if (type && type !== EStatusTable.OPEN) {
-            try {
-                setState(prev => ({ ...prev, loadingTable: true }));
-                const res = await apiOpenTable({ table_id: id, payment_id: 1 });
-                if (res?.ma_bill) {
-                    showSideOder(true, id);
-                    toast.showSuccess('Mở bàn thành công!');
-                }
-                setState(prev => ({ ...prev, loadingTable: false, refresh: !prev.refresh }));
-            } catch (error: any) {
-                console.log(error);
-                toast.showError(error);
-                setState(prev => ({ ...prev, loadingTable: false }));
-            }
             return;
         }
         // setState(prev => ({ ...prev, selectedItemId: id }));

@@ -423,6 +423,7 @@ export default function OrderCartComponent({ id }: Props) {
             fetchApiBillDetail();
             await apiSaveBill(body);
             setState(prev => ({ ...prev, loadingBill: false, showConfirmPayment: false, showModal: true }));
+            showManageOrder(true);
         } catch (error: any) {
             console.log('error: ', error);
             toast.showError(error);

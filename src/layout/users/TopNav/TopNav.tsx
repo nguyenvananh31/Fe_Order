@@ -1,13 +1,12 @@
-import { FacebookFilled, InstagramOutlined, SearchOutlined, TruckOutlined, TwitterOutlined, YoutubeFilled } from '@ant-design/icons'
-import React from 'react'
+import { FacebookFilled, InstagramOutlined, SearchOutlined, TwitterOutlined, YoutubeFilled } from '@ant-design/icons'
 
 const TopNav = () => {
     return (
         <div className='topNav hidden lg:block bg-bgColor1 border-b-[1px]'>
             <div className="container max-w-[1140px] mx-auto lg:grid lg:grid-cols-gridTopNav sm:block">
                 <div className="container-left bg-bgColor1 flex items-center  py-4 pl-[20px]">
-                    <h4 className='text-[16px] hidden  text-textColor1 lg:flex items-center mr-7'><span className='text-mainColor1 mr-1 font-bold'>100%</span>Secure delivery without contacting the courier</h4>
-                    <h4 className='text-[16px] hidden  text-textColor1 lg:flex items-center gap-1'><i className="fa-solid fa-truck-fast text-mainColor1"></i> Track Your Order</h4>
+                    <h4 className='text-[16px] hidden  text-textColor1 lg:flex items-center mr-7'><span className='text-mainColor1 mr-1 font-bold'>100%</span>Giao hàng an toàn mà không cần liên hệ với người chuyển phát nhanh</h4>
+                    <h4 className='text-[16px] hidden  text-textColor1 lg:flex items-center gap-1'><i className="fa-solid fa-truck-fast text-mainColor1"></i> Theo dõi đơn hàng của bạn</h4>
                 </div>
                 <div className="container-right flex items-center bg-textColor1 pr-[20px]">
                     <form action="" className="form-search bg-bgColor1 h-full flex item-center border-l-[1px] pl-4 border-borderColor1">

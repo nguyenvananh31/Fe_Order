@@ -75,7 +75,7 @@ export default function SidebarOder() {
 
     const closeNavRight = useCallback(() => {
         showManageOrder(true);
-        setState(prev => ({ ...prev, isOpenRight: false }))
+        setState(prev => ({ ...prev, isOpenRight: false }));
     }, []);
 
     const items: TabsProps['items'] = [

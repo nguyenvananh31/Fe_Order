@@ -66,7 +66,7 @@ export default function TablePage() {
                                 icon={<PlusOutlined />}
                                 onClick={hooks.handleShowModalOpenTable}
                             >
-                                Gộp bàn
+                                Mở bàn
                             </Button>
                         </Col>
                         {

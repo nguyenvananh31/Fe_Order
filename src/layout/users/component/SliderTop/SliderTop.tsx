@@ -31,7 +31,6 @@ const SliderTop: React.FC = () => {
               <p className="text-3xl font-semibold text-white mt-3">$399</p>
               <button className='btn-type-2 mt-8'><span>Order now</span></button>
             </div>
-
           </div>
         </SwiperSlide>
 

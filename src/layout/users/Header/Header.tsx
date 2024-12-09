@@ -240,14 +240,14 @@ const Header = () => {
             <div className="container">
               <ul className="menus-mobile md:hidden block ">
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={RouteConfig.HOME} className="menus-item__link text-type-2">Home</Link><PlusOutlined /></li>
+                  to={RouteConfig.HOME} className="menus-item__link text-type-2">Trang chủ</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={RouteConfig.CLINET_PRODUCTS} className="menus-item__link text-type-2">Product</Link><PlusOutlined /></li>
+                  to={RouteConfig.CLINET_PRODUCTS} className="menus-item__link text-type-2">Món ăn</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={RouteConfig.TABLE} className="menus-item__link text-type-2">Table</Link><PlusOutlined /></li>
+                  to={RouteConfig.TABLE} className="menus-item__link text-type-2">Bàn</Link><PlusOutlined /></li>
                 <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link
-                  to={RouteConfig.ABOUT} className="menus-item__link text-type-2">About us</Link><PlusOutlined /></li>
-                <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link to={RouteConfig.CONTACT} className="menus-item__link text-type-2">Contact</Link><PlusOutlined /></li>
+                  to={RouteConfig.ABOUT} className="menus-item__link text-type-2">Giới thiệu</Link><PlusOutlined /></li>
+                <li className="menus-item flex justify-between border-b-[1px] border-borderColor1 py-3 mb-2"><Link to={RouteConfig.CONTACT} className="menus-item__link text-type-2">Liên hệ</Link><PlusOutlined /></li>
               </ul>
             </div>
             <div className="container">
@@ -255,7 +255,7 @@ const Header = () => {
                 <input type="text" placeholder='Search...' className='border-none outline-none rounded-md w-full text-type-3' />
                 <button type='submit' className='border-none group'><SearchOutlined className='text-textColor2 text-xl group-hover:text-mainColor2' /></button>
               </form>
-              <p className='text-type-4 py-4 '>This involves interactions between a business and its customers. It's about meeting customers' needs and resolving their problems. Effective customer service is crucial.</p>
+              <p className='text-type-4 py-4 '>Điều này liên quan đến sự tương tác giữa một doanh nghiệp và khách hàng của mình. Đó là về việc đáp ứng nhu cầu của khách hàng và giải quyết vấn đề của họ. Dịch vụ khách hàng hiệu quả là rất quan trọng.</p>
               <div className="box-gird-image grid grid-cols-3 gap-5">
                 <Image
                   className='rounded-lg cursor-pointer w-full h-full object-cover'
@@ -290,7 +290,7 @@ const Header = () => {
               </div>
             </div>
             <div className="container my-5 flex justify-center">
-              <button className="btn-type-2"><span>Order now</span></button>
+              <button className="btn-type-2"><span>Đặt ngay</span></button>
             </div>
             {/* <div className="container">
               <div className="box-contact-sideBar">

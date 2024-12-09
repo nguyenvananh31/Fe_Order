@@ -49,7 +49,7 @@ const initState: IState = {
 const Checkout = () => {
 
   const [state, setState] = useState<IState>(initState);
-  const { cartStore } = useCartStore();
+  const { cartStore, refreshCartStore } = useCartStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -200,15 +200,16 @@ const Checkout = () => {
       });
       formData.append('use_points', `${state.tranferPoint ? 1 : 0}`);
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
-      formData.append('payment_id', `${1}`);
+      formData.append('payment_id', `${state.paymentValue}`);
       await apiAddBill(formData);
       toast.showSuccess('Đặt hàng thành công!');
+      refreshCartStore();
       navigate(RouteConfig.HOME);
     } catch (error: any) {
       console.log(error);
       toast.showError(error);
     }
-  }, [cartStore.optionSelect, state.tranferPoint, state.addresActive, state.voucher]);
+  }, [cartStore.optionSelect, state.tranferPoint, state.addresActive, state.voucher, state.paymentValue]);
 
   const onChangePayment = useCallback((e: RadioChangeEvent) => {
     setState(prev => ({ ...prev, paymentValue: e.target.value }));

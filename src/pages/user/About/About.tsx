@@ -46,17 +46,16 @@ const About = () => {
 
 
   const images = [
-    "../../public/images/instagram-banner/01.jpg",
-    "../../public/images/instagram-banner/02.jpg",
-    "../../public/images/instagram-banner/03.jpg",
-    "../../public/images/instagram-banner/04.jpg",
-    "../../public/images/instagram-banner/05.jpg",
-    "../../public/images/instagram-banner/06.jpg",
-    "../../public/images/instagram-banner/07.jpg",
-    "../../public/images/instagram-banner/08.jpg",
-    "../../public/images/instagram-banner/09.jpg",
-    "../../public/images/instagram-banner/10.jpg",
-
+    "/images/instagram-banner/01.jpg",
+    "/images/instagram-banner/02.jpg",
+    "/images/instagram-banner/03.jpg",
+    "/images/instagram-banner/04.jpg",
+    "/images/instagram-banner/05.jpg",
+    "/images/instagram-banner/06.jpg",
+    "/images/instagram-banner/07.jpg",
+    "/images/instagram-banner/08.jpg",
+    "/images/instagram-banner/09.jpg",
+    "/images/instagram-banner/10.jpg",
   ];
 
   return (
@@ -73,13 +72,13 @@ const About = () => {
                   >
                     <div className="about-image relative md:m-3 md:p-3 md:mb-16">
                       <img
-                        src="../../public/images/about/burger.png"
+                        src="/images/about/burger.png"
                         alt="about-img"
                         className="lg:w-full lg:h-auto lg:p-7 md:ml-16 sm:w-full"
                       />
                       <div className="burger-text absolute top-0 left-0">
                         <img
-                          src="../../public/images/about/burger-text.png"
+                          src="/images/about/burger-text.png"
                           alt="shape-img"
                         />
                       </div>
@@ -177,14 +176,14 @@ const About = () => {
           className="main-cta-banner-2 section-padding bg-cover bg-no-repeat"
           style={{
             backgroundImage:
-              "url('../../../../public/images/main-cta-bg-2.jpg')",
+              "url('/images/main-cta-bg-2.jpg')",
           }}
         >
           <div className="tomato-shape-left animate-bounce">
-            <img src="../../public/images/tomato.png" alt="shape-img" />
+            <img src="/images/tomato.png" alt="shape-img" />
           </div>
           <div className="chili-shape-right animate-bounce">
-            <img src="../../public/images/chilli.png" alt="shape-img" />
+            <img src="/images/chilli.png" alt="shape-img" />
           </div>
           <div className="container mx-auto">
             <div className="main-cta-banner-wrapper-2 flex items-center justify-between mx-[129px]">
@@ -213,7 +212,7 @@ const About = () => {
               </button>
               <div className="delivery-man">
                 <img
-                  src="../../public/images/delivery-man-2.png"
+                  src="/images/delivery-man-2.png"
                   alt="img"
                   className="w-full h-auto max-h-[200px]"
                 />
@@ -283,7 +282,7 @@ const About = () => {
                       <div className="about-food-items hover:bg-white text-center rounded-2xl py-8 px-3 group relative overflow-hidden transition-all duration-500 ease-in-out transform hover:scale-105 hover:shadow-lg">
                         <div className="food-image mb-4">
                           <img
-                            src="../../public/images/about-food/pizza.png"
+                            src="/images/about-food/pizza.png"
                             alt="food-img"
                             className="w-3/4 h-auto mx-auto p-3 rounded-lg"
                           />
@@ -312,7 +311,7 @@ const About = () => {
                       <div className="about-food-items hover:bg-white text-center rounded-2xl py-8 px-3 group relative overflow-hidden transition-all duration-500 ease-in-out transform hover:scale-105 hover:shadow-lg">
                         <div className="food-image mb-4">
                           <img
-                            src="../../public/images/about-food/pizza.png"
+                            src="/images/about-food/pizza.png"
                             alt="food-img"
                             className="w-3/4 h-auto mx-auto p-3 rounded-lg"
                           />
@@ -341,7 +340,7 @@ const About = () => {
                       <div className="about-food-items hover:bg-white text-center rounded-2xl py-8 px-3 group relative overflow-hidden transition-all duration-500 ease-in-out transform hover:scale-105 hover:shadow-lg">
                         <div className="food-image mb-4">
                           <img
-                            src="../../public/images/about-food/pizza.png"
+                            src="/images/about-food/pizza.png"
                             alt="food-img"
                             className="w-3/4 h-auto mx-auto p-3 rounded-lg"
                           />
@@ -370,7 +369,7 @@ const About = () => {
                       <div className="about-food-items hover:bg-white text-center rounded-2xl py-8 px-3 group relative overflow-hidden transition-all duration-500 ease-in-out transform hover:scale-105 hover:shadow-lg">
                         <div className="food-image mb-4">
                           <img
-                            src="../../public/images/about-food/pizza.png"
+                            src="/images/about-food/pizza.png"
                             alt="food-img"
                             className="w-3/4 h-auto mx-auto p-3 rounded-lg"
                           />
@@ -407,7 +406,7 @@ const About = () => {
             <div className="xl:w-7/12 lg:w-9/12 w-full px-3">
               <div
                 className="burger-banner-items bg-cover bg-center text-center rounded-lg"
-                style={{ backgroundImage: "url('../../public/images/banner/burger-bg.png')" }}
+                style={{ backgroundImage: "url('/images/banner/burger-bg.png')" }}
               >
                 <div className="burger-content text-center py-10">
                   <h3 className="text-5xl sm:text-5xl sm:font-bold">today</h3>
@@ -420,21 +419,21 @@ const About = () => {
                 </div>
                 <div className="burger-image">
                   <img
-                    src="../../public/images/food/big-burger.png"
+                    src="/images/food/big-burger.png"
                     alt="food-img"
                     className="mx-auto max-w-full h-auto"
                   />
                 </div>
                 <div className="text-shape mt-4">
                   <img
-                    src="../../public/images/shape/pizza-text-2.png"
+                    src="/images/shape/pizza-text-2.png"
                     alt="shape-img"
                     className="mx-auto"
                   />
                 </div>
                 <div className="burger-text mt-2">
                   <img
-                    src="../../public/images/shape/burger-text.png"
+                    src="/images/shape/burger-text.png"
                     alt="shape-img"
                     className="mx-auto"
                   />
@@ -446,7 +445,7 @@ const About = () => {
             <div className="xl:w-5/12 lg:w-9/12 w-full px-3">
               <div
                 className="single-offer-items bg-cover bg-center p-5 relative rounded-lg style-2"
-                style={{ backgroundImage: "url('../../public/images/banner/pepsi-bg.png')" }}
+                style={{ backgroundImage: "url('/images/banner/pepsi-bg.png')" }}
               >
                 <div className="offer-content text-white">
                   <h5 className="text-xl">crispy, every bite taste</h5>
@@ -467,14 +466,14 @@ const About = () => {
                 </div>
                 <div className="offer-img absolute bottom-0 right-0">
                   <img
-                    src="../../public/images/offer/50percent-off-3.png"
+                    src="/images/offer/50percent-off-3.png"
                     alt="shape-img"
                     className="max-w-[100px] lg:max-w-[150px] h-auto"
                   />
                 </div>
                 <div className="roller-box absolute bottom-0 right-14">
                   <img
-                    src="../../public/images/food/roller-box.png"
+                    src="/images/food/roller-box.png"
                     alt="food-img"
                     className="max-w-[400px] lg:max-w-[400px] h-auto"
                   />
@@ -504,7 +503,7 @@ const About = () => {
                       <div
                         className="today-best-sale-image bg-cover h-48 md:h-64 lg:h-80"
                         style={{
-                          backgroundImage: `url('../../../../public/images/banner/best-sale-4.jpg')`,
+                          backgroundImage: `url('../..//images/banner/best-sale-4.jpg')`,
                         }}
                       ></div>
                     </div>
@@ -514,18 +513,18 @@ const About = () => {
               <div className="w-full lg:w-4/12 px-2 p-2">
                 <div
                   className="best-sale-content style-2 bg-cover h-full"
-                  style={{ backgroundImage: "url('../../../../public/images/shape.png')" }}
+                  style={{ backgroundImage: "url('../..//images/shape.png')" }}
                 >
                   <div className="burger-shape">
                     <img
-                      src="../../../../public/images/shape/fry-shape-4.png"
+                      src="../..//images/shape/fry-shape-4.png"
                       alt="shape-img"
                       className="w-full"
                     />
                   </div>
                   <div className="fry-shape">
                     <img
-                      src="../../../../public/images/shape/burger-shape-4.png"
+                      src="../..//images/shape/burger-shape-4.png"
                       alt="shape-img"
                       className="w-full"
                     />
@@ -660,7 +659,7 @@ const About = () => {
 
       <section
         className="food-processing-section section-padding fix bg-cover"
-        style={{ backgroundImage: "url('../../../../public/images/shape/about-food-bg.png')" }}
+        style={{ backgroundImage: "url('../..//images/shape/about-food-bg.png')" }}
       >
         <div className="container mx-auto">
           <div className="section-title text-center mb-8">
@@ -681,7 +680,7 @@ const About = () => {
                 <div className="food-processing-items style-2 text-center">
                   <div className="food-processing-image">
                     <img
-                      src="../../../../public/images/choose/01.png"
+                      src="../..//images/choose/01.png"
                       alt="img"
                       className="mx-auto"
                     />
@@ -705,7 +704,7 @@ const About = () => {
                 <div className="food-processing-items style-2 text-center active">
                   <div className="food-processing-image">
                     <img
-                      src="../../../../public/images/choose/02.png"
+                      src="../..//images/choose/02.png"
                       alt="img"
                       className="mx-auto"
                     />
@@ -730,7 +729,7 @@ const About = () => {
                 <div className="food-processing-items style-2 text-center">
                   <div className="food-processing-image">
                     <img
-                      src="../../../../public/images/choose/03.png"
+                      src="../..//images/choose/03.png"
                       alt="img"
                       className="mx-auto"
                     />
@@ -755,13 +754,13 @@ const About = () => {
 
       <section className="testimonial-section relative section-padding section-bg">
         <div className="burger-shape absolute top-0 left-0">
-          <img src="../../../../public/images/shape/burger-shape-3.png" alt="burger-shape" />
+          <img src="../..//images/shape/burger-shape-3.png" alt="burger-shape" />
         </div>
         <div className="fry-shape absolute top-0 right-0">
-          <img src="../../../../public/images/shape/fry-shape-2.png" alt="fry-shape" />
+          <img src="../..//images/shape/fry-shape-2.png" alt="fry-shape" />
         </div>
         <div className="pizza-shape absolute bottom-0 left-0">
-          <img src="../../../../public/images/shape/pizzashape.png" alt="pizza-shape" />
+          <img src="../..//images/shape/pizzashape.png" alt="pizza-shape" />
         </div>
         <div className="container mx-auto">
           <div className="testimonial-wrapper style-2">
@@ -800,7 +799,7 @@ const About = () => {
                       <div
                         className="client-img bg-cover bg-center h-24 w-24 rounded-full"
                       >
-                        <img src="../../../../public/images/client/01.jpg" alt="" className="rounded-full"/>
+                        <img src="../..//images/client/01.jpg" alt="" className="rounded-full"/>
                       </div>
                     </div>
                   </div>
@@ -809,7 +808,7 @@ const About = () => {
                       <div
                         className="client-img bg-cover bg-center h-24 w-24 rounded-full"
                       >
-                        <img src="../../../../public/images/client/02.jpg" alt="" className="rounded-full"/>
+                        <img src="../..//images/client/02.jpg" alt="" className="rounded-full"/>
                       </div>
                     </div>
                   </div>
@@ -818,7 +817,7 @@ const About = () => {
                       <div
                         className="client-img bg-cover bg-center h-24 w-24 rounded-full"
                       >
-                        <img src="../../../../public/images/client/03.jpg" alt="" className="rounded-full"/>
+                        <img src="../..//images/client/03.jpg" alt="" className="rounded-full"/>
                       </div>
                     </div>
                   </div>
@@ -833,7 +832,7 @@ const About = () => {
       <section
         className="booking-section mt-0 section-padding bg-cover bg-center mx-auto sm:px-4 lg:px-16"
         style={{
-          backgroundImage: "url('../../../../public/images/main-bg.jpg')",
+          backgroundImage: "url('../..//images/main-bg.jpg')",
         }}
       >
         <div className="container mx-auto">
