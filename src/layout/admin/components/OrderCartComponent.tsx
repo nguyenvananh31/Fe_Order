@@ -34,6 +34,7 @@ interface IState {
     showConfirmPayment: boolean;
     showModal: boolean;
     billOnlinePro: any[];
+    billNameIds: any;
 }
 
 const initState: IState = {
@@ -49,6 +50,10 @@ const initState: IState = {
     showConfirmPayment: false,
     showModal: false,
     billOnlinePro: [],
+    billNameIds: {
+        name: '',
+        ids: []
+    }
 }
 
 interface ITotal {
@@ -125,9 +130,31 @@ export default function OrderCartComponent({ id }: Props) {
         if (!id) return;
         const fetchData = async () => {
             try {
-                setState(prev => ({ ...prev, loading: true }));
+                setState(() => ({ ...initState, loading: true }));
                 const res = await apiGetTableDetail(id);
-                setState(prev => ({ ...prev, data: res?.data[0]?.bill_details || [], loading: false, billDetail: res?.data[0] }));
+                setState(prev => {
+                    const billNameIds = res?.data[0].tables.reduce((acc: any, curr: any, index: number, arr: any[]) => {
+                        if (arr.length == index + 1) {
+                            let ids = [...acc.ids, curr.id];
+                            return {
+                                name: acc.name + curr?.table,
+                                ids
+                            };
+                        }
+                        return {
+                            name: acc.name + curr?.table + ' - ',
+                            ids: [...acc.ids, curr.id]
+                        };
+                    }, { name: '', ids: [] });
+                    showManageOrder(undefined, billNameIds.ids);
+                    return {
+                        ...prev, data: res?.data[0]?.bill_details || [],
+                        loading: false, billDetail: res?.data[0], billNameIds
+                    }
+                });
+                if (option === 3) {
+                    getApiOrderProCart(res?.data[0]?.ma_bill || '');
+                }
             } catch (error: any) {
                 setState(prev => ({ ...prev, loading: false }));
                 toast.showError(error);
@@ -420,7 +447,7 @@ export default function OrderCartComponent({ id }: Props) {
                 voucher: values.voucher || undefined
             }
             setState(prev => ({ ...prev, loadingBill: true }));
-            fetchApiBillDetail();
+            await fetchApiBillDetail();
             await apiSaveBill(body);
             setState(prev => ({ ...prev, loadingBill: false, showConfirmPayment: false, showModal: true }));
             showManageOrder(true);
@@ -454,12 +481,7 @@ export default function OrderCartComponent({ id }: Props) {
                         <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
                             <p className="font-bold">Số bàn:
-                                {state.billDetail?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
-                                    if (arr.length == index + 1) {
-                                        return acc + curr?.table;
-                                    }
-                                    return acc + curr?.table + ' - ';
-                                }, '')}
+                                {state.billNameIds.name}
                             </p>
                         </Flex>
                         {/* <Flex gap={8} justify="center" align="center">

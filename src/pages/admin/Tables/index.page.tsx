@@ -34,7 +34,7 @@ export default function TablePage() {
                     overflowX: 'hidden'
                 }}>
                     <Row gutter={[20, 16]} className="px-6 py-6" justify={'space-around'}>
-                        <Col span={15}
+                        <Col span={state.showManageOrder ? 14 : 16}
                         // className="flex gap-2 max-sm:flex-col"
                         >
                             <AutoComplete
@@ -59,7 +59,10 @@ export default function TablePage() {
                                 >Làm mới</Button>
                             </div> */}
                         </Col>
-                        <Col span={9}>
+                        <Col span={state.showManageOrder ? 3 : 4}>
+                            <Button onClick={hooks.handleRefreshTable} size="large" icon={<UndoOutlined />}>{state.showManageOrder || 'Làm mới'}</Button>
+                        </Col>
+                        <Col span={state.showManageOrder ? 7 : 4}>
                             <Button
                                 size="large"
                                 type='primary'
@@ -70,33 +73,36 @@ export default function TablePage() {
                             </Button>
                         </Col>
                         {
-                            !!state.data.length && state.data.map((item: any) => (
-                                <Col key={item.id}>
-                                    <Card
-                                        className={`border ${item.reservation_status == EStatusTable.OPEN ? 'border-sky-600 bg-sky-100' : 'border-ghost'} cursor-pointer`}
-                                        onClick={() => hooks.openModalTable(item.id, item.reservation_status)}
-                                        styles={{
-                                            body: {
-                                                padding: 0
-                                            }
-                                        }}
-                                    >
-                                        <div className="px-2 py-2 w-[148px] h-[120px] flex flex-col justify-between">
-                                            <div>
-                                                Bàn {item.table}
+                            !!state.data.length && state.data.map((item: any) => {
+                                const styleStatus = item.reservation_status == EStatusTable.OPEN ? state.selectedItemIds?.includes(item.id) ? 'border-purple bg-purple' : 'border-sky-600 bg-sky-100' : 'border-ghost';
+                                return (
+                                    <Col key={item.id}>
+                                        <Card
+                                            className={`border ${styleStatus} cursor-pointer`}
+                                            onClick={() => hooks.openModalTable(item.id, item.reservation_status)}
+                                            styles={{
+                                                body: {
+                                                    padding: 0
+                                                }
+                                            }}
+                                        >
+                                            <div className="px-2 py-2 w-[148px] h-[120px] flex flex-col justify-between">
+                                                <div>
+                                                    Bàn {item.table}
+                                                </div>
+                                                {/* {
+                                                    item.reservation_status == EStatusTable.OPEN && (
+                                                        <div className="flex gap-4 justify-between">
+                                                            <span>2h20</span>
+                                                            <span>1.000.000d</span>
+                                                        </div>
+                                                    )
+                                                } */}
                                             </div>
-                                            {/* {
-                                                item.reservation_status == EStatusTable.OPEN && (
-                                                    <div className="flex gap-4 justify-between">
-                                                        <span>2h20</span>
-                                                        <span>1.000.000d</span>
-                                                    </div>
-                                                )
-                                            } */}
-                                        </div>
-                                    </Card>
-                                </Col>
-                            ))
+                                        </Card>
+                                    </Col>
+                                )
+                            })
                         }
                         <Col>
                             <Card
@@ -117,7 +123,7 @@ export default function TablePage() {
                             </Card>
                         </Col>
                         <Col span={24}>
-                            <Pagination defaultCurrent={state.pageIndex} total={state.total} align="end" onChange={hooks.handlePageChange} />
+                            <Pagination current={state.pageIndex} pageSize={state.pageSize} total={state.total} align="end" onChange={hooks.handlePageChange} />
                         </Col>
                     </Row>
                 </Splitter.Panel>

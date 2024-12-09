@@ -281,7 +281,7 @@ const Bill: React.FC = () => {
       </div>
       {
         state.showModal &&
-        <BillModel onClose={handleDismissModal} onRefresh={refreshPage} itemId={state.selectedItemId} data={state.bill} />
+        <BillModel isClient onClose={handleDismissModal} onRefresh={refreshPage} itemId={state.selectedItemId} data={state.bill} />
       }
     </>
   );

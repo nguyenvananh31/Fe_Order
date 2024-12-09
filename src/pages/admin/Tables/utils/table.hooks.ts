@@ -16,7 +16,7 @@ interface IState {
     pageSize: number;
     pageIndex: number;
     total: number;
-    selectedItem?: any;
+    selectedItemIds?: any[];
     refresh: boolean;
     showModalAdd: boolean;
     loadingPro: boolean;
@@ -40,6 +40,7 @@ const initState: IState = {
     pageIndexPro: 1,
     showManageOrder: false,
     showModalOpenTable: false,
+    selectedItemIds: [],
 }
 
 export default function useTable() {
@@ -65,14 +66,18 @@ export default function useTable() {
             EventBus.getInstance().events.subscribe((data: BaseEventPayload<any>) => {
                 if (data.type === EventBusName.ON_SHOW_MANAGE_ORDER) {
                     setState(prev => {
-                        const refresh = data.payload ? !prev.refresh : prev.refresh;
-                        if (prev.showManageOrder == !data.payload) {
-                            return { ...prev, refresh };
+                        const state = {
+                            refresh: data.payload.isOpen ? !prev.refresh : prev.refresh,
+                            selectedItemIds: !data.payload?.isOpen ? (data.payload?.ids || prev?.selectedItemIds) : prev?.selectedItemIds,
+                            showManageOrder: typeof data.payload?.isOpen !== 'undefined' ? !data.payload?.isOpen : prev.showManageOrder,
+                        };
+                        if (prev.showManageOrder == !data.payload.isOpen) {
+                            return { ...prev, ...state };
                         }
                         if (!prev.showManageOrder) {
                             fetchApiPros();
                         }
-                        return { ...prev, showManageOrder: !data.payload, refresh };
+                        return { ...prev, ...state };
                     });
                 }
             })
@@ -137,11 +142,15 @@ export default function useTable() {
         setState(prev => ({ ...initState, refresh: !prev.refresh }));
     }, []);
 
+    const handleRefreshTable = useCallback(() => {
+        setState(prev => ({ ...prev, refresh: !prev.refresh, pageIndex: 1 }));
+    }, []);
+
     const openModalTable = useCallback(async (id: number, type?: string) => {
         if (type && type !== EStatusTable.OPEN) {
             return;
         }
-        // setState(prev => ({ ...prev, selectedItemId: id }));
+        setState(prev => ({ ...prev, selectedItemIds: [id] }));
         showSideOder(true, id);
     }, []);
 
@@ -209,5 +218,6 @@ export default function useTable() {
         handleResize,
         handleShowModalOpenTable,
         handleOpenManyTable,
+        handleRefreshTable
     }
 }

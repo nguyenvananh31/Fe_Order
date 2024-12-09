@@ -1,14 +1,13 @@
-import { Button, Col, Image, Modal, Row, Space, Tag } from "antd";
-import { ColumnProps } from "antd/es/table";
-import { useEffect, useMemo, useState } from "react";
-import { IBill, IBillDetail } from "../../../../interFaces/bill";
-import { apiGetOneBillDetail } from "../utils/bill.service";
-import { EOrderType } from "../../../../constants/enum";
-import { convertPriceVND } from "../../../../utils/common";
 import { ZoomInOutlined } from "@ant-design/icons";
-import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { Button, Col, Image, Modal, Row, Space, Tag, Timeline } from "antd";
+import { ColumnProps } from "antd/es/table";
 import { Table } from "antd/lib";
-import useToast from "../../../../hooks/useToast";
+import { useEffect, useMemo, useState } from "react";
+import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { EOrderType } from "../../../../constants/enum";
+import { IBill, IBillDetail } from "../../../../interFaces/bill";
+import { convertPriceVND } from "../../../../utils/common";
+import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
 
 const statusBill: any = {
     pending: { color: 'magenta', title: 'Đang chờ' },
@@ -24,25 +23,30 @@ interface IProps {
     onRefresh: () => void;
     onClose: () => void;
     data?: IBill;
+    isClient?: boolean;
 }
 
 interface IState {
     loading: boolean;
     loadingBtn: boolean;
+    loadingShip: boolean;
     isEdit: boolean;
     item?: IBillDetail[];
+    shipping: any[];
+    shipper?: any;
 }
 
 const initState: IState = {
     loading: true,
     loadingBtn: false,
+    loadingShip: false,
     isEdit: false,
+    shipping: [],
 }
 
-export default function BillModel({ onClose, itemId = undefined, data }: IProps) {
+export default function BillModel({ onClose, itemId = undefined, data, isClient }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
-    const toast = useToast();
 
     useEffect(() => {
         if (!itemId) {
@@ -52,14 +56,30 @@ export default function BillModel({ onClose, itemId = undefined, data }: IProps)
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
-                const res = await apiGetOneBillDetail(itemId!);
-                if (res.data) {
-                    setState(prev => ({ ...prev, loading: false, item: res.data }));
-                }
+                const res: any = await apiGetOneBillDetail(itemId!, isClient);
+                setState(prev => ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data }));
             } catch (error) {
                 console.log(error);
-                toast.showError(error as any);
                 setState(prev => ({ ...prev, isEdit: true, loading: false }));
+            }
+        }
+        fetchApi();
+    }, []);
+
+    useEffect(() => {
+        if (!itemId || !isClient) {
+            setState(prev => ({ ...prev, isEdit: true }));
+            return;
+        }
+        const fetchApi = async () => {
+            try {
+                setState(prev => ({ ...prev, loadingShip: true }));
+                const res: any = await apiGetOneBillShipping(itemId!);
+                const shipper = res?.history.length > 0 ? res?.history[0].shipper : {};
+                setState(prev => ({ ...prev, loadingShip: false, shipping: res?.history, shipper }));
+            } catch (error) {
+                console.log(error);
+                setState(prev => ({ ...prev, isEdit: true, loading: false, shipping: [] }));
             }
         }
         fetchApi();
@@ -207,6 +227,30 @@ export default function BillModel({ onClose, itemId = undefined, data }: IProps)
                             </Col>
                         </Row>
                     </Col>
+                    {
+                        isClient && (
+                            <>
+                                <Col span={12}>
+                                    <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>
+                                    <Timeline
+                                        className="mt-2"
+                                        items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
+                                    />
+                                </Col>
+                                <Col span={12}>
+                                    <span className="text-[15px] font-bold">Thông tin người giao hàng</span>
+                                    <div className="flex">
+                                        <span className="text-primary font-bold mr-2">Tên shipper:</span>
+                                        <span>{state?.shipper?.name || state?.shipper?.email || 'Chưa có thông tin'}</span>
+                                    </div>
+                                    <div className="flex">
+                                        <span className="text-primary font-bold mr-2">Số điện thoại:</span>
+                                        <span>{state?.shipper?.phone || 'Chưa có thông tin'}</span>
+                                    </div>
+                                </Col>
+                            </>
+                        )
+                    }
                     <Col span={24}>
                         <div className='flex items-center justify-between mb-2'>
                             <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
