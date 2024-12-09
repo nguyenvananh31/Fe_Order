@@ -60,12 +60,12 @@ const Home = () => {
         <h2 className='text-4xl text-mainColor2 block pb-5 font-bold'>Danh mục phổ biến</h2>
       </div>
       <SliderCate cates={catesMemo} loadingCate={state.loadingCate} />
-        {
-          state.loadingPro && 
-          <div className='flex justify-center items-center min-h-20'>
-            <Spin />
-          </div>
-        }
+      {
+        state.loadingPro &&
+        <div className='flex justify-center items-center min-h-20'>
+          <Spin />
+        </div>
+      }
       <div className="container max-w-[1140px] grid grid-cols-4 gap-10 mx-auto mt-16">
         {
           state.proDetails.map((item, index) => (
@@ -77,7 +77,7 @@ const Home = () => {
         <div className="max-w-5xl px-4 mx-auto sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-xl font-medium text-gray-900">
-              Trusted by world class creators
+              ĐƯỢC NHỮNG NHÀ SÁNG TẠO ĐỈNH THẾ GIỚI TIN TƯỞNG
             </h2>
           </div>
           <div className="grid items-center grid-cols-2 gap-10 mt-12 md:grid-cols-4 sm:gap-y-16">

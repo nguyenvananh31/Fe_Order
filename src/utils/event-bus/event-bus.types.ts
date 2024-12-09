@@ -13,4 +13,6 @@ export enum EventBusName {
   LOGOUT,
   INVALID_TOKEN,
   LOGOUT_HANDLE,
+  ON_SHOW_MANAGE_ORDER,
+  ADD_PRO_TO_TABLE
 }

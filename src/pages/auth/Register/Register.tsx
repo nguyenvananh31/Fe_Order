@@ -2,6 +2,7 @@ import "antd/dist/reset.css";
 import { Link } from "react-router-dom";
 import { Form, Input, Button, Checkbox, } from 'antd';
 import RegisterForm from "./utils/RegisterForm.hooks";
+import { PhoneOutlined } from "@ant-design/icons";
 const Register = () => {
     const { ...hook } = RegisterForm();
 
@@ -19,10 +20,10 @@ const Register = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
                     <div className="relative">
                         <div className="w-full max-w-xl xl:w-full xl:mx-auto xl:pr-24 xl:max-w-xl">
-                            <h3 className="text-4xl font-bold text-white">
-                                Join 35k+ web professionals &amp;{" "}
+                            {/* <h3 className="text-4xl font-bold text-white">
+                                Tham gia cùng trang web  &amp;{" "}
                                 <br className="hidden xl:block" />
-                                build your website
+                                xây dựng trang web của bạn
                             </h3>
                             <ul className="grid grid-cols-1 mt-10 sm:grid-cols-2 gap-x-8 gap-y-4">
                                 <li className="flex items-center space-x-3">
@@ -105,7 +106,7 @@ const Register = () => {
                                         Design Files Included{" "}
                                     </span>
                                 </li>
-                            </ul>
+                            </ul> */}
                         </div>
                     </div>
                 </div>
@@ -167,13 +168,46 @@ const Register = () => {
                                                 message: "Tên không được để trống, vui lòng nhập lại!",
                                             },
                                             {
-                                                min: 2,
-                                                message: "Tên phải dài hơn 2 ký tự, vui lòng nhập lại!",
+                                                min: 5,
+                                                message: "Tên phải dài hơn 5 ký tự, vui lòng nhập lại!",
                                             },
                                         ]}
                                     >
                                         <Input
                                             placeholder="Nguyễn Văn A"
+                                            className=" block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                                        />
+                                    </Form.Item>
+                                </div>
+                            </div>
+
+                            <div className="animate__animated animate__backInRight w-full relative text-gray-400 focus-within:text-gray-600">
+                                <label
+                                    htmlFor=""
+                                    className=" text-base font-medium text-gray-900 "
+                                >
+                                    Số điện thoại
+                                </label>
+                                <div className="flex w-full items-center">
+                                    <div className="absolute z-10 inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <PhoneOutlined className="text-lg"/>
+                                    </div>
+                                    <Form.Item
+                                        className="w-full"
+                                        name="phone_number"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Số điện thoại là bắt buộc, vui lòng nhập lại!",
+                                            },
+                                            {
+                                                pattern: /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/,
+                                                message: 'Số điện thoại không đúng định dạng!',
+                                            },
+                                        ]}
+                                    >
+                                        <Input
+                                            placeholder="+84"
                                             className=" block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
                                         />
                                     </Form.Item>
@@ -338,7 +372,7 @@ const Register = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "You must agree to the privacy policy & terms!",
+                                            message: "Bạn phải đồng ý với chính sách và điều khoản về quyền riêng tư!",
                                         },
                                     ]}
                                 >

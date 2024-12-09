@@ -60,7 +60,11 @@ const initState: IState = {
     showDrawer: false,
 }
 
-const OrderPage = () => {
+interface IProps {
+    isAdmin?: boolean;
+}
+
+const OrderPage = ({ isAdmin }: IProps) => {
     const [state, setState] = useState<IState>(initState);
     const toast = useToast();
     const navigate = useNavigate();
@@ -436,7 +440,7 @@ const OrderPage = () => {
             </Content>
             {/* Sider order */}
             {
-                !isMobile && (
+                !isMobile && !isAdmin && (
                     <SiderOder
                         onToggle={handleToggleSider}
                         cart={cartOrderProMemo}
@@ -461,7 +465,7 @@ const OrderPage = () => {
             }
         </Layout>
         {/* Modal thông tin thanh toán */}
-        {state.showModal && <ModalPayment
+        {state.showModal && !isAdmin && <ModalPayment
             onCancel={handleDismissModal}
             billPros={state.billOnlinePro}
             billDetail={state.billDetail}
@@ -469,7 +473,7 @@ const OrderPage = () => {
         />
         }
         {/* Modal xác nhận thanh toán */}
-        {state.showConfirmPayment && <ModalConfirmPayment
+        {state.showConfirmPayment && !isAdmin && <ModalConfirmPayment
             onCancel={handleDismissModal}
             form={form}
             onSubmit={handleSubmitForm}
@@ -478,27 +482,31 @@ const OrderPage = () => {
         />
         }
         {/* Drawer sider */}
-        <DrawerOrder
-            open={state.showDrawer}
-            onToggleDrawer={handleToggleDrawer}
-            isMobile={isMobile}
-            cart={cartOrderProMemo}
-            loading={state.loadingCart}
-            onToggleCheckBox={handleToggleCheckAll}
-            onDelCartPro={handleDelCartPro}
-            checked={checkedOrderMemo}
-            onIncreaseCart={handleAddPro}
-            onDecreaseCart={handleDecraesePro}
-            onCheckedPro={handleCheckedPro}
-            onShowPayment={handleShowModalConfirm}
-            loadingBtn={state.loadingBtn}
-            onOrderPro={handleSumitOrderPros}
-            loadBill={state.loadingBill}
-            billDetail={state.billDetail}
-            billOnlinePro={state.billOnlinePro}
-            onFetchBill={handleClickBill}
-            orderId={orderId || ''}
-        />
+        {
+            !isAdmin && (
+                <DrawerOrder
+                    open={state.showDrawer}
+                    onToggleDrawer={handleToggleDrawer}
+                    isMobile={isMobile}
+                    cart={cartOrderProMemo}
+                    loading={state.loadingCart}
+                    onToggleCheckBox={handleToggleCheckAll}
+                    onDelCartPro={handleDelCartPro}
+                    checked={checkedOrderMemo}
+                    onIncreaseCart={handleAddPro}
+                    onDecreaseCart={handleDecraesePro}
+                    onCheckedPro={handleCheckedPro}
+                    onShowPayment={handleShowModalConfirm}
+                    loadingBtn={state.loadingBtn}
+                    onOrderPro={handleSumitOrderPros}
+                    loadBill={state.loadingBill}
+                    billDetail={state.billDetail}
+                    billOnlinePro={state.billOnlinePro}
+                    onFetchBill={handleClickBill}
+                    orderId={orderId || ''}
+                />
+            )
+        }
     </>
 }
 

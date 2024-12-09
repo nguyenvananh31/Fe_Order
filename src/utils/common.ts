@@ -38,6 +38,6 @@ export function formatDurationDate(date: Date): string {
 }
 
 //Lấy đường dẫn qr
-export function getUrlQrCheck() {
-  return import.meta.env.VITE_URL  + '/qr-check';
+export function getUrlQrCheck(id: string) {
+  return import.meta.env.VITE_URL  + '/qr-check/' + id;
 }

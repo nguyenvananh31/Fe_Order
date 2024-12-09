@@ -3,7 +3,8 @@ import ApiUtils from "../../../../utils/api/api.utils"
 const apiName = {
     table: '/api/admin/tables',
     tableOder: '/api/admin/bill_table',
-    aciveItem: '/api/admin/acive_item'
+    aciveItem: '/api/admin/acive_item',
+    getPros: '/api/client/products_details',
 }
 
 export const apiGetTables = async (params?: any) => {
@@ -22,4 +23,8 @@ export const apiAddTable = async (body: any) => {
 
 export const apiActiveItem = async (body: any) => {
     return await ApiUtils.put<any, any>(apiName.aciveItem, body);
+}
+
+export const apiGetAllProduct = async (params?: any) => {
+    return await ApiUtils.fetch<any, any>(apiName.getPros, params);
 }

@@ -5,10 +5,10 @@ import { TabsProps } from "antd/lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { useIsMobile } from "../../hooks/useIsMobile";
-import useToastMessage from "../../hooks/useToastMessage";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
 import OrderCartComponent from "./components/OrderCartComponent";
+import { showManageOrder } from "../../utils/event-bus/event-bus.events";
 
 interface ISate {
     loading: boolean;
@@ -30,7 +30,6 @@ export default function SidebarOder() {
 
     const isMobile = useIsMobile();
     const [state, setState] = useState<ISate>(innitState);
-    const {contextHolder, showToast} = useToastMessage();
     const subscriptions = useRef(new Subscription());
 
     // useEffect(() => {
@@ -75,7 +74,8 @@ export default function SidebarOder() {
     };
 
     const closeNavRight = useCallback(() => {
-        setState(prev => ({ ...prev, isOpenRight: false }))
+        showManageOrder(true);
+        setState(prev => ({ ...prev, isOpenRight: false }));
     }, []);
 
     const items: TabsProps['items'] = [
@@ -83,32 +83,36 @@ export default function SidebarOder() {
         //     key: '1',
         //     label: <span className="pr-2">Giỏ hàng</span>,
         //     icon: <ShoppingCartOutlined />,
-        //     children: <ProCartComponent id={state.orderId} showToastMes={showToast} />,
+        //     children: <ProCartComponent id={state.orderId} />,
         // },
         {
             key: '2',
             label: <span className="pr-2">Danh sách món ăn</span>,
             icon: <InboxOutlined />,
-            children: <OrderCartComponent id={state.orderId} showToastMes={showToast} />,
+            children: <OrderCartComponent id={state.orderId} />,
         },
     ];
 
     return (
         <>
-        {contextHolder}
-        <Sider
-            collapsed={!state.isOpenRight}
-            collapsedWidth={0}
-            width={isMobile ? '100%' : 350}
-            className="drop-shadow-primary"
-            style={{
-                position: "sticky",
-                top: 0,
-                left: 0,
-                bottom: 0,
-            }}
-            theme="light"
-        >
+            <Sider
+                collapsed={!state.isOpenRight}
+                collapsedWidth={0}
+                width={isMobile ? '100%' : 330}
+                className="drop-shadow-primary"
+                style={{
+                    position: "sticky",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    height: '100vh',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    msOverflowStyle: 'none', /* Ẩn thanh cuộn cho IE và Edge */
+                    scrollbarWidth: 'none'   /* Ẩn thanh cuộn cho Firefox */
+                }}
+                theme="light"
+            >
                 <Tabs
                     defaultActiveKey="2"
                     items={items}
@@ -116,10 +120,10 @@ export default function SidebarOder() {
                     tabBarExtraContent={{ left: <CloseOutlined onClick={closeNavRight} className="cursor-pointer p-2" /> }}
                     className="pt-4 h-[100vh]"
                     style={{
-                        height: '100%'
+                        height: '100%',
                     }}
                 />
-        </Sider>
+            </Sider>
         </>
     )
 }

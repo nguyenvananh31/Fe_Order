@@ -126,7 +126,7 @@ export default function CatePage() {
                 title: 'Trạng thái thanh toán',
                 dataIndex: 'payment_status',
                 align: 'center',
-                width: '15%',
+                width: 'max-content',
                 render: (_: any, item: IBill) => (
                     <Tag color={statusPayment[item.payment_status]?.color} className={`min-w-[80px]`} >
                         {statusPayment[item.payment_status]?.title}
@@ -146,7 +146,7 @@ export default function CatePage() {
             },
         ];
         return tblColumns;
-    }, [state.pageIndex, state.pageSize])
+    }, [state.pageIndex, state.pageSize]);
 
     return (
         <>
@@ -243,7 +243,7 @@ export default function CatePage() {
             </div>
             {
                 state.showModal &&
-                <BillModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} data={state.bill} />
+                <BillModel onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} data={state.bill} />
             }
             {/* Update status */}
             <Modal

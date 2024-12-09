@@ -5,6 +5,8 @@ import ApiUtils from "../../../../utils/api/api.utils"
 const apiName = {
     bill: '/api/admin/bills',
     billDetail: '/api/admin/billsDetail',
+    billDetailClient: '/api/client/billdetail',
+    billShipping: '/api/client/shipping'
 }
 
 export const apiGetBils = async (params?: any) => {
@@ -17,8 +19,13 @@ export const apiGetOneBill = async (id: number) => {
     return res;
 }
 
-export const apiGetOneBillDetail = async (id: number) => {
-    const res = await ApiUtils.fetch<any, ResponeBase<IBillDetail[]>>(`${apiName.billDetail}/${id}`);
+export const apiGetOneBillDetail = async (id: number, isClient?: boolean) => {
+    const res = await ApiUtils.fetch<any, ResponeBase<IBillDetail[]>>(`${isClient ? apiName.billDetailClient : apiName.billDetail}/${id}`);
+    return res;
+}
+
+export const apiGetOneBillShipping = async (id: number) => {
+    const res = await ApiUtils.fetch<any, any>(`${apiName.billShipping}/${id}`);
     return res;
 }
 

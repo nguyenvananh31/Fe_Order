@@ -42,3 +42,43 @@
         background-color: transparent;
     }
 }
+
+.customer-checkbox {
+    .ant-checkbox-wrapper {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 6px 4px;
+        border-radius: 5px;
+        .ant-checkbox.ant-wave-target {
+            position: absolute;
+            top: 0;
+            left: 0;
+            .ant-checkbox-inner {
+                padding: 4px;
+                width: 80px;
+                height: 80px;
+            }
+            .ant-checkbox-inner::after {
+                content: unset;
+            }
+            &.ant-checkbox-disabled .ant-checkbox-inner {
+                background-color: #e0f2fe;
+                border: 1px solid #0284c7;
+            }
+        }
+        & > span:last-child {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: black;
+            margin: 4px;
+        }
+        &.ant-checkbox-wrapper-checked {
+            & span:last-child {
+                color: white;
+            }
+        }
+    }
+    
+}
