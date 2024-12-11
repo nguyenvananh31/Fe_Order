@@ -1,20 +1,21 @@
-import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
+import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, SettingOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
+import { Button, Card, Checkbox, Divider, Dropdown, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { fallBackImg, getImageUrl } from "../../../constants/common";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 import useToast from "../../../hooks/useToast";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
+import ModalConfirmPayment from "../../../pages/user/Order/components/ModalConfirmPayment";
+import ModalPayment from "../../../pages/user/Order/components/ModalPayment";
 import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "../../../pages/user/Order/utils/order.service";
 import ApiUtils from "../../../utils/api/api.utils";
 import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../utils/common";
 import { BaseEventPayload, EventBusName } from "../../../utils/event-bus";
 import EventBus from "../../../utils/event-bus/event-bus";
 import { showManageOrder } from "../../../utils/event-bus/event-bus.events";
-import ModalConfirmPayment from "../../../pages/user/Order/components/ModalConfirmPayment";
-import { useIsMobile } from "../../../hooks/useIsMobile";
-import ModalPayment from "../../../pages/user/Order/components/ModalPayment";
+import ModalOpenTable from "../../../pages/user/Table/components/ModalOpenTable";
 
 type Props = {
     id?: number;
@@ -35,6 +36,10 @@ interface IState {
     showModal: boolean;
     billOnlinePro: any[];
     billNameIds: any;
+    showModalOpenTable: boolean;
+    isEdit: number;
+    options: any[];
+    refresh: boolean;
 }
 
 const initState: IState = {
@@ -53,7 +58,11 @@ const initState: IState = {
     billNameIds: {
         name: '',
         ids: []
-    }
+    },
+    showModalOpenTable: false,
+    isEdit: 0,
+    options: [],
+    refresh: false,
 }
 
 interface ITotal {
@@ -133,9 +142,9 @@ export default function OrderCartComponent({ id }: Props) {
                 setState(() => ({ ...initState, loading: true }));
                 const res = await apiGetTableDetail(id);
                 setState(prev => {
-                    const billNameIds = res?.data[0].tables.reduce((acc: any, curr: any, index: number, arr: any[]) => {
+                    const billNameIds = res?.data[0]?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
                         if (arr.length == index + 1) {
-                            let ids = [...acc.ids, curr.id];
+                            let ids = acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id];
                             return {
                                 name: acc.name + curr?.table,
                                 ids
@@ -143,7 +152,7 @@ export default function OrderCartComponent({ id }: Props) {
                         }
                         return {
                             name: acc.name + curr?.table + ' - ',
-                            ids: [...acc.ids, curr.id]
+                            ids: acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id]
                         };
                     }, { name: '', ids: [] });
                     showManageOrder(undefined, billNameIds.ids);
@@ -162,7 +171,7 @@ export default function OrderCartComponent({ id }: Props) {
             }
         }
         fetchData();
-    }, [id]);
+    }, [id, state.refresh]);
 
     //Handle add pro to cart order
     useEffect(() => {
@@ -432,7 +441,7 @@ export default function OrderCartComponent({ id }: Props) {
     }, []);
 
     const handleDismissModal = useCallback(() => {
-        setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false }));
+        setState(prev => ({ ...prev, showModal: false, showConfirmPayment: false, showModalOpenTable: false }));
     }, []);
 
     const handleSubmitForm = useCallback(() => { form.submit() }, []);
@@ -460,6 +469,41 @@ export default function OrderCartComponent({ id }: Props) {
 
     const handleShowModalConfirm = useCallback(() => {
         setState(prev => ({ ...prev, showConfirmPayment: true }));
+    }, []);
+
+    const handleShowModalTable = useCallback((isEdit: number, options: any = []) => () => {
+        setState(prev => ({...prev, showModalOpenTable: true, isEdit, options }));
+    }, []);
+
+    const handleSubmitTable = useCallback((ids: any[], type?: number) => async () => {
+        console.log('ids: ', ids);
+        try {
+            if (type == 1) {
+                await apiUnincreaseTable({
+                    bill_id: state?.billDetail?.id,
+                    tableIds: ids
+                });
+            }else {
+                await apiIncreaseTable({
+                    bill_id: state?.billDetail?.id,
+                    tableIds: ids
+                });
+            }
+            toast.showSuccess('Cập nhật thành công!');
+            setState(prev => ({...prev, showModalOpenTable: false, refresh: !prev.refresh }));
+            showManageOrder(true);
+        } catch (error) {
+            console.log(error);
+            toast.showError(error as any);
+        }
+    }, [state.billDetail]);
+
+    const apiIncreaseTable = useCallback(async (body: any) => {
+        return await ApiUtils.put<any, any>('/api/admin/addtablefrombill', body);
+    }, []);
+
+    const apiUnincreaseTable = useCallback(async (body: any) => {
+        return await ApiUtils.put<any, any>('/api/admin/remotablefrombill', body);
     }, []);
 
     if (!id) {
@@ -500,7 +544,29 @@ export default function OrderCartComponent({ id }: Props) {
                 </div>
                 <QRCode size={150} value={getUrlQrCheck(state?.billDetail?.ma_bill || '')} />
             </Flex>
-            <Divider />
+            <Divider className="mb-0" />
+            <Flex justify="end" className="m-2 mb-0">
+                <Dropdown menu={{
+                    items:
+                        [
+                            {
+                                key: '1',
+                                label: 'Giảm bàn',
+                                icon: <MinusCircleOutlined />,
+                                disabled: state?.billNameIds?.ids.length < 2,
+                                onClick: handleShowModalTable(1, state?.billNameIds?.ids || [])
+                            },
+                            {
+                                key: '2',
+                                label: 'Tăng bàn',
+                                icon: <PlusCircleOutlined />,
+                                onClick: handleShowModalTable(2)
+                            }
+                        ]
+                }}>
+                    <Button type="text" icon={<SettingOutlined />} />
+                </Dropdown>
+            </Flex>
             <Segmented
                 className="m-2"
                 options={[
@@ -684,6 +750,14 @@ export default function OrderCartComponent({ id }: Props) {
                     billPros={state.billOnlinePro}
                     billDetail={state.billDetail}
                     isMobile={isMobile}
+                />
+            }
+            {
+                state.showModalOpenTable && <ModalOpenTable
+                    onCancel={handleDismissModal}
+                    onConfirm={handleSubmitTable}
+                    isEdit={state.isEdit}
+                    options={state.options}
                 />
             }
         </div>

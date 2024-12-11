@@ -116,7 +116,7 @@ export default function CatePage() {
                 width: '15%',
                 render: (_: any, item: IBill) => (
                     <Tooltip title="Thay đổi trạng thái">
-                        <Tag onClick={() => hooks.handleOpenModalStatus(item.id, item.status)} color={statusBill[item.status]?.color} className={`min-w-[80px] cursor-pointer`} >
+                        <Tag onClick={() => hooks.handleOpenModalStatus(item.id, item.status)} color={statusBill[item.status]?.color} className={`min-w-[80px] cursor-pointer text-center`} >
                             {statusBill[item.status]?.title}
                         </Tag>
                     </Tooltip>
@@ -128,7 +128,7 @@ export default function CatePage() {
                 align: 'center',
                 width: 'max-content',
                 render: (_: any, item: IBill) => (
-                    <Tag color={statusPayment[item.payment_status]?.color} className={`min-w-[80px]`} >
+                    <Tag color={statusPayment[item.payment_status]?.color} className={`min-w-[80px] text-center`} >
                         {statusPayment[item.payment_status]?.title}
                     </Tag>
                 )
@@ -150,7 +150,6 @@ export default function CatePage() {
 
     return (
         <>
-            {hooks.contextHolder}
             <Breadcrumb
                 style={{
                     fontSize: "24px",

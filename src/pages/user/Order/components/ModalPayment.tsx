@@ -30,7 +30,7 @@ const ModalPayment = (props: IProps) => {
                         <div className="text-lg font-semibold text-center mb-4">Đơn hàng</div>
                         <Row gutter={[16, 16]} justify={'center'} className="px-4">
                             {
-                                 props.billPros.map((i, y) => (
+                                props.billPros.map((i, y) => (
                                     <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }} className="w-full">
                                         <Card.Meta title={
                                             <div className="border rounded-md p-2 oredered-card">

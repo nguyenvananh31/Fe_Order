@@ -9,15 +9,27 @@ import { IBill, IBillDetail } from "../../../../interFaces/bill";
 import { convertPriceVND } from "../../../../utils/common";
 import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
 
+
 const statusBill: any = {
-    pending: { color: 'magenta', title: 'Đang chờ' },
-    confirmed: { color: 'cyan', title: 'Đã xác nhận' },
-    preparing: { color: 'gold', title: 'Chuẩn bị' },
-    shipping: { color: 'purple', title: 'Đang giao' },
-    completed: { color: 'green', title: 'Đã hoàn thành' },
-    cancelled: { color: 'red', title: 'Đã huỷ' },
-    failed: { color: 'volcano', title: 'Thất bại' }
+    'pending': { color: 'magenta', title: 'Đang chờ' },
+    'confirmed': { color: 'cyan', title: 'Đã xác nhận' },
+    'preparing': { color: 'gold', title: 'Chuẩn bị' },
+    'shipping': { color: 'purple', title: 'Đang giao' },
+    'completed': { color: 'green', title: 'Đã hoàn thành' },
+    'cancelled': { color: 'red', title: 'Đã huỷ' },
+    'failed': { color: 'volcano', title: 'Thất bại' },
+    'cancellation_requested': { color: 'yellow', title: 'Chờ xác nhận hủy' },
+    'cancellation_approved': { color: 'volcano', title: 'Xác nhận hủy' },
+    'cancellation_rejected': { color: 'volcano', title: 'Hủy thất bại' },
 };
+
+const statusPayment: any = {
+    pending: { color: "magenta", title: "Đang chờ" },
+    paid: { color: "cyan", title: "Trả hàng" },
+    successful: { color: "green", title: "Đã thanh toán" },
+    failed: { color: "red", title: "Thanh toán thất bại" },
+    refunded: { color: "volcano", title: "Hoàn trả tiền" },
+}
 interface IProps {
     itemId?: number;
     onRefresh: () => void;
@@ -219,6 +231,12 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Thanh toán:</span>
                                     <span>{data?.payment || 'Chưa có'}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Trạng thái thanh toán:</span>
+                                    <Tag color={statusPayment[data?.payment_status || ''].color} className={`min-w-[80px]`} >
+                                        {statusPayment[data?.payment_status || ''].title}
+                                    </Tag>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tổng tiền:</span>
