@@ -22,7 +22,10 @@ export default function useAuth() {
     const checkPermission = useCallback(async (id: number) => {
         try {
             const res = await apiGetOneUser(id);
-            return res.data;
+            if (res?.data) {
+                dispatch(changeAuth(res?.data));
+            }
+            return res?.data;
         } catch {
             console.log('không có quyền');
             return false;

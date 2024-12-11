@@ -11,8 +11,8 @@ const auth = createSlice({
     initialState: initialState,
     reducers: {
         changeAuth: (state: IUser | null, actions: PayloadAction<IUser | null>) => {
-            localStorageUtils.setObject(KeyStorage.AUTH, actions.payload);
             state = !!state ? {...state, ...actions.payload} : actions.payload;
+            localStorageUtils.setObject(KeyStorage.AUTH, state);
             return state;
         },
         removeAuth: () => {

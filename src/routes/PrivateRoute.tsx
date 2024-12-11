@@ -1,9 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SpinnerLoader from '../components/loader';
 import { RoutePath } from "../constants/path";
 import useAuth from "../hooks/redux/auth/useAuth";
-import { apiGetOneUser } from "../pages/admin/Account/utils/account.service";
-import SpinnerLoader from '../components/loader';
 
 
 interface IProps {
@@ -12,7 +11,7 @@ interface IProps {
 
 export default function PrivateRoute({ children }: IProps) {
 
-    const { user } = useAuth();
+    const { user, checkPermission } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -23,7 +22,7 @@ export default function PrivateRoute({ children }: IProps) {
     const checkSession = async () => {
         try {
             setLoading(true);
-            await apiGetOneUser(user?.id || 0);
+            await checkPermission(user?.id || 0);
             setLoading(false);
         } catch {
             console.log('không có quyền');

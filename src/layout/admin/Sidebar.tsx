@@ -1,19 +1,17 @@
 import { Avatar, Layout, Menu } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Subscription } from "rxjs";
+import { RouteConfig } from "../../constants/path";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
-import { LISTMENU } from "./menu";
 import useMenu from "./useMenu";
-import { useNavigate } from "react-router-dom";
-import { RouteConfig } from "../../constants/path";
 
 const { Sider } = Layout;
 
-
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { activeMenu, handleChange } = useMenu();
+  const { activeMenu, handleChange, menuItem } = useMenu();
   const subscriptions = useRef(new Subscription());
   const navigate = useNavigate();
 
@@ -84,7 +82,7 @@ const Sidebar: React.FC = () => {
         openKeys={activeMenu[1] && !collapsed ? activeMenu[1] : undefined}
         mode="inline"
         theme="light"
-        items={LISTMENU}
+        items={menuItem}
         onOpenChange={handleChange}
       />
     </Sider>

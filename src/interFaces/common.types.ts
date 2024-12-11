@@ -9,7 +9,7 @@ export interface IUser {
   avatar?: string;
   token?: string;
   password?: string;
-  roles: IRole[];
+  roles: any[];
   is_locked: boolean;
 }
 
