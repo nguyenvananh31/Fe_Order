@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { menuActive, menuPath } from "../../constants/path";
+import { menuActive, menuPath, RoutePath } from "../../constants/path";
 import { LISTMENU } from "./menu";
 import useAuth from "../../hooks/redux/auth/useAuth";
 import { ROLES } from "../../constants/enum";
@@ -18,9 +18,12 @@ export default function useMenu() {
     if (roles.includes(ROLES.ADMIN) || roles.includes(ROLES.QTV)) {
       return menu;
     }
-    
-    menu.filter((i: any) => !roles.includes(i?.permission));
-
+    menu = menu.filter((i: any) => {
+      if (!i?.permission || i.key == RoutePath.ADMIN) {
+        return true;
+      }
+      return i.permission.some((i: any) => roles.includes(i));
+    });
     return menu;
   }, [user]);
 

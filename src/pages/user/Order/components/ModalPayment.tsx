@@ -1,16 +1,55 @@
 import { Card, Divider, Flex, QRCode, Row, Space, Tag } from "antd";
 import moment from "moment";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
-import { convertPriceVNDNotSupfix } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, getInfoBank } from "../../../../utils/common";
+import { useCallback, useEffect, useMemo } from "react";
+import ApiUtils from "../../../../utils/api/api.utils";
+import useToast from "../../../../hooks/useToast";
 
 interface IProps {
     onCancel: () => void;
     billPros: any[],
-    billDetail: {}
+    billDetail: any,
     isMobile: boolean;
 }
 
 const ModalPayment = (props: IProps) => {
+    console.log('props: ', props.billDetail);
+
+    const toast = useToast();
+    const bankInfo: any = useMemo(() => getInfoBank(), []);
+
+    useEffect(() => {
+        if (!bankInfo) {
+            return;
+        }
+        const fetchData = async() => {
+            try {
+                const res = await apiGetQr({
+                    accountNo: bankInfo?.numberBank,
+                    accountName: bankInfo?.nameBank, 
+                    acqId: bankInfo?.bankPin,
+                    amount: +props?.billDetail?.total_amount || 0,
+                    addInfo: 'Thanh toán'
+                });
+            } catch (error: any) {
+                console.log(error);
+                toast.showError(error?.error || 'Có lỗi xảy ra!');
+            }
+        }
+        fetchData();
+    }, [bankInfo])
+
+    const apiGetQr = useCallback(async (body: any) => {
+        return await ApiUtils.post<any, any>(
+            'https://api.vietqr.io/v2/generate',
+            body,
+            {
+                'x-client-id': import.meta.env.VITE_X_CLIENT_ID || '',
+                'x-api-key': import.meta.env.VITE_API_KEY || '',
+            }
+        );
+    }, []);
 
     return <BaseModalSetting
         onConfirm={() => { }}
@@ -180,19 +219,19 @@ const ModalPayment = (props: IProps) => {
                         <Flex justify="space-between" align="end" gap={12}>
                             <div className="basis-2/5">Ngân hàng:</div>
                             <div className="flex-1 font-bold line-clamp-1">
-                                MB
+                                {bankInfo?.bankType || 'MB'}
                             </div>
                         </Flex>
                         <Flex justify="space-between" align="end" gap={12}>
                             <div className="basis-2/5">Số tài khoản:</div>
                             <div className="flex-1 font-bold line-clamp-1">
-                                0374339124
+                                {bankInfo?.numberBank || '0374339124'}
                             </div>
                         </Flex>
                         <Flex justify="space-between" align="end" gap={12}>
                             <div className="basis-2/5">Tên tài khoản:</div>
                             <div className="flex-1 font-bold line-clamp-1">
-                                Đô Minh Lệ
+                                {bankInfo?.nameBank || 'Đô Minh Lệ'}
                             </div>
                         </Flex>
                     </Space>
