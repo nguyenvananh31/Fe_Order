@@ -42,12 +42,13 @@ const Cart = () => {
 
   useEffect(() => {
     (async () => {
-      setState(prev => ({ ...prev, loading: true }));
-      const res = await refreshCartStore();
-      if (!res) {
-        showToast('error', 'Có lỗi xảy ra!');
+      try {
+        setState(prev => ({ ...prev, loading: true }));
+        await refreshCartStore();
+        setState(prev => ({ ...prev, loading: false }));
+      } catch (error) {
+        setState(prev => ({ ...prev, loading: false }));
       }
-      setState(prev => ({ ...prev, loading: false }));
     })();
   }, [state.refresh]);
 

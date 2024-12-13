@@ -1,5 +1,5 @@
 // components/SharedMenu.tsx
-import { ClockCircleOutlined, FileSearchOutlined, FileTextOutlined, GiftOutlined, HomeOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, FileSearchOutlined, FileTextOutlined, GiftOutlined, HomeOutlined, InboxOutlined, LineHeightOutlined, PayCircleOutlined, TruckOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { RouteConfig, RoutePath } from "../../constants/path";
 import { ROLES } from "../../constants/enum";
@@ -21,7 +21,7 @@ export const LISTMENU: any[] = [
       <Link to={RouteConfig.ACCOUNT}>Quản lý tài khoản</Link>
     ),
     icon: <UserOutlined />,
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.USER],
+    permission: [ROLES.ADMIN, ROLES.USER],
   },
   {
     key: RoutePath.CUSTOMERS,
@@ -29,7 +29,7 @@ export const LISTMENU: any[] = [
       <Link to={RouteConfig.CUSTOMERS}>Quản lý khách hàng</Link>
     ),
     icon: <UsergroupAddOutlined />,
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.CUSTOMER],
+    permission: [ROLES.ADMIN, ROLES.CUSTOMER],
   },
   {
     key: RoutePath.CATEGORY,
@@ -37,7 +37,7 @@ export const LISTMENU: any[] = [
       <Link to={RouteConfig.CATEGORY}>Quản lý danh mục</Link>
     ),
     icon: <FileTextOutlined />,
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.CATEGORIES],
+    permission: [ROLES.ADMIN, ROLES.CATEGORIES],
   },
   {
     key: RoutePath.SIZES,
@@ -45,7 +45,7 @@ export const LISTMENU: any[] = [
       <Link to={RouteConfig.SIZES}>Quản lý kích thước</Link>
     ),
     icon: <LineHeightOutlined />,
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.SIZE],
+    permission: [ROLES.ADMIN, ROLES.SIZE],
   },
   {
     key: RoutePath.ADMIN_PRODUCT_MAIN,
@@ -63,7 +63,7 @@ export const LISTMENU: any[] = [
         )
       }
     ],
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT],
+    permission: [ROLES.ADMIN, ROLES.PRODUCT],
   },
   {
     key: RoutePath.ADMIN_TABLE_MAIN,
@@ -81,7 +81,7 @@ export const LISTMENU: any[] = [
         )
       }
     ],
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.TABLE],
+    permission: [ROLES.ADMIN, ROLES.TABLE],
   },
   {
     key: RoutePath.AD_BILL,
@@ -89,7 +89,7 @@ export const LISTMENU: any[] = [
     label: (
       <Link to={RouteConfig.AD_BILL}>Quản lý đơn</Link>
     ),
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.BILL],
+    permission: [ROLES.ADMIN, ROLES.BILL],
   },
   {
     key: RoutePath.PAYMENT,
@@ -97,7 +97,7 @@ export const LISTMENU: any[] = [
     label: (
       <Link to={RouteConfig.PAYMENT}>Quản lý thanh toán</Link>
     ),
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.PAYMENT],
+    permission: [ROLES.ADMIN, ROLES.PAYMENT],
   },
   {
     key: RoutePath.VOUCHER,
@@ -105,6 +105,14 @@ export const LISTMENU: any[] = [
     label: (
       <Link to={RouteConfig.VOUCHER}>Quản lý khuyến mại</Link>
     ),
-    permission: [ROLES.QTV, ROLES.ADMIN, ROLES.VOUCHER],
+    permission: [ROLES.ADMIN, ROLES.VOUCHER],
+  },
+  {
+    key: RoutePath.SHIPPER,
+    icon: <TruckOutlined />,
+    label: (
+      <Link to={RouteConfig.SHIPPER}>Quản lý giao hàng</Link>
+    ),
+    permission: [ROLES.ADMIN, ROLES.SHIPPER],
   },
 ];

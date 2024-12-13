@@ -1,6 +1,8 @@
-import { Checkbox, Col, Form, Input, Modal, Row } from "antd";
-import { useEffect, useState } from "react";
+import { Form, Input, Modal, Tree } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import Avatar from "react-avatar";
+import { ROLES } from "../../../../constants/enum";
+import useToast from "../../../../hooks/useToast";
 import { IRole, IUser } from "../../../../interFaces/common.types";
 import { apiGetOneUser, apiGetRoles, apiUpadateRoles } from "../utils/account.service";
 
@@ -8,15 +10,15 @@ interface IProps {
     itemId?: number;
     onRefresh: () => void;
     onClose: () => void;
-    showToast: (type: string, message: string) => void;
 }
 
 interface IState {
     loading: boolean;
     loadingBtn: boolean;
     isEdit: boolean;
-    dataRoles: IRole[];
+    dataRoles: any[];
     account?: IUser;
+    checkedRoles: number[];
 }
 
 const initState: IState = {
@@ -24,12 +26,14 @@ const initState: IState = {
     loadingBtn: false,
     isEdit: false,
     dataRoles: [],
+    checkedRoles: [],
 }
 
-export default function AccountModel({ onClose, onRefresh, showToast, itemId = undefined }: IProps) {
+export default function AccountModel({ onClose, onRefresh, itemId = undefined }: IProps) {
 
     const [state, setState] = useState<IState>(initState);
     const [form] = Form.useForm();
+    const toast = useToast();
 
     //Lấy thông tin account nếu có
     useEffect(() => {
@@ -39,16 +43,15 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
         const fetchApi = async () => {
             try {
                 const res = await apiGetOneUser(itemId!);
-                if (res.data) {
-                    setState(prev => ({ ...prev, loading: false, account: res.data }));
-                    form.setFieldsValue({
-                        ...res.data,
-                        roles: res?.data?.roles.map(role => role.id),
-                    });
-                }
+
+                setState(prev => ({ ...prev, loading: false, account: res.data, checkedRoles: res.data.roles.filter(i => i.id != 2).map(i => i.id) }));
+
+                form.setFieldsValue({
+                    ...res.data,
+                });
             } catch (error) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                setState(prev => ({ ...prev, loading: false }));
             }
         }
         fetchApi();
@@ -61,17 +64,34 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                 setState(prev => ({ ...prev, loading: true }));
                 const res = await apiGetRoles();
                 if (res.data) {
-                    setState(prev => ({ ...prev, loading: false, dataRoles: res.data }));
+                    let dataRoles = [
+                        {
+                            title: ROLES.ADMIN,
+                            key: 1,
+                            children: [],
+                        },
+                        {
+                            title: ROLES.QTV,
+                            key: 2,
+                            children:
+                                res?.data
+                                    .filter(item => item.name !== ROLES.ADMIN && item.name !== ROLES.QTV)
+                                    .map(item => ({
+                                        title: item.name,
+                                        key: item.id,
+                                    }))
+                            ,
+                        },
+                    ];
+                    setState(prev => ({ ...prev, loading: false, dataRoles }));
                 }
             } catch (error) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
             }
         }
         setState(prev => ({ ...prev, loading: false }));
         fetchApi();
     }, []);
-
 
     // handle submit form và cập nhật
     const handleSubmit = () => {
@@ -93,16 +113,20 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     newRoles = values.roles.map((role: IRole) => role.id)
                 }
                 await apiUpadateRoles(itemId, { roles: newRoles });
-                showToast('success', 'Cập nhật vai trò thành công!');
+                toast.showSuccess('Cập nhật vai trò thành công!');
                 onClose();
                 onRefresh();
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
-            showToast('error', 'Cập nhật vai trò thất bại!');
+            toast.showError(error?.error || 'Cập nhật vai trò thất bại!');
         }
         setState(prev => ({ ...prev, loadingBtn: false }));
     }
+
+    const handleCheck = useCallback((checkedKeysValue: any) => {
+        setState(prev => ({ ...prev, checkedRoles: checkedKeysValue }));
+    }, []);
 
     return (
         <>
@@ -147,24 +171,15 @@ export default function AccountModel({ onClose, onRefresh, showToast, itemId = u
                     <Form.Item
                         name='roles'
                         label="Vai trò"
-                        // getValueProps={}
+                    // getValueProps={}
                     >
-                        <Checkbox.Group
-                            style={{ width: '100%' }}
-                            // defaultValue={state.account?.roles.map(role => role.id)}
-                        >
-                            <Row>
-                                {
-                                    state.dataRoles.map(role => {
-                                        return (
-                                            <Col key={role.id} span={8}>
-                                                <Checkbox value={role.id}>{role.name}</Checkbox>
-                                            </Col>
-                                        )
-                                    })
-                                }
-                            </Row>
-                        </Checkbox.Group>
+                        <Tree
+                            checkable
+                            checkedKeys={state.checkedRoles}
+                            defaultExpandAll
+                            onCheck={handleCheck}
+                            treeData={state.dataRoles}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

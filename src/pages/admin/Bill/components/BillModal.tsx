@@ -46,17 +46,21 @@ interface IState {
     item?: IBillDetail[];
     shipping: any[];
     shipper?: any;
+    data?: any;
 }
 
-const initState: IState = {
-    loading: true,
-    loadingBtn: false,
-    loadingShip: false,
-    isEdit: false,
-    shipping: [],
-}
+
 
 export default function BillModel({ onClose, itemId = undefined, data, isClient }: IProps) {
+
+    const initState: IState = useMemo(() => ({
+        loading: true,
+        loadingBtn: false,
+        loadingShip: false,
+        isEdit: false,
+        shipping: [],
+        data
+    }), []);
 
     const [state, setState] = useState<IState>(initState);
 
@@ -69,7 +73,10 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
             try {
                 setState(prev => ({ ...prev, loading: true }));
                 const res: any = await apiGetOneBillDetail(itemId!, isClient);
-                setState(prev => ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data }));
+                setState(prev => {
+                    const stateData = prev?.data ? { ...prev.data, address: res?.bill?.address } : undefined;
+                    return ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data, data: stateData })
+                });
             } catch (error) {
                 console.log(error);
                 setState(prev => ({ ...prev, isEdit: true, loading: false }));
@@ -192,7 +199,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                         Chi tiết đơn
                     </div>
                 }
-                width={650}
+                width={800}
             >
                 <Row gutter={[20, 20]}>
                     <Col span={24}>
@@ -200,47 +207,47 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                             <Col xs={24} sm={12}>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Mã đơn:</span>
-                                    <span>#{data?.ma_bill}</span>
+                                    <span>#{state?.data?.ma_bill}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tên khách hàng:</span>
-                                    <span>{data?.khachhang?.name || data?.khachhang?.email}</span>
+                                    <span>{state?.data?.khachhang?.name || state?.data?.khachhang?.email}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Địa chỉ:</span>
-                                    <span>{data?.addresses || 'Chưa có'}</span>
+                                    <span>{state?.data?.address || 'Chưa có'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Ngày đặt:</span>
-                                    <span>{data?.order_date}</span>
+                                    <span>{state?.data?.order_date}</span>
                                 </div>
                             </Col>
                             <Col xs={24} sm={12}>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Cách thức:</span>
-                                    <span>{data?.order_type == EOrderType.In_restaurant ? 'Tại nhà hàng' : 'Online'}</span>
+                                    <span>{state?.data?.order_type == EOrderType.In_restaurant ? 'Tại nhà hàng' : 'Online'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Trạng thái:</span>
                                     <span>
-                                        <Tag color={statusBill[data?.status || ''].color} className={`min-w-[80px]`} >
-                                            {statusBill[data?.status || ''].title}
+                                        <Tag color={statusBill[state?.data?.status || ''].color} className={`min-w-[80px]`} >
+                                            {statusBill[state?.data?.status || ''].title}
                                         </Tag>
                                     </span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Thanh toán:</span>
-                                    <span>{data?.payment || 'Chưa có'}</span>
+                                    <span>{state?.data?.payment || 'Chưa có'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Trạng thái thanh toán:</span>
-                                    <Tag color={statusPayment[data?.payment_status || ''].color} className={`min-w-[80px]`} >
-                                        {statusPayment[data?.payment_status || ''].title}
+                                    <Tag color={statusPayment[state?.data?.payment_status || ''].color} className={`min-w-[80px]`} >
+                                        {statusPayment[state?.data?.payment_status || ''].title}
                                     </Tag>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tổng tiền:</span>
-                                    <span>{convertPriceVND(+data?.total_amount! || 0)}</span>
+                                    <span>{convertPriceVND(+state?.data?.total_amount! || 0)}</span>
                                 </div>
                             </Col>
                         </Row>
@@ -250,10 +257,17 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                             <>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>
-                                    <Timeline
-                                        className="mt-2"
-                                        items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
-                                    />
+                                    <div className="max-h-[200px]" style={{
+                                        overflowY: 'auto',
+                                        overflowX: 'hidden',
+                                        msOverflowStyle: 'none', /* Ẩn thanh cuộn cho IE và Edge */
+                                        scrollbarWidth: 'none'   /* Ẩn thanh cuộn cho Firefox */
+                                    }}>
+                                        <Timeline
+                                            className="mt-2"
+                                            items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
+                                        />
+                                    </div>
                                 </Col>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Thông tin người giao hàng</span>

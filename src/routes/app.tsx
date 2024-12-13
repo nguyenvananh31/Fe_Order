@@ -43,6 +43,9 @@ const ListVoucher = lazy(() => import('../pages/admin/Vouchers'));
 
 const DetailOrderTable = lazy(() => import('../pages/admin/Vouchers'));
 
+//Quản lý giao hàng
+const ShipperPage = lazy(() => import('../pages/admin/Shipper'));
+
 export interface IRoutesProperties {
     path: RouteProps['path'];
     name?: string;
@@ -154,6 +157,13 @@ const accountRoutes: IRoutesProperties[] = [
         name: 'Quản lý đơn',
         element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.BILL]}>
             <BillScreen />
+        </ProtectedRoute>
+    },
+    {
+        path: RouteConfig.SHIPPER,
+        name: 'Quản lý giao hàng',
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.SHIPPER]}>
+            <ShipperPage />
         </ProtectedRoute>
     }
 ];

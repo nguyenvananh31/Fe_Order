@@ -27,7 +27,6 @@ export default function useAuth() {
             }
             return res?.data;
         } catch {
-            console.log('không có quyền');
             return false;
         }
     }, []);

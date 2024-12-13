@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SpinnerLoader from '../components/loader';
 import { RoutePath } from "../constants/path";
 import useAuth from "../hooks/redux/auth/useAuth";
+import { ROLES } from "../constants/enum";
 
 interface IProps {
     allowedRoles: string[];
@@ -26,12 +27,16 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
         try {
             setLoading(true);
             const res: any = await checkPermission(user?.id || 0);
+            let roles = [];
             if (res?.roles?.length > 0) {
-                setRoles(res.roles.map((i: any) => i.name));
+                roles = res.roles.map((i: any) => i.name);
             }
+            if (user?.roles?.some(i => i.name == ROLES.SHIPPER)) {
+                roles.push(ROLES.SHIPPER);
+            }
+            setRoles(roles);
             setLoading(false);
         } catch {
-            console.log('không có quyền');
             setLoading(false);
             navigate(RoutePath.HOME);
         }

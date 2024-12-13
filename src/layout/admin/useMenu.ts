@@ -15,7 +15,7 @@ export default function useMenu() {
   const menuItem = useMemo(() => {
     let menu = [...LISTMENU];
     const roles = user?.roles?.map(i => i.name);
-    if (roles.includes(ROLES.ADMIN) || roles.includes(ROLES.QTV)) {
+    if (roles.includes(ROLES.ADMIN)) {
       return menu;
     }
     menu = menu.filter((i: any) => {
