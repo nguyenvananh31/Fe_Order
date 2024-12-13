@@ -5,7 +5,7 @@ import { Table } from "antd/lib";
 import { useEffect, useMemo, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { EOrderType } from "../../../../constants/enum";
-import { IBill, IBillDetail } from "../../../../interFaces/bill";
+import { IBillDetail } from "../../../../interFaces/bill";
 import { convertPriceVND } from "../../../../utils/common";
 import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
 
@@ -34,8 +34,9 @@ interface IProps {
     itemId?: number;
     onRefresh: () => void;
     onClose: () => void;
-    data?: IBill;
+    data?: any;
     isClient?: boolean;
+    isAdmin?: boolean;
 }
 
 interface IState {
@@ -51,14 +52,15 @@ interface IState {
 
 
 
-export default function BillModel({ onClose, itemId = undefined, data, isClient }: IProps) {
+export default function BillModel({ onClose, itemId = undefined, data, isClient, isAdmin }: IProps) {
 
     const initState: IState = useMemo(() => ({
         loading: true,
         loadingBtn: false,
         loadingShip: false,
         isEdit: false,
-        shipping: [],
+        shipping: isAdmin ? data?.shipping_histories : [],
+        shipper: isAdmin ? data?.shipper : undefined,
         data
     }), []);
 
@@ -86,7 +88,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
     }, []);
 
     useEffect(() => {
-        if (!itemId || !isClient) {
+        if (!itemId || !isClient || isAdmin) {
             setState(prev => ({ ...prev, isEdit: true }));
             return;
         }
@@ -253,7 +255,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                         </Row>
                     </Col>
                     {
-                        isClient && (
+                        isClient || isAdmin && (
                             <>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>
@@ -283,18 +285,20 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                             </>
                         )
                     }
-                    <Col span={24}>
-                        <div className='flex items-center justify-between mb-2'>
-                            <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
-                        </div>
-                        <Table
-                            loading={state.loading}
-                            dataSource={state.item}
-                            columns={columns}
-                            rowKey="id"
-                            pagination={false}
-                        />
-                    </Col>
+                    {!isAdmin && (
+                        <Col span={24}>
+                            <div className='flex items-center justify-between mb-2'>
+                                <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
+                            </div>
+                            <Table
+                                loading={state.loading}
+                                dataSource={state.item}
+                                columns={columns}
+                                rowKey="id"
+                                pagination={false}
+                            />
+                        </Col>
+                    )}
                 </Row>
             </Modal>
         </>

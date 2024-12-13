@@ -112,7 +112,7 @@ export default function AccountModel({ onClose, onRefresh, itemId = undefined }:
                 if (values.roles[0]?.id) {
                     newRoles = values.roles.map((role: IRole) => role.id)
                 }
-                await apiUpadateRoles(itemId, { roles: newRoles });
+                await apiUpadateRoles(itemId, { roles: state.checkedRoles });
                 toast.showSuccess('Cập nhật vai trò thành công!');
                 onClose();
                 onRefresh();
@@ -174,6 +174,7 @@ export default function AccountModel({ onClose, onRefresh, itemId = undefined }:
                     // getValueProps={}
                     >
                         <Tree
+                            disabled={!state.isEdit}
                             checkable
                             checkedKeys={state.checkedRoles}
                             defaultExpandAll

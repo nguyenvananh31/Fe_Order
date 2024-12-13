@@ -56,6 +56,20 @@ export default function useBill() {
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
 
+    // useEffect(() => {
+    //     // Nghe sự kiện từ channel
+    //     const channel = echo.channel(`bill.${billId}`);
+        
+    //     channel.listen('.item.added', (event) => {
+    //         console.log('Event received:', event);
+    //     });
+
+    //     // Dọn dẹp channel khi component unmount
+    //     return () => {
+    //         echo.leaveChannel(`bill.${billId}`);
+    //     };
+    // }, [billId]);
+
     //Lấy bill
     useEffect(() => {
         //Lấy tất cả tài khoản

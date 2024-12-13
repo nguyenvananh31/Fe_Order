@@ -1,31 +1,39 @@
 import { StopOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import SpinnerLoader from '../components/loader';
-import { RoutePath } from "../constants/path";
-import useAuth from "../hooks/redux/auth/useAuth";
 import { ROLES } from "../constants/enum";
+import useAuth from "../hooks/redux/auth/useAuth";
 
 interface IProps {
     allowedRoles: string[];
     children: any;
 }
 
+interface IState {
+    loading: boolean;
+    roles: any[];
+}
+
+const initState: IState = {
+    loading: true,
+    roles: []
+}
+
 export default function ProtectedRoute({ allowedRoles, children }: IProps) {
 
     const { user, checkPermission } = useAuth();
-    const [roles, setRoles] = useState<string[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
+    const [state, setState] = useState<IState>(initState);
+    // const navigate = useNavigate();
     const loaction = useLocation();
 
     useEffect(() => {
         checkSession();
-    }, [loaction]);
+    }, [loaction.pathname]);
 
     const checkSession = async () => {
         try {
-            setLoading(true);
+            setState(prev => ({ ...prev, loading: true }));
             const res: any = await checkPermission(user?.id || 0);
             let roles = [];
             if (res?.roles?.length > 0) {
@@ -34,19 +42,18 @@ export default function ProtectedRoute({ allowedRoles, children }: IProps) {
             if (user?.roles?.some(i => i.name == ROLES.SHIPPER)) {
                 roles.push(ROLES.SHIPPER);
             }
-            setRoles(roles);
-            setLoading(false);
+            setState(prev => ({ ...prev, loading: false, roles }));
         } catch {
-            setLoading(false);
-            navigate(RoutePath.HOME);
+            setState(prev => ({ ...prev, loading: false }));
+            // navigate(RoutePath.HOME);
         }
     };
 
-    if (loading) {
+    if (state.loading) {
         return <SpinnerLoader />
     }
 
-    if (user == null || allowedRoles.filter(i => roles.includes(i)).length == 0) {
+    if (user == null || allowedRoles.filter(i => state.roles.includes(i)).length == 0) {
         return (
             <div className="bg-primary drop-shadow-primary rounded-primary h-full flex items-center justify-center flex-col gap-3">
                 <StopOutlined className="text-5xl" />

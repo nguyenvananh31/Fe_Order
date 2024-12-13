@@ -127,7 +127,7 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RouteConfig.ADMIN_PRODUCT,
         name: 'Quản lý sản phẩm',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT ]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT]}>
             <ProductScreen />
         </ProtectedRoute>
     },
