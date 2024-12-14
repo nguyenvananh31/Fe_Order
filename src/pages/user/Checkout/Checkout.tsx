@@ -202,9 +202,9 @@ const Checkout = () => {
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
       formData.append('payment_id', `${state.paymentValue}`);
       await apiAddBill(formData);
-      toast.showSuccess('Đặt hàng thành công!');
+      toast.showSuccess('Đặt hàng thành công!' +  (state.paymentValue == 2 ? ' Vui lòng thanh toán đơn hàng!' : ''));
       refreshCartStore();
-      navigate(RouteConfig.HOME);
+      // navigate(RouteConfig.HOME);
     } catch (error: any) {
       console.log(error);
       toast.showError(error);
@@ -353,6 +353,9 @@ const Checkout = () => {
         onConfirm={handleChooseVoucher}
         voucher={state.voucher}
       />
+    }
+    {
+      
     }
   </div>
 };

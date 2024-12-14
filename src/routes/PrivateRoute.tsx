@@ -22,12 +22,14 @@ export default function PrivateRoute({ children }: IProps) {
     const checkSession = async () => {
         try {
             setLoading(true);
-            await checkPermission(user?.id || 0);
+            const isLogin = await checkPermission(user?.id || 0);
+            if (!isLogin) {
+                navigate(RoutePath.HOME);
+            }
             setLoading(false);
         } catch {
             console.log('không có quyền');
             setLoading(false);
-            navigate(RoutePath.HOME);
         }
     }
 

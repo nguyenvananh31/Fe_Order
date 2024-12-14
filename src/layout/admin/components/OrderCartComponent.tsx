@@ -263,7 +263,7 @@ export default function OrderCartComponent({ id }: Props) {
             const newPros = res.data.bill_details.reduce((acc: any[], curr: any) =>
                 acc.concat(curr.product.product_details.map((x: any) => ({ ...x, name: curr.product.name, thumbnail: curr.product.thumbnail }))),
                 []);
-            setState(prev => ({ ...prev, loadingBill: false, billDetail, billOnlinePro: newPros }));
+            setState(prev => ({ ...prev, loadingBill: false, billDetail: { ...prev.billDetail, ...billDetail }, billOnlinePro: newPros }));
         } catch (error) {
             console.log(error);
             toast.showError('Bàn đã được thanh toán hoặc huỷ!');
@@ -300,11 +300,11 @@ export default function OrderCartComponent({ id }: Props) {
         }
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
-            await apiActiveItem({ id_billdetails: ids });
+            const res = await apiActiveItem({ id_billdetails: ids });
             toast.showSuccess('Xác nhận món thành công!');
             setState(prev => {
                 const newPros = [...prev.data.map(i => ids.includes(i.id_bill_detail) ? { ...i, product: { ...i.product, status: !i.product.status } } : i)];
-                return { ...prev, loadingBtn: false, data: newPros, checkedCofirm: [] };
+                return { ...prev, loadingBtn: false, data: newPros, checkedCofirm: [], billDetail: res?.data?.bill || prev.billDetail };
             });
         } catch (error: any) {
             console.log(error);
@@ -472,7 +472,7 @@ export default function OrderCartComponent({ id }: Props) {
     }, []);
 
     const handleShowModalTable = useCallback((isEdit: number, options: any = []) => () => {
-        setState(prev => ({...prev, showModalOpenTable: true, isEdit, options }));
+        setState(prev => ({ ...prev, showModalOpenTable: true, isEdit, options }));
     }, []);
 
     const handleSubmitTable = useCallback((ids: any[], type?: number) => async () => {
@@ -483,14 +483,14 @@ export default function OrderCartComponent({ id }: Props) {
                     bill_id: state?.billDetail?.id,
                     tableIds: ids
                 });
-            }else {
+            } else {
                 await apiIncreaseTable({
                     bill_id: state?.billDetail?.id,
                     tableIds: ids
                 });
             }
             toast.showSuccess('Cập nhật thành công!');
-            setState(prev => ({...prev, showModalOpenTable: false, refresh: !prev.refresh }));
+            setState(prev => ({ ...prev, showModalOpenTable: false, refresh: !prev.refresh }));
             showManageOrder(true);
         } catch (error) {
             console.log(error);
