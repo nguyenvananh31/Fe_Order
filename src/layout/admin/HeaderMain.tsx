@@ -1,15 +1,15 @@
 import { BellOutlined, CloseOutlined, LogoutOutlined, MenuUnfoldOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Drawer, Dropdown, Menu, MenuProps } from "antd";
-import useHeader from "./header.hooks";
-import { LISTMENU } from "./menu";
-import { RouteConfig } from "../../constants/path";
 import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "../../constants/path";
+import useHeader from "./header.hooks";
 
 
 export const HeaderMain = () => {
 
   const { ...hooks } = useHeader();
   const navigate = useNavigate();
+
 
   // Menu item Account
   const items: MenuProps['items'] = [
@@ -116,7 +116,7 @@ export const HeaderMain = () => {
           openKeys={hooks.activeMenu[1] ? hooks.activeMenu[1] : undefined}
           mode="inline"
           theme="light"
-          items={LISTMENU}
+          items={hooks.menuItem}
           onClick={hooks.toggleDraw}
           onOpenChange={hooks.handleChange}
         />

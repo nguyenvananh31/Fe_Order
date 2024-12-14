@@ -3,7 +3,7 @@ import { RadioChangeEvent } from "antd/lib";
 import { useCallback, useEffect, useState } from "react";
 import { PAGINATE_DEFAULT } from "../../../../constants/enum";
 import useDebounce from "../../../../hooks/useDeBounce";
-import useToastMessage from "../../../../hooks/useToastMessage";
+import useToast from "../../../../hooks/useToast";
 import { IBill } from "../../../../interFaces/bill";
 import { apiGetBils, apiUpdateStatusBill } from "./bill.service";
 
@@ -51,10 +51,24 @@ const initState: IState = {
 export default function useBill() {
 
     const [state, setState] = useState<IState>(initState);
-    const { showToast, contextHolder } = useToastMessage();
+    const toast = useToast();
     const [status, setStatus] = useState<any>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
+
+    // useEffect(() => {
+    //     // Nghe sự kiện từ channel
+    //     const channel = echo.channel(`bill.${billId}`);
+        
+    //     channel.listen('.item.added', (event) => {
+    //         console.log('Event received:', event);
+    //     });
+
+    //     // Dọn dẹp channel khi component unmount
+    //     return () => {
+    //         echo.leaveChannel(`bill.${billId}`);
+    //     };
+    // }, [billId]);
 
     //Lấy bill
     useEffect(() => {
@@ -101,7 +115,7 @@ export default function useBill() {
                 }
             } catch (error: any) {
                 console.log(error);
-                showToast('error', 'Có lỗi xảy ra!');
+                toast.showError(error as any);
                 setState((prev) => ({ ...prev, data: [], loading: false, total: 0 }));
             }
         }
@@ -160,10 +174,10 @@ export default function useBill() {
         try {
             await apiUpdateStatusBill(status?.id, { status: status?.type });
             setState((prev) => ({ ...prev, refresh: !prev.refresh, showModalStatus: false }));
-            showToast('success', 'Cập nhật trạng thái thành công!');
+            toast.showSuccess('Cập nhật trạng thái thành công!');
         } catch (error: any) {
             console.log(error);
-            showToast('error', 'Có lỗi xảy ra!');
+            toast.showError(error?.error || 'Có lỗi xảy ra!');
             setState((prev) => ({ ...prev, loading: false }));
         }
     }
@@ -234,10 +248,8 @@ export default function useBill() {
 
     return {
         state,
-        contextHolder,
         status,
         options,
-        showToast,
         handlePageChange,
         handleOpenModal,
         refreshPage,

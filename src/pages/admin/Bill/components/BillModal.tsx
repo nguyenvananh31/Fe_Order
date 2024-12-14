@@ -5,25 +5,38 @@ import { Table } from "antd/lib";
 import { useEffect, useMemo, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { EOrderType } from "../../../../constants/enum";
-import { IBill, IBillDetail } from "../../../../interFaces/bill";
+import { IBillDetail } from "../../../../interFaces/bill";
 import { convertPriceVND } from "../../../../utils/common";
 import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
 
+
 const statusBill: any = {
-    pending: { color: 'magenta', title: 'Đang chờ' },
-    confirmed: { color: 'cyan', title: 'Đã xác nhận' },
-    preparing: { color: 'gold', title: 'Chuẩn bị' },
-    shipping: { color: 'purple', title: 'Đang giao' },
-    completed: { color: 'green', title: 'Đã hoàn thành' },
-    cancelled: { color: 'red', title: 'Đã huỷ' },
-    failed: { color: 'volcano', title: 'Thất bại' }
+    'pending': { color: 'magenta', title: 'Đang chờ' },
+    'confirmed': { color: 'cyan', title: 'Đã xác nhận' },
+    'preparing': { color: 'gold', title: 'Chuẩn bị' },
+    'shipping': { color: 'purple', title: 'Đang giao' },
+    'completed': { color: 'green', title: 'Đã hoàn thành' },
+    'cancelled': { color: 'red', title: 'Đã huỷ' },
+    'failed': { color: 'volcano', title: 'Thất bại' },
+    'cancellation_requested': { color: 'yellow', title: 'Chờ xác nhận hủy' },
+    'cancellation_approved': { color: 'volcano', title: 'Xác nhận hủy' },
+    'cancellation_rejected': { color: 'volcano', title: 'Hủy thất bại' },
 };
+
+const statusPayment: any = {
+    pending: { color: "magenta", title: "Đang chờ" },
+    paid: { color: "cyan", title: "Thanh toán khi nhận hàng" },
+    successful: { color: "green", title: "Đã thanh toán" },
+    failed: { color: "red", title: "Thanh toán thất bại" },
+    refunded: { color: "volcano", title: "Hoàn trả tiền" },
+}
 interface IProps {
     itemId?: number;
     onRefresh: () => void;
     onClose: () => void;
-    data?: IBill;
+    data?: any;
     isClient?: boolean;
+    isAdmin?: boolean;
 }
 
 interface IState {
@@ -34,17 +47,22 @@ interface IState {
     item?: IBillDetail[];
     shipping: any[];
     shipper?: any;
+    data?: any;
 }
 
-const initState: IState = {
-    loading: true,
-    loadingBtn: false,
-    loadingShip: false,
-    isEdit: false,
-    shipping: [],
-}
 
-export default function BillModel({ onClose, itemId = undefined, data, isClient }: IProps) {
+
+export default function BillModel({ onClose, itemId = undefined, data, isClient, isAdmin }: IProps) {
+
+    const initState: IState = useMemo(() => ({
+        loading: true,
+        loadingBtn: false,
+        loadingShip: false,
+        isEdit: false,
+        shipping: isAdmin ? data?.shipping_histories : [],
+        shipper: isAdmin ? data?.shipper : undefined,
+        data
+    }), []);
 
     const [state, setState] = useState<IState>(initState);
 
@@ -57,7 +75,10 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
             try {
                 setState(prev => ({ ...prev, loading: true }));
                 const res: any = await apiGetOneBillDetail(itemId!, isClient);
-                setState(prev => ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data }));
+                setState(prev => {
+                    const stateData = prev?.data ? { ...prev.data, address: res?.bill?.address } : undefined;
+                    return ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data, data: stateData })
+                });
             } catch (error) {
                 console.log(error);
                 setState(prev => ({ ...prev, isEdit: true, loading: false }));
@@ -67,7 +88,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
     }, []);
 
     useEffect(() => {
-        if (!itemId || !isClient) {
+        if (!itemId || !isClient || isAdmin) {
             setState(prev => ({ ...prev, isEdit: true }));
             return;
         }
@@ -180,7 +201,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                         Chi tiết đơn
                     </div>
                 }
-                width={650}
+                width={800}
             >
                 <Row gutter={[20, 20]}>
                     <Col span={24}>
@@ -188,54 +209,67 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                             <Col xs={24} sm={12}>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Mã đơn:</span>
-                                    <span>#{data?.ma_bill}</span>
+                                    <span>#{state?.data?.ma_bill}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tên khách hàng:</span>
-                                    <span>{data?.khachhang?.name || data?.khachhang?.email}</span>
+                                    <span>{state?.data?.khachhang?.name || state?.data?.khachhang?.email}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Địa chỉ:</span>
-                                    <span>{data?.addresses || 'Chưa có'}</span>
+                                    <span>{state?.data?.address || 'Chưa có'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Ngày đặt:</span>
-                                    <span>{data?.order_date}</span>
+                                    <span>{state?.data?.order_date}</span>
                                 </div>
                             </Col>
                             <Col xs={24} sm={12}>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Cách thức:</span>
-                                    <span>{data?.order_type == EOrderType.In_restaurant ? 'Tại nhà hàng' : 'Online'}</span>
+                                    <span>{state?.data?.order_type == EOrderType.In_restaurant ? 'Tại nhà hàng' : 'Online'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Trạng thái:</span>
                                     <span>
-                                        <Tag color={statusBill[data?.status || ''].color} className={`min-w-[80px]`} >
-                                            {statusBill[data?.status || ''].title}
+                                        <Tag color={statusBill[state?.data?.status || ''].color} className={`min-w-[80px]`} >
+                                            {statusBill[state?.data?.status || ''].title}
                                         </Tag>
                                     </span>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Thanh toán:</span>
-                                    <span>{data?.payment || 'Chưa có'}</span>
+                                    <span>{state?.data?.payment || 'Chưa có'}</span>
+                                </div>
+                                <div className="flex">
+                                    <span className="text-primary font-bold mr-2">Trạng thái thanh toán:</span>
+                                    <Tag color={statusPayment[state?.data?.payment_status || ''].color} className={`min-w-[80px]`} >
+                                        {statusPayment[state?.data?.payment_status || ''].title}
+                                    </Tag>
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tổng tiền:</span>
-                                    <span>{convertPriceVND(+data?.total_amount! || 0)}</span>
+                                    <span>{convertPriceVND(+state?.data?.total_amount! || 0)}</span>
                                 </div>
                             </Col>
                         </Row>
                     </Col>
                     {
-                        isClient && (
+                        (isClient || isAdmin) && (
                             <>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>
-                                    <Timeline
-                                        className="mt-2"
-                                        items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
-                                    />
+                                    <div className="max-h-[200px]" style={{
+                                        overflowY: 'auto',
+                                        overflowX: 'hidden',
+                                        msOverflowStyle: 'none', /* Ẩn thanh cuộn cho IE và Edge */
+                                        scrollbarWidth: 'none'   /* Ẩn thanh cuộn cho Firefox */
+                                    }}>
+                                        <Timeline
+                                            className="mt-2"
+                                            items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
+                                        />
+                                    </div>
                                 </Col>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Thông tin người giao hàng</span>
@@ -251,18 +285,20 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient 
                             </>
                         )
                     }
-                    <Col span={24}>
-                        <div className='flex items-center justify-between mb-2'>
-                            <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
-                        </div>
-                        <Table
-                            loading={state.loading}
-                            dataSource={state.item}
-                            columns={columns}
-                            rowKey="id"
-                            pagination={false}
-                        />
-                    </Col>
+                    {!isAdmin && (
+                        <Col span={24}>
+                            <div className='flex items-center justify-between mb-2'>
+                                <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
+                            </div>
+                            <Table
+                                loading={state.loading}
+                                dataSource={state.item}
+                                columns={columns}
+                                rowKey="id"
+                                pagination={false}
+                            />
+                        </Col>
+                    )}
                 </Row>
             </Modal>
         </>

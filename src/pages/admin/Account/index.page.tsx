@@ -186,7 +186,7 @@ export default function AccountPage() {
 
             {
                 state.showModal &&
-                <AccountModel showToast={hooks.showToast} onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />
+                <AccountModel onClose={hooks.handleDismissModal} onRefresh={hooks.refreshPage} itemId={state.selectedItemId} />
             }
         </>
     )

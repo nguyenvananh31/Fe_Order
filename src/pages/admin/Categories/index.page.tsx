@@ -93,7 +93,7 @@ export default function CatePage() {
             },
         ];
         return tblColumns;
-    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal])
+    }, [state.pageIndex, state.pageSize, hooks.handleOpenModal]);
 
     return (
         <>

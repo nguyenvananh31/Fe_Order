@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteConfig } from '../../../../constants/path';
 
@@ -34,7 +34,8 @@ const AsideMain = () => {
   ];
 
   const [selectedKey, setSelectedKey] = useState<string>(() => {
-    return localStorage.getItem('selectedKey') || '1';
+    // return localStorage.getItem('selectedKey') || '1';
+    return '1';
   });
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const AsideMain = () => {
   }, [selectedKey]);
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
-    setSelectedKey(e.key);
+    // setSelectedKey(e.key);
   };
 
 

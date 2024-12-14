@@ -6,7 +6,17 @@ export enum PAGINATE_DEFAULT {
 //Quyền admin
 export enum ROLES {
     ADMIN = 'admin',
-    QTV = 'qtv'
+    QTV = 'qtv',
+    SHIPPER = 'shipper',
+    USER = 'user',
+    CUSTOMER = 'customer',
+    CATEGORIES = 'categories',
+    SIZE = 'size',
+    VOUCHER = 'voucher',
+    TABLE = 'table',
+    PRODUCT = 'product',
+    PAYMENT = 'payment',
+    BILL = 'bill',
 }
 
 //order type

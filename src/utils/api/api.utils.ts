@@ -9,9 +9,11 @@ import localStorageUtils, { KeyStorage } from "../local-storage.utils";
 import { ResponseCode } from "./api.types";
 
 interface CustomHeaders {
-  isAuth: boolean;
+  isAuth?: boolean;
   access_token?: string | undefined | null;
   isRefresh?: boolean;
+  'x-client-id'?: string; 
+  'x-api-key'?: string; 
 }
 
 const REQ_TIMEOUT = 25 * 1000;

@@ -39,5 +39,17 @@ export function formatDurationDate(date: Date): string {
 
 //Lấy đường dẫn qr
 export function getUrlQrCheck(id: string) {
-  return import.meta.env.VITE_URL  + '/qr-check/' + id;
+  return import.meta.env.VITE_URL + '/qr-check/' + id;
+}
+
+//Lấy thông tin tài khoản thanh toán
+export function getInfoBank() {
+  const numberBank = import.meta.env.VITE_NUMBER_BANK || '';
+  const nameBank = import.meta.env.VITE_NAME_BANK || '';
+  const bankPin = import.meta.env.VITE_BANK_PIN || '';
+  const bankType = import.meta.env.VITE_BANK_TYPE || '';
+  if (!numberBank || !bankPin || !bankType || !nameBank) {
+    return '';
+  }
+  return { numberBank, bankPin, bankType, nameBank };
 }

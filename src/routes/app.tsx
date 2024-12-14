@@ -41,7 +41,10 @@ const QRheckOrder = lazy(() => import('../pages/user/Order/QrCheckOrder'));
 
 const ListVoucher = lazy(() => import('../pages/admin/Vouchers'));
 
-const DetailOrderTable  = lazy(() => import('../pages/admin/Vouchers'));
+const DetailOrderTable = lazy(() => import('../pages/admin/Vouchers'));
+
+//Quản lý giao hàng
+const ShipperPage = lazy(() => import('../pages/admin/Shipper'));
 
 export interface IRoutesProperties {
     path: RouteProps['path'];
@@ -74,35 +77,37 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: RouteConfig.ACCOUNT,
         name: 'Quản lý tài khoản',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.USER]}>
             <AccountScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.CATEGORY,
         name: 'Quản lý danh mục',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.CATEGORIES]}>
             <CateScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.SIZES,
         name: 'Quản lý kích thước',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.SIZE]}>
             <SizesScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.PAYMENT,
         name: 'Quản lý phương thức thanh toán',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PAYMENT]}>
             <PaymentsScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_TABLE,
         name: 'Quản lý bàn',
-        element: <TableScreen />
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.TABLE]}>
+            <TableScreen />
+        </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_TABLE_ORDER,
@@ -115,43 +120,50 @@ const accountRoutes: IRoutesProperties[] = [
     {
         path: `${RouteConfig.ADMIN_EDIT_PRODUCT}/:id`,
         name: 'Sửa sản phẩm',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT]}>
             <EditProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_PRODUCT,
         name: 'Quản lý sản phẩm',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT]}>
             <ProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.ADMIN_ADD_PRODUCT,
         name: 'Quản lý thêm sản phẩm',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.PRODUCT]}>
             <AddProductScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.CUSTOMERS,
         name: 'Quản lý khách hàng',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.CUSTOMER]}>
             <CustomerScreen />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.VOUCHER,
         name: 'Quản lý Voucher',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.VOUCHER]}>
             <ListVoucher />
         </ProtectedRoute>
     },
     {
         path: RouteConfig.AD_BILL,
         name: 'Quản lý đơn',
-        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN]}>
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.BILL]}>
             <BillScreen />
+        </ProtectedRoute>
+    },
+    {
+        path: RouteConfig.SHIPPER,
+        name: 'Quản lý giao hàng',
+        element: <ProtectedRoute allowedRoles={[ROLES.QTV, ROLES.ADMIN, ROLES.SHIPPER]}>
+            <ShipperPage />
         </ProtectedRoute>
     }
 ];

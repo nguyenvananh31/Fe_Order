@@ -1,12 +1,14 @@
 import { Checkbox, Pagination, Spin } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
 import { apiGetTableClient } from "../utils/table.service";
 import { EStatusTable } from "../../../../constants/enum";
 
 interface IProps {
     onCancel: () => void;
-    onConfirm: (table_ids: any[]) => () => void;
+    onConfirm: (table_ids: any[], type?: number) => () => void;
+    isEdit?: number;
+    options?: any[];
 }
 
 interface IState {
@@ -19,17 +21,19 @@ interface IState {
     options: any[];
 }
 
-const initState: IState = {
-    loading: true,
-    refresh: false,
-    pageSize: 15,
-    pageIndex: 1,
-    totalTable: 0,
-    dataTable: [],
-    options: [],
-}
 
-const ModalOpenTable = ({ onCancel, onConfirm }: IProps) => {
+const ModalOpenTable = ({ onCancel, onConfirm, isEdit = 0, options = [] }: IProps) => {
+
+    const initState: IState = useMemo(() => ({
+        loading: true,
+        refresh: false,
+        pageSize: 15,
+        pageIndex: 1,
+        totalTable: 0,
+        dataTable: [],
+        options,
+    }), []);
+
 
     const [state, setState] = useState<IState>(initState);
 
@@ -64,10 +68,10 @@ const ModalOpenTable = ({ onCancel, onConfirm }: IProps) => {
     }, []);
 
     return <BaseModalSetting
-        title={'Chọn bàn cần mở'}
+        title={isEdit ? isEdit == 1 ? 'Chọn bàn cần xoá' : 'Thêm bàn' : 'Chọn bàn cần mở'}
         onCancel={onCancel}
-        onConfirm={onConfirm(state.options)}
-        okText={'Mở bàn'}
+        onConfirm={onConfirm(state.options, isEdit)}
+        okText={isEdit ? 'Lưu' : 'Mở bàn'}
     >
         <>
             <div className="customer-checkbox">
@@ -75,12 +79,14 @@ const ModalOpenTable = ({ onCancel, onConfirm }: IProps) => {
                     state.dataTable.length > 0 && (
                         <Checkbox.Group className="w-full" onChange={handleChooseTable}>
                             {
-                                state.dataTable.map((i, index) => (
-                                    <Checkbox disabled={i.reservation_status == EStatusTable.OPEN} value={i.id} key={i.id}><span className="line-clamp-1 w-16">{i?.table || `Bàn ${index + 1}`}</span></Checkbox>
-                                ))
+                                state.dataTable.map((i, index) => {
+                                    return (
+                                        <Checkbox disabled={isEdit == 1 ? !state.options.includes(i.id) : i.reservation_status == EStatusTable.OPEN} value={i.id} key={i.id}><span className="line-clamp-1 w-16">{i?.table || `Bàn ${index + 1}`}</span></Checkbox>
+                                    )
+                                })
                             }
                         </Checkbox.Group>
-                    )
+                    )   
                 }
             </div>
             {

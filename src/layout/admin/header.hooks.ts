@@ -4,7 +4,7 @@ import useMenu from "./useMenu";
 
 export default function useHeader() {
   const [open, setOpen] = useState<boolean>(false);
-  const { activeMenu, handleChange } = useMenu();
+  const { activeMenu, handleChange, menuItem } = useMenu();
   const { clearStore } = useAuth();
 
   const toggleDraw = () => {
@@ -18,6 +18,7 @@ export default function useHeader() {
   return {
     open,
     activeMenu,
+    menuItem,
     toggleDraw,
     handleLogout,
     handleChange

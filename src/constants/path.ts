@@ -39,7 +39,8 @@ export const RoutePath = {
     SIZES: 'sizes',
     ERROR: 'error',
     ADMIN_EDIT_PRODUCT: 'product-edit',
-    VOUCHER: 'vouchers'
+    VOUCHER: 'vouchers',
+    SHIPPER: 'shipper',
 }
 
 export const menuPath: { [key: string]: string } = {
@@ -89,6 +90,7 @@ export const RouteConfig = {
     SIZES: '/admin/sizes',
     ADMIN_EDIT_PRODUCT: '/admin/product-edit',
     VOUCHER: '/admin/vouchers',
+    SHIPPER: '/admin/shipper',
 
     // Error page
     ERROR: '/error',

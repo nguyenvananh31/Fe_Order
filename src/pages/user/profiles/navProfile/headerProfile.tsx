@@ -10,7 +10,7 @@ const HeaderProfile = () => {
       <div className="flex items-center text-gray-800 p-5 border-b-2">
         <div className="hidden sm:flex sm:items-center mr-3">
           <Space direction="vertical" size={16}>
-            <Avatar size={64} src="../../public/images/team/01.jpg" />
+            <Avatar size={64} src="/public/images/team/01.jpg" />
           </Space>
         </div>
         <div className="font-medium text-base capitalize">

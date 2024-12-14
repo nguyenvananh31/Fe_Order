@@ -7,8 +7,8 @@ import { Subscription } from "rxjs";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { BaseEventPayload, EventBusName } from "../../utils/event-bus";
 import EventBus from "../../utils/event-bus/event-bus";
-import OrderCartComponent from "./components/OrderCartComponent";
 import { showManageOrder } from "../../utils/event-bus/event-bus.events";
+import OrderCartComponent from "./components/OrderCartComponent";
 
 interface ISate {
     loading: boolean;
@@ -117,7 +117,9 @@ export default function SidebarOder() {
                     defaultActiveKey="2"
                     items={items}
                     size="large"
-                    tabBarExtraContent={{ left: <CloseOutlined onClick={closeNavRight} className="cursor-pointer p-2" /> }}
+                    tabBarExtraContent={{
+                        left: <CloseOutlined onClick={closeNavRight} className="cursor-pointer p-2" />
+                    }}
                     className="pt-4 h-[100vh]"
                     style={{
                         height: '100%',

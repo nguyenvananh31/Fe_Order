@@ -24,6 +24,8 @@ import FormInforProfile from "../pages/user/profiles/infoProfiles/FormInforProfi
 import Table from "../pages/user/Table/Table";
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../pages/admin/Dashboard/Dashboard";
+import { ROLES } from "../constants/enum";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const Router = () => {
   return (
@@ -72,7 +74,7 @@ const Router = () => {
         }
 
         <Route path={RouteConfig.ADMIN} element={<PrivateRoute><BaseLayoutAdmin /></PrivateRoute>} >
-          <Route index element={<Dashboard />} />
+          <Route index element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]}><Dashboard /></ProtectedRoute>} />
           {
             privateProtectedFlattenRoutes.map((route, index) => (
               <Route path={route.path} element={route.element} key={index} />
