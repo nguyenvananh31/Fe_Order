@@ -53,3 +53,9 @@ export function getInfoBank() {
   }
   return { numberBank, bankPin, bankType, nameBank };
 }
+
+//Get link qr image payment
+export function getQrImagePay(amount: number, id: number) {
+  const qrLink = import.meta.env.VITE_QR_URL_IMGAE || '';
+  return qrLink + 'accountName=' + import.meta.env.VITE_NAME_BANK || '' + '&amount=' + amount + '&addInfo=donhang' + id;
+} 

@@ -74,7 +74,8 @@ export default function useTable() {
                         if (prev.showManageOrder == !data.payload.isOpen) {
                             return { ...prev, ...state };
                         }
-                        if (!prev.showManageOrder) {
+                        
+                        if (!prev.showManageOrder && typeof data.payload?.isOpen !== 'undefined') {
                             fetchApiPros();
                         }
                         return { ...prev, ...state };

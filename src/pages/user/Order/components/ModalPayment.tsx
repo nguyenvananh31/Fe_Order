@@ -1,10 +1,8 @@
 import { Card, Divider, Flex, QRCode, Row, Space, Tag } from "antd";
 import moment from "moment";
+import { useMemo } from "react";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
 import { convertPriceVNDNotSupfix, getInfoBank } from "../../../../utils/common";
-import { useCallback, useEffect, useMemo } from "react";
-import ApiUtils from "../../../../utils/api/api.utils";
-import useToast from "../../../../hooks/useToast";
 
 interface IProps {
     onCancel: () => void;
@@ -16,40 +14,8 @@ interface IProps {
 const ModalPayment = (props: IProps) => {
     console.log('props: ', props.billDetail);
 
-    const toast = useToast();
     const bankInfo: any = useMemo(() => getInfoBank(), []);
 
-    useEffect(() => {
-        if (!bankInfo) {
-            return;
-        }
-        const fetchData = async() => {
-            try {
-                const res = await apiGetQr({
-                    accountNo: bankInfo?.numberBank,
-                    accountName: bankInfo?.nameBank, 
-                    acqId: bankInfo?.bankPin,
-                    amount: +props?.billDetail?.total_amount || 0,
-                    addInfo: 'Thanh toán'
-                });
-            } catch (error: any) {
-                console.log(error);
-                toast.showError(error?.error || 'Có lỗi xảy ra!');
-            }
-        }
-        fetchData();
-    }, [bankInfo])
-
-    const apiGetQr = useCallback(async (body: any) => {
-        return await ApiUtils.post<any, any>(
-            'https://api.vietqr.io/v2/generate',
-            body,
-            {
-                'x-client-id': import.meta.env.VITE_X_CLIENT_ID || '',
-                'x-api-key': import.meta.env.VITE_API_KEY || '',
-            }
-        );
-    }, []);
 
     return <BaseModalSetting
         onConfirm={() => { }}
@@ -196,14 +162,14 @@ const ModalPayment = (props: IProps) => {
                         <Flex justify="space-between" align="end" gap={12}>
                             <div>Giảm giá</div>
                             <div>
-                                <span className="text-xs">-{convertPriceVNDNotSupfix(100000)}</span>
+                                <span className="text-xs">-{convertPriceVNDNotSupfix(0)}</span>
                                 <span className="text-[10px]">vnđ</span>
                             </div>
                         </Flex>
                         <Flex justify="space-between" align="end" gap={12}>
                             <div>Thanh toán</div>
                             <div>
-                                <span className="text-sm font-semibold text-[#00813D]">{convertPriceVNDNotSupfix(100000)}</span>
+                                <span className="text-sm font-semibold text-[#00813D]">{convertPriceVNDNotSupfix(props?.billDetail?.totalAmount)}</span>
                                 <span className="text-[#00813D] text-[12px]  font-semibold">vnđ</span>
                             </div>
                         </Flex>
