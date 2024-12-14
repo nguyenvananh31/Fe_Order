@@ -25,7 +25,7 @@ const statusBill: any = {
 
 const statusPayment: any = {
     pending: { color: "magenta", title: "Đang chờ" },
-    paid: { color: "cyan", title: "Trả hàng" },
+    paid: { color: "cyan", title: "Thanh toán khi nhận hàng" },
     successful: { color: "green", title: "Đã thanh toán" },
     failed: { color: "red", title: "Thanh toán thất bại" },
     refunded: { color: "volcano", title: "Hoàn trả tiền" },
@@ -255,7 +255,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                         </Row>
                     </Col>
                     {
-                        isClient || isAdmin && (
+                        (isClient || isAdmin) && (
                             <>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>

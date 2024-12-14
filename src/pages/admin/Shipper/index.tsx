@@ -161,6 +161,8 @@ const ShipperPage = () => {
 
     //hanđle approve bill shipper
     const handleChangeStatus = useCallback((id: number, status: string, hasImage: boolean = false) => async () => {
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaaa');
+
         try {
             const formData = new FormData();
             if (hasImage) {
@@ -179,7 +181,7 @@ const ShipperPage = () => {
     }, [fileList]);
 
     // handle submit form và cập nhật
-    const handleSubmit = () => {
+    const handleSubmit = () => {        
         form.submit();
     }
 
@@ -386,7 +388,7 @@ const ShipperPage = () => {
             >
                 <Form
                     form={form}
-                    onFinish={(values: any) => handleChangeStatus(state?.selectedItemId!, values.status ? 'delivered' : 'delivery_failed', values.status)}
+                    onFinish={(values: any) => handleChangeStatus(state?.selectedItemId!, values.status ? 'delivered' : 'delivery_failed', values.status)()}
                     // disabled={!state.isEdit}
                     layout="vertical"
                 >

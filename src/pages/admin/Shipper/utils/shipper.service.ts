@@ -11,7 +11,7 @@ export const apigetShipper = async (params?: any) => {
 
 export const apiGetUpdateShippingStatus = async (id: number, body: any, hasImage?: boolean) => {
     if (hasImage) {
-        return await ApiUtils.postForm<any, any>(apiName.updateShippingStatus + '/' + id + '?method=PUT', body);
+        return await ApiUtils.postForm<any, any>(apiName.updateShippingStatus + '/' + id + '?_method=PUT', body);
     }
     return await ApiUtils.put<any, any>(apiName.updateShippingStatus + '/' + id, body);
 }

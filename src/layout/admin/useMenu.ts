@@ -14,15 +14,15 @@ export default function useMenu() {
 
   const menuItem = useMemo(() => {
     let menu = [...LISTMENU];
-    const roles = user?.roles?.map(i => i.name);
-    if (roles.includes(ROLES.ADMIN)) {
+    const roles = user?.roles?.map(i => i.name) || [];
+    if (roles?.includes(ROLES.ADMIN)) {
       return menu;
     }
     menu = menu.filter((i: any) => {
       if (!i?.permission || i.key == RoutePath.ADMIN) {
         return true;
       }
-      return i.permission.some((i: any) => roles.includes(i));
+      return i.permission.some((i: any) => roles?.includes(i));
     });
     return menu;
   }, [user]);
