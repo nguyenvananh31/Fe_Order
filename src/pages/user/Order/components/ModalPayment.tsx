@@ -12,7 +12,6 @@ interface IProps {
 }
 
 const ModalPayment = (props: IProps) => {
-
     const bankInfo: any = useMemo(() => getInfoBank(), []);
 
     return <BaseModalSetting
@@ -28,7 +27,7 @@ const ModalPayment = (props: IProps) => {
     >
         <Flex wrap={'wrap-reverse'} className="md:w-max" gap={16}>
             {
-                props.billPros.length > 0 && (
+                props.billPros.length > 0 && props?.billPros[0]?.id && (
                     <div className={`bg-[#F5F5F5] md:p-4 max-md:p-2 rounded-md md:w-[400px] ${props.isMobile ? 'flex-1' : ''}`}>
                         <div className="text-lg font-semibold text-center mb-4">Đơn hàng</div>
                         <Row gutter={[16, 16]} justify={'center'} className="px-4">

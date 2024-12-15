@@ -375,7 +375,7 @@ const Checkout = () => {
     {
       state.showModalPay && <ModalPayment
         onCancel={handleHiddenModalPay}
-        billPros={listPros}
+        billPros={Array(listPros.length)}
         billDetail={state.bill}
         isMobile={isMobile}
       />

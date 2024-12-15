@@ -1,5 +1,5 @@
 import { ArrowUpOutlined, FileTextOutlined, StockOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Avatar, Card, Col, Progress, Row, Statistic, Table } from "antd";
+import { Avatar, Card, Col, DatePicker, Flex, Progress, Radio, Row, Spin, Statistic, Table } from "antd";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2"; // Thêm Line chart từ react-chartjs-2
 import './Dashboard.scss'; // Import SCSS file
 import { apiGetDashboard } from "./utils/dashboard.service";
@@ -30,15 +30,21 @@ ChartJS.register(
 interface IState {
   loading: boolean;
   data: any;
+  dataOption: any;
   start_date: string;
   end_date: string;
+  optionFillter: number;
+  refresh: boolean;
 }
 
 const initState: IState = {
   loading: true,
   data: [],
+  dataOption: {},
   start_date: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
   end_date: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
+  optionFillter: 1,
+  refresh: false,
 }
 
 const Dashboard = () => {
@@ -49,19 +55,21 @@ const Dashboard = () => {
   useEffect(() => {
     (async () => {
       try {
+        setState(prev => ({ ...prev, loading: true }));
         const conds = {
           start_date: state.start_date,
           end_date: state.end_date,
         }
         const res = await apiGetDashboard(conds);
-        setState(prev => ({ ...prev, loading: false, data: res }));
+        let dataOption = state.optionFillter == 1 ? res?.default?.today : res?.filtered;
+        setState(prev => ({ ...prev, loading: false, data: res, dataOption }));
       } catch (error: any) {
         console.log(error);
         // toast.showError(error);
         setState(prev => ({ ...prev, loading: false }));
       }
     })();
-  }, []);
+  }, [state.refresh]);
 
   // Dữ liệu cho biểu đồ Line
   const lineChartData = {
@@ -146,6 +154,44 @@ const Dashboard = () => {
     },
   ];
 
+  const options = [
+    { label: 'Tháng trước', value: 0 },
+    { label: 'Ngày', value: 1 },
+    { label: 'Tháng này', value: 2 },
+    { label: 'Tuỳ chỉnh', value: 3 },
+  ];
+
+  const handleChangeOption = useCallback((e: any) => {
+    setState(prev => {
+      let dataOption;
+      if (prev.data && e.target.value !== 3) {
+        if (e.target.value == 0) {
+          dataOption = prev.data?.default?.last_month;
+        }
+        if (e.target.value == 1) {
+          dataOption = prev.data?.default?.today;
+        }
+        if (e.target.value == 2) {
+          dataOption = prev.data?.default?.current_month;
+        }
+      }
+      return { ...prev, optionFillter: e.target.value, dataOption }
+    });
+  }, []);
+
+  //Filter date
+  const handleFilterDate = (_: any, dateStrings: [string, string]) => {
+    if (!dateStrings[0] || !dateStrings[1]) {
+      setState(prev => ({ ...prev, filterDate: undefined, refresh: !prev.refresh, pageIndex: 1 }))
+      return;
+    }
+
+    const startDate = new Date(dateStrings[0]).toISOString();
+    const endDate = new Date(dateStrings[1]).toISOString();
+
+    setState(prev => ({ ...prev, filterDate: [startDate, endDate], refresh: !prev.refresh }))
+  }
+
   return (
     <div className="dashboard px-2">
       <Row gutter={16}>
@@ -214,132 +260,58 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Row gutter={[8, 8]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
-        <Col span={24}><h4>Tổng</h4></Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng sản phẩm'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.total?.products} <StockOutlined /></p>}
-            />
-          </Card>
+      <Row gutter={[8, 20]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
+        <Col span={24}>
+          <Flex justify="space-between">
+            <h4>Thống kê tổng</h4>
+            <Flex>
+              {
+                state.optionFillter == 3 && (
+                  <DatePicker.RangePicker
+                    onChange={handleFilterDate}
+                  />
+                )
+              }
+              <Radio.Group className="ml-2" block options={options} value={state.optionFillter} optionType="button" onChange={handleChangeOption} />
+            </Flex>
+          </Flex>
         </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng tài khoản'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.total?.users} <UserAddOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng đơn hàng'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.total?.bills} <FileTextOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng bàn'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.total?.tables} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow my-4">
-        <Col span={24}><h4>Tổng theo Tháng Này</h4></Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng sản phẩm'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.current_month?.products} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng tài khoản'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.current_month?.users} <UserAddOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng đơn hàng'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.current_month?.bills} <FileTextOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng bàn'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.current_month?.tables} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow my-4">
-        <Col span={24}><h4>Tổng Theo Tháng trước</h4></Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng sản phẩm'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.last_month?.products} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng tài khoản'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.last_month?.users} <UserAddOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng đơn hàng'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.last_month?.bills} <FileTextOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng bàn'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.last_month?.tables} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
-        <Col span={24}><h4>Tổng Theo Ngày</h4></Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng sản phẩm'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.products} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng tài khoản'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.users} <UserAddOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng đơn hàng'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.bills} <FileTextOutlined /></p>}
-            />
-          </Card>
-        </Col>
-        <Col span={5}>
-          <Card type="inner" hoverable>
-            <Card.Meta title={'Tổng bàn'}
-              description={<p className="font-bold text-lg text-primary text-center">{state.data?.default?.today?.tables} <StockOutlined /></p>}
-            />
-          </Card>
-        </Col>
+        {
+          state.loading ? <div className='flex justify-center items-center min-h-20'>
+            <Spin />
+          </div>
+            :
+            <>
+              <Col span={5}>
+                <Card type="inner" hoverable>
+                  <Card.Meta title={'Tổng sản phẩm'}
+                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.products} <StockOutlined /></p>}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card type="inner" hoverable>
+                  <Card.Meta title={'Tổng tài khoản'}
+                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.users} <UserAddOutlined /></p>}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card type="inner" hoverable>
+                  <Card.Meta title={'Tổng đơn hàng'}
+                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.bills} <FileTextOutlined /></p>}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card type="inner" hoverable>
+                  <Card.Meta title={'Tổng bàn'}
+                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.tables} <StockOutlined /></p>}
+                  />
+                </Card>
+              </Col>
+            </>
+        }
       </Row>
     </div>
   );
