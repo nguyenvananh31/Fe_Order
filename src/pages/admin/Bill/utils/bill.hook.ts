@@ -6,6 +6,7 @@ import useDebounce from "../../../../hooks/useDeBounce";
 import useToast from "../../../../hooks/useToast";
 import { IBill } from "../../../../interFaces/bill";
 import { apiGetBils, apiUpdateStatusBill } from "./bill.service";
+import { useIsMobile } from "../../../../hooks/useIsMobile";
 
 interface IState {
     loadingSubmit: boolean;
@@ -21,6 +22,7 @@ interface IState {
     search: boolean;
     bill?: IBill;
     showModalStatus: boolean;
+    showModalPay: boolean;
     loadingSearch: boolean;
     textSearch?: string;
     filtertatus?: boolean;
@@ -41,6 +43,7 @@ const initState: IState = {
     refresh: false,
     search: false,
     showModalStatus: false,
+    showModalPay: false,
     loadingSearch: false,
     textSearch: '',
     filtertatus: undefined,
@@ -55,11 +58,12 @@ export default function useBill() {
     const [status, setStatus] = useState<any>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const debouncedSearch = useDebounce(state.textSearch?.trim() || '');
+    const isMobile = useIsMobile();
 
     // useEffect(() => {
     //     // Nghe sự kiện từ channel
     //     const channel = echo.channel(`bill.${billId}`);
-        
+
     //     channel.listen('.item.added', (event) => {
     //         console.log('Event received:', event);
     //     });
@@ -133,6 +137,8 @@ export default function useBill() {
         setState((prev) => ({
             ...prev,
             showModal: false,
+            showModalPay: false,
+            showModalStatus: false,
             selectedItemId: undefined,
         }));
     }, []);
@@ -143,6 +149,15 @@ export default function useBill() {
             ...prev,
             showModal: true,
             selectedItemId: item?.id || 0,
+            bill: item
+        }))
+    }, []);
+
+    // Hiển thị model pay
+    const handleOpenModalPay = useCallback((item?: IBill) => {
+        setState(prev => ({
+            ...prev,
+            showModalPay: true,
             bill: item
         }))
     }, []);
@@ -221,7 +236,7 @@ export default function useBill() {
 
         const filterDate = new Date(dateString).toISOString();
 
-        setState(prev => ({ ...prev, filterDate , refresh: !prev.refresh, pageIndex: 1 }))
+        setState(prev => ({ ...prev, filterDate, refresh: !prev.refresh, pageIndex: 1 }))
     }
 
     // làm mới data
@@ -234,13 +249,14 @@ export default function useBill() {
             setState(prev => {
                 let rePage = false;
                 if (
-                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length-3) ||
+                    prev.filterOrderBy !== sorter?.order?.slice(0, sorter.order.length - 3) ||
                     prev.filterSort !== sorter.field
                 ) {
                     rePage = true;
                 }
-                return { ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length-3) : undefined,
-                     filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
+                return {
+                    ...prev, filterOrderBy: sorter.order ? sorter.order.slice(0, sorter.order.length - 3) : undefined,
+                    filterSort: sorter.field, refresh: !state.refresh, pageIndex: rePage ? 1 : prev.pageIndex
                 }
             })
         }
@@ -250,6 +266,8 @@ export default function useBill() {
         state,
         status,
         options,
+        isMobile,
+        handleOpenModalPay,
         handlePageChange,
         handleOpenModal,
         refreshPage,

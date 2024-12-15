@@ -124,7 +124,6 @@ const ProductDetail = () => {
             description={state.product.description}
             price={activeProductDetail?.price}
             sale={activeProductDetail?.sale || 0}
-            quantity={activeProductDetail?.quantity}
             currentQuantity={state.quantity}
             increment={increment}
             decrement={decrement}

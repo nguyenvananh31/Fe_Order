@@ -1,12 +1,12 @@
 import { ZoomInOutlined } from "@ant-design/icons";
-import { Button, Col, Image, Modal, Row, Space, Tag, Timeline } from "antd";
+import { Button, Col, Flex, Image, Modal, Row, Space, Tag, Timeline } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { Table } from "antd/lib";
 import { useEffect, useMemo, useState } from "react";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 import { EOrderType } from "../../../../constants/enum";
 import { IBillDetail } from "../../../../interFaces/bill";
-import { convertPriceVND } from "../../../../utils/common";
+import { convertPriceVND, getInfoBank, getQrImagePay } from "../../../../utils/common";
 import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
 
 
@@ -65,6 +65,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
     }), []);
 
     const [state, setState] = useState<IState>(initState);
+    const bankInfo: any = useMemo(() => getInfoBank(), []);
 
     useEffect(() => {
         if (!itemId) {
@@ -254,6 +255,38 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                             </Col>
                         </Row>
                     </Col>
+                    {
+                        isClient && state?.data?.payment_status == 'pending' && (
+                            <>
+                                <Col span={12} className="text-center">
+                                    <Flex vertical justify="space-between" align="center" gap={4}>
+                                        <div>Mở Ứng Dụng Ngân Hàng để quét QRCode</div>
+                                        <Image width={150} className="p-1 rounded border" src={getQrImagePay(+state?.data?.totalAmount || +state?.data?.total_amount, state?.data?.id)} />
+                                    </Flex>
+                                </Col>
+                                <Col span={12} className="flex flex-col justify-center">
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Ngân hàng:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {bankInfo?.bankType || 'MB'}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Số tài khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {bankInfo?.numberBank || '0374339124'}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Tên tài khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {'DO VAN KHOA'}
+                                        </div>
+                                    </Flex>
+                                </Col>
+                            </>
+                        )
+                    }
                     {
                         (isClient || isAdmin) && (
                             <>
