@@ -1,10 +1,13 @@
-import { FileTextOutlined, StockOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Card, Col, DatePicker, Flex, Radio, Row, Spin } from "antd";
+import { Breadcrumb, Col, DatePicker, Row, Select } from "antd";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
+import { AreaChartCn } from "./components/AreaChart";
+import { BarChartCn } from "./components/BarChart";
+import { LineChartCn } from "./components/LineChart";
+import { RadialChartCn } from "./components/RadialChart";
+import { RadialChartStackedCn } from "./components/RadialChartStacked";
 import './Dashboard.scss'; // Import SCSS file
-import { apiGetDashboard } from "./utils/dashboard.service";
-import LineChart from "./components/LineChart";
+import { apiGetDashboard, apiGetDashboardChart } from "./utils/dashboard.service";
 import dayjs from "dayjs";
 
 interface IState {
@@ -51,6 +54,26 @@ const Dashboard = () => {
     })();
   }, [state.refresh]);
 
+  
+  useEffect(() => {
+    (async () => {
+      try {
+        setState(prev => ({ ...prev, loading: true }));
+        const conds = {
+          start_date: state.start_date,
+          end_date: state.end_date,
+        }
+        const res = await apiGetDashboardChart(conds);
+        let dataOption = state.optionFillter == 1 ? res?.default?.today : res?.filtered;
+        setState(prev => ({ ...prev, loading: false, data: res, dataOption }));
+      } catch (error: any) {
+        console.log(error);
+        // toast.showError(error);
+        setState(prev => ({ ...prev, loading: false }));
+      }
+    })();
+  }, [state.refresh]);
+
   const options = [
     { label: 'Tháng trước', value: 0 },
     { label: 'Ngày', value: 1 },
@@ -58,21 +81,24 @@ const Dashboard = () => {
     { label: 'Tuỳ chỉnh', value: 3 },
   ];
 
-  const handleChangeOption = useCallback((e: any) => {
+  const handleChangeOption = useCallback((value: any) => {
     setState(prev => {
       let dataOption;
-      if (prev.data && e.target.value !== 3) {
-        if (e.target.value == 0) {
+      if (prev.data && value !== 3) {
+        if (value == 0) {
           dataOption = prev.data?.default?.last_month;
         }
-        if (e.target.value == 1) {
+        if (value == 1) {
           dataOption = prev.data?.default?.today;
         }
-        if (e.target.value == 2) {
+        if (value == 2) {
           dataOption = prev.data?.default?.current_month;
         }
+        if (value == 3) {
+          dataOption = prev.data?.res?.filtered;
+        }
       }
-      return { ...prev, optionFillter: e.target.value, dataOption }
+      return { ...prev, optionFillter: value, dataOption }
     });
   }, []);
 
@@ -86,68 +112,67 @@ const Dashboard = () => {
     const startDate = new Date(dateStrings[0]).toISOString();
     const endDate = new Date(dateStrings[1]).toISOString();
 
-    setState(prev => ({ ...prev, filterDate: [startDate, endDate], refresh: !prev.refresh }))
+    setState(prev => ({ ...prev, start_date: startDate, end_date: endDate, refresh: !prev.refresh }))
   }
 
   return (
-    <div className="dashboard px-2">
-      <Row gutter={[8, 20]} justify={'space-between'} className="bg-primary px-6 py-6 rounded-primary drop-shadow">
-        <Col span={24}>
-          <Flex justify="space-between">
-            <h4>Thống kê tổng</h4>
-            <Flex>
+    <div className="dashboard">
+      <Row gutter={[20, 20]} justify={'space-between'} className="my-4">
+        <Col span={24} className="flex justify-end items-center gap-4">
+          <Breadcrumb
+            style={{
+              fontSize: "24px",
+              margin: "16px auto 28px 0",
+            }}
+            items={[
               {
-                state.optionFillter == 3 && (
-                  <DatePicker.RangePicker
-                    onChange={handleFilterDate}
-                    maxDate={dayjs()}
-                  />
-                )
-              }
-              <Radio.Group className="ml-2 cutomize-radio" block options={options} value={state.optionFillter} optionType="button" onChange={handleChangeOption} />
-            </Flex>
-          </Flex>
+                title: <div className="font-bold">Dashboard</div>,
+              },
+            ]}
+          />
+          <DatePicker.RangePicker
+            onChange={handleFilterDate}
+            maxDate={dayjs()}
+            disabled={state?.optionFillter != 3}
+            allowEmpty
+          />
+          <Select
+            value={state.optionFillter}
+            style={{ width: 120 }}
+            onChange={handleChangeOption}
+            options={options}
+          />
         </Col>
-        {
-          state.loading ? <div className='flex justify-center items-center min-h-20'>
-            <Spin />
-          </div>
-            :
-            <>
-              <Col span={5}>
-                <Card type="inner" hoverable>
-                  <Card.Meta title={'Tổng sản phẩm'}
-                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.products} <StockOutlined /></p>}
-                  />
-                </Card>
-              </Col>
-              <Col span={5}>
-                <Card type="inner" hoverable>
-                  <Card.Meta title={'Tổng tài khoản'}
-                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.users} <UserAddOutlined /></p>}
-                  />
-                </Card>
-              </Col>
-              <Col span={5}>
-                <Card type="inner" hoverable>
-                  <Card.Meta title={'Tổng đơn hàng'}
-                    description={<p className="font-bold text-lg text-primary text-center">{state?.dataOption?.bills} <FileTextOutlined /></p>}
-                  />
-                </Card>
-              </Col>
-              <Col span={5}>
-                <Card type="inner" hoverable>
-                  <Card.Meta title={'Ước tính lượng khách'}
-                    description={<p className="font-bold text-lg text-primary text-center">{Math.ceil((+state?.dataOption?.guests?.min_guest + +state?.dataOption?.guests?.max_guest) / 2 || 0)} <StockOutlined /></p>}
-                  />
-                </Card>
-              </Col>
-            </>
-        }
-      </Row>
-      <Row gutter={[8, 20]} justify={'space-between'} className="my-4">
         <Col span={12}>
-          <LineChart />
+          <Row gutter={[20, 20]}>
+            <Col span={12}>
+              <RadialChartCn
+                completed_bills={state.dataOption?.bills?.completed_bills?.revenue}
+                failed_bills={state.dataOption?.bills?.failed_bills?.revenue}
+              />
+            </Col>
+            <Col span={12}>
+              <RadialChartStackedCn
+                completed_bills={state.dataOption?.bills?.completed_bills?.count}
+                failed_bills={state.dataOption?.bills?.failed_bills?.count}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col span={12}>
+          <BarChartCn
+            guests={Math.ceil((+state.dataOption?.guests?.max_guest + +state.dataOption?.guests?.min_guest) / 2)}
+            orders={+state.dataOption?.orders}
+            products={+state.dataOption?.products}
+            tables={+state.dataOption?.tables}
+            users={+state.dataOption?.users}
+          />
+        </Col>
+        <Col span={12}>
+          <LineChartCn />
+        </Col>
+        <Col span={12}>
+          <AreaChartCn />
         </Col>
       </Row>
     </div>
