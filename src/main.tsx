@@ -6,13 +6,12 @@ import './configs/css/config.css';
 import './index.scss';
 import store from "./utils/redux-store.utils.ts";
 
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
         {/* <PersistGate loading={<Loader />} persistor={persistor}> */}
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
         {/* </PersistGate> */}
     </Provider>
 
