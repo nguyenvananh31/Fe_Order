@@ -1,5 +1,5 @@
-import { Button, Input } from 'antd';
 import { MinusOutlined, PlusOutlined, StarFilled } from '@ant-design/icons';
+import { Button, Input } from 'antd';
 import { convertPriceVND } from '../../../../utils/common';
 
 interface ProductInfoProps {
@@ -7,7 +7,6 @@ interface ProductInfoProps {
   description: string;
   price: number;
   sale: number;
-  quantity: number;
   currentQuantity: number;
   increment: () => void;
   decrement: () => void;
@@ -19,7 +18,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
   description,
   price,
   sale,
-  quantity,
   currentQuantity,
   increment,
   decrement,
@@ -68,7 +66,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
         <button className="btn-type-1" onClick={() => handleAddToCart(true)}><span>Đặt Ngay</span></button>
         <button className="btn-type-2" onClick={() => handleAddToCart()}><span>Thêm Vào Giỏ Hàng</span></button>
       </div>
-      <span className="block mt-[12px] text-type-2">Quantity: <span className='text-mainColor2'>{quantity}</span></span>
+      {/* <span className="block mt-[12px] text-type-2">Quantity: <span className='text-mainColor2'>{quantity}</span></span> */}
     </div>
   );
 };

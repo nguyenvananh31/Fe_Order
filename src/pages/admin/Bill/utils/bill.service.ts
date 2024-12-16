@@ -6,7 +6,8 @@ const apiName = {
     bill: '/api/admin/bills',
     billDetail: '/api/admin/billsDetail',
     billDetailClient: '/api/client/billdetail',
-    billShipping: '/api/client/shipping'
+    billShipping: '/api/client/shipping',
+    billShippingAdmin: '/api/admin/shipping'
 }
 
 export const apiGetBils = async (params?: any) => {
@@ -24,8 +25,8 @@ export const apiGetOneBillDetail = async (id: number, isClient?: boolean) => {
     return res;
 }
 
-export const apiGetOneBillShipping = async (id: number) => {
-    const res = await ApiUtils.fetch<any, any>(`${apiName.billShipping}/${id}`);
+export const apiGetOneBillShipping = async (id: number, isClient?: boolean) => {
+    const res = await ApiUtils.fetch<any, any>(`${isClient ? apiName.billShipping : apiName.billShippingAdmin}/${id}`);
     return res;
 }
 

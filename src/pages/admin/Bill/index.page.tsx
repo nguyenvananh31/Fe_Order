@@ -1,5 +1,5 @@
-import { CloseCircleFilled, EyeOutlined, LoadingOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
-import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Modal, Radio, Row, Select, Space, Tag, Tooltip } from "antd";
+import { CloseCircleFilled, EyeOutlined, LoadingOutlined, PayCircleOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { AutoComplete, Breadcrumb, Button, Col, DatePicker, Divider, Flex, Modal, Radio, Row, Select, Space, Tag, Tooltip } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useMemo } from "react";
 import { EOrderStatus, EOrderType } from "../../../constants/enum";
@@ -7,6 +7,7 @@ import { IBill } from "../../../interFaces/bill";
 import { convertPriceVND } from "../../../utils/common";
 import BillModel from "./components/BillModal";
 import useBill from "./utils/bill.hook";
+import ModalPayment from "../../user/Order/components/ModalPayment";
 
 const statusBill: any = {
     'pending': { color: 'magenta', title: 'Đang chờ' },
@@ -139,9 +140,18 @@ export default function CatePage() {
                 align: 'center',
                 fixed: 'right',
                 render: (_: any, item: any) => (
-                    <Tooltip title="Chi tiết">
-                        <Button onClick={() => hooks.handleOpenModal(item)} className='ml-2' icon={<EyeOutlined />}></Button>
-                    </Tooltip>
+                    <Flex>
+                        <Tooltip title="Chi tiết">
+                            <Button onClick={() => hooks.handleOpenModal(item)} className='ml-2' icon={<EyeOutlined />}></Button>
+                        </Tooltip>
+                        {
+                            item?.payment_status == 'pending' && (
+                                <Tooltip title="Thông tin thanh toán">
+                                    <Button type="primary" onClick={() => hooks.handleOpenModalPay(item)} className='ml-2' icon={<PayCircleOutlined />}></Button>
+                                </Tooltip>
+                            )
+                        }
+                    </Flex>
                 )
             },
         ];
@@ -268,6 +278,15 @@ export default function CatePage() {
                     </Space>
                 </Radio.Group>
             </Modal>
+            {/* Modal thông tin thanh toán */}
+            {
+                state.showModalPay && <ModalPayment
+                    onCancel={hooks.handleDismissModal}
+                    billPros={[]}
+                    billDetail={state.bill}
+                    isMobile={hooks.isMobile}
+                />
+            }
         </>
     )
 }

@@ -13,6 +13,8 @@ import { IPayments } from "../../../interFaces/payments";
 import { convertPriceVND } from "../../../utils/common";
 import BaseModalVoucher from "./components/VoucherModal";
 import { apiAddBill, apiGetAddresandCustomer, apiGetPayment } from "./utils/checkout.service";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import ModalPayment from "../Order/components/ModalPayment";
 
 interface IState {
   loading: boolean;
@@ -28,6 +30,8 @@ interface IState {
   showModalVoucher: boolean;
   voucher: any[];
   showMorePro: boolean;
+  showModalPay: boolean;
+  bill: any;
 }
 
 const initState: IState = {
@@ -44,6 +48,8 @@ const initState: IState = {
   showModalVoucher: false,
   voucher: [],
   showMorePro: false,
+  showModalPay: false,
+  bill: {},
 }
 
 const Checkout = () => {
@@ -51,6 +57,7 @@ const Checkout = () => {
   const [state, setState] = useState<IState>(initState);
   const { cartStore, refreshCartStore } = useCartStore();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (cartStore.optionSelect.length == 0) {
@@ -80,10 +87,10 @@ const Checkout = () => {
         return acc + +curr.max_discount_value;
       }
       return acc + discount;
-    },0);
+    }, 0);
   }, [state.voucher, totalPros]);
   const totalDiscount = useMemo(() => {
-    let pointSale = state.tranferPoint ? state.customer?.diemthuong || 0 > totalPros ? totalPros : state.customer?.diemthuong : 0;
+    let pointSale = state.tranferPoint ? (state.customer?.diemthuong || 0) > totalPros ? totalPros : state.customer?.diemthuong : 0;
     return pointSale + totalVouchers;
   }, [state.tranferPoint, totalVouchers]);
   const subTotal = useMemo(() => totalPros - totalDiscount! >= 0 ? totalPros - totalDiscount! : 0, [totalPros, totalDiscount]);
@@ -137,7 +144,13 @@ const Checkout = () => {
   }, []);
 
   const handleHiddenModal = useCallback(() => {
-    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: false }));
+    setState(prev => ({ ...prev, showModalAddress: false, showModalVoucher: false, showModalPay: false }));
+  }, []);
+
+  const handleHiddenModalPay = useCallback(() => {
+    setState(prev => ({ ...prev, showModalPay: false }));
+    refreshCartStore();
+    navigate(RouteConfig.HOME);
   }, []);
 
   const handleChangeAddress = useCallback((item?: IAddress) => () => {
@@ -182,7 +195,7 @@ const Checkout = () => {
         dataIndex: 'total',
         key: 'total',
         align: 'right',
-        render: (_: any, { quantity, product_sale, product_price}: any) => `${convertPriceVND(quantity * (+product_sale || +product_price))}`,
+        render: (_: any, { quantity, product_sale, product_price }: any) => `${convertPriceVND(quantity * (+product_sale || +product_price))}`,
       },
     ]
   }, [cartStore]);
@@ -201,10 +214,14 @@ const Checkout = () => {
       formData.append('use_points', `${state.tranferPoint ? 1 : 0}`);
       formData.append('user_addresses_id', `${state.addresActive?.id}`);
       formData.append('payment_id', `${state.paymentValue}`);
-      await apiAddBill(formData);
-      toast.showSuccess('Đặt hàng thành công!' +  (state.paymentValue == 2 ? ' Vui lòng thanh toán đơn hàng!' : ''));
-      refreshCartStore();
-      // navigate(RouteConfig.HOME);
+      const res = await apiAddBill(formData);
+      toast.showSuccess('Đặt hàng thành công!' + (state.paymentValue == 2 ? ' Vui lòng thanh toán đơn hàng!' : ''));
+      if (state.paymentValue == 2) {
+        setState(prev => ({ ...prev, showModalPay: true, bill: res?.bill }));
+      } else {
+        refreshCartStore();
+        navigate(RouteConfig.HOME);
+      }
     } catch (error: any) {
       console.log(error);
       toast.showError(error);
@@ -354,8 +371,14 @@ const Checkout = () => {
         voucher={state.voucher}
       />
     }
+    {/* Modal thông tin thanh toán */}
     {
-      
+      state.showModalPay && <ModalPayment
+        onCancel={handleHiddenModalPay}
+        billPros={Array(listPros.length)}
+        billDetail={state.bill}
+        isMobile={isMobile}
+      />
     }
   </div>
 };

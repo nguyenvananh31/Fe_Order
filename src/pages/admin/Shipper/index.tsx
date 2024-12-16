@@ -83,6 +83,7 @@ const ShipperPage = () => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [previewImage, setPreviewImage] = useState<string | undefined>('');
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+    const [optionShip, setOptionShip] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -161,8 +162,6 @@ const ShipperPage = () => {
 
     //hanđle approve bill shipper
     const handleChangeStatus = useCallback((id: number, status: string, hasImage: boolean = false) => async () => {
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaa');
-
         try {
             const formData = new FormData();
             if (hasImage) {
@@ -181,7 +180,7 @@ const ShipperPage = () => {
     }, [fileList]);
 
     // handle submit form và cập nhật
-    const handleSubmit = () => {        
+    const handleSubmit = () => {
         form.submit();
     }
 
@@ -401,7 +400,7 @@ const ShipperPage = () => {
                         name="status"
                         rules={[{ required: true, message: 'Trạng thái giao hàng là bắt buộc!' }]}
                     >
-                        <Select defaultValue={true}>
+                        <Select value={optionShip} onChange={(value: boolean) => setOptionShip(value)}>
                             <Select.Option value={true}>Giao hàng thành công</Select.Option>
                             <Select.Option value={false}>Giao hàng thất bại</Select.Option>
                         </Select>

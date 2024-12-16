@@ -82,3 +82,9 @@
     }
     
 }
+
+.cutomize-radio {
+    .ant-radio-button-wrapper-block {
+        flex: unset;
+    }
+}

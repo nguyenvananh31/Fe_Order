@@ -1,8 +1,8 @@
-import { Card, Divider, Flex, QRCode, Row, Space, Tag } from "antd";
+import { Card, Divider, Flex, Image, Row, Space, Tag } from "antd";
 import moment from "moment";
 import { useMemo } from "react";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
-import { convertPriceVNDNotSupfix, getInfoBank } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, getInfoBank, getQrImagePay } from "../../../../utils/common";
 
 interface IProps {
     onCancel: () => void;
@@ -12,10 +12,7 @@ interface IProps {
 }
 
 const ModalPayment = (props: IProps) => {
-    console.log('props: ', props.billDetail);
-
     const bankInfo: any = useMemo(() => getInfoBank(), []);
-
 
     return <BaseModalSetting
         onConfirm={() => { }}
@@ -30,7 +27,7 @@ const ModalPayment = (props: IProps) => {
     >
         <Flex wrap={'wrap-reverse'} className="md:w-max" gap={16}>
             {
-                props.billPros.length > 0 && (
+                props.billPros.length > 0 && props?.billPros[0]?.id && (
                     <div className={`bg-[#F5F5F5] md:p-4 max-md:p-2 rounded-md md:w-[400px] ${props.isMobile ? 'flex-1' : ''}`}>
                         <div className="text-lg font-semibold text-center mb-4">Đơn hàng</div>
                         <Row gutter={[16, 16]} justify={'center'} className="px-4">
@@ -71,74 +68,6 @@ const ModalPayment = (props: IProps) => {
                                     </Card>
                                 ))
                             }
-                            {/* <Col span={24}>
-                        <Card bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                            <Card.Meta title={
-                                <div className="border rounded-md p-2 bg-white">
-                                    <Flex gap={4}>
-                                        <Flex flex={1} align="end" justify="space-between">
-                                            <Flex gap={8}>
-                                                <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
-                                                <div>
-                                                    <p>Fish Burger</p>
-                                                    <p className="text-ghost text-sm">x4</p>
-                                                </div>
-                                            </Flex>
-                                            <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <Tag color="green">Hoàn thành</Tag>
-                                                <div>
-                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
-                                                    <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                                </div>
-                                            </Flex>
-                                        </Flex>
-                                    </Flex>
-                                    <Divider className="my-2" />
-                                    <Flex justify="space-between" align="center">
-                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
-                                        <div>
-                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
-                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                        </div>
-                                    </Flex>
-                                </div>
-                            } />
-                        </Card>
-                    </Col> */}
-                            {/* <Col span={24}>
-                        <Card loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                            <Card.Meta title={
-                                <div className="border rounded-md p-2 bg-white">
-                                    <Flex gap={4}>
-                                        <Flex flex={1} align="end" justify="space-between">
-                                            <Flex gap={8}>
-                                                <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
-                                                <div>
-                                                    <p>Fish Burger</p>
-                                                    <p className="text-ghost text-sm">x4</p>
-                                                </div>
-                                            </Flex>
-                                            <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                <Tag color="green">Hoàn thành</Tag>
-                                                <div>
-                                                    <span className="text-sm font-bold">{convertPriceVNDNotSupfix(100000)}</span>
-                                                    <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                                </div>
-                                            </Flex>
-                                        </Flex>
-                                    </Flex>
-                                    <Divider className="my-2" />
-                                    <Flex justify="space-between" align="center">
-                                        <span className="text-sm text-ghost">01/11/2024, 08:28pm</span>
-                                        <div>
-                                            <span className="text-md font-bold">{convertPriceVNDNotSupfix(400000)}</span>
-                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                        </div>
-                                    </Flex>
-                                </div>
-                            } />
-                        </Card>
-                    </Col> */}
                         </Row>
                     </div>
                 )
@@ -150,12 +79,12 @@ const ModalPayment = (props: IProps) => {
                     <Space direction="vertical" className="bg-white rounded-md p-4 w-full">
                         <Flex justify="space-between" align="end" gap={12}>
                             <div>Số lượng</div>
-                            <div>5</div>
+                            <div>{props.billPros.length}</div>
                         </Flex>
                         <Flex justify="space-between" align="end" gap={12}>
                             <div>Thành tiền</div>
                             <div>
-                                <span className="text-xs">{convertPriceVNDNotSupfix(100000)}</span>
+                                <span className="text-xs">{convertPriceVNDNotSupfix(props?.billDetail?.totalAmount || props?.billDetail?.total_amount)}</span>
                                 <span className="text-[10px]">vnđ</span>
                             </div>
                         </Flex>
@@ -169,7 +98,7 @@ const ModalPayment = (props: IProps) => {
                         <Flex justify="space-between" align="end" gap={12}>
                             <div>Thanh toán</div>
                             <div>
-                                <span className="text-sm font-semibold text-[#00813D]">{convertPriceVNDNotSupfix(props?.billDetail?.totalAmount)}</span>
+                                <span className="text-sm font-semibold text-[#00813D]">{convertPriceVNDNotSupfix(props?.billDetail?.totalAmount || props?.billDetail?.total_amount)}</span>
                                 <span className="text-[#00813D] text-[12px]  font-semibold">vnđ</span>
                             </div>
                         </Flex>
@@ -180,7 +109,7 @@ const ModalPayment = (props: IProps) => {
                     <Space direction="vertical" className="bg-white rounded-md p-4 w-full">
                         <Flex vertical justify="space-between" align="center" gap={4}>
                             <div>Mở Ứng Dụng Ngân Hàng để quét QRCode</div>
-                            <QRCode value={'-'} size={140} />
+                            <Image width={150} className="p-1 rounded border" src={getQrImagePay(+props?.billDetail?.totalAmount || +props?.billDetail?.total_amount, props?.billDetail?.id)} />
                         </Flex>
                         <Flex justify="space-between" align="end" gap={12}>
                             <div className="basis-2/5">Ngân hàng:</div>
@@ -197,13 +126,12 @@ const ModalPayment = (props: IProps) => {
                         <Flex justify="space-between" align="end" gap={12}>
                             <div className="basis-2/5">Tên tài khoản:</div>
                             <div className="flex-1 font-bold line-clamp-1">
-                                {bankInfo?.nameBank || 'Đô Minh Lệ'}
+                                {'DO VAN KHOA'}
                             </div>
                         </Flex>
                     </Space>
                 </div>
             </div>
-
         </Flex>
     </BaseModalSetting>
 }

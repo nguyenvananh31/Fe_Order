@@ -1,13 +1,14 @@
 import { ZoomInOutlined } from "@ant-design/icons";
-import { Button, Col, Image, Modal, Row, Space, Tag, Timeline } from "antd";
+import { Button, Col, Flex, Image, Modal, Row, Space, Tag, Timeline } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { Table } from "antd/lib";
 import { useEffect, useMemo, useState } from "react";
-import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { DateFomatTime, fallBackImg, getImageUrl } from "../../../../constants/common";
 import { EOrderType } from "../../../../constants/enum";
 import { IBillDetail } from "../../../../interFaces/bill";
-import { convertPriceVND } from "../../../../utils/common";
+import { convertPriceVND, getInfoBank, getQrImagePay } from "../../../../utils/common";
 import { apiGetOneBillDetail, apiGetOneBillShipping } from "../utils/bill.service";
+import moment from "moment";
 
 
 const statusBill: any = {
@@ -30,6 +31,17 @@ const statusPayment: any = {
     failed: { color: "red", title: "Thanh toán thất bại" },
     refunded: { color: "volcano", title: "Hoàn trả tiền" },
 }
+
+const statusShipping: any = {
+    'cancellation_requested': 'Yêu cầu huỷ đơn',
+    'cancellation_approved': 'Xác nhận huỷ thành công',
+    'cancellation_rejected': 'Từ chối yêu cầu huỷ',
+    'shipping_started': 'Bắt đầu giao hàng',
+    'delivered': 'Giao hàng thành công',
+    'delivery_failed': 'Giao hàng thất bại',
+    'pending_retry': 'Giao lại',
+}
+
 interface IProps {
     itemId?: number;
     onRefresh: () => void;
@@ -50,8 +62,6 @@ interface IState {
     data?: any;
 }
 
-
-
 export default function BillModel({ onClose, itemId = undefined, data, isClient, isAdmin }: IProps) {
 
     const initState: IState = useMemo(() => ({
@@ -65,6 +75,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
     }), []);
 
     const [state, setState] = useState<IState>(initState);
+    const bankInfo: any = useMemo(() => getInfoBank(), []);
 
     useEffect(() => {
         if (!itemId) {
@@ -77,7 +88,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                 const res: any = await apiGetOneBillDetail(itemId!, isClient);
                 setState(prev => {
                     const stateData = prev?.data ? { ...prev.data, address: res?.bill?.address } : undefined;
-                    return ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data, data: stateData })
+                    return ({ ...prev, loading: false, item: isClient ? res?.bill_details : res?.data, data: stateData });
                 });
             } catch (error) {
                 console.log(error);
@@ -88,14 +99,14 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
     }, []);
 
     useEffect(() => {
-        if (!itemId || !isClient || isAdmin) {
+        if (!itemId) {
             setState(prev => ({ ...prev, isEdit: true }));
             return;
         }
         const fetchApi = async () => {
             try {
                 setState(prev => ({ ...prev, loadingShip: true }));
-                const res: any = await apiGetOneBillShipping(itemId!);
+                const res: any = await apiGetOneBillShipping(itemId!, isClient);
                 const shipper = res?.history.length > 0 ? res?.history[0].shipper : {};
                 setState(prev => ({ ...prev, loadingShip: false, shipping: res?.history, shipper }));
             } catch (error) {
@@ -249,13 +260,57 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                                 </div>
                                 <div className="flex">
                                     <span className="text-primary font-bold mr-2">Tổng tiền:</span>
-                                    <span>{convertPriceVND(+state?.data?.total_amount! || 0)}</span>
+                                    <span>{convertPriceVND(+state?.data?.totalAmount || +state?.data?.total_amount)}</span>
                                 </div>
                             </Col>
                         </Row>
                     </Col>
                     {
-                        (isClient || isAdmin) && (
+                        state?.data?.payment_status == 'pending' && (
+                            <>
+                                <Col span={12} className="text-center">
+                                    <Flex vertical justify="space-between" align="center" gap={4}>
+                                        <div>Mở Ứng Dụng Ngân Hàng để quét QRCode</div>
+                                        <Image width={150} className="p-1 rounded border" src={getQrImagePay(+state?.data?.totalAmount || +state?.data?.total_amount, state?.data?.id)} />
+                                    </Flex>
+                                </Col>
+                                <Col span={12} className="flex flex-col justify-center">
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Ngân hàng:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {bankInfo?.bankType || 'MB'}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Số tài khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {bankInfo?.numberBank || '0374339124'}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Tên tài khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {'DO VAN KHOA'}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Số tiền chuyển khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            {convertPriceVND(+state?.data?.totalAmount || +state?.data?.total_amount)}
+                                        </div>
+                                    </Flex>
+                                    <Flex justify="space-between" align="end" gap={12}>
+                                        <div className="basis-2/5">Nội dung chuyển khoản:</div>
+                                        <div className="flex-1 font-bold line-clamp-1">
+                                            don{state?.data?.id}
+                                        </div>
+                                    </Flex>
+                                </Col>
+                            </>
+                        )
+                    }
+                    {
+                        state?.data?.order_type == EOrderType.Online && state?.shipping?.length > 0 && (
                             <>
                                 <Col span={12}>
                                     <span className="text-[15px] font-bold">Tiến độ đơn hàng</span>
@@ -267,7 +322,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                                     }}>
                                         <Timeline
                                             className="mt-2"
-                                            items={state.shipping.map(i => ({ children: `${i?.description} - ${i?.created_at}` }))}
+                                            items={state.shipping.map(i => ({ children: `${statusShipping[i?.event]} - ${moment(i?.created_at).format(DateFomatTime)}` }))}
                                         />
                                     </div>
                                 </Col>
@@ -285,7 +340,7 @@ export default function BillModel({ onClose, itemId = undefined, data, isClient,
                             </>
                         )
                     }
-                    {!isAdmin && (
+                    {state.item && (
                         <Col span={24}>
                             <div className='flex items-center justify-between mb-2'>
                                 <h1 className='text-primary text-lg'>Danh sách sản phẩm</h1>
