@@ -44,7 +44,7 @@ export default function AccountModel({ onClose, onRefresh, itemId = undefined }:
             try {
                 const res = await apiGetOneUser(itemId!);
 
-                setState(prev => ({ ...prev, loading: false, account: res.data, checkedRoles: res.data.roles.filter(i => i.id != 2).map(i => i.id) }));
+                setState(prev => ({ ...prev, loading: false, account: res.data, checkedRoles: res.data.roles.filter(i => i.id != 11).map(i => i.id) }));
 
                 form.setFieldsValue({
                     ...res.data,
@@ -73,9 +73,14 @@ export default function AccountModel({ onClose, onRefresh, itemId = undefined }:
                         {
                             title: ROLES.QTV,
                             key: 2,
+                            children: [],
+                        },
+                        {
+                            title: ROLES.CTV,
+                            key: 11,
                             children:
                                 res?.data
-                                    .filter(item => item.name !== ROLES.ADMIN && item.name !== ROLES.QTV)
+                                    .filter(item => item.name !== ROLES.ADMIN && item.name !== ROLES.QTV && item.name !== ROLES.CTV)
                                     .map(item => ({
                                         title: item.name,
                                         key: item.id,
@@ -107,12 +112,13 @@ export default function AccountModel({ onClose, onRefresh, itemId = undefined }:
         try {
             setState(prev => ({ ...prev, loadingBtn: true }));
             if (itemId) {
-                let newRoles;
-                newRoles = values.roles;
-                if (values.roles[0]?.id) {
-                    newRoles = values.roles.map((role: IRole) => role.id)
+                let newRoles = [...state.checkedRoles];
+                if (newRoles.length > 0) {
+                    if (newRoles.length > 2 || !(newRoles.includes(1) && newRoles.includes(2))) {
+                        newRoles.push(11);
+                    }
                 }
-                await apiUpadateRoles(itemId, { roles: state.checkedRoles });
+                await apiUpadateRoles(itemId, { roles: newRoles });
                 toast.showSuccess('Cập nhật vai trò thành công!');
                 onClose();
                 onRefresh();

@@ -1,33 +1,37 @@
+import { Link } from 'react-router-dom'
 import './Footer.scss'
+import { RouteConfig } from '@/constants/path'
+import { Avatar } from 'antd'
 const Footer = () => {
   return (
     <footer>
       <div className="container ">
         <div className="container-left">
-          <div className="logo-bottom-wrapper">
-            <img src="https://modinatheme.com/html/foodking-html/assets/img/logo/logo.svg" alt="" className="logo-bottom__img" />
-          </div>
+          <Link to={RouteConfig.HOME} className='flex items-center'>
+            <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
+            <span className='ml-2 font-font3 text-3xl'>YaGi</span>
+          </Link>
         </div>
         <div className="container-center">
           <ul className="menu-list">
             <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Liên kết nhanh</a></li>
             <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Tài khoản</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 3</a></li>
+            <li className="menu-list-item"><a href={RouteConfig.HOME} className="menu-list-item__link text-type-2">Trang chủ</a></li>
+            <li className="menu-list-item"><a href={RouteConfig.CLINET_PRODUCTS} className="menu-list-item__link text-type-2">Món ăn</a></li>
+            <li className="menu-list-item"><a href={RouteConfig.TABLE} className="menu-list-item__link text-type-2">Bàn ăn</a></li>
+            <li className="menu-list-item"><a href={RouteConfig.ABOUT} className="menu-list-item__link text-type-2">Giới thiệu</a></li>
+            <li className="menu-list-item"><a href={RouteConfig.CONTACT} className="menu-list-item__link text-type-2">Liên hệ</a></li>
+            {/* <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
             <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
             <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
             <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
-            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li>
+            <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-2">Pages 1</a></li> */}
           </ul>
           <div className="address-box">
             <ul className="address-list">
               <li className="menu-list-item"><a href="#" className="menu-list-item__link text-type-3">Địa chỉ:</a></li>
               <li className="address-list-item"><p className="address-list-item__desc text-type-4">
-                Magadhi, Atal Path, near Rajdhani Apartment, Mahesh Nagar, Keshri Nagar, Patna, Bihar 800024 India
+                Trụ sở chính Tòa nhà FPT Polytechnic, Phố Trịnh Văn Bô, Nam Từ Liêm, Hà Nội
               </p></li>
             </ul>
             <ul className="address-list">
@@ -55,7 +59,7 @@ const Footer = () => {
       <div className="container-bottom mx-auto bg-mainColor2">
         <div className="box-content flex items-center justify-between py-12 px-[16px] md:px-[20px] max-w-[1100px] mx-auto">
           <div className="box-left">
-            <p className='text-type-4' style={{color: "#fff",fontWeight:"500"}}>© Copyright 2024 DATN . All Rights Reserved.</p>
+            <p className='text-type-4' style={{ color: "#fff", fontWeight: "500" }}>© Bản quyền 2024 DATN . Mọi quyền được bảo lưu.</p>
           </div>
           <div className="box-right">
             <img src="https://www.vrihiskydeck.com/assets/img/Cards.png" alt="" />

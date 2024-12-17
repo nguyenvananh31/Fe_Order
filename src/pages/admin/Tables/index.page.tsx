@@ -183,8 +183,8 @@ export default function TablePage() {
                                         <List.Item key={item.id}>
                                             <List.Item.Meta
                                                 avatar={<Avatar className="w-[60px] h-[60px]" src={item.image ? getImageUrl(item.image) : fallBackImg} />}
-                                                title={<span className="line-clamp-1">{item?.name} <Tag className="ml-2">{item.size.name}</Tag></span>}
-                                                description={<span className="line-clamp-2 mr-4 text-xs">{convertPriceVND(+item.sale || +item.price)}</span>}
+                                                title={<span>{item?.name} <Tag className="ml-2">{item.size.name}</Tag></span>}
+                                                description={<span className="mr-4 text-xs">{convertPriceVND(+item.sale || +item.price)}</span>}
                                             />
                                             <Button onClick={hooks.handleAddPro(item)} type="text" className="text-sky-400" icon={<PlusOutlined />} />
                                         </List.Item>

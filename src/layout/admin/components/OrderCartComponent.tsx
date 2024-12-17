@@ -1,21 +1,22 @@
+import { EOrderProStatus } from "@/constants/enum";
 import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, SettingOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Dropdown, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tooltip } from "antd";
+import { Button, Card, Checkbox, Divider, Dropdown, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tag, Tooltip } from "antd";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import { fallBackImg, getImageUrl } from "../../../constants/common";
+import { fallBackImg, getImageUrl, orderProStatus } from "../../../constants/common";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import useToast from "../../../hooks/useToast";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
 import ModalConfirmPayment from "../../../pages/user/Order/components/ModalConfirmPayment";
 import ModalPayment from "../../../pages/user/Order/components/ModalPayment";
 import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "../../../pages/user/Order/utils/order.service";
+import ModalOpenTable from "../../../pages/user/Table/components/ModalOpenTable";
 import ApiUtils from "../../../utils/api/api.utils";
-import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../utils/common";
+import { convertPriceVND, convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "../../../utils/common";
 import { BaseEventPayload, EventBusName } from "../../../utils/event-bus";
 import EventBus from "../../../utils/event-bus/event-bus";
 import { showManageOrder } from "../../../utils/event-bus/event-bus.events";
-import ModalOpenTable from "../../../pages/user/Table/components/ModalOpenTable";
 
 type Props = {
     id?: number;
@@ -141,26 +142,31 @@ export default function OrderCartComponent({ id }: Props) {
             try {
                 setState(() => ({ ...initState, loading: true }));
                 const res = await apiGetTableDetail(id);
-                setState(prev => {
-                    const billNameIds = res?.data[0]?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
-                        if (arr.length == index + 1) {
-                            let ids = acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id];
-                            return {
-                                name: acc.name + curr?.table,
-                                ids
-                            };
-                        }
+                const billNameIds = res?.data[0]?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
+                    if (arr.length == index + 1) {
+                        let ids = acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id];
                         return {
-                            name: acc.name + curr?.table + ' - ',
-                            ids: acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id]
+                            name: acc.name + curr?.table,
+                            ids
                         };
-                    }, { name: '', ids: [] });
+                    }
+                    return {
+                        name: acc.name + curr?.table + ' - ',
+                        ids: acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id]
+                    };
+                }, { name: '', ids: [] });
+
+                if (billNameIds.ids.length > 1) {
                     showManageOrder(undefined, billNameIds.ids);
+                }
+
+                setState(prev => {
                     return {
                         ...prev, data: res?.data[0]?.bill_details || [],
                         loading: false, billDetail: res?.data[0], billNameIds
                     }
                 });
+
                 if (option === 3) {
                     getApiOrderProCart(res?.data[0]?.ma_bill || '');
                 }
@@ -303,8 +309,7 @@ export default function OrderCartComponent({ id }: Props) {
             const res = await apiActiveItem({ id_billdetails: ids });
             toast.showSuccess('Xác nhận món thành công!');
             setState(prev => {
-                const newPros = [...prev.data.map(i => ids.includes(i.id_bill_detail) ? { ...i, product: { ...i.product, status: !i.product.status } } : i)];
-                return { ...prev, loadingBtn: false, data: newPros, checkedCofirm: [], billDetail: res?.data?.bill || prev.billDetail };
+                return { ...prev, loadingBtn: false, checkedCofirm: [], billDetail: res?.data?.bill || prev.billDetail, refresh: !prev.refresh };
             });
         } catch (error: any) {
             console.log(error);
@@ -476,7 +481,6 @@ export default function OrderCartComponent({ id }: Props) {
     }, []);
 
     const handleSubmitTable = useCallback((ids: any[], type?: number) => async () => {
-        console.log('ids: ', ids);
         try {
             if (type == 1) {
                 await apiUnincreaseTable({
@@ -534,7 +538,7 @@ export default function OrderCartComponent({ id }: Props) {
                         </Flex> */}
                         <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
-                            <p className="font-bold">Tổng tiền: {convertPriceVNDNotSupfix(+state.billDetail?.totalAmount || 0)}vnđ</p>
+                            <p className="font-bold">Tổng tiền: {convertPriceVNDNotSupfix(+state.billDetail?.totalAmount || +state.billDetail?.total_amount || 0)}vnđ</p>
                         </Flex>
                         <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
@@ -582,21 +586,38 @@ export default function OrderCartComponent({ id }: Props) {
                     <Checkbox.Group className="w-full" value={state.checkedCofirm} onChange={handleCheckedPro}>
                         {
                             state?.data?.map((i: any) => {
-                                return i?.product?.status == (option - 1) && (
-                                    <Card key={i.id_bill_detail} className="m-2 px-2 basis-full" styles={{ body: { padding: '8px 0', display: 'flex', alignItems: 'center' } }}>
-                                        {
-                                            option == 1 && (
-                                                <Checkbox className="ml-2 mr-4" value={i.id_bill_detail} />
-                                            )
-                                        }
+                                const isChecked = i?.product?.status == EOrderProStatus.PENDING || i?.product?.status == EOrderProStatus.CONFIRMED;
+                                if (isChecked && option == 1) {
+                                    return <Card key={i.id_bill_detail} className="m-2 px-2 basis-full" styles={{ body: { padding: '8px 0', display: 'flex', alignItems: 'center' } }}>
+                                        <Checkbox className="ml-2 mr-4" value={i.id_bill_detail} />
                                         <Image src={i.product.thumbnail ? getImageUrl(i.product.thumbnail || '') : fallBackImg} preview={false} className="rounded max-w-[50px] min-h-[50px] object-cover object-center" />
                                         <div className="ml-2 flex flex-col gap-2 justify-between">
-                                            <div className="text-primary text-sm font-semibold">{i.product.name}</div>
-                                            <div className="text-primary text-sm font-semibold">{convertPriceVND(i.product.product_detail.price)}</div>
+                                            <Tooltip title={i.product.name + ' - ' + i?.product?.product_detail?.size?.name}>
+                                                <div className="text-primary text-sm font-semibold">{truncateWords(i.product.name, 2)} - {i?.product?.product_detail?.size?.name}</div>
+                                            </Tooltip>
+                                            <div className="text-sm font-semibold">{convertPriceVND(i.product.product_detail.price)}</div>
                                         </div>
-                                        <div className="ml-auto mr-5 font-semibold">x{i.quantity}</div>
+                                        <Flex vertical justify="space-between" align="end" gap={20} flex={1}>
+                                            <Tag className="m-0" color={orderProStatus[i?.product?.status]?.color}>{orderProStatus[i?.product?.status]?.label}</Tag>
+                                            <div className="ml-auto font-semibold">x{i.quantity}</div>
+                                        </Flex>
                                     </Card>
-                                )
+                                }
+                                if (!isChecked && option == 2) {
+                                    return <Card key={i.id_bill_detail} className="m-2 px-2 basis-full" styles={{ body: { padding: '8px 0', display: 'flex', alignItems: 'center' } }}>
+                                        <Image src={i.product.thumbnail ? getImageUrl(i.product.thumbnail || '') : fallBackImg} preview={false} className="rounded max-w-[50px] min-h-[50px] object-cover object-center" />
+                                        <div className="ml-2 flex flex-col gap-2 justify-between">
+                                            <Tooltip title={i.product.name + ' - ' + i?.product?.product_detail?.size?.name}>
+                                                <div className="text-primary text-sm font-semibold">{truncateWords(i.product.name, 2)} - {i?.product?.product_detail?.size?.name}</div>
+                                            </Tooltip>
+                                            <div className="text-sm font-semibold">{convertPriceVND(i.product.product_detail.price)}</div>
+                                        </div>
+                                        <Flex vertical justify="space-between" align="end" gap={20} flex={1}>
+                                            <Tag className="m-0" color={orderProStatus[i?.product?.status]?.color}>{orderProStatus[i?.product?.status]?.label}</Tag>
+                                            <div className="ml-auto font-semibold">x{i.quantity}</div>
+                                        </Flex>
+                                    </Card>
+                                }
                             })
                         }
                     </Checkbox.Group>
@@ -667,7 +688,7 @@ export default function OrderCartComponent({ id }: Props) {
                                                             <Flex gap={8}>
                                                                 <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                                 <Space direction="vertical" align="start">
-                                                                    <Tooltip title={`${i.product_name} - ${i.size_name}`} className="line-clamp-1 max-w-[160px]">{i.product_name} - {i.size_name}</Tooltip>
+                                                                    <Tooltip title={`${i.product_name} - ${i.size_name}`}>{truncateWords(i.product_name)} - {i.size_name}</Tooltip>
                                                                     <Flex gap={8} justify="center" align="center">
                                                                         <MinusCircleOutlined className="cursor-pointer" onClick={() => handleDecraesePro(i)} />
                                                                         <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>
@@ -731,7 +752,9 @@ export default function OrderCartComponent({ id }: Props) {
                 <Button onClick={handleShowManageOrder} icon={<PlusOutlined />} className="w-4/5 py-4">Thêm món vào bàn</Button>
             </Flex>
             <Flex align="center" justify="center" className="my-4">
-                <Button icon={<PayCircleOutlined />} onClick={handleShowModalConfirm} type="primary" danger className="w-4/5 py-4 mb-4">Thanh toán</Button>
+                <Button icon={<PayCircleOutlined />}
+                    onClick={handleShowModalConfirm}
+                    type="primary" danger className="w-4/5 py-4 mb-4">Thanh toán</Button>
             </Flex>
             {/* Modal xác nhận thanh toán */}
             {

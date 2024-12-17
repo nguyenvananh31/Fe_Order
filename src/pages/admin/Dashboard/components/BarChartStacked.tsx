@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Area, CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import {
   Card,
@@ -14,8 +14,10 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent
+  ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Spin } from "antd"
 // const chartData = [
@@ -29,8 +31,12 @@ import { Spin } from "antd"
 
 const chartConfig = {
   desktop: {
-    label: "Tổng",
+    label: "Thành công",
     color: "hsl(var(--chart-1))",
+  },
+  mobile: {
+    label: "Thất bại",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
@@ -39,16 +45,13 @@ interface IProps {
   dataChart: any[];
 }
 
-export function LineChartCn({ loading, dataChart }: IProps) {
+export function BarChartStacked({ loading, dataChart }: IProps) {
 
   return (
     <Card>
-      <CardHeader className="flex items-stretch space-y-0 border-b p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Biểu đồ doanh thu</CardTitle>
-          {/* <CardDescription>January - June 2024</CardDescription> */}
-        </div>
-        
+      <CardHeader>
+        <CardTitle>Thống kê đơn hàng</CardTitle>
+        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
         {
@@ -58,33 +61,30 @@ export function LineChartCn({ loading, dataChart }: IProps) {
             </div>
             :
             <ChartContainer config={chartConfig}>
-              <LineChart
-                accessibilityLayer
-                data={dataChart}
-                margin={{
-                  left: 12,
-                  right: 12,
-                }}
-              >
+              <BarChart accessibilityLayer data={dataChart}>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="type"
                   tickLine={false}
+                  tickMargin={10}
                   axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(value) => {
-                    return value;
-                  }}
+                  tickFormatter={(value) => value}
                 />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                <Line
+                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar
                   dataKey="desktop"
-                  type="monotone"
-                  stroke="var(--color-desktop)"
-                  strokeWidth={2}
-                  dot={true}
+                  stackId="a"
+                  fill="var(--color-desktop)"
+                  radius={[0, 0, 4, 4]}
                 />
-              </LineChart>
+                <Bar
+                  dataKey="mobile"
+                  stackId="a"
+                  fill="var(--color-mobile)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
             </ChartContainer>
         }
       </CardContent>

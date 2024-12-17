@@ -1,7 +1,7 @@
 import { PlusOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Flex, Row, Space } from "antd";
+import { Button, Card, Col, Flex, Row, Space, Tooltip } from "antd";
 import { memo } from "react";
-import { convertPriceVNDNotSupfix } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, truncateWords } from "../../../../utils/common";
 import { fallBackImg, getImageUrl } from "../../../../constants/common";
 
 interface IProps {
@@ -60,19 +60,21 @@ const ProContent = ({ data, loading, onClickAdd }: IProps) => {
                                     title={
                                         <Flex align="center" justify="space-between" >
                                             <Space direction="vertical" align="start">
-                                                <div className="line-clamp-2 w-max">{i.name} - {i.size.name}</div>
+                                                <Tooltip title={i.name + ' - ' + i.size.name}>
+                                                    <div>{truncateWords(i.name, 5)} - {i.size.name}</div>
+                                                </Tooltip>
                                                 <Flex>
                                                     <Flex vertical>
                                                         {
-                                                            !!i.sale && (
+                                                            i.sale && (
                                                                 <div>
-                                                                    <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.sale)}</span>
+                                                                    <span className="text-sm font-semibold line-through text-ghost">{convertPriceVNDNotSupfix(i.price)}</span>
                                                                     <span className="text-[#00813D] font-bold">vnđ</span>
                                                                 </div>
                                                             )
                                                         }
                                                         <div>
-                                                            <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale ? i.price : i.sale)}</span>
+                                                            <span className="text-xl font-bold">{convertPriceVNDNotSupfix(i.sale ? i.sale : i.price)}</span>
                                                             <span className="text-[#00813D] font-bold">vnđ</span>
                                                         </div>
                                                     </Flex>

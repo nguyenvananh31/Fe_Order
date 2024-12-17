@@ -1,9 +1,10 @@
 import { DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, RightOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Flex, QRCode, Skeleton, Space, Tag } from "antd";
+import { Button, Card, Checkbox, Divider, Flex, QRCode, Skeleton, Space, Tag, Tooltip } from "antd";
 import { memo, useCallback, useMemo, useState } from "react";
-import { convertPriceVNDNotSupfix, getUrlQrCheck } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "../../../../utils/common";
 import moment from "moment";
-import { fallBackImg, getImageUrl } from "../../../../constants/common";
+import { fallBackImg, getImageUrl, orderProStatus } from "../../../../constants/common";
+import { EOrderProStatus } from "@/constants/enum";
 
 interface IProps {
     props: {
@@ -32,11 +33,11 @@ interface ITotal {
     totalPrice: number;
 }
 
-const RightContent = ({props}: IProps) => {
+const RightContent = ({ props }: IProps) => {
 
     const [tab, setTab] = useState<number>(1);
 
-    const total: ITotal= useMemo(() => {
+    const total: ITotal = useMemo(() => {
         const pros = props.cart.filter(i => props.checked.includes(i.id));
         const totalSale = pros.reduce((acc, curr) => acc + (+curr.sale || 0), 0);
         const totalPrice = pros.reduce((acc, curr) => acc + (+curr.sale || +curr.price), 0);
@@ -92,7 +93,7 @@ const RightContent = ({props}: IProps) => {
                 }
                 <QRCode value={getUrlQrCheck(props.orderId || '')} />
             </Flex>
-            <Divider  className="mb-0"/>
+            <Divider className="mb-0" />
         </div>
         {/* Các món chưa gọi */}
         {
@@ -139,7 +140,9 @@ const RightContent = ({props}: IProps) => {
                                                         <Flex gap={8}>
                                                             <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                             <Space direction="vertical" align="start">
-                                                                <p>{i.product_name} - {i.size_name}</p>
+                                                                <Tooltip title={i.product_name + ' - ' + i.size_name}>
+                                                                    <p>{truncateWords(i.product_name)} - {i.size_name}</p>
+                                                                </Tooltip>
                                                                 <Flex gap={8} justify="center" align="center">
                                                                     <MinusCircleOutlined className="cursor-pointer" onClick={() => props.onDecreaseCart(i)} />
                                                                     <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>
@@ -212,15 +215,17 @@ const RightContent = ({props}: IProps) => {
         {
             tab == 2 && (
                 <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[220px] xl:pt-[330px]'}`}>
-                    <Space direction="vertical" size={'large'} className="w-full">
+                    <Space direction="vertical" size={'large'} className="w-full mb-4">
                         <Flex align="center" justify="center" >
                             <Button type="primary" className="w-4/5 py-4 bg-[#00813D]" onClick={() => { handleChangeTab(1) }}>Gọi thêm món</Button>
                         </Flex>
                         <Flex align="center" justify="center" >
-                            <Button onClick={props.onShowPayment} className="w-4/5 py-4 border-[#00813D]">
+                            <Button
+                                // onClick={props.onShowPayment}
+                                className="w-4/5 py-4 border-[#00813D]">
                                 <Space align="center" size={'large'}>
                                     <img width={24} src="./images/review.png" alt="icon" />
-                                    Thanh toán
+                                    Yêu cầu thanh toán
                                 </Space>
                             </Button>
                         </Flex>
@@ -236,12 +241,14 @@ const RightContent = ({props}: IProps) => {
                                                     <Flex gap={8}>
                                                         <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
                                                         <div>
-                                                            <p>{i.name} - {i.size_name}</p>
+                                                            <Tooltip title={i?.name + ' - ' + i.size_name}>
+                                                                <div>{truncateWords(i?.name, 2)} - {i.size_name}</div>
+                                                            </Tooltip>
                                                             <p className="text-ghost text-sm">x{i.quantity}</p>
                                                         </div>
                                                     </Flex>
                                                     <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                        <Tag color={i.status ? 'green' : 'orange'}>{i.status ? 'Hoàn thành' : 'Đang chờ'}</Tag>
+                                                        <Tag className="m-0" color={orderProStatus[i.status]?.color}>{orderProStatus[i.status]?.label}</Tag>
                                                         <div>
                                                             <span className="text-sm font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) || 0)}</span>
                                                             <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
@@ -257,7 +264,10 @@ const RightContent = ({props}: IProps) => {
                                                     <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
                                                 </div>
                                             </Flex>
-                                            {/* <div className="del">Huỷ món</div> */}
+                                            {
+                                                i.status == EOrderProStatus.PENDING &&
+                                                <div className="del">Huỷ món</div>
+                                            }
                                         </div>
                                     } />
                                 </Card>

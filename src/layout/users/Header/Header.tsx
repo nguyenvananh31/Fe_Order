@@ -187,8 +187,9 @@ const Header = () => {
         <div className="container max-w-[1140px] mx-auto px-[20px] py-6 border-b-[1px] border-borderColor1 flex items-center justify-between">
           <div className="container-left">
             <div className="logo-wrapper pr-12">
-              <Link to={`/`}>
-                <img src="https://modinatheme.com/html/foodking-html/assets/img/logo/logo.svg" alt="" className="logo-wrapper__img" />
+              <Link to={RouteConfig.HOME} className='flex items-center'>
+                <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
+                <span className='ml-2 font-font3 text-3xl'>YaGi</span>
               </Link>
             </div>
           </div>

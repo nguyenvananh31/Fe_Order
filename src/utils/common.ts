@@ -37,6 +37,19 @@ export function formatDurationDate(date: Date): string {
   return result || '0p';
 }
 
+export function truncateWords(input: string, length: number = 4): string {
+  // Tách chuỗi thành từng từ dựa trên dấu cách
+  const words = input.split(" ");
+
+  // Nếu chuỗi có 3 từ trở xuống, trả về chuỗi gốc
+  if (words.length <= length) {
+    return input;
+  }
+
+  // Ghép 3 từ đầu tiên và thêm dấu ba chấm
+  return words.slice(0, length).join(" ") + "...";
+}
+
 //Lấy đường dẫn qr
 export function getUrlQrCheck(id: string) {
   return import.meta.env.VITE_URL + '/qr-check/' + id;
@@ -58,4 +71,58 @@ export function getInfoBank() {
 export function getQrImagePay(amount: number, id: number) {
   const qrLink = import.meta.env.VITE_QR_URL_IMGAE || '';
   return (qrLink + '?accountName=' + (import.meta.env.VITE_NAME_BANK || '') + '&amount=' + amount + '&addInfo=don' + id);
-} 
+}
+
+type TypeOption = "month" | "week" | "3days";
+
+export function customizeDataToChart(
+  dataArray: any[],
+  type: TypeOption,
+  keysMapping: [string, string, any][]
+): Record<string, any>[] {
+  // Hàm chia nhỏ mảng và gộp trung bình dữ liệu
+  function chunkAndAverage(array: any[], chunkSize: number): Record<string, any>[] {
+    const result: Record<string, any>[] = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      const chunk = array.slice(i, i + chunkSize);
+      const averagedObject: Record<string, any> = {};
+
+      keysMapping.forEach(([key, newKey, transform]) => {
+        const sum = chunk.reduce((acc, item) => {
+          if (typeof item[key] == 'string') {
+            const value = item[key] || '';
+            return transform ? transform(item) : value
+          }
+          const value = item[key] || '';
+          return acc + (Number(transform ? transform(item) : value) || 0);
+        }, 0);
+        averagedObject[newKey] = (sum / chunk.length).toFixed(2);
+      });
+
+      result.push(averagedObject);
+    }
+    return result;
+  }
+
+  // Hàm map object và áp dụng logic xử lý riêng
+  function mapObject(item: any): Record<string, any> {
+    const mappedObject: Record<string, any> = {};
+    keysMapping.forEach(([key, newKey, transform]) => {
+      const value = item[key] || '';
+      mappedObject[newKey] = transform ? transform(item) : value;
+    });
+    return mappedObject;
+  }
+
+  // Xử lý tùy theo type
+  switch (type) {
+    case "month":
+      return dataArray.map(mapObject);
+    case "week":
+      return chunkAndAverage(dataArray, 7);
+    case "3days":
+      return chunkAndAverage(dataArray, 3);
+    default:
+      throw new Error("Type không hợp lệ");
+  }
+}

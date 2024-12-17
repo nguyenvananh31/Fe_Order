@@ -17,6 +17,7 @@ export enum ROLES {
     PRODUCT = 'product',
     PAYMENT = 'payment',
     BILL = 'bill',
+    CTV = 'ctv',
 }
 
 //order type
@@ -37,6 +38,14 @@ export enum EOrderStatus {
     cancellation_requested = 'cancellation_requested',
     cancellation_approved = 'cancellation_approved',
     cancellation_rejected = 'cancellation_rejected',
+}
+
+//Order type pro
+export enum EOrderProStatus {
+    PENDING = 'pending',
+    CONFIRMED = 'confirmed',
+    COMPLETED = 'completed',
+    CANCELLED = 'cancelled',
 }
 
 //Permission

@@ -1,4 +1,4 @@
-import { Flex } from "antd";
+import { Avatar, Flex } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { memo } from "react";
 import RightContent from "./RightContent";
@@ -52,7 +52,7 @@ const SiderOrder = (props: IProps) => {
         }}>
             <Flex justify="space-between" align="center" className="mx-6 my-4">
                 <span className="text-[#00813D] text-2xl font-bold">YaGI ORDER</span>
-                <img width={60} src='./images/logo/logo.png' alt="Logo" />
+                <Avatar src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' />
             </Flex>
         </div>
         <RightContent props={props} />

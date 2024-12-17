@@ -46,7 +46,10 @@ function ListProducts() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiGetProDetail();
+        const res = await apiGetProDetail({
+          per_page: state.pageSize,
+          page: state.pageIndex,
+        });
         setState(prev => ({ ...prev, pros: res.data, loadingPro: false, total: res.total }));
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -74,13 +77,23 @@ function ListProducts() {
   const getProByCateId = useCallback(async (id: number) => {
     try {
       setState(prev => ({ ...prev, loadingPro: true, cateActive: id }));
-      const res = await apiGetProByCate(id);
-      setState(prev => ({ ...prev, loadingPro: false, pros: res.data, total: res.data.length }));
+      const res = await apiGetProByCate(id, {
+        per_page: state.pageSize,
+        page: 1,
+      });
+      setState(prev => ({ ...prev, loadingPro: false, pros: res.data, total: res.data.length, pageIndex: 1 }));
     } catch (error) {
       console.error('Error fetching product:', error);
       setState(prev => ({ ...prev, loadingPro: false, pros: [], total: 0 }));
     }
   }, []);
+
+  const handleChagePage = useCallback((pageIndex: number) => () => {
+    setState(prev => ({ ...prev, pageIndex, refresh: prev.cateActive ? prev.refresh : !prev.refresh }));
+    if (state.cateActive) {
+      getProByCateId(state.cateActive);
+    }
+  }, [state.cateActive]);
 
   return (
     <>
@@ -125,7 +138,7 @@ function ListProducts() {
                         id="saveForNext"
                       />
                       <label htmlFor="saveForNext" className="text-lg">
-                        Small
+                        Nhỏ
                       </label>
                     </div>
                   </div>
@@ -253,7 +266,7 @@ function ListProducts() {
                       {
                         [...Array(paginateNumber)].map((_: any, index: number) => (
                           <li key={index}>
-                            <p className={`page-numbers cursor-pointer ${index + 1 == state.pageIndex ? 'text-[white]' : ''}`} style={{background: index + 1 == state.pageIndex ? '#00813D' : ''}}>{index + 1}</p>
+                            <p onClick={handleChagePage(index + 1)} className={`page-numbers cursor-pointer ${index + 1 == state.pageIndex ? 'text-[white]' : ''}`} style={{ background: index + 1 == state.pageIndex ? '#00813D' : '' }}>{index + 1}</p>
                           </li>
                         ))
                       }

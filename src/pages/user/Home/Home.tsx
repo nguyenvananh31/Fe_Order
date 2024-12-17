@@ -32,7 +32,7 @@ const Home = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiGetProDetail();
+        const res = await apiGetProDetail({per_page: 12});
         setState(prev => ({ ...prev, proDetails: res.data, loadingPro: false }));
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -44,7 +44,7 @@ const Home = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiGetCateClient();
+        const res = await apiGetCateClient({per_page: 100});
         setState(prev => ({ ...prev, cates: res.data, loadingCate: false }));
       } catch (error) {
         console.error('Error fetching products:', error);

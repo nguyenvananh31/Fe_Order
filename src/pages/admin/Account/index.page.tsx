@@ -33,6 +33,7 @@ export default function AccountPage() {
                 dataIndex: 'email',
                 sorter: true,
                 showSorterTooltip: { title: 'Sắp xếp theo tên và email' },
+                width: '20%',
                 render: (_: any, user: IUser) => {
                     return (
                         <div className='flex items-center gap-3'>
@@ -49,6 +50,7 @@ export default function AccountPage() {
                 title: "Vai trò",
                 key: 'roles',
                 dataIndex: 'roles',
+                width: '40%',
                 render: (_: any, { roles }: IUser) => (
                     <>
                         {roles?.map((role) => {
@@ -74,7 +76,7 @@ export default function AccountPage() {
                 title: 'Trạng thái',
                 dataIndex: 'status',
                 align: 'center',
-                width: '15%',
+                width: 80,
                 render: (_: any, user: IUser) => (
                     <Tooltip title="Thay đổi trạng thái">
                         <Popconfirm
@@ -97,8 +99,8 @@ export default function AccountPage() {
                 title: 'Hành động',
                 dataIndex: 'action',
                 align: 'center',
-                width: '15%',
                 fixed: 'right',
+                width: 50,
                 render: (_: any, { id }: any) => (
                     <Tooltip title="Chi tiết và cập nhập">
                         <Button onClick={() => hooks.handleOpenModal(id)} className='ml-2 text-yellow-500 border-yellow-500' icon={<EditOutlined />}></Button>

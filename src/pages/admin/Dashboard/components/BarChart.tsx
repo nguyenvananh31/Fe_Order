@@ -1,15 +1,12 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, Rectangle, XAxis } from "recharts"
 
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import {
   ChartConfig,
@@ -17,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { Spin } from "antd"
 
 
 const chartConfig = {
@@ -51,13 +49,14 @@ interface IProps {
   products: number;
   tables: number;
   users: number;
+  loading: boolean;
 }
 
 export function BarChartCn({ guests,
   orders,
   products,
   tables,
-  users }: IProps) {
+  users, loading }: IProps) {
 
   const chartData = [
     { browser: "chrome", visitors: guests, fill: "var(--color-chrome)" },
@@ -73,41 +72,55 @@ export function BarChartCn({ guests,
         <CardTitle>Thống kê chung</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="browser"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label
-              }
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar
-              dataKey="visitors"
-              strokeWidth={2}
-              radius={8}
-              activeIndex={2}
-              activeBar={({ ...props }) => {
-                return (
-                  <Rectangle
-                    {...props}
-                    fillOpacity={0.8}
-                    stroke={props.payload.fill}
-                    strokeDasharray={4}
-                    strokeDashoffset={4}
+        {
+          loading ?
+            <div className='flex justify-center items-center'>
+              <Spin />
+            </div>
+            :
+            <ChartContainer config={chartConfig}>
+              <BarChart accessibilityLayer data={chartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="browser"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) =>
+                    chartConfig[value as keyof typeof chartConfig]?.label
+                  }
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar
+                  dataKey="visitors"
+                  strokeWidth={2}
+                  radius={8}
+                  activeIndex={2}
+                  activeBar={({ ...props }) => {
+                    return (
+                      <Rectangle
+                        {...props}
+                        fillOpacity={0.8}
+                        stroke={props.payload.fill}
+                        strokeDasharray={4}
+                        strokeDashoffset={4}
+                      />
+                    )
+                  }}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
                   />
-                )
-              }}
-            />
-          </BarChart>
-        </ChartContainer>
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+        }
       </CardContent>
     </Card>
   )

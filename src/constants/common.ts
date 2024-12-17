@@ -1,4 +1,5 @@
 import { AliasToken } from "antd/es/theme/internal";
+import { EOrderProStatus } from "./enum";
 
 export const getImageUrl = (fileName?: string) => {
     if (!fileName || fileName.length <= 0) return;
@@ -26,3 +27,10 @@ export const themeToken: Partial<AliasToken> | undefined = {
 };
 
 export const sortType = ['asc', 'desc'];
+
+export const orderProStatus: any = {
+    pending : {label: 'Đang chờ', color: 'magenta'},
+    confirmed: {label: 'Xác nhận', color: 'cyan'},
+    completed: {label: 'Hoàn thành', color: 'green'},
+    cancelled: {label: 'Đã huỷ', color: 'red'},
+}
