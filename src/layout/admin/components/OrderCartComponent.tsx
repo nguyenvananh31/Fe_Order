@@ -132,42 +132,34 @@ export default function OrderCartComponent({ id }: Props) {
     };
 
     useEffect(() => {
-        if (pusher && state.billId) {
-            const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
-            channel.bind('item.added', function (data: any) {
-                if (data?.billDetails?.items?.length > 0) {
-                    for (let index = 0; index < data?.billDetails?.items?.length; index++) {
-                        handleDecraesePro(
-                            { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
-                            data?.billDetails?.items[index]?.quantity,
-                            true
-                        );
-                    }
+        if (!pusher || !state.billId) return;
+        const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
+        channel.bind('item.added', function (data: any) {
+            if (data?.billDetails?.items?.length > 0) {
+                for (let index = 0; index < data?.billDetails?.items?.length; index++) {
+                    handleDecraesePro(
+                        { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
+                        data?.billDetails?.items[index]?.quantity,
+                        true
+                    );
                 }
-                setOption(prev => {
-                    if (prev !== 3) {
-                        fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
-                    }
-                    return prev;
-                });
-            })
-            channel.bind('item.confirmed', function (data: any) {
-                console.log('res confirmed: ', data);
-            })
-            channel.bind('item.addedToCart', function (data: any) {
-                setOption(prev => {
-                    if (prev == 3) {
-                        getApiOrderProCart(state?.billDetail?.ma_bill || '', false);
-                    }
-                    return prev;
-                });
-            })
-        }
-        return () => {
-            if (pusher && state.billId) {
-                pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
-                pusher.disconnect();
             }
+            fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
+        })
+        channel.bind('item.confirmed', function (data: any) {
+            console.log('res confirmed: ', data);
+        })
+        channel.bind('item.addedToCart', function (data: any) {
+            setOption(prev => {
+                if (prev == 3) {
+                    getApiOrderProCart(state?.billDetail?.ma_bill || '', false);
+                }
+                return prev;
+            });
+        })
+        return () => {
+            channel.unbind_all();
+            pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
         }
     }, [state.billId]);
 

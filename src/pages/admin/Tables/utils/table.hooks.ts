@@ -76,7 +76,7 @@ export default function useTable() {
                         }
                         
                         if (!prev.showManageOrder && typeof data.payload?.isOpen !== 'undefined') {
-                            fetchApiPros();
+                            fetchApiPros({refresh: true});
                         }
                         return { ...prev, ...state };
                     });
@@ -115,14 +115,10 @@ export default function useTable() {
         fetchData();
     }, [state.refresh]);
 
-    const fetchApiPros = useCallback(async () => {
+    const fetchApiPros = useCallback(async (conds: {page?: number, refresh?: boolean}) => {
         try {
-            const conds = {
-                page: state.pageIndexPro,
-                per_page: 5,
-            };
             setState(prev => ({ ...prev, loadingPro: true }));
-            const res = await apiGetAllProduct(conds);
+            const res = await apiGetAllProduct({ per_page: 5, page: conds?.refresh ? 1 : conds?.page});
             const pros = res.data.reduce((acc: any[], curr: any) => {
                 let pros = curr?.product_details.map((i: any) => ({
                     name: curr.name,
@@ -169,8 +165,10 @@ export default function useTable() {
 
     const handleScroll = useCallback((e: React.UIEvent<HTMLElement, UIEvent>) => {
         if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - 420) <= 1) {
-            setState(prev => ({ ...prev, pageIndexPro: prev.pageIndexPro + 1 }))
-            fetchApiPros();
+            setState(prev => {
+                fetchApiPros({page: prev.pageIndexPro + 1});
+                return { ...prev, pageIndexPro: prev.pageIndexPro + 1 };
+            })
         }
     }, []);
 

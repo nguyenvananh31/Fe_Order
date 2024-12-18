@@ -67,6 +67,7 @@ const BaseLayoutUser = () => {
         <Outlet />
         <Footer />
         {orderId && <FloatButton tooltip={'Order'} icon={<InfoCircleOutlined />} type='primary' onClick={handleGotoOrder} />}
+        <FloatButton.BackTop />
       </div>
     </Root>
   )

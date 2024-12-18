@@ -23,7 +23,7 @@ export const HeaderMain = () => {
         <div className="flex items-center px-4 py-2 gap-4 min-w-[180px] rounded-primary group hover:bg-purple">
           <Avatar className="w-[38px] h-[38px]" style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
           <div className="flex flex-col">
-            <span className="text-primary font-semibold text-base group-hover:text-purple">Le Do</span>
+            <span className="text-primary font-semibold text-base group-hover:text-purple">{hooks?.user?.name || hooks?.user?.email || 'Trống'}</span>
             <span className="text-ghost text-sm font-normal">Admin</span>
           </div>
         </div>

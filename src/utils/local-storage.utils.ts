@@ -2,7 +2,8 @@
 export enum KeyStorage {
     AUTH = 'AUTH',
     ORDER = 'ORDER',
-    FORGOT = 'FORGOT'
+    FORGOT = 'FORGOT',
+    CALLSTAFF = 'CALLSTAFF'
 }
 
 const localStorageUtils = {

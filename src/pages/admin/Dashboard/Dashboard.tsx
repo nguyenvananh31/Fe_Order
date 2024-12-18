@@ -53,7 +53,6 @@ const Dashboard = () => {
         }
         const res = await apiGetDashboard(conds);
         let dataOption = state.optionFillter == 1 ? res?.default?.today : res?.filtered;
-        console.log('dataOption: ', dataOption);
         setState(prev => ({ ...prev, loading: false, data: res, dataOption }));
       } catch (error: any) {
         console.log(error);

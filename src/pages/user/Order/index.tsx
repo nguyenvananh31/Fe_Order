@@ -82,43 +82,40 @@ const OrderPage = ({ isAdmin }: IProps) => {
     const pusher = usePusher();
 
     useEffect(() => {
-        if (pusher && state.billDetail?.id) {
-            const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
-            channel.bind('item.added', function (data: any) {
-                if (data?.billDetails?.items?.length > 0) {
-                    for (let index = 0; index < data?.billDetails?.items?.length; index++) {
-                        handleDecraesePro(
-                            { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
-                            data?.billDetails?.items[index]?.quantity,
-                            true
-                        );
-                    }
+        if (!pusher || !state.billDetail?.id) return;
+        const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
+        channel.bind('item.added', function (data: any) {
+            if (data?.billDetails?.items?.length > 0) {
+                for (let index = 0; index < data?.billDetails?.items?.length; index++) {
+                    handleDecraesePro(
+                        { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
+                        data?.billDetails?.items[index]?.quantity,
+                        true
+                    );
                 }
-                setTab(prev => {
-                    if (prev == 2) {
-                        fetchApiBillDetail();
-                    }
-                    return prev;
-                });
-            })
-            channel.bind('item.confirmed', function (data: any) {
-                console.log('data confirmed: ', data);
-
-            })
-            channel.bind('item.addedToCart', function () {
-                setTab(prev => {
-                    if (prev == 1) {
-                        fetchApiGetOrderCart(false);
-                    }
-                    return prev;
-                });
-            })
-        }
-        return () => {
-            if (pusher && state.billDetail?.id) {
-                pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
-                pusher.disconnect();
             }
+            setTab(prev => {
+                if (prev == 2) {
+                    fetchApiBillDetail();
+                }
+                return prev;
+            });
+        })
+        channel.bind('item.confirmed', function (data: any) {
+            console.log('data confirmed: ', data);
+
+        })
+        channel.bind('item.addedToCart', function () {
+            setTab(prev => {
+                if (prev == 1) {
+                    fetchApiGetOrderCart(false);
+                }
+                return prev;
+            });
+        })
+        return () => {
+            channel.unbind_all();
+            pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
         }
     }, [state.billDetail?.id]);
 

@@ -38,6 +38,7 @@ interface ITotal {
 
 const RightContent = ({ props }: IProps) => {
 
+    const [loading, setLoading] = useState<boolean>(false);
     const toast = useToast();
 
     const total: ITotal = useMemo(() => {
@@ -63,6 +64,23 @@ const RightContent = ({ props }: IProps) => {
         return ApiUtils.post('/api/client/oder_item/cancelItem', body);
     }, []);
 
+    const apiCallStaff = useCallback(async (id: number) => {
+        return await ApiUtils.fetch<any, any>('/api/call/' + id);
+    }, []);
+
+    const handleCallStaff = useCallback((id: number) => async () => {
+        try {
+            setLoading(true);
+            await apiCallStaff(id);
+            toast.showSuccess('Đã thông báo đến nhân viên!');
+            setLoading(false);
+        } catch (error: any) {
+            console.log(error);
+            toast.showError(error);
+            setLoading(false);
+        }
+    }, []);
+
     return <>
         <div style={{
             position: 'fixed',
@@ -83,7 +101,7 @@ const RightContent = ({ props }: IProps) => {
                                 <Space direction="vertical" align="start">
                                     <Flex gap={8} justify="center" align="center">
                                         <InfoCircleOutlined className="text-[#00813D]" />
-                                        <p className="font-bold">Số bàn: {props.billDetail?.tableNumber}</p>
+                                        <p className="font-bold">Số bàn: {props.billDetail?.tableNumber?.length ? props.billDetail?.tableNumber?.join(' - ') : props.billDetail?.tableNumber}</p>
                                     </Flex>
                                     <Flex gap={8} justify="center" align="center">
                                         <InfoCircleOutlined className="text-[#00813D]" />
@@ -231,7 +249,8 @@ const RightContent = ({ props }: IProps) => {
                         </Flex>
                         <Flex align="center" justify="center" >
                             <Button
-                                // onClick={props.onShowPayment}
+                                loading={loading}
+                                onClick={handleCallStaff(props?.billDetail?.id || 0)}
                                 className="w-4/5 py-4 border-[#00813D]">
                                 <Space align="center" size={'large'}>
                                     <img width={24} src="./images/review.png" alt="icon" />
