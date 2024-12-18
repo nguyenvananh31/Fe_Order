@@ -1,12 +1,12 @@
+import { EOrderProStatus } from "@/constants/enum";
+import useToast from "@/hooks/useToast";
+import ApiUtils from "@/utils/api/api.utils";
 import { DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, RightOutlined, SmileOutlined } from "@ant-design/icons";
 import { Button, Card, Checkbox, Divider, Flex, QRCode, Skeleton, Space, Tag, Tooltip } from "antd";
-import { memo, useCallback, useMemo, useState } from "react";
-import { convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "../../../../utils/common";
 import moment from "moment";
-import { fallBackImg, getImageUrl, orderProStatus } from "../../../../constants/common";
-import { EOrderProStatus } from "@/constants/enum";
-import ApiUtils from "@/utils/api/api.utils";
-import useToast from "@/hooks/useToast";
+import { memo, useCallback, useMemo, useState } from "react";
+import { fallBackImg, getImageUrl, orderProStatus } from "@/constants/common";
+import { convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "@/utils/common";
 
 interface IProps {
     props: {
@@ -17,7 +17,7 @@ interface IProps {
         onCheckedPro: (ids: number[]) => void;
         onShowPayment: () => void;
         onOrderPro: () => void;
-        onFetchBill: () => void;
+        handleChangeTab: (tab: number) => void;
         cart: any[];
         loading: boolean;
         checked: any[];
@@ -27,6 +27,7 @@ interface IProps {
         billOnlinePro: any[];
         orderId: string;
         isMobile: boolean;
+        tab: number;
     }
 }
 
@@ -37,7 +38,6 @@ interface ITotal {
 
 const RightContent = ({ props }: IProps) => {
 
-    const [tab, setTab] = useState<number>(1);
     const toast = useToast();
 
     const total: ITotal = useMemo(() => {
@@ -49,16 +49,9 @@ const RightContent = ({ props }: IProps) => {
         };
     }, [props.checked]);
 
-    const handleChangeTab = useCallback((tab: number) => {
-        setTab(tab);
-        if (tab == 2) {
-            props.onFetchBill();
-        }
-    }, [props.onFetchBill]);
-
     const handleCancelPro = useCallback((id: number) => async () => {
         try {
-            const res = await apiCancelPro({ ma_bill: props.orderId, id_bill_details: [id] });
+            await apiCancelPro({ ma_bill: props.orderId, id_bill_details: [id] });
             toast.showSuccess('Yêu cầu huỷ thành công!');
         } catch (error) {
             console.log(error);
@@ -77,7 +70,7 @@ const RightContent = ({ props }: IProps) => {
             backgroundColor: '#ffffff',
             width: props.isMobile ? '100%' : '396px',
             paddingTop: props.isMobile ? '20px' : 'unset',
-            top: props.isMobile ? 65 : 96
+            top: props.isMobile ? 65 : 65,
         }}>
             <Flex justify="space-between" align="center" className="px-4">
                 {
@@ -114,9 +107,9 @@ const RightContent = ({ props }: IProps) => {
         </div>
         {/* Các món chưa gọi */}
         {
-            tab == 1 && (
-                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[240px] xl:pt-[300px]'}`}>
-                    <div className="text-lg font-semibold">Danh sách Order</div>
+            props.tab == 1 && (
+                <div className={`px-4 ${props.isMobile ? 'pt-[220px]' : 'max-xl:pt-[240px] xl:pt-[280px]'}`}>
+                    <div className="text-lg font-semibold my-2">Danh sách Order</div>
                     <Checkbox.Group className="w-full" value={props.checked} onChange={props.onCheckedPro}>
                         <Space direction="vertical" size={'large'} className="w-full">
                             {
@@ -215,8 +208,8 @@ const RightContent = ({ props }: IProps) => {
                         <Flex align="center" justify="center" >
                             <Button loading={props.loadingBtn} onClick={props.onOrderPro} type="primary" className="w-4/5 py-4 bg-[#00813D]">Đặt ngay</Button>
                         </Flex>
-                        <Flex align="center" justify="center" >
-                            <Button onClick={() => handleChangeTab(2)} className="w-4/5 py-4 border-[#00813D]">
+                        <Flex align="center" justify="center">
+                            <Button onClick={() => props.handleChangeTab(2)} className="w-4/5 py-4 border-[#00813D] mb-4">
                                 <Space align="center" size={'large'}>
                                     <img width={24} src="./images/icon-order.png" alt="icon" />
                                     Các món đã gọi
@@ -230,11 +223,11 @@ const RightContent = ({ props }: IProps) => {
         }
         {/* Các món đã lên */}
         {
-            tab == 2 && (
-                <div className={`px-4 ${props.isMobile ? 'pt-[200px]' : 'max-xl:pt-[220px] xl:pt-[330px]'}`}>
+            props.tab == 2 && (
+                <div className={`px-4 ${props.isMobile ? 'pt-[220px]' : 'max-xl:pt-[220px] xl:pt-[280px]'}`}>
                     <Space direction="vertical" size={'large'} className="w-full mb-4">
                         <Flex align="center" justify="center" >
-                            <Button type="primary" className="w-4/5 py-4 bg-[#00813D]" onClick={() => { handleChangeTab(1) }}>Gọi thêm món</Button>
+                            <Button type="primary" className="w-4/5 py-4 bg-[#00813D]" onClick={() => { props.handleChangeTab(1) }}>Gọi thêm món</Button>
                         </Flex>
                         <Flex align="center" justify="center" >
                             <Button
@@ -242,11 +235,11 @@ const RightContent = ({ props }: IProps) => {
                                 className="w-4/5 py-4 border-[#00813D]">
                                 <Space align="center" size={'large'}>
                                     <img width={24} src="./images/review.png" alt="icon" />
-                                    Yêu cầu thanh toán
+                                    Gọi nhân viên
                                 </Space>
                             </Button>
                         </Flex>
-                        <div className="text-lg font-semibold">Các món đã Order</div>
+                        <div className="text-lg font-semibold my-2">Các món đã Order</div>
                         {
                             props.billOnlinePro.length > 0 &&
                             props.billOnlinePro.map((i, y) => {
@@ -257,7 +250,7 @@ const RightContent = ({ props }: IProps) => {
                                                 <Flex gap={4}>
                                                     <Flex flex={1} align="end" justify="space-between">
                                                         <Flex gap={8}>
-                                                            <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                            <img width={50} className="rounded" src={i?.thumbnail ? getImageUrl(i?.thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                             <div>
                                                                 <Tooltip title={i?.name + ' - ' + i.size_name}>
                                                                     <div>{truncateWords(i?.name, 2)} - {i.size_name}</div>

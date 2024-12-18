@@ -33,7 +33,7 @@ export default function AccountPage() {
                 dataIndex: 'email',
                 sorter: true,
                 showSorterTooltip: { title: 'Sắp xếp theo tên và email' },
-                width: '20%',
+                width: '30%',
                 render: (_: any, user: IUser) => {
                     return (
                         <div className='flex items-center gap-3'>

@@ -135,12 +135,32 @@ export default function OrderCartComponent({ id }: Props) {
         if (pusher && state.billId) {
             const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
             channel.bind('item.added', function (data: any) {
-                const res = JSON.stringify(data);
-                console.log('res addd: ', res);
+                if (data?.billDetails?.items?.length > 0) {
+                    for (let index = 0; index < data?.billDetails?.items?.length; index++) {
+                        handleDecraesePro(
+                            { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
+                            data?.billDetails?.items[index]?.quantity,
+                            true
+                        );
+                    }
+                }
+                setOption(prev => {
+                    if (prev !== 3) {
+                        fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
+                    }
+                    return prev;
+                });
             })
             channel.bind('item.confirmed', function (data: any) {
-                const res = JSON.stringify(data);
-                console.log('res confirmed: ', res);
+                console.log('res confirmed: ', data);
+            })
+            channel.bind('item.addedToCart', function (data: any) {
+                setOption(prev => {
+                    if (prev == 3) {
+                        getApiOrderProCart(state?.billDetail?.ma_bill || '', false);
+                    }
+                    return prev;
+                });
             })
         }
         return () => {
@@ -183,7 +203,6 @@ export default function OrderCartComponent({ id }: Props) {
                 if (billNameIds?.ids?.length > 1) {
                     showManageOrder(undefined, billNameIds?.ids);
                 }
-
                 setState(prev => {
                     return {
                         ...prev, data: res?.data[0]?.bill_details || [],
@@ -280,10 +299,10 @@ export default function OrderCartComponent({ id }: Props) {
         return () => clearTimeout(timeout);
     }, [state.itemHandle, state.billDetail]);
 
-    const fetchApiBillDetail = useCallback(async () => {
+    const fetchApiBillDetail = useCallback(async (billId?: any, isLoad?: boolean) => {
         try {
-            setState(prev => ({ ...prev, loadingBill: true }));
-            const res: any = await apiGetbillDetailOnline({ ma_bill: state?.billDetail?.ma_bill });
+            setState(prev => ({ ...prev, loadingBill: isLoad }));
+            const res: any = await apiGetbillDetailOnline({ ma_bill: billId || state?.billDetail?.ma_bill });
             const billDetail = {
                 tableNumber: res.data.table_number,
                 customerName: res.data.khachhang?.name || 'Chưa có',
@@ -349,9 +368,9 @@ export default function OrderCartComponent({ id }: Props) {
         setOption(value);
     }, [state.billDetail]);
 
-    const getApiOrderProCart = useCallback(async (id: string) => {
+    const getApiOrderProCart = useCallback(async (id: string, isLoad: boolean = true) => {
         try {
-            setState(prev => ({ ...prev, loadingCart: true }));
+            setState(prev => ({ ...prev, loadingCart: isLoad }));
             const res = await apiGetOrderByBillId(id);
             setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data }));
         } catch (error) {
@@ -368,24 +387,24 @@ export default function OrderCartComponent({ id }: Props) {
         setState(prev => ({ ...prev, checkedOrder: ids }))
     }, []);
 
-    const handleDecraesePro = useCallback(async (item: any) => {
+    const handleDecraesePro = useCallback(async (item: any, quantity: number = 1, isLocal?: boolean) => {
         setState(prev => {
             if (prev.apiCaling) {
                 return prev;
             }
             let newPros = [];
             let itemHandle;
-            if (item.quantity - 1 == 0) {
+            if (item.quantity - quantity < 1) {
                 newPros = prev.cartOrderPro.filter(i => i.product_detail_id !== item.product_detail_id);
                 itemHandle = { id: item.id, isDel: true };
             } else {
-                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.product_detail_id ? { ...i, quantity: i.quantity - 1 } : i);
-                itemHandle = { id: item.id, quantity: item.quantity - 1, isUpdate: true };
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.product_detail_id ? { ...i, quantity: i.quantity - quantity } : i);
+                itemHandle = { id: item.id, quantity: item.quantity - quantity, isUpdate: true };
             }
             return {
                 ...prev,
                 cartOrderPro: newPros,
-                itemHandle
+                itemHandle: isLocal ? prev.itemHandle : itemHandle,
             }
         })
     }, []);
@@ -712,7 +731,7 @@ export default function OrderCartComponent({ id }: Props) {
                                                             <Flex gap={8}>
                                                                 <img className="rounded w-[50px] h-[50px] object-cover object-center" src={i.product_thumbnail ? getImageUrl(i.product_thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                                 <Space direction="vertical" align="start">
-                                                                    <Tooltip title={`${i.product_name} - ${i.size_name}`}>{truncateWords(i.product_name)} - {i.size_name}</Tooltip>
+                                                                    <Tooltip title={`${i.product_name} - ${i.size_name}`}>{truncateWords(i.product_name, 3)} - {i.size_name}</Tooltip>
                                                                     <Flex gap={8} justify="center" align="center">
                                                                         <MinusCircleOutlined className="cursor-pointer" onClick={() => handleDecraesePro(i)} />
                                                                         <p className="text-ghost text-sm min-w-6 pointer-events-none">x{i.quantity || 0}</p>

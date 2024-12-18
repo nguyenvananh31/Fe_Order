@@ -247,7 +247,7 @@ function ListProducts() {
                 }}
                 dataSource={state.pros}
                 renderItem={(item) => (
-                  <List.Item>
+                  <List.Item key={item.id}>
                     <ItemProduct product={item} />
                   </List.Item>
                 )}

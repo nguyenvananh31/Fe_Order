@@ -9,6 +9,7 @@ import { ROLES } from "../constants/enum";
 const LoginScreen = lazy(() => import('../pages/auth/Login/Login'));
 const RegisterScreen = lazy(() => import('../pages/auth/Register/Register'));
 const ForgotScreen = lazy(() => import('../pages/auth/Forgot'));
+const ResetPassScreen = lazy(() => import('../pages/auth/Forgot/ResetPass'));
 
 //Quản lý tài khoản
 const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
@@ -76,6 +77,13 @@ const authRoutes: IRoutesProperties[] = [
         name: 'Quên mật khẩu',
         element: <GuestGuard>
             <ForgotScreen />
+        </GuestGuard>
+    },
+    {
+        path: RouteConfig.RESETPASS,
+        name: 'Thay đổi mật khẩu',
+        element: <GuestGuard>
+            <ResetPassScreen />
         </GuestGuard>
     },
 ];

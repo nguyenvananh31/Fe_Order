@@ -12,7 +12,7 @@ interface IProps {
     onCheckedPro: (ids: number[]) => void;
     onShowPayment: () => void;
     onOrderPro: () => void;
-    onFetchBill: () => void;
+    handleChangeTab: (tab: number) => void;
     cart: any[];
     loading: boolean;
     checked: any[];
@@ -22,6 +22,7 @@ interface IProps {
     billOnlinePro: any[];
     orderId: string;
     isMobile: boolean;
+    tab: number;
 }
 
 const SiderOrder = (props: IProps) => {

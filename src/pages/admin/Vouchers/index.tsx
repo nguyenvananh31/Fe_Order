@@ -120,7 +120,7 @@ const ListVoucher: React.FC = () => {
                 conds.orderby = state.filterOrderBy;
             }
 
-            const res: any = await ApiUtils.fetch('/api/admin/vouchers');
+            const res: any = await ApiUtils.fetch('/api/admin/vouchers', conds);
 
             if (state.search && !state.enterSearch) {
                 setOptions(res.data.map((i: any) => ({ value: `${i.id}`, label: i.name, data: i })))

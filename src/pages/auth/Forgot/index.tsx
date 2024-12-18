@@ -25,7 +25,9 @@ export default function ForgotPage() {
             setState(prev => ({...prev, loading: true}));
             const res = await apiGetsendLinkToMail(values);
             if (res?.token) {
-                localStorageUtils.set(KeyStorage.FORGOT, res.token);
+                localStorageUtils.setObject(KeyStorage.FORGOT, {
+                    ...values, token: res.token,
+                });
                 toast.showSuccess('Yêu cầu thành công! Vui lòng xem trong hòm thư!');
             }
             setState(prev => ({...prev, loading: false}));

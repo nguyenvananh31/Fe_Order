@@ -14,6 +14,8 @@ import ModalPayment from "./components/ModalPayment";
 import ProContent from "./components/ProContent";
 import SiderOder from "./components/SiderOder";
 import { apiAddOrderPro, apiDelOrderCart, apiGetbillDetailOnline, apiGetOrderByBillId, apiGetOrderCate, apiGetProByCateId, apiGetProForOrder, apiOrderPros, apiSaveBill, apiUpdateOrderCart } from "./utils/order.service";
+import { usePusher } from "@/hooks/usePusher";
+import { PUSHER_CHANNEL } from "@/constants/enum";
 
 interface IState {
     loading: boolean;
@@ -36,6 +38,8 @@ interface IState {
     billDetail: any;
     showConfirmPayment: boolean;
     showDrawer: boolean;
+    refreshBill: boolean;
+    refreshCart: boolean;
 }
 
 const initState: IState = {
@@ -58,6 +62,8 @@ const initState: IState = {
     billDetail: {},
     showConfirmPayment: false,
     showDrawer: false,
+    refreshBill: false,
+    refreshCart: false,
 }
 
 interface IProps {
@@ -66,14 +72,57 @@ interface IProps {
 
 const OrderPage = ({ isAdmin }: IProps) => {
     const [state, setState] = useState<IState>(initState);
+    const [tab, setTab] = useState<number>(1);
     const toast = useToast();
     const navigate = useNavigate();
-
     const isMobile = useIsMobile();
-
     const [form] = Form.useForm();
-
     const { orderId, clearOrder, isFisrtLoad } = useOrder();
+
+    const pusher = usePusher();
+
+    useEffect(() => {
+        if (pusher && state.billDetail?.id) {
+            const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
+            channel.bind('item.added', function (data: any) {
+                if (data?.billDetails?.items?.length > 0) {
+                    for (let index = 0; index < data?.billDetails?.items?.length; index++) {
+                        handleDecraesePro(
+                            { ...data?.billDetails?.items[index], id: data?.billDetails?.items[index]?.bill_id },
+                            data?.billDetails?.items[index]?.quantity,
+                            true
+                        );
+                    }
+                }
+                setTab(prev => {
+                    if (prev == 2) {
+                        fetchApiBillDetail();
+                    }
+                    return prev;
+                });
+            })
+            channel.bind('item.confirmed', function (data: any) {
+                console.log('data confirmed: ', data);
+
+            })
+            channel.bind('item.addedToCart', function () {
+                setTab(prev => {
+                    if (prev == 1) {
+                        fetchApiGetOrderCart(false);
+                    }
+                    return prev;
+                });
+            })
+        }
+        return () => {
+            if (pusher && state.billDetail?.id) {
+                pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
+                pusher.disconnect();
+            }
+        }
+    }, [state.billDetail?.id]);
+
+
 
     const cartOrderProMemo = useMemo(() => state.cartOrderPro, [state.cartOrderPro]);
     const checkedOrderMemo = useMemo(() => state.checkedOrder, [state.checkedOrder]);
@@ -96,6 +145,7 @@ const OrderPage = ({ isAdmin }: IProps) => {
             setState(prev => ({ ...prev, loadingBill: true }));
             const res: any = await apiGetbillDetailOnline({ ma_bill: orderId });
             const billDetail = {
+                ...res?.data,
                 tableNumber: res.data.table_number,
                 customerName: res.data.khachhang?.name || 'Chưa có',
                 totalAmount: res.data.total_amount,
@@ -125,7 +175,7 @@ const OrderPage = ({ isAdmin }: IProps) => {
                         return [];
                     }
                     return i.product_details.map((x: any) => ({ ...x, image: i.thumbnail, name: i.name }));
-                })
+                });
 
                 setState(prev => ({ ...prev, loadingPro: false, products: items.flat() }));
             } catch (error) {
@@ -152,18 +202,26 @@ const OrderPage = ({ isAdmin }: IProps) => {
 
     useEffect(() => {
         if (!isFisrtLoad) return;
-        const fetchData = async () => {
-            try {
-                setState(prev => ({ ...prev, loadingCart: true }));
-                const res = await apiGetOrderByBillId(orderId || '');
-                setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data }));
-            } catch (error) {
-                console.log(error);
-                setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: [] }));
-            }
-        }
-        fetchData();
+        fetchApiGetOrderCart();
     }, [state.refresh, isFisrtLoad]);
+
+    const fetchApiGetOrderCart = useCallback(async (isLoad: boolean = true) => {
+        try {
+            // let isCheckCalling = false;
+            setState(prev => {
+                // isCheckCalling = prev.refreshCart;
+                return { ...prev, loadingCart: isLoad, refreshCart: true }
+            });
+            // if (isCheckCalling) {
+            //     return;
+            // }
+            const res = await apiGetOrderByBillId(orderId || '');
+            setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: res.data.data, refreshCart: false }));
+        } catch (error) {
+            console.log(error);
+            setState(prev => ({ ...prev, loadingCart: false, cartOrderPro: [], refreshCart: false }));
+        }
+    }, [isFisrtLoad]);
 
     //Handle add pro to cart order
     useEffect(() => {
@@ -340,24 +398,24 @@ const OrderPage = ({ isAdmin }: IProps) => {
         });
     }, []);
 
-    const handleDecraesePro = useCallback(async (item: any) => {
+    const handleDecraesePro = useCallback(async (item: any, quantity: number = 1, isLocal?: boolean) => {
         setState(prev => {
             if (prev.apiCaling) {
                 return prev;
             }
             let newPros = [];
             let itemHandle;
-            if (item.quantity - 1 == 0) {
+            if (item.quantity - quantity < 1) {
                 newPros = prev.cartOrderPro.filter(i => i.product_detail_id !== item.product_detail_id);
                 itemHandle = { id: item.id, isDel: true };
             } else {
-                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.product_detail_id ? { ...i, quantity: i.quantity - 1 } : i);
-                itemHandle = { id: item.id, quantity: item.quantity - 1, isUpdate: true };
+                newPros = prev.cartOrderPro.map(i => i.product_detail_id == item.product_detail_id ? { ...i, quantity: i.quantity - quantity } : i);
+                itemHandle = { id: item.id, quantity: item.quantity - quantity, isUpdate: true };
             }
             return {
                 ...prev,
                 cartOrderPro: newPros,
-                itemHandle
+                itemHandle: isLocal ? prev.itemHandle : itemHandle,
             }
         })
     }, []);
@@ -404,6 +462,13 @@ const OrderPage = ({ isAdmin }: IProps) => {
             setState(prev => ({ ...prev, loadingBill: false }));
         }
     }, [isFisrtLoad]);
+
+    const handleChangeTab = useCallback((tab: number) => {
+        setTab(tab);
+        if (tab == 2) {
+            handleClickBill();
+        }
+    }, [handleClickBill]);
 
     return <>
         <Layout className="min-h-[100vh]">
@@ -457,9 +522,10 @@ const OrderPage = ({ isAdmin }: IProps) => {
                         loadBill={state.loadingBill}
                         billDetail={state.billDetail}
                         billOnlinePro={state.billOnlinePro}
-                        onFetchBill={handleClickBill}
                         orderId={orderId || ''}
                         isMobile={isMobile}
+                        tab={tab}
+                        handleChangeTab={handleChangeTab}
                     />
                 )
             }
@@ -502,8 +568,9 @@ const OrderPage = ({ isAdmin }: IProps) => {
                     loadBill={state.loadingBill}
                     billDetail={state.billDetail}
                     billOnlinePro={state.billOnlinePro}
-                    onFetchBill={handleClickBill}
                     orderId={orderId || ''}
+                    tab={tab}
+                    handleChangeTab={handleChangeTab}
                 />
             )
         }

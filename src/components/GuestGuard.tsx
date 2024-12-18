@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
-import useAuth from "../hooks/redux/auth/useAuth";
 import { useNavigate } from "react-router-dom";
-import { RoutePath } from "../constants/path";
+import { RouteConfig } from "../constants/path";
+import useAuth from "../hooks/redux/auth/useAuth";
 
 interface IProps {
     children: ReactNode;
@@ -13,9 +13,9 @@ export default function GuestGuard({ children }: IProps) {
     
     useEffect(() => {
         if (!!user?.roles?.length) {
-            navigate(`/${RoutePath.ADMIN}`);
+            navigate(RouteConfig.ADMIN);
         } else if (user) {
-            navigate(`${RoutePath.HOME}`);
+            navigate(RouteConfig.HOME);
         }
     }, []);
 

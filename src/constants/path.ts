@@ -100,4 +100,5 @@ export const RouteConfig = {
     LOGIN: '/login',
     REGISTER: '/register',
     FORGOT: '/forgot',
+    RESETPASS: '/reset-password',
 }
