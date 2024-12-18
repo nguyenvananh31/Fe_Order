@@ -1,4 +1,4 @@
-import { EOrderProStatus } from "@/constants/enum";
+import { EOrderProStatus, PUSHER_CHANNEL } from "@/constants/enum";
 import { CheckOutlined, DeleteOutlined, InfoCircleOutlined, MinusCircleOutlined, PauseOutlined, PayCircleOutlined, PlusCircleOutlined, PlusOutlined, SettingOutlined, ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
 import { Button, Card, Checkbox, Divider, Dropdown, Empty, Flex, Form, Image, QRCode, Segmented, Space, Spin, Tag, Tooltip } from "antd";
 import moment from "moment";
@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { fallBackImg, getImageUrl, orderProStatus } from "../../../constants/common";
 import { useIsMobile } from "../../../hooks/useIsMobile";
+import { usePusher } from "../../../hooks/usePusher";
 import useToast from "../../../hooks/useToast";
 import { apiActiveItem, apiGetTableDetail } from "../../../pages/admin/Tables/utils/rable.service";
 import ModalConfirmPayment from "../../../pages/user/Order/components/ModalConfirmPayment";
@@ -41,6 +42,7 @@ interface IState {
     isEdit: number;
     options: any[];
     refresh: boolean;
+    billId: number;
 }
 
 const initState: IState = {
@@ -64,6 +66,7 @@ const initState: IState = {
     isEdit: 0,
     options: [],
     refresh: false,
+    billId: 0,
 }
 
 interface ITotal {
@@ -79,6 +82,7 @@ export default function OrderCartComponent({ id }: Props) {
     const [form] = Form.useForm();
     const isMobile = useIsMobile();
     const subscriptions = useRef(new Subscription());
+    const pusher = usePusher();
 
     useEffect(() => {
         registerEventBus();
@@ -127,6 +131,26 @@ export default function OrderCartComponent({ id }: Props) {
         );
     };
 
+    useEffect(() => {
+        if (pusher && state.billId) {
+            const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
+            channel.bind('item.added', function (data: any) {
+                const res = JSON.stringify(data);
+                console.log('res addd: ', res);
+            })
+            channel.bind('item.confirmed', function (data: any) {
+                const res = JSON.stringify(data);
+                console.log('res confirmed: ', res);
+            })
+        }
+        return () => {
+            if (pusher && state.billId) {
+                pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
+                pusher.disconnect();
+            }
+        }
+    }, [state.billId]);
+
     const total: ITotal = useMemo(() => {
         const pros = state.cartOrderPro.filter(i => state.checkedOrder.includes(i.id));
         const totalSale = pros.reduce((acc, curr) => acc + (+curr.sale || 0), 0);
@@ -144,7 +168,7 @@ export default function OrderCartComponent({ id }: Props) {
                 const res = await apiGetTableDetail(id);
                 const billNameIds = res?.data[0]?.tables?.reduce((acc: any, curr: any, index: number, arr: any[]) => {
                     if (arr.length == index + 1) {
-                        let ids = acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id];
+                        let ids = acc?.ids?.length > 0 ? [...acc.ids, curr.id] : [curr.id];
                         return {
                             name: acc.name + curr?.table,
                             ids
@@ -152,18 +176,18 @@ export default function OrderCartComponent({ id }: Props) {
                     }
                     return {
                         name: acc.name + curr?.table + ' - ',
-                        ids: acc?.ids.length > 0 ? [...acc.ids, curr.id] : [curr.id]
+                        ids: acc?.ids?.length > 0 ? [...acc?.ids, curr.id] : [curr.id]
                     };
                 }, { name: '', ids: [] });
 
-                if (billNameIds.ids.length > 1) {
-                    showManageOrder(undefined, billNameIds.ids);
+                if (billNameIds?.ids?.length > 1) {
+                    showManageOrder(undefined, billNameIds?.ids);
                 }
 
                 setState(prev => {
                     return {
                         ...prev, data: res?.data[0]?.bill_details || [],
-                        loading: false, billDetail: res?.data[0], billNameIds
+                        loading: false, billDetail: res?.data[0], billNameIds, billId: res?.data[0]?.id,
                     }
                 });
 
@@ -529,7 +553,7 @@ export default function OrderCartComponent({ id }: Props) {
                         <Flex gap={8} justify="center" align="center">
                             <InfoCircleOutlined className="text-[#00813D]" />
                             <p className="font-bold">Số bàn:
-                                {state.billNameIds.name}
+                                {state.billNameIds?.name}
                             </p>
                         </Flex>
                         {/* <Flex gap={8} justify="center" align="center">

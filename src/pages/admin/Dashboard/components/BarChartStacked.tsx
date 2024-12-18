@@ -60,9 +60,9 @@ export function BarChartStacked({ loading, dataChart }: IProps) {
               <Spin />
             </div>
             :
-            <ChartContainer config={chartConfig}>
+            <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <BarChart accessibilityLayer data={dataChart}>
-                <CartesianGrid vertical={false} />
+                <CartesianGrid vertical={false} stroke="#e0e0e0"/>
                 <XAxis
                   dataKey="type"
                   tickLine={false}

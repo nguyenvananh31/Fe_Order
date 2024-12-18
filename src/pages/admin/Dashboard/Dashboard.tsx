@@ -53,6 +53,7 @@ const Dashboard = () => {
         }
         const res = await apiGetDashboard(conds);
         let dataOption = state.optionFillter == 1 ? res?.default?.today : res?.filtered;
+        console.log('dataOption: ', dataOption);
         setState(prev => ({ ...prev, loading: false, data: res, dataOption }));
       } catch (error: any) {
         console.log(error);
@@ -74,10 +75,26 @@ const Dashboard = () => {
             const day = index + 1;
             dataChartRevenue.push({
               type: day,
-              desktop: +res?.revenue[index]?.revenue || 0
+              desktop: +res?.revenue[index]?.revenue_in_restaurant || 0,
+              mobile: +res?.revenue[index]?.revenue_online || 0
             });
             dataChartBill.push({
               type: day,
+              desktop: +res?.revenue[index]?.completed_bills || 0,
+              mobile: +res?.revenue[index]?.failed_bills || 0,
+            });
+          }
+        }
+        if (res?.type == 'monthly') {
+          for (let index = 0; index < res?.revenue?.length; index++) {
+            const month = index + 1;
+            dataChartRevenue.push({
+              type: 'Th ' + month,
+              desktop: +res?.revenue[index]?.revenue_in_restaurant || 0,
+              mobile: +res?.revenue[index]?.revenue_online || 0
+            });
+            dataChartBill.push({
+              type: 'Th ' + month,
               desktop: +res?.revenue[index]?.completed_bills || 0,
               mobile: +res?.revenue[index]?.failed_bills || 0,
             });
@@ -127,6 +144,7 @@ const Dashboard = () => {
         { value: "3", label: "Quý 3" },
         { value: "4", label: "Quý 4" },
       ],
+      disabled: true,
     },
     {
       value: "month",
@@ -251,20 +269,20 @@ const Dashboard = () => {
         <Col span={12}>
           <BarChartCn
             guests={Math.ceil((+state.dataOption?.guests?.max_guest + +state.dataOption?.guests?.min_guest) / 2)}
-            orders={+state.dataOption?.orders}
+            orders={+state.dataOption?.bills?.total_bills}
             products={+state.dataOption?.products}
             tables={+state.dataOption?.tables}
             users={+state.dataOption?.users}
             loading={state.loading}
           />
         </Col>
-        <Col span={24}>
+        <Col span={12}>
           <LineChartCn
             loading={state.loadingChart}
             dataChart={state.dataChartRevenue}
           />
         </Col>
-        <Col span={24}>
+        <Col span={12}>
           <BarChartStacked
             loading={state.loadingChart}
             dataChart={state.dataChartBill}

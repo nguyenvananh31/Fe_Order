@@ -83,3 +83,7 @@ export enum EStatusTable {
     CLOSE = 'close',
     PENDING = 'pending'
 }
+
+export enum PUSHER_CHANNEL {
+    BILL_ORDER = 'bill'
+}

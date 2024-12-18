@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Area, CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { Area, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -14,6 +14,8 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent
 } from "@/components/ui/chart"
@@ -29,8 +31,12 @@ import { Spin } from "antd"
 
 const chartConfig = {
   desktop: {
-    label: "Tổng",
+    label: "Tại nhà hàng",
     color: "hsl(var(--chart-1))",
+  },
+  mobile: {
+    label: "Onine",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
@@ -43,12 +49,12 @@ export function LineChartCn({ loading, dataChart }: IProps) {
 
   return (
     <Card>
-      <CardHeader className="flex items-stretch space-y-0 border-b p-0 sm:flex-row">
+      <CardHeader className="flex items-stretch space-y-0 p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Biểu đồ doanh thu</CardTitle>
           {/* <CardDescription>January - June 2024</CardDescription> */}
         </div>
-        
+
       </CardHeader>
       <CardContent>
         {
@@ -57,7 +63,7 @@ export function LineChartCn({ loading, dataChart }: IProps) {
               <Spin />
             </div>
             :
-            <ChartContainer config={chartConfig}>
+            <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <LineChart
                 accessibilityLayer
                 data={dataChart}
@@ -66,7 +72,7 @@ export function LineChartCn({ loading, dataChart }: IProps) {
                   right: 12,
                 }}
               >
-                <CartesianGrid vertical={false} />
+                <CartesianGrid vertical={false} stroke="#e0e0e0"/>
                 <XAxis
                   dataKey="type"
                   tickLine={false}
@@ -77,10 +83,18 @@ export function LineChartCn({ loading, dataChart }: IProps) {
                   }}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Line
                   dataKey="desktop"
                   type="monotone"
                   stroke="var(--color-desktop)"
+                  strokeWidth={2}
+                  dot={true}
+                />
+                <Line
+                  dataKey="mobile"
+                  type="monotone"
+                  stroke="var(--color-mobile)"
                   strokeWidth={2}
                   dot={true}
                 />

@@ -8,6 +8,7 @@ import { ROLES } from "../constants/enum";
 //Auth
 const LoginScreen = lazy(() => import('../pages/auth/Login/Login'));
 const RegisterScreen = lazy(() => import('../pages/auth/Register/Register'));
+const ForgotScreen = lazy(() => import('../pages/auth/Forgot'));
 
 //Quản lý tài khoản
 const AccountScreen = lazy(() => import('../pages/admin/Account/index.page'));
@@ -65,9 +66,16 @@ const authRoutes: IRoutesProperties[] = [
     },
     {
         path: RouteConfig.REGISTER,
-        name: 'Quên mật khẩu',
+        name: 'Đăng ký tài khoản',
         element: <GuestGuard>
             <RegisterScreen />
+        </GuestGuard>
+    },
+    {
+        path: RouteConfig.FORGOT,
+        name: 'Quên mật khẩu',
+        element: <GuestGuard>
+            <ForgotScreen />
         </GuestGuard>
     },
 ];

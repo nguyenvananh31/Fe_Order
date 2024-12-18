@@ -87,8 +87,9 @@ const Bill: React.FC = () => {
 
   const handleCancelOrder = useCallback(async (orderId: number) => {
     try {
-      await ApiUtils.put(`/api/client/bills/${orderId}/cancel`);
-
+      const res: any = await ApiUtils.put(`/api/client/bills/${orderId}/cancel`);
+      toast.showSuccess(res?.message || 'Huỷ đã thành công!');
+      setState(prev => ({ ...prev, refresh: !prev.refresh }));
     } catch (error) {
       console.error("Error sending cancellation request", error);
       toast.showError(error as any);

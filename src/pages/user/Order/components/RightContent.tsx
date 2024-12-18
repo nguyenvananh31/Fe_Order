@@ -5,6 +5,8 @@ import { convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "../../..
 import moment from "moment";
 import { fallBackImg, getImageUrl, orderProStatus } from "../../../../constants/common";
 import { EOrderProStatus } from "@/constants/enum";
+import ApiUtils from "@/utils/api/api.utils";
+import useToast from "@/hooks/useToast";
 
 interface IProps {
     props: {
@@ -36,6 +38,7 @@ interface ITotal {
 const RightContent = ({ props }: IProps) => {
 
     const [tab, setTab] = useState<number>(1);
+    const toast = useToast();
 
     const total: ITotal = useMemo(() => {
         const pros = props.cart.filter(i => props.checked.includes(i.id));
@@ -52,6 +55,20 @@ const RightContent = ({ props }: IProps) => {
             props.onFetchBill();
         }
     }, [props.onFetchBill]);
+
+    const handleCancelPro = useCallback((id: number) => async () => {
+        try {
+            const res = await apiCancelPro({ ma_bill: props.orderId, id_bill_details: [id] });
+            toast.showSuccess('Yêu cầu huỷ thành công!');
+        } catch (error) {
+            console.log(error);
+            toast.showError(error as any);
+        }
+    }, [props.orderId]);
+
+    const apiCancelPro = useCallback(async (body: any) => {
+        return ApiUtils.post('/api/client/oder_item/cancelItem', body);
+    }, []);
 
     return <>
         <div style={{
@@ -232,46 +249,48 @@ const RightContent = ({ props }: IProps) => {
                         <div className="text-lg font-semibold">Các món đã Order</div>
                         {
                             props.billOnlinePro.length > 0 &&
-                            props.billOnlinePro.map((i, y) => (
-                                <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
-                                    <Card.Meta title={
-                                        <div className="border rounded-md p-2 oredered-card">
-                                            <Flex gap={4}>
-                                                <Flex flex={1} align="end" justify="space-between">
-                                                    <Flex gap={8}>
-                                                        <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
-                                                        <div>
-                                                            <Tooltip title={i?.name + ' - ' + i.size_name}>
-                                                                <div>{truncateWords(i?.name, 2)} - {i.size_name}</div>
-                                                            </Tooltip>
-                                                            <p className="text-ghost text-sm">x{i.quantity}</p>
-                                                        </div>
-                                                    </Flex>
-                                                    <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                        <Tag className="m-0" color={orderProStatus[i.status]?.color}>{orderProStatus[i.status]?.label}</Tag>
-                                                        <div>
-                                                            <span className="text-sm font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) || 0)}</span>
-                                                            <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                                        </div>
+                            props.billOnlinePro.map((i, y) => {
+                                return (
+                                    <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                        <Card.Meta title={
+                                            <div className="border rounded-md p-2 oredered-card">
+                                                <Flex gap={4}>
+                                                    <Flex flex={1} align="end" justify="space-between">
+                                                        <Flex gap={8}>
+                                                            <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                            <div>
+                                                                <Tooltip title={i?.name + ' - ' + i.size_name}>
+                                                                    <div>{truncateWords(i?.name, 2)} - {i.size_name}</div>
+                                                                </Tooltip>
+                                                                <p className="text-ghost text-sm">x{i.quantity}</p>
+                                                            </div>
+                                                        </Flex>
+                                                        <Flex gap={4} vertical={true} justify="space-between" align="end">
+                                                            <Tag className="m-0" color={orderProStatus[i.status]?.color}>{orderProStatus[i.status]?.label}</Tag>
+                                                            <div>
+                                                                <span className="text-sm font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) || 0)}</span>
+                                                                <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                            </div>
+                                                        </Flex>
                                                     </Flex>
                                                 </Flex>
-                                            </Flex>
-                                            <Divider className="my-2" />
-                                            <Flex justify="space-between" align="center">
-                                                <span className="text-sm text-ghost">{moment(i?.time_order || undefined).format("DD/MM/YYYY, hh:mma")}</span>
-                                                <div>
-                                                    <span className="text-md font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) * i.quantity)}</span>
-                                                    <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
-                                                </div>
-                                            </Flex>
-                                            {
-                                                i.status == EOrderProStatus.PENDING &&
-                                                <div className="del">Huỷ món</div>
-                                            }
-                                        </div>
-                                    } />
-                                </Card>
-                            ))
+                                                <Divider className="my-2" />
+                                                <Flex justify="space-between" align="center">
+                                                    <span className="text-sm text-ghost">{moment(i?.time_order || undefined).format("DD/MM/YYYY, hh:mma")}</span>
+                                                    <div>
+                                                        <span className="text-md font-bold">{convertPriceVNDNotSupfix((i?.sale || i?.price) * i.quantity)}</span>
+                                                        <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>
+                                                    </div>
+                                                </Flex>
+                                                {
+                                                    i.status == EOrderProStatus.PENDING &&
+                                                    <div onClick={handleCancelPro(i?.id || 0)} className="del">Huỷ món</div>
+                                                }
+                                            </div>
+                                        } />
+                                    </Card>
+                                )
+                            })
                         }
                         {
                             props.loadBill && (

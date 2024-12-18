@@ -9,6 +9,7 @@ import { RoutePath } from "./constants/path";
 import useAuth from "./hooks/redux/auth/useAuth";
 import useToast from "./hooks/useToast";
 import { ToastProvider } from "./hooks/useToast/handling";
+import PusherProvider from "./hooks/usePusher";
 import Router from "./routes";
 import { BaseEventPayload, EventBusName } from "./utils/event-bus";
 import EventBus from "./utils/event-bus/event-bus";
@@ -73,11 +74,13 @@ function App() {
         <>
             <ToastProvider>
                 <ConfigProvider locale={locale} theme={{ token: themeToken }}>
-                    <Root>
-                        <Suspense fallback={<SpinnerLoader />}>
-                            <Router />
-                        </Suspense>
-                    </Root>
+                    <PusherProvider>
+                        <Root>
+                            <Suspense fallback={<SpinnerLoader />}>
+                                <Router />
+                            </Suspense>
+                        </Root>
+                    </PusherProvider>
                 </ConfigProvider>
             </ToastProvider>
         </>

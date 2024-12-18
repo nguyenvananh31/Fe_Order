@@ -335,7 +335,6 @@ const Register = () => {
                                         className="w-full"
                                         name="password_confirmation"
                                         dependencies={["password"]}
-                                        hasFeedback
                                         rules={[
                                             {
                                                 required: true,

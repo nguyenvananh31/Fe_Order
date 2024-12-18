@@ -1,8 +1,9 @@
 
 import 'antd/dist/reset.css';
 import { Link } from 'react-router-dom';
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, Flex } from "antd";
 import { LoginForm } from './utils/LoginForm.hooks';
+import { RouteConfig } from '@/constants/path';
 
 const Login = () => {
     const { ...hooks } = LoginForm();
@@ -120,9 +121,18 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <Form.Item className="mt-2.5" name="remember" valuePropName="checked">
-                                <Checkbox className="text-sm text-gray-600">Ghi nhớ tài khoản</Checkbox>
-                            </Form.Item>
+                            <Flex align='center' justify='space-between'>
+                                <Form.Item className="mt-2.5" name="remember" valuePropName="checked">
+                                    <Checkbox className="text-sm text-gray-600">Ghi nhớ tài khoản</Checkbox>
+                                </Form.Item>
+                                <Link
+                                    to={RouteConfig.FORGOT}
+                                    title=""
+                                    className="font-medium pt-3 text-end text-blue-600 transition-all duration-200 hover:text-blue-700 hover:underline focus:text-blue-700"
+                                >
+                                    Quên mật khẩu?
+                                </Link>
+                            </Flex>
 
                             <Form.Item className="mt-2.5">
                                 <Button

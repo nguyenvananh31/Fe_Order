@@ -20,6 +20,7 @@ export const RoutePath = {
     CATEGORY: 'categories',
     LOGIN: 'login',
     REGISTER: 'register',
+    FORGOT: 'forgot',
     CHECKOUT: 'checkout',
     ORDER: 'order',
     CHECK_QR: 'qr-check/:id',
@@ -98,4 +99,5 @@ export const RouteConfig = {
     // Other routes
     LOGIN: '/login',
     REGISTER: '/register',
+    FORGOT: '/forgot',
 }
