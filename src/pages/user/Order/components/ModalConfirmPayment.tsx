@@ -55,6 +55,27 @@ const ModalConfirmPayment = (props: IProps) => {
     >
         <Form layout="vertical" form={props.form} onFinish={props.onSaveBill}>
             <Form.Item
+                label='Họ và tên'
+                name='name'
+                rules={[]}
+            >
+                <Input type="text" placeholder="Nhập họ và tên" />
+            </Form.Item>
+
+            <Form.Item
+                label='Email'
+                name='email'
+                rules={[
+                    {
+                        type: 'email',
+                        required: false,
+                        message: 'Email không đúng định dạng!',
+                    },
+                ]}
+            >
+                <Input type="email" placeholder="Nhập email" />
+            </Form.Item>
+            <Form.Item
                 label='Số điện thoại'
                 name='phone'
                 rules={[
@@ -64,7 +85,7 @@ const ModalConfirmPayment = (props: IProps) => {
                     },
                 ]}
             >
-                <Input  type="tel" placeholder="Nhập số điện thoại"/>
+                <Input type="tel" placeholder="Nhập số điện thoại" />
             </Form.Item>
             <Form.Item name='payment'
                 label='Phương thức thanh toán'

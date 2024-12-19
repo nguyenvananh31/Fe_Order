@@ -8,7 +8,7 @@ import { PAGINATE_DEFAULT } from "../../../constants/enum";
 import useToast from "../../../hooks/useToast";
 import { convertPriceVND } from "../../../utils/common";
 import BillModel from "../Bill/components/BillModal";
-import { apigetShipper, apiGetUpdateShippingStatus } from "./utils/shipper.service";
+import { apigetShipper, apiGetUpdateShippingStatus, apiRetryShipper } from "./utils/shipper.service";
 
 const statusBill: any = {
     'pending': { color: 'magenta', title: 'Đang chờ' },
@@ -18,6 +18,7 @@ const statusBill: any = {
     'completed': { color: 'green', title: 'Đã hoàn thành' },
     'cancelled': { color: 'red', title: 'Đã huỷ' },
     'failed': { color: 'red', title: 'Thất bại' },
+    'pending_retry': { color: 'yellow', title: 'Chờ giao lại' },
     'cancellation_requested': { color: 'yellow', title: 'Chờ xác nhận hủy' },
     'cancellation_approved': { color: 'volcano', title: 'Xác nhận hủy' },
     'cancellation_rejected': { color: 'volcano', title: 'Hủy thất bại' },
@@ -172,7 +173,7 @@ const ShipperPage = () => {
             }
 
             await apiGetUpdateShippingStatus(id, !hasImage ? { status } : formData, hasImage);
-            setState(prev => ({ ...prev, refresh: !prev.refresh }));
+            setState(prev => ({ ...prev, refresh: !prev.refresh, showModalConfirm: false }));
         } catch (error: any) {
             console.log(error);
             toast.showError(error);
@@ -183,6 +184,17 @@ const ShipperPage = () => {
     const handleSubmit = () => {
         form.submit();
     }
+
+    const handleSubmitRetry = useCallback((id: number) => async () => {
+        try {
+            await apiRetryShipper(id);
+            toast.showSuccess('Cập nhật thành công!');
+            setState(prev => ({ ...prev, refresh: !prev.refresh }));
+        } catch (error : any) {
+            console.log(error);
+            toast.showError(error);
+        }
+    }, []);
 
     const columns = useMemo(() => {
         const tblColumns: ColumnProps<any>[] = [
@@ -325,6 +337,23 @@ const ShipperPage = () => {
                                 </Tooltip>
                             )
                         }
+                        {
+                            item.status == 'pending_retry' && (
+                                <Tooltip title="Xác nhận giao lại đơn hàng">
+                                    <Popconfirm
+                                        title="Xác nhận giao lại đơn hàng"
+                                        description="Bạn có muốn giao lại đơn hàng không?"
+                                        okText="Xác nhận"
+                                        cancelText="Không"
+                                        onConfirm={handleSubmitRetry(item.id)}
+                                    >
+                                        <Button
+                                            className='ml-2' type="primary" icon={<CheckCircleOutlined />}>
+                                        </Button>
+                                    </Popconfirm>
+                                </Tooltip>
+                            )
+                        }
                     </Flex>
                 )
             },
@@ -387,7 +416,7 @@ const ShipperPage = () => {
             >
                 <Form
                     form={form}
-                    onFinish={(values: any) => handleChangeStatus(state?.selectedItemId!, values.status ? 'delivered' : 'delivery_failed', values.status)()}
+                    onFinish={(values: any) => handleChangeStatus(state?.selectedItemId!, values.status ? 'delivered' : 'delivery_failed', true)()}
                     // disabled={!state.isEdit}
                     layout="vertical"
                 >
@@ -411,6 +440,7 @@ const ShipperPage = () => {
                         </div>
                     )}
                         valuePropName="fileList" getValueFromEvent={normFile}
+                        rules={[{ required: true, message: 'Hình ảnh giao hàng là bắt buộc!' }]}
                     >
                         <Upload
                             listType="picture-card"

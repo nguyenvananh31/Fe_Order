@@ -7,6 +7,7 @@ import moment from "moment";
 import { memo, useCallback, useMemo, useState } from "react";
 import { fallBackImg, getImageUrl, orderProStatus } from "@/constants/common";
 import { convertPriceVNDNotSupfix, getUrlQrCheck, truncateWords } from "@/utils/common";
+import { usePusher } from "@/hooks/usePusher";
 
 interface IProps {
     props: {
@@ -44,7 +45,7 @@ const RightContent = ({ props }: IProps) => {
     const total: ITotal = useMemo(() => {
         const pros = props.cart.filter(i => props.checked.includes(i.id));
         const totalSale = pros.reduce((acc, curr) => acc + (+curr.sale || 0), 0);
-        const totalPrice = pros.reduce((acc, curr) => acc + (+curr.sale || +curr.price), 0);
+        const totalPrice = pros.reduce((acc, curr) => acc + ((+curr.sale || +curr.price) * +curr?.quantity), 0);
         return {
             totalSale, totalPrice
         };
@@ -263,7 +264,7 @@ const RightContent = ({ props }: IProps) => {
                             props.billOnlinePro.length > 0 &&
                             props.billOnlinePro.map((i, y) => {
                                 return (
-                                    <Card key={y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
+                                    <Card key={i?.bill_detail_id || y} loading={false} bordered={false} style={{ boxShadow: 'unset' }} styles={{ body: { padding: 0 } }}>
                                         <Card.Meta title={
                                             <div className="border rounded-md p-2 oredered-card">
                                                 <Flex gap={4}>
@@ -296,7 +297,7 @@ const RightContent = ({ props }: IProps) => {
                                                 </Flex>
                                                 {
                                                     i.status == EOrderProStatus.PENDING &&
-                                                    <div onClick={handleCancelPro(i?.id || 0)} className="del">Huỷ món</div>
+                                                    <div onClick={handleCancelPro(i?.bill_detail_id || 0)} className="del">Huỷ món</div>
                                                 }
                                             </div>
                                         } />

@@ -83,6 +83,7 @@ const OrderPage = ({ isAdmin }: IProps) => {
 
     useEffect(() => {
         if (!pusher || !state.billDetail?.id) return;
+        console.log('state.billDetail: ', state.billDetail);
         const channel = pusher.subscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
         channel.bind('item.added', function (data: any) {
             if (data?.billDetails?.items?.length > 0) {
@@ -96,14 +97,28 @@ const OrderPage = ({ isAdmin }: IProps) => {
             }
             setTab(prev => {
                 if (prev == 2) {
-                    fetchApiBillDetail();
+                    fetchApiBillDetail(false);
                 }
                 return prev;
             });
         })
         channel.bind('item.confirmed', function (data: any) {
-            console.log('data confirmed: ', data);
-
+            // console.log('data confirmed: ', data);
+            setTab(prev => {
+                if (prev == 2) {
+                    fetchApiBillDetail(false);
+                }
+                return prev;
+            });
+        })
+        channel.bind('item.cancelled', function (data: any) {
+            // console.log('data confirmed: ', data);
+            setTab(prev => {
+                if (prev == 2) {
+                    fetchApiBillDetail(false);
+                }
+                return prev;
+            });
         })
         channel.bind('item.addedToCart', function () {
             setTab(prev => {
@@ -113,6 +128,16 @@ const OrderPage = ({ isAdmin }: IProps) => {
                 return prev;
             });
         })
+        // const channel1 = pusher.subscribe(PUSHER_CHANNEL.CART + '.' + state.billDetail?.id);
+        // channel1.bind('item.deleted', function (data: any) {
+        //     console.log('data: deleted', data);
+        //     setTab(prev => {
+        //         if (prev == 1) {
+        //             fetchApiGetOrderCart(false);
+        //         }
+        //         return prev;
+        //     });
+        // })
         return () => {
             channel.unbind_all();
             pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billDetail?.id);
@@ -137,9 +162,9 @@ const OrderPage = ({ isAdmin }: IProps) => {
         fetchApiBillDetail();
     }, [state.refresh, isFisrtLoad])
 
-    const fetchApiBillDetail = useCallback(async () => {
+    const fetchApiBillDetail = useCallback(async (isLoad: boolean = true) => {
         try {
-            setState(prev => ({ ...prev, loadingBill: true }));
+            setState(prev => ({ ...prev, loadingBill: isLoad }));
             const res: any = await apiGetbillDetailOnline({ ma_bill: orderId });
             const billDetail = {
                 ...res?.data,

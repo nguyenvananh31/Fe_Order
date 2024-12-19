@@ -75,11 +75,11 @@ export const LISTMENU: any[] = [
           <Link to={RouteConfig.ADMIN_TABLE}>Danh sách bàn</Link>
         )
       },
-      {
-        key: RoutePath.ADMIN_TABLE_ORDER, label: (
-          <Link to={RouteConfig.ADMIN_TABLE_ORDER}>Danh sách đặt bàn</Link>
-        )
-      }
+      // {
+      //   key: RoutePath.ADMIN_TABLE_ORDER, label: (
+      //     <Link to={RouteConfig.ADMIN_TABLE_ORDER}>Danh sách đặt bàn</Link>
+      //   )
+      // }
     ],
     permission: [ROLES.ADMIN, ROLES.TABLE],
   },

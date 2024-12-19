@@ -2,7 +2,8 @@ import { Card, Divider, Flex, Image, Row, Space, Tag } from "antd";
 import moment from "moment";
 import { useMemo } from "react";
 import BaseModalSetting from "../../../../components/base/BaseModalSetting";
-import { convertPriceVNDNotSupfix, getInfoBank, getQrImagePay } from "../../../../utils/common";
+import { convertPriceVNDNotSupfix, getInfoBank, getQrImagePay, truncateWords } from "../../../../utils/common";
+import { fallBackImg, getImageUrl, orderProStatus } from "@/constants/common";
 
 interface IProps {
     onCancel: () => void;
@@ -12,6 +13,7 @@ interface IProps {
 }
 
 const ModalPayment = (props: IProps) => {
+    console.log('props: ', props.billPros);
     const bankInfo: any = useMemo(() => getInfoBank(), []);
 
     return <BaseModalSetting
@@ -39,14 +41,14 @@ const ModalPayment = (props: IProps) => {
                                                 <Flex gap={4}>
                                                     <Flex flex={1} align="end" justify="space-between">
                                                         <Flex gap={8}>
-                                                            <img width={50} src="./images/pasta.png" alt="Ảnh sản phẩm" />
+                                                            <img width={50} className="rounded" src={i?.thumbnail ? getImageUrl(i?.thumbnail) : fallBackImg} alt="Ảnh sản phẩm" />
                                                             <div>
-                                                                <p className="line-clamp-1">{i.name} - {i.size_name}</p>
+                                                                <p className="line-clamp-1">{truncateWords(i.name, 3)} - {i.size_name}</p>
                                                                 <p className="text-ghost text-sm">x{i.quantity}</p>
                                                             </div>
                                                         </Flex>
                                                         <Flex gap={4} vertical={true} justify="space-between" align="end">
-                                                            <Tag color={i.status ? 'green' : 'red'}>{i.status ? 'Hoàn thành' : 'Huỷ'}</Tag>
+                                                            <Tag className="m-0" color={orderProStatus[i.status]?.color}>{orderProStatus[i.status]?.label}</Tag>
                                                             <div>
                                                                 <span className="text-sm font-bold">{convertPriceVNDNotSupfix(i?.price || 0)}</span>
                                                                 <span className="text-[#00813D] text-[12px]  font-bold">vnđ</span>

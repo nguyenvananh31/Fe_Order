@@ -86,5 +86,6 @@ export enum EStatusTable {
 
 export enum PUSHER_CHANNEL {
     BILL_ORDER = 'bill',
-    CALL = 'call'
+    CALL = 'call',
+    CART = 'cart',
 }

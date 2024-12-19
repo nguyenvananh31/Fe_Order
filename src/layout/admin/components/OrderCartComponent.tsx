@@ -147,7 +147,12 @@ export default function OrderCartComponent({ id }: Props) {
             fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
         })
         channel.bind('item.confirmed', function (data: any) {
-            console.log('res confirmed: ', data);
+            // console.log('res confirmed: ', data);
+            fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
+        })
+        channel.bind('item.cancelled', function (data: any) {
+            // console.log('res confirmed: ', data);
+            fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
         })
         channel.bind('item.addedToCart', function (data: any) {
             setOption(prev => {
@@ -156,17 +161,30 @@ export default function OrderCartComponent({ id }: Props) {
                 }
                 return prev;
             });
+            fetchApiBillDetail(state?.billDetail?.ma_bill || '', false);
         })
+        // const channel1 = pusher.subscribe(PUSHER_CHANNEL.CART + '.' + state.billDetail?.id);
+        // channel1.bind('item.deleted', function (data: any) {
+        //     console.log('data: deleted', data);
+        //     setOption(prev => {
+        //         if (prev == 3) {
+        //             getApiOrderProCart(state?.billDetail?.ma_bill || '', false);
+        //         }
+        //         return prev;
+        //     });
+        // })
         return () => {
             channel.unbind_all();
+            // channel1.unbind_all();
             pusher.unsubscribe(PUSHER_CHANNEL.BILL_ORDER + '.' + state.billId);
+            // pusher.unsubscribe(PUSHER_CHANNEL.CART + '.' + state.billId);
         }
     }, [state.billId]);
 
     const total: ITotal = useMemo(() => {
         const pros = state.cartOrderPro.filter(i => state.checkedOrder.includes(i.id));
         const totalSale = pros.reduce((acc, curr) => acc + (+curr.sale || 0), 0);
-        const totalPrice = pros.reduce((acc, curr) => acc + (+curr.sale || +curr.price), 0);
+        const totalPrice = pros.reduce((acc, curr) => acc + ((+curr.sale || +curr.price) * +curr?.quantity), 0);
         return {
             totalSale, totalPrice
         };
@@ -493,7 +511,9 @@ export default function OrderCartComponent({ id }: Props) {
                 phone: values.phone || undefined,
                 payment_id: values.payment,
                 note: values.note || undefined,
-                voucher: values.voucher || undefined
+                voucher: values.voucher || undefined,
+                name: values?.name || undefined,
+                email: values?.email || undefined,
             }
             setState(prev => ({ ...prev, loadingBill: true }));
             await fetchApiBillDetail();

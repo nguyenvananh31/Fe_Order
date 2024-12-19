@@ -39,7 +39,7 @@ const statusShipping: any = {
     'shipping_started': 'Bắt đầu giao hàng',
     'delivered': 'Giao hàng thành công',
     'delivery_failed': 'Giao hàng thất bại',
-    'pending_retry': 'Giao lại',
+    'pending_retry': 'Chờ giao lại',
 }
 
 interface IProps {
